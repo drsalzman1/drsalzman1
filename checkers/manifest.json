@@ -1,0 +1,33 @@
+{
+  "background_color": "#ffffff",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "Checkers",
+  "description": "This is a simple checkers application that I wrote to learn HTML, CSS and Javascript.",
+  "orientation": "any",
+  "scope": "./",
+  "short_name": "Checkers",
+  "start_url": "index.html",
+  "id": "checkers",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "images/icon.svg",
+      "sizes": "640x640"
+    }
+  ],
+  "screenshots" : [
+    {
+      "src": "images/screen-shot-1280x800.png",
+      "sizes": "1280x800",
+      "form_factor": "wide",
+      "label": "Homescreen of Checkers app"
+    },
+    {
+      "src": "images/screen-shot-750x1334.png",
+      "sizes": "750x1334",
+      "form_factor": "narrow",
+      "label": "Homescreen of Checkers app"
+    }
+  ]
+}

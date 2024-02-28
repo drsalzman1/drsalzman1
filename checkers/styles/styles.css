@@ -1,0 +1,75 @@
+body {
+    width: 100vmin;
+    max-width: 640px;
+    margin: auto;
+    font-family: sans-serif;
+    font-size: 16px;
+}
+
+#header {
+    font-size: 32px;
+    font-weight: bold;
+    margin: 8px;
+}
+
+#header img {
+    width: 40px;
+    float: right;
+}
+
+#prompt {
+    margin: 8px;
+}
+
+#board {
+    width: 100vmin;
+    max-width: 640px;
+    aspect-ratio: 1;
+    position: relative;
+}
+
+#board img {
+    width: 12.5vmin;
+    max-width: 80px;
+    position: absolute;
+    z-index: 0;
+}
+
+#board :nth-child(1) {width: 100vmin; max-width: 640px}
+#board :nth-child(2) {left: min(1*12.5vmin, 1*80px); top: min(0*12.5vmin, 0*80px);}
+#board :nth-child(3) {left: min(3*12.5vmin, 3*80px); top: min(0*12.5vmin, 0*80px);}
+#board :nth-child(4) {left: min(5*12.5vmin, 5*80px); top: min(0*12.5vmin, 0*80px);}
+#board :nth-child(5) {left: min(7*12.5vmin, 7*80px); top: min(0*12.5vmin, 0*80px);}
+#board :nth-child(6) {left: min(0*12.5vmin, 0*80px); top: min(1*12.5vmin, 1*80px);}
+#board :nth-child(7) {left: min(2*12.5vmin, 2*80px); top: min(1*12.5vmin, 1*80px);}
+#board :nth-child(8) {left: min(4*12.5vmin, 4*80px); top: min(1*12.5vmin, 1*80px);}
+#board :nth-child(9) {left: min(6*12.5vmin, 6*80px); top: min(1*12.5vmin, 1*80px);}
+#board :nth-child(10) {left: min(1*12.5vmin, 1*80px); top: min(2*12.5vmin, 2*80px);}
+#board :nth-child(11) {left: min(3*12.5vmin, 3*80px); top: min(2*12.5vmin, 2*80px);}
+#board :nth-child(12) {left: min(5*12.5vmin, 5*80px); top: min(2*12.5vmin, 2*80px);}
+#board :nth-child(13) {left: min(7*12.5vmin, 7*80px); top: min(2*12.5vmin, 2*80px);}
+#board :nth-child(14) {left: min(0*12.5vmin, 0*80px); top: min(3*12.5vmin, 3*80px);}
+#board :nth-child(15) {left: min(2*12.5vmin, 2*80px); top: min(3*12.5vmin, 3*80px);}
+#board :nth-child(16) {left: min(4*12.5vmin, 4*80px); top: min(3*12.5vmin, 3*80px);}
+#board :nth-child(17) {left: min(6*12.5vmin, 6*80px); top: min(3*12.5vmin, 3*80px);}
+#board :nth-child(18) {left: min(1*12.5vmin, 1*80px); top: min(4*12.5vmin, 4*80px);}
+#board :nth-child(19) {left: min(3*12.5vmin, 3*80px); top: min(4*12.5vmin, 4*80px);}
+#board :nth-child(20) {left: min(5*12.5vmin, 5*80px); top: min(4*12.5vmin, 4*80px);}
+#board :nth-child(21) {left: min(7*12.5vmin, 7*80px); top: min(4*12.5vmin, 4*80px);}
+#board :nth-child(22) {left: min(0*12.5vmin, 0*80px); top: min(5*12.5vmin, 5*80px);}
+#board :nth-child(23) {left: min(2*12.5vmin, 2*80px); top: min(5*12.5vmin, 5*80px);}
+#board :nth-child(24) {left: min(4*12.5vmin, 4*80px); top: min(5*12.5vmin, 5*80px);}
+#board :nth-child(25) {left: min(6*12.5vmin, 6*80px); top: min(5*12.5vmin, 5*80px);}
+#board :nth-child(26) {left: min(1*12.5vmin, 1*80px); top: min(6*12.5vmin, 6*80px);}
+#board :nth-child(27) {left: min(3*12.5vmin, 3*80px); top: min(6*12.5vmin, 6*80px);}
+#board :nth-child(28) {left: min(5*12.5vmin, 5*80px); top: min(6*12.5vmin, 6*80px);}
+#board :nth-child(29) {left: min(7*12.5vmin, 7*80px); top: min(6*12.5vmin, 6*80px);}
+#board :nth-child(30) {left: min(0*12.5vmin, 0*80px); top: min(7*12.5vmin, 7*80px);}
+#board :nth-child(31) {left: min(2*12.5vmin, 2*80px); top: min(7*12.5vmin, 7*80px);}
+#board :nth-child(32) {left: min(4*12.5vmin, 4*80px); top: min(7*12.5vmin, 7*80px);}
+#board :nth-child(33) {left: min(6*12.5vmin, 6*80px); top: min(7*12.5vmin, 7*80px);}
+
+#footer {
+    margin: 8px;
+    display: none;
+}
