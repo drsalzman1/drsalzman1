@@ -2,7 +2,7 @@
     --body-width:       min(1.000*100vw, 1.000*640px);
     --body-font-size:   min(0.030*100vw, 0.030*640px);
     --header-font-size: min(0.060*100vw, 0.060*640px);
-    --arrow-font-size:  min(0.100*100vw, 0.100*640px);
+    --arrow-font-size:  min(0.080*100vw, 0.080*640px);
     --arrow-margin:     min(0.050*100vw, 0.050*640px);
     --puzzle-size:      min(0.440*100vw, 0.440*640px);
     --tile-size:        min(0.080*100vw, 0.080*640px);
