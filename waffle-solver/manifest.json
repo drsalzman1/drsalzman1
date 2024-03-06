@@ -12,12 +12,12 @@
   "theme_color": "#ffffff",
   "icons": [
     {
-      "src": "icon.svg",
+      "src": "regular-icon.svg",
       "sizes": "640x640",
       "purpose": "any"
     },
     {
-      "src": "icon.svg",
+      "src": "maskable-icon.svg",
       "sizes": "640x640",
       "purpose": "maskable"
     }
