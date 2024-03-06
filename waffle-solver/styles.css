@@ -1,14 +1,14 @@
 body {
-    width: 100vw;
-    max-width: 640px;
+    width: min(1.00*100vw, 1.00*640px);
     margin: auto;
     font-family: sans-serif;
-    font-size: min(4vw, 16px);
+    font-size: min(0.03*100vw, 0.03*640px);
 }
 
 #header {
-    font-size: min(9vw, 32px);
-    font-weight: bold;
+    font-size: min(0.05*100vw, 0.05*640px);
+    font-weight: 600;
+    text-align: center;
     margin: 8px;
 }
 
@@ -17,77 +17,81 @@ body {
 }
 
 #puzzle {
-    width: 50vw;
-    max-width: 320px;
-    height: 50vw;
-    max-height: 320px;
+    width: min(0.40*100vw, 0.40*640px);
+    height: min(0.40*100vw, 0.40*640px);
     position: relative;
     margin: auto;
 }
 
-button {
-    width: 9vw;
-    max-width: 58px;
-    height: 9vw;
-    max-height: 58px;
+#puzzle button {
+    width: min(0.07*100vw, 0.07*640px);
+    height: min(0.07*100vw, 0.07*640px);
     position: absolute;
-    font-size: min(7vw, 36px);
+    font-size: min(0.05*100vw, 0.05*640px);
     font-weight: 600;
     z-index: 0;
 }
 
-#puzzle :nth-child(1) {left: min(0*10vw, 0*64px); top: min(0*10vw, 0*64px);}
-#puzzle :nth-child(2) {left: min(1*10vw, 1*64px); top: min(0*10vw, 0*64px);}
-#puzzle :nth-child(3) {left: min(2*10vw, 2*64px); top: min(0*10vw, 0*64px);}
-#puzzle :nth-child(4) {left: min(3*10vw, 3*64px); top: min(0*10vw, 0*64px);}
-#puzzle :nth-child(5) {left: min(4*10vw, 4*64px); top: min(0*10vw, 0*64px);}
-#puzzle :nth-child(6) {left: min(0*10vw, 0*64px); top: min(1*10vw, 1*64px);}
-#puzzle :nth-child(7) {left: min(2*10vw, 2*64px); top: min(1*10vw, 1*64px);}
-#puzzle :nth-child(8) {left: min(4*10vw, 4*64px); top: min(1*10vw, 1*64px);}
-#puzzle :nth-child(9) {left: min(0*10vw, 0*64px); top: min(2*10vw, 2*64px);}
-#puzzle :nth-child(10) {left: min(1*10vw, 1*64px); top: min(2*10vw, 2*64px);}
-#puzzle :nth-child(11) {left: min(2*10vw, 2*64px); top: min(2*10vw, 2*64px);}
-#puzzle :nth-child(12) {left: min(3*10vw, 3*64px); top: min(2*10vw, 2*64px);}
-#puzzle :nth-child(13) {left: min(4*10vw, 4*64px); top: min(2*10vw, 2*64px);}
-#puzzle :nth-child(14) {left: min(0*10vw, 0*64px); top: min(3*10vw, 3*64px);}
-#puzzle :nth-child(15) {left: min(2*10vw, 2*64px); top: min(3*10vw, 3*64px);}
-#puzzle :nth-child(16) {left: min(4*10vw, 4*64px); top: min(3*10vw, 3*64px);}
-#puzzle :nth-child(17) {left: min(0*10vw, 0*64px); top: min(4*10vw, 4*64px);}
-#puzzle :nth-child(18) {left: min(1*10vw, 1*64px); top: min(4*10vw, 4*64px);}
-#puzzle :nth-child(19) {left: min(2*10vw, 2*64px); top: min(4*10vw, 4*64px);}
-#puzzle :nth-child(20) {left: min(3*10vw, 3*64px); top: min(4*10vw, 4*64px);}
-#puzzle :nth-child(21) {left: min(4*10vw, 4*64px); top: min(4*10vw, 4*64px);}
+#puzzle :nth-child(1) {left: min(0*0.08*100vw, 0*0.08*640px); top: min(0*0.08*100vw, 0*0.08*640px);}
+#puzzle :nth-child(2) {left: min(1*0.08*100vw, 1*0.08*640px); top: min(0*0.08*100vw, 0*0.08*640px);}
+#puzzle :nth-child(3) {left: min(2*0.08*100vw, 2*0.08*640px); top: min(0*0.08*100vw, 0*0.08*640px);}
+#puzzle :nth-child(4) {left: min(3*0.08*100vw, 3*0.08*640px); top: min(0*0.08*100vw, 0*0.08*640px);}
+#puzzle :nth-child(5) {left: min(4*0.08*100vw, 4*0.08*640px); top: min(0*0.08*100vw, 0*0.08*640px);}
+#puzzle :nth-child(6) {left: min(0*0.08*100vw, 0*0.08*640px); top: min(1*0.08*100vw, 1*0.08*640px);}
+#puzzle :nth-child(7) {left: min(2*0.08*100vw, 2*0.08*640px); top: min(1*0.08*100vw, 1*0.08*640px);}
+#puzzle :nth-child(8) {left: min(4*0.08*100vw, 4*0.08*640px); top: min(1*0.08*100vw, 1*0.08*640px);}
+#puzzle :nth-child(9) {left: min(0*0.08*100vw, 0*0.08*640px); top: min(2*0.08*100vw, 2*0.08*640px);}
+#puzzle :nth-child(10) {left: min(1*0.08*100vw, 1*0.08*640px); top: min(2*0.08*100vw, 2*0.08*640px);}
+#puzzle :nth-child(11) {left: min(2*0.08*100vw, 2*0.08*640px); top: min(2*0.08*100vw, 2*0.08*640px);}
+#puzzle :nth-child(12) {left: min(3*0.08*100vw, 3*0.08*640px); top: min(2*0.08*100vw, 2*0.08*640px);}
+#puzzle :nth-child(13) {left: min(4*0.08*100vw, 4*0.08*640px); top: min(2*0.08*100vw, 2*0.08*640px);}
+#puzzle :nth-child(14) {left: min(0*0.08*100vw, 0*0.08*640px); top: min(3*0.08*100vw, 3*0.08*640px);}
+#puzzle :nth-child(15) {left: min(2*0.08*100vw, 2*0.08*640px); top: min(3*0.08*100vw, 3*0.08*640px);}
+#puzzle :nth-child(16) {left: min(4*0.08*100vw, 4*0.08*640px); top: min(3*0.08*100vw, 3*0.08*640px);}
+#puzzle :nth-child(17) {left: min(0*0.08*100vw, 0*0.08*640px); top: min(4*0.08*100vw, 4*0.08*640px);}
+#puzzle :nth-child(18) {left: min(1*0.08*100vw, 1*0.08*640px); top: min(4*0.08*100vw, 4*0.08*640px);}
+#puzzle :nth-child(19) {left: min(2*0.08*100vw, 2*0.08*640px); top: min(4*0.08*100vw, 4*0.08*640px);}
+#puzzle :nth-child(20) {left: min(3*0.08*100vw, 3*0.08*640px); top: min(4*0.08*100vw, 4*0.08*640px);}
+#puzzle :nth-child(21) {left: min(4*0.08*100vw, 4*0.08*640px); top: min(4*0.08*100vw, 4*0.08*640px);}
 
 #keyboard {
-    width: 100vw;
-    max-width: 640px;
+    width: min(1.00*100vw, 1.00*640px);
     position: relative;
 }
 
-#keyboard :nth-child(1) {left: min(0*10vw + 0.5vw, 0*64px + 3.2px); top: min(0*10vw, 0*64px);}
-#keyboard :nth-child(2) {left: min(1*10vw + 0.5vw, 1*64px + 3.2px); top: min(0*10vw, 0*64px);}
-#keyboard :nth-child(3) {left: min(2*10vw + 0.5vw, 2*64px + 3.2px); top: min(0*10vw, 0*64px);}
-#keyboard :nth-child(4) {left: min(3*10vw + 0.5vw, 3*64px + 3.2px); top: min(0*10vw, 0*64px);}
-#keyboard :nth-child(5) {left: min(4*10vw + 0.5vw, 4*64px + 3.2px); top: min(0*10vw, 0*64px);}
-#keyboard :nth-child(6) {left: min(5*10vw + 0.5vw, 5*64px + 3.2px); top: min(0*10vw, 0*64px);}
-#keyboard :nth-child(7) {left: min(6*10vw + 0.5vw, 6*64px + 3.2px); top: min(0*10vw, 0*64px);}
-#keyboard :nth-child(8) {left: min(7*10vw + 0.5vw, 7*64px + 3.2px); top: min(0*10vw, 0*64px);}
-#keyboard :nth-child(9) {left: min(8*10vw + 0.5vw, 8*64px + 3.2px); top: min(0*10vw, 0*64px);}
-#keyboard :nth-child(10) {left: min(9*10vw + 0.5vw, 9*64px + 3.2px); top: min(0*10vw, 0*64px);}
-#keyboard :nth-child(11) {left: min(0*10vw + 5.5vw, 0*64px + 35.2px); top: min(1*10vw, 1*64px);}
-#keyboard :nth-child(12) {left: min(1*10vw + 5.5vw, 1*64px + 35.2px); top: min(1*10vw, 1*64px);}
-#keyboard :nth-child(13) {left: min(2*10vw + 5.5vw, 2*64px + 35.2px); top: min(1*10vw, 1*64px);}
-#keyboard :nth-child(14) {left: min(3*10vw + 5.5vw, 3*64px + 35.2px); top: min(1*10vw, 1*64px);}
-#keyboard :nth-child(15) {left: min(4*10vw + 5.5vw, 4*64px + 35.2px); top: min(1*10vw, 1*64px);}
-#keyboard :nth-child(16) {left: min(5*10vw + 5.5vw, 5*64px + 35.2px); top: min(1*10vw, 1*64px);}
-#keyboard :nth-child(17) {left: min(6*10vw + 5.5vw, 6*64px + 35.2px); top: min(1*10vw, 1*64px);}
-#keyboard :nth-child(18) {left: min(7*10vw + 5.5vw, 7*64px + 35.2px); top: min(1*10vw, 1*64px);}
-#keyboard :nth-child(19) {left: min(8*10vw + 5.5vw, 8*64px + 35.2px); top: min(1*10vw, 1*64px);}
-#keyboard :nth-child(20) {left: min(1*10vw + 0.5vw, 1*64px + 3.2px); top: min(2*10vw, 2*64px);}
-#keyboard :nth-child(21) {left: min(2*10vw + 0.5vw, 2*64px + 3.2px); top: min(2*10vw, 2*64px);}
-#keyboard :nth-child(22) {left: min(3*10vw + 0.5vw, 3*64px + 3.2px); top: min(2*10vw, 2*64px);}
-#keyboard :nth-child(23) {left: min(4*10vw + 0.5vw, 4*64px + 3.2px); top: min(2*10vw, 2*64px);}
-#keyboard :nth-child(24) {left: min(5*10vw + 0.5vw, 5*64px + 3.2px); top: min(2*10vw, 2*64px);}
-#keyboard :nth-child(25) {left: min(6*10vw + 0.5vw, 6*64px + 3.2px); top: min(2*10vw, 2*64px);}
-#keyboard :nth-child(26) {left: min(7*10vw + 0.5vw, 7*64px + 3.2px); top: min(2*10vw, 2*64px);}
-#keyboard :nth-child(27) {left: min(8*10vw + 0.5vw, 8*64px + 3.2px); top: min(2*10vw, 2*64px); font-size: min(5vw, 24px)}
+#keyboard button {
+    width: min(0.09*100vw, 0.09*640px);
+    height: min(0.09*100vw, 0.09*640px);
+    position: absolute;
+    font-size: min(0.05*100vw, 0.05*640px);
+    font-weight: 600;
+    z-index: 0;
+}
+
+#keyboard :nth-child(1) {left: min(0*0.10*100vw + 0.5vw, 0*0.10*640px + 3.2px); top: min(0*0.10*100vw, 0*0.10*640px);}
+#keyboard :nth-child(2) {left: min(1*0.10*100vw + 0.5vw, 1*0.10*640px + 3.2px); top: min(0*0.10*100vw, 0*0.10*640px);}
+#keyboard :nth-child(3) {left: min(2*0.10*100vw + 0.5vw, 2*0.10*640px + 3.2px); top: min(0*0.10*100vw, 0*0.10*640px);}
+#keyboard :nth-child(4) {left: min(3*0.10*100vw + 0.5vw, 3*0.10*640px + 3.2px); top: min(0*0.10*100vw, 0*0.10*640px);}
+#keyboard :nth-child(5) {left: min(4*0.10*100vw + 0.5vw, 4*0.10*640px + 3.2px); top: min(0*0.10*100vw, 0*0.10*640px);}
+#keyboard :nth-child(6) {left: min(5*0.10*100vw + 0.5vw, 5*0.10*640px + 3.2px); top: min(0*0.10*100vw, 0*0.10*640px);}
+#keyboard :nth-child(7) {left: min(6*0.10*100vw + 0.5vw, 6*0.10*640px + 3.2px); top: min(0*0.10*100vw, 0*0.10*640px);}
+#keyboard :nth-child(8) {left: min(7*0.10*100vw + 0.5vw, 7*0.10*640px + 3.2px); top: min(0*0.10*100vw, 0*0.10*640px);}
+#keyboard :nth-child(9) {left: min(8*0.10*100vw + 0.5vw, 8*0.10*640px + 3.2px); top: min(0*0.10*100vw, 0*0.10*640px);}
+#keyboard :nth-child(10) {left: min(9*0.10*100vw + 0.5vw, 9*0.10*640px + 3.2px); top: min(0*0.10*100vw, 0*0.10*640px);}
+#keyboard :nth-child(11) {left: min(0*0.10*100vw + 5.5vw, 0*0.10*640px + 35.2px); top: min(1*0.10*100vw, 1*0.10*640px);}
+#keyboard :nth-child(12) {left: min(1*0.10*100vw + 5.5vw, 1*0.10*640px + 35.2px); top: min(1*0.10*100vw, 1*0.10*640px);}
+#keyboard :nth-child(13) {left: min(2*0.10*100vw + 5.5vw, 2*0.10*640px + 35.2px); top: min(1*0.10*100vw, 1*0.10*640px);}
+#keyboard :nth-child(14) {left: min(3*0.10*100vw + 5.5vw, 3*0.10*640px + 35.2px); top: min(1*0.10*100vw, 1*0.10*640px);}
+#keyboard :nth-child(15) {left: min(4*0.10*100vw + 5.5vw, 4*0.10*640px + 35.2px); top: min(1*0.10*100vw, 1*0.10*640px);}
+#keyboard :nth-child(16) {left: min(5*0.10*100vw + 5.5vw, 5*0.10*640px + 35.2px); top: min(1*0.10*100vw, 1*0.10*640px);}
+#keyboard :nth-child(17) {left: min(6*0.10*100vw + 5.5vw, 6*0.10*640px + 35.2px); top: min(1*0.10*100vw, 1*0.10*640px);}
+#keyboard :nth-child(18) {left: min(7*0.10*100vw + 5.5vw, 7*0.10*640px + 35.2px); top: min(1*0.10*100vw, 1*0.10*640px);}
+#keyboard :nth-child(19) {left: min(8*0.10*100vw + 5.5vw, 8*0.10*640px + 35.2px); top: min(1*0.10*100vw, 1*0.10*640px);}
+#keyboard :nth-child(20) {left: min(1*0.10*100vw + 0.5vw, 1*0.10*640px + 3.2px); top: min(2*0.10*100vw, 2*0.10*640px);}
+#keyboard :nth-child(21) {left: min(2*0.10*100vw + 0.5vw, 2*0.10*640px + 3.2px); top: min(2*0.10*100vw, 2*0.10*640px);}
+#keyboard :nth-child(22) {left: min(3*0.10*100vw + 0.5vw, 3*0.10*640px + 3.2px); top: min(2*0.10*100vw, 2*0.10*640px);}
+#keyboard :nth-child(23) {left: min(4*0.10*100vw + 0.5vw, 4*0.10*640px + 3.2px); top: min(2*0.10*100vw, 2*0.10*640px);}
+#keyboard :nth-child(24) {left: min(5*0.10*100vw + 0.5vw, 5*0.10*640px + 3.2px); top: min(2*0.10*100vw, 2*0.10*640px);}
+#keyboard :nth-child(25) {left: min(6*0.10*100vw + 0.5vw, 6*0.10*640px + 3.2px); top: min(2*0.10*100vw, 2*0.10*640px);}
+#keyboard :nth-child(26) {left: min(7*0.10*100vw + 0.5vw, 7*0.10*640px + 3.2px); top: min(2*0.10*100vw, 2*0.10*640px);}
+#keyboard :nth-child(27) {left: min(8*0.10*100vw + 0.5vw, 8*0.10*640px + 3.2px); top: min(2*0.10*100vw, 2*0.10*640px); font-size: min(0.04*100vw, 0.04*640px)}
