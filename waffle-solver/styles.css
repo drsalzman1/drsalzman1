@@ -7,9 +7,11 @@
     --tile-font-size:   min(0.050*100vw, 0.050*640px);
     --tile-pitch:       min(0.090*100vw, 0.090*640px);
     --keyboard-width:   min(1.000*100vw, 1.000*640px);
-    --key-size:         min(0.090*100vw, 0.090*640px);
+    --key-width:        min(0.090*100vw, 0.090*640px);
+    --key-height:       min(0.110*100vw, 0.110*640px);
     --key-font-size:    min(0.050*100vw, 0.050*640px);
-    --key-pitch:        min(0.100*100vw, 0.100*640px);
+    --key-horizontal:   min(0.100*100vw, 0.100*640px);
+    --key-vertical:     min(0.120*100vw, 0.120*640px);
     --row1-offset:      min(0.005*100vw, 0.005*640px);
     --row2-offset:      min(0.055*100vw, 0.055*640px);
     --row3-offset:      min(0.105*100vw, 0.105*640px);
@@ -78,38 +80,38 @@ body {
 }
 
 #keyboard button {
-    width: var(--key-size);
-    height: var(--key-size);
+    width: var(--key-width);
+    height: var(--key-height);
     font-size: var(--key-font-size);
     font-weight: 600;
     position: absolute;
     z-index: 0;
 }
 
-#keyboard :nth-child(1) {left: calc(0*var(--key-pitch) + var(--row1-offset)); top: calc(0*var(--key-pitch));}
-#keyboard :nth-child(2) {left: calc(1*var(--key-pitch) + var(--row1-offset)); top: calc(0*var(--key-pitch));}
-#keyboard :nth-child(3) {left: calc(2*var(--key-pitch) + var(--row1-offset)); top: calc(0*var(--key-pitch));}
-#keyboard :nth-child(4) {left: calc(3*var(--key-pitch) + var(--row1-offset)); top: calc(0*var(--key-pitch));}
-#keyboard :nth-child(5) {left: calc(4*var(--key-pitch) + var(--row1-offset)); top: calc(0*var(--key-pitch));}
-#keyboard :nth-child(6) {left: calc(5*var(--key-pitch) + var(--row1-offset)); top: calc(0*var(--key-pitch));}
-#keyboard :nth-child(7) {left: calc(6*var(--key-pitch) + var(--row1-offset)); top: calc(0*var(--key-pitch));}
-#keyboard :nth-child(8) {left: calc(7*var(--key-pitch) + var(--row1-offset)); top: calc(0*var(--key-pitch));}
-#keyboard :nth-child(9) {left: calc(8*var(--key-pitch) + var(--row1-offset)); top: calc(0*var(--key-pitch));}
-#keyboard :nth-child(10) {left: calc(9*var(--key-pitch) + var(--row1-offset)); top: calc(0*var(--key-pitch));}
-#keyboard :nth-child(11) {left: calc(0*var(--key-pitch) + var(--row2-offset)); top: calc(1*var(--key-pitch));}
-#keyboard :nth-child(12) {left: calc(1*var(--key-pitch) + var(--row2-offset)); top: calc(1*var(--key-pitch));}
-#keyboard :nth-child(13) {left: calc(2*var(--key-pitch) + var(--row2-offset)); top: calc(1*var(--key-pitch));}
-#keyboard :nth-child(14) {left: calc(3*var(--key-pitch) + var(--row2-offset)); top: calc(1*var(--key-pitch));}
-#keyboard :nth-child(15) {left: calc(4*var(--key-pitch) + var(--row2-offset)); top: calc(1*var(--key-pitch));}
-#keyboard :nth-child(16) {left: calc(5*var(--key-pitch) + var(--row2-offset)); top: calc(1*var(--key-pitch));}
-#keyboard :nth-child(17) {left: calc(6*var(--key-pitch) + var(--row2-offset)); top: calc(1*var(--key-pitch));}
-#keyboard :nth-child(18) {left: calc(7*var(--key-pitch) + var(--row2-offset)); top: calc(1*var(--key-pitch));}
-#keyboard :nth-child(19) {left: calc(8*var(--key-pitch) + var(--row2-offset)); top: calc(1*var(--key-pitch));}
-#keyboard :nth-child(20) {left: calc(0*var(--key-pitch) + var(--row3-offset)); top: calc(2*var(--key-pitch));}
-#keyboard :nth-child(21) {left: calc(1*var(--key-pitch) + var(--row3-offset)); top: calc(2*var(--key-pitch));}
-#keyboard :nth-child(22) {left: calc(2*var(--key-pitch) + var(--row3-offset)); top: calc(2*var(--key-pitch));}
-#keyboard :nth-child(23) {left: calc(3*var(--key-pitch) + var(--row3-offset)); top: calc(2*var(--key-pitch));}
-#keyboard :nth-child(24) {left: calc(4*var(--key-pitch) + var(--row3-offset)); top: calc(2*var(--key-pitch));}
-#keyboard :nth-child(25) {left: calc(5*var(--key-pitch) + var(--row3-offset)); top: calc(2*var(--key-pitch));}
-#keyboard :nth-child(26) {left: calc(6*var(--key-pitch) + var(--row3-offset)); top: calc(2*var(--key-pitch));}
-#keyboard :nth-child(27) {left: calc(7*var(--key-pitch) + var(--row3-offset)); top: calc(2*var(--key-pitch)); font-size: var(--bs-font-size)}
+#keyboard :nth-child(1) {left: calc(0*var(--key-horizontal) + var(--row1-offset)); top: calc(0*var(--key-vertical));}
+#keyboard :nth-child(2) {left: calc(1*var(--key-horizontal) + var(--row1-offset)); top: calc(0*var(--key-vertical));}
+#keyboard :nth-child(3) {left: calc(2*var(--key-horizontal) + var(--row1-offset)); top: calc(0*var(--key-vertical));}
+#keyboard :nth-child(4) {left: calc(3*var(--key-horizontal) + var(--row1-offset)); top: calc(0*var(--key-vertical));}
+#keyboard :nth-child(5) {left: calc(4*var(--key-horizontal) + var(--row1-offset)); top: calc(0*var(--key-vertical));}
+#keyboard :nth-child(6) {left: calc(5*var(--key-horizontal) + var(--row1-offset)); top: calc(0*var(--key-vertical));}
+#keyboard :nth-child(7) {left: calc(6*var(--key-horizontal) + var(--row1-offset)); top: calc(0*var(--key-vertical));}
+#keyboard :nth-child(8) {left: calc(7*var(--key-horizontal) + var(--row1-offset)); top: calc(0*var(--key-vertical));}
+#keyboard :nth-child(9) {left: calc(8*var(--key-horizontal) + var(--row1-offset)); top: calc(0*var(--key-vertical));}
+#keyboard :nth-child(10) {left: calc(9*var(--key-horizontal) + var(--row1-offset)); top: calc(0*var(--key-vertical));}
+#keyboard :nth-child(11) {left: calc(0*var(--key-horizontal) + var(--row2-offset)); top: calc(1*var(--key-vertical));}
+#keyboard :nth-child(12) {left: calc(1*var(--key-horizontal) + var(--row2-offset)); top: calc(1*var(--key-vertical));}
+#keyboard :nth-child(13) {left: calc(2*var(--key-horizontal) + var(--row2-offset)); top: calc(1*var(--key-vertical));}
+#keyboard :nth-child(14) {left: calc(3*var(--key-horizontal) + var(--row2-offset)); top: calc(1*var(--key-vertical));}
+#keyboard :nth-child(15) {left: calc(4*var(--key-horizontal) + var(--row2-offset)); top: calc(1*var(--key-vertical));}
+#keyboard :nth-child(16) {left: calc(5*var(--key-horizontal) + var(--row2-offset)); top: calc(1*var(--key-vertical));}
+#keyboard :nth-child(17) {left: calc(6*var(--key-horizontal) + var(--row2-offset)); top: calc(1*var(--key-vertical));}
+#keyboard :nth-child(18) {left: calc(7*var(--key-horizontal) + var(--row2-offset)); top: calc(1*var(--key-vertical));}
+#keyboard :nth-child(19) {left: calc(8*var(--key-horizontal) + var(--row2-offset)); top: calc(1*var(--key-vertical));}
+#keyboard :nth-child(20) {left: calc(0*var(--key-horizontal) + var(--row3-offset)); top: calc(2*var(--key-vertical));}
+#keyboard :nth-child(21) {left: calc(1*var(--key-horizontal) + var(--row3-offset)); top: calc(2*var(--key-vertical));}
+#keyboard :nth-child(22) {left: calc(2*var(--key-horizontal) + var(--row3-offset)); top: calc(2*var(--key-vertical));}
+#keyboard :nth-child(23) {left: calc(3*var(--key-horizontal) + var(--row3-offset)); top: calc(2*var(--key-vertical));}
+#keyboard :nth-child(24) {left: calc(4*var(--key-horizontal) + var(--row3-offset)); top: calc(2*var(--key-vertical));}
+#keyboard :nth-child(25) {left: calc(5*var(--key-horizontal) + var(--row3-offset)); top: calc(2*var(--key-vertical));}
+#keyboard :nth-child(26) {left: calc(6*var(--key-horizontal) + var(--row3-offset)); top: calc(2*var(--key-vertical));}
+#keyboard :nth-child(27) {left: calc(7*var(--key-horizontal) + var(--row3-offset)); top: calc(2*var(--key-vertical)); font-size: var(--bs-font-size)}
