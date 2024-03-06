@@ -2,6 +2,8 @@
     --body-width:       min(1.000*100vw, 1.000*640px);
     --body-font-size:   min(0.030*100vw, 0.030*640px);
     --header-font-size: min(0.060*100vw, 0.060*640px);
+    --arrow-font-size:  min(0.100*100vw, 0.100*640px);
+    --arrow-margin:     min(0.050*100vw, 0.050*640px);
     --puzzle-size:      min(0.440*100vw, 0.440*640px);
     --tile-size:        min(0.080*100vw, 0.080*640px);
     --tile-font-size:   min(0.050*100vw, 0.050*640px);
@@ -32,15 +34,26 @@ body {
     margin: 8px;
 }
 
-#prompt {
-    margin: 8px;
+#main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.arrow button {
+    background-color: transparent;
+    border-style: none;
+    color: lightgrey;
+    font-size: var(--arrow-font-size);
+    margin: var(--arrow-margin);
 }
 
 #puzzle {
     width: var(--puzzle-size);
     height: var(--puzzle-size);
     position: relative;
-    margin: auto;
+    display: inline-block;
+    /* margin: auto; */
 }
 
 #puzzle button {
@@ -73,6 +86,10 @@ body {
 #puzzle :nth-child(19) {left: calc(2*var(--tile-pitch)); top: calc(4*var(--tile-pitch));}
 #puzzle :nth-child(20) {left: calc(3*var(--tile-pitch)); top: calc(4*var(--tile-pitch));}
 #puzzle :nth-child(21) {left: calc(4*var(--tile-pitch)); top: calc(4*var(--tile-pitch));}
+
+#prompt {
+    margin: 8px;
+}
 
 #keyboard {
     width: var(--keyboard-width);
