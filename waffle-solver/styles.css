@@ -1,23 +1,26 @@
 :root {
     --body-width:       min(1.000*100vw, 1.000*640px);
     --body-font-size:   min(0.030*100vw, 0.030*640px);
-    --header-font-size: min(0.060*100vw, 0.060*640px);
+    --header-font-size: min(0.055*100vw, 0.055*640px);
     --arrow-font-size:  min(0.080*100vw, 0.080*640px);
     --arrow-margin:     min(0.050*100vw, 0.050*640px);
+    --side-size:        min(0.280*100vw, 0.280*640px);
     --puzzle-size:      min(0.440*100vw, 0.440*640px);
     --tile-size:        min(0.080*100vw, 0.080*640px);
-    --tile-font-size:   min(0.050*100vw, 0.050*640px);
+    --tile-font-size:   min(0.045*100vw, 0.045*640px);
     --tile-pitch:       min(0.090*100vw, 0.090*640px);
-    --keyboard-width:   min(1.000*100vw, 1.000*640px);
     --key-width:        min(0.090*100vw, 0.090*640px);
     --key-height:       min(0.110*100vw, 0.110*640px);
-    --key-font-size:    min(0.050*100vw, 0.050*640px);
+    --key-font-size:    min(0.045*100vw, 0.045*640px);
     --key-horizontal:   min(0.100*100vw, 0.100*640px);
     --key-vertical:     min(0.120*100vw, 0.120*640px);
     --row1-offset:      min(0.005*100vw, 0.005*640px);
     --row2-offset:      min(0.055*100vw, 0.055*640px);
     --row3-offset:      min(0.105*100vw, 0.105*640px);
     --bs-font-size:     min(0.040*100vw, 0.040*640px);
+    --gry:              #EDEFF1;
+    --gld:              #E9BA3A;
+    --grn:              #6FB05C;
 }
 
 body {
@@ -28,32 +31,40 @@ body {
 }
 
 #header {
+    width: var(--body-width);
     font-size: var(--header-font-size);
     font-weight: 600;
     text-align: center;
-    margin: 8px;
+    margin-top: 8px;
+    margin-bottom: 8px;
 }
 
 #main {
+    width: var(--body-width);
     display: flex;
-    justify-content: center;
+    flex-direction: row;
     align-items: center;
 }
 
-.arrow button {
+#left, #right {
+    width: var(--side-size);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    visibility: hidden;
+}
+
+#leftButton, #rightButton {
     background-color: transparent;
     border-style: none;
     color: lightgrey;
     font-size: var(--arrow-font-size);
-    margin: var(--arrow-margin);
 }
 
 #puzzle {
     width: var(--puzzle-size);
     height: var(--puzzle-size);
     position: relative;
-    display: inline-block;
-    /* margin: auto; */
 }
 
 #puzzle button {
@@ -61,38 +72,43 @@ body {
     height: var(--tile-size);
     font-size: var(--tile-font-size);
     font-weight: 600;
+    color: black;
+    background-color: var(--gry);
+    border-color: var(--gry);
+    border-style: outset;
+    border-width: 3px;
+    border-radius: 5px;
     position: absolute;
     z-index: 0;
 }
 
-#puzzle :nth-child(1) {left: calc(0*var(--tile-pitch)); top: calc(0*var(--tile-pitch));}
-#puzzle :nth-child(2) {left: calc(1*var(--tile-pitch)); top: calc(0*var(--tile-pitch));}
-#puzzle :nth-child(3) {left: calc(2*var(--tile-pitch)); top: calc(0*var(--tile-pitch));}
-#puzzle :nth-child(4) {left: calc(3*var(--tile-pitch)); top: calc(0*var(--tile-pitch));}
-#puzzle :nth-child(5) {left: calc(4*var(--tile-pitch)); top: calc(0*var(--tile-pitch));}
-#puzzle :nth-child(6) {left: calc(0*var(--tile-pitch)); top: calc(1*var(--tile-pitch));}
-#puzzle :nth-child(7) {left: calc(2*var(--tile-pitch)); top: calc(1*var(--tile-pitch));}
-#puzzle :nth-child(8) {left: calc(4*var(--tile-pitch)); top: calc(1*var(--tile-pitch));}
-#puzzle :nth-child(9) {left: calc(0*var(--tile-pitch)); top: calc(2*var(--tile-pitch));}
-#puzzle :nth-child(10) {left: calc(1*var(--tile-pitch)); top: calc(2*var(--tile-pitch));}
-#puzzle :nth-child(11) {left: calc(2*var(--tile-pitch)); top: calc(2*var(--tile-pitch));}
-#puzzle :nth-child(12) {left: calc(3*var(--tile-pitch)); top: calc(2*var(--tile-pitch));}
-#puzzle :nth-child(13) {left: calc(4*var(--tile-pitch)); top: calc(2*var(--tile-pitch));}
-#puzzle :nth-child(14) {left: calc(0*var(--tile-pitch)); top: calc(3*var(--tile-pitch));}
-#puzzle :nth-child(15) {left: calc(2*var(--tile-pitch)); top: calc(3*var(--tile-pitch));}
-#puzzle :nth-child(16) {left: calc(4*var(--tile-pitch)); top: calc(3*var(--tile-pitch));}
-#puzzle :nth-child(17) {left: calc(0*var(--tile-pitch)); top: calc(4*var(--tile-pitch));}
-#puzzle :nth-child(18) {left: calc(1*var(--tile-pitch)); top: calc(4*var(--tile-pitch));}
-#puzzle :nth-child(19) {left: calc(2*var(--tile-pitch)); top: calc(4*var(--tile-pitch));}
-#puzzle :nth-child(20) {left: calc(3*var(--tile-pitch)); top: calc(4*var(--tile-pitch));}
-#puzzle :nth-child(21) {left: calc(4*var(--tile-pitch)); top: calc(4*var(--tile-pitch));}
+#puzzle :nth-child(01), #puzzle :nth-child(06), #puzzle :nth-child(09), #puzzle :nth-child(14), #puzzle :nth-child(17) {left: calc(0*var(--tile-pitch));}
+#puzzle :nth-child(02),                         #puzzle :nth-child(10),                         #puzzle :nth-child(18) {left: calc(1*var(--tile-pitch));}
+#puzzle :nth-child(03), #puzzle :nth-child(07), #puzzle :nth-child(11), #puzzle :nth-child(15), #puzzle :nth-child(19) {left: calc(2*var(--tile-pitch));}
+#puzzle :nth-child(04),                         #puzzle :nth-child(12),                         #puzzle :nth-child(20) {left: calc(3*var(--tile-pitch));}
+#puzzle :nth-child(05), #puzzle :nth-child(08), #puzzle :nth-child(13), #puzzle :nth-child(16), #puzzle :nth-child(21) {left: calc(4*var(--tile-pitch));}
+
+#puzzle :nth-child(01), #puzzle :nth-child(02), #puzzle :nth-child(03), #puzzle :nth-child(04), #puzzle :nth-child(05) {top: calc(0*var(--tile-pitch));}
+#puzzle :nth-child(06),                         #puzzle :nth-child(07),                         #puzzle :nth-child(08) {top: calc(1*var(--tile-pitch));}
+#puzzle :nth-child(09), #puzzle :nth-child(10), #puzzle :nth-child(11), #puzzle :nth-child(12), #puzzle :nth-child(13) {top: calc(2*var(--tile-pitch));}
+#puzzle :nth-child(14),                         #puzzle :nth-child(15),                         #puzzle :nth-child(16) {top: calc(3*var(--tile-pitch));}
+#puzzle :nth-child(17), #puzzle :nth-child(18), #puzzle :nth-child(19), #puzzle :nth-child(20), #puzzle :nth-child(21) {top: calc(4*var(--tile-pitch));}
+
+#puzzle :nth-child(01), #puzzle :nth-child(05), #puzzle :nth-child(11), #puzzle :nth-child(17), #puzzle :nth-child(21) {
+    color: white; 
+    background-color: var(--grn); 
+    border-color: var(--grn);
+}
 
 #prompt {
-    margin: 8px;
+    width: var(--body-width);
+    text-align: center;
+    margin-top: 8px;
+    margin-bottom: 8px;
 }
 
 #keyboard {
-    width: var(--keyboard-width);
+    width: var(--body-width);
     position: relative;
 }
 
@@ -101,6 +117,10 @@ body {
     height: var(--key-height);
     font-size: var(--key-font-size);
     font-weight: 600;
+    background-color: var(--gry);
+    border-style: solid;
+    border-color: darkgray;
+    border-width: 1px;
     position: absolute;
     z-index: 0;
 }
@@ -131,4 +151,5 @@ body {
 #keyboard :nth-child(24) {left: calc(4*var(--key-horizontal) + var(--row3-offset)); top: calc(2*var(--key-vertical));}
 #keyboard :nth-child(25) {left: calc(5*var(--key-horizontal) + var(--row3-offset)); top: calc(2*var(--key-vertical));}
 #keyboard :nth-child(26) {left: calc(6*var(--key-horizontal) + var(--row3-offset)); top: calc(2*var(--key-vertical));}
-#keyboard :nth-child(27) {left: calc(7*var(--key-horizontal) + var(--row3-offset)); top: calc(2*var(--key-vertical)); font-size: var(--bs-font-size)}
+#keyboard :nth-child(27) {left: calc(7*var(--key-horizontal) + var(--row3-offset)); top: calc(2*var(--key-vertical));}
+#keyboard :nth-child(27) {font-size: var(--bs-font-size)}

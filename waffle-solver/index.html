@@ -13,8 +13,13 @@
             Waffle Solver
         </div>
         <div id="main">
-            <div class="arrow">
-                <button type="button">&#9664;</button>
+            <div id="left">
+                <div>
+                    <button id="leftButton" type="button">&#9664;</button>
+                </div>
+                <div id="leftText">
+                    Reset
+                </div>
             </div>
             <div id="puzzle">
                 <button type="button"></button><button type="button"></button><button type="button"></button>
@@ -25,12 +30,17 @@
                 <button type="button"></button><button type="button"></button><button type="button"></button>
                 <button type="button"></button><button type="button"></button><button type="button"></button>
             </div>
-            <div class="arrow">
-                <button type="button">&#9654;</button>
+            <div id="right">
+                <div>
+                    <button id="rightButton" type="button">&#9654;</button>
+                </div>
+                <div id="rightText">
+                    Solve
+                </div>
             </div>
         </div>
         <div id="prompt">
-            Please enter today's Waffle puzzle.
+            Click keys to enter letters. Click tiles to change colors.
         </div>
         <div id="keyboard">
             <button type="button">Q</button><button type="button">W</button><button type="button">E</button>
@@ -44,4 +54,5 @@
             <button type="button">N</button><button type="button">M</button><button type="button">&#9003;</button>
         </div>
     </body>
+    <script src="scripts.js" defer></script>
 </html>
