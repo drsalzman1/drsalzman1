@@ -1,23 +1,5 @@
 "use strict";
 
-// Page values
-let page = 0;
-const pageTag = [
-    "Reset",
-    "Entry",
-    "Swap 1",
-    "Swap 2",
-    "Swap 3",
-    "Swap 4",
-    "Swap 5",
-    "Swap 6",
-    "Swap 7",
-    "Swap 8",
-    "Swap 9",
-    "Swap 10",
-    "Final"
-];
-
 // Color constants
 const gry = "#EDEFF1";
 const gld = "#E9BA3A";
@@ -101,14 +83,15 @@ window.onload = function() {
         };
     };
     document.onkeydown = function(e) {
-        if (e.key == "Backspace" && cursor > 0) {
+        const key = e.key.toUpperCase();
+        if (key == "BACKSPACE" && cursor > 0) {
             cursor -= 1;
             tileValue[cursor] = "";
             tileElement[cursor].innerHTML = "";
             document.getElementById("right").style.visibility = "hidden";
-        } else if (e.key.length == 1 && e.key.toUpperCase() >= "A" && e.key.toUpperCase() <= "Z" && cursor < tiles) {
-            tileValue[cursor] = e.key.toUpperCase();
-            tileElement[cursor].innerHTML = e.key.toUpperCase();
+        } else if (key.length == 1 && key >= "A" && key <= "Z" && cursor < tiles) {
+            tileValue[cursor] = key;
+            tileElement[cursor].innerHTML = key;
             cursor += 1;
             document.getElementById("left").style.visibility = "visible";
             if (cursor == tiles) document.getElementById("right").style.visibility = "visible";
