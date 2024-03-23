@@ -5,14 +5,14 @@ const guesses = 6, letters = 5, positions = 21, numSwaps = 10
 const L1 = 0, L2 = 1, L3 = 2, L4 = 3, L5 = 4                                            // guess letters: letter 1, letter2, letter 3, letter 4, letter 5
 const R1 = 0, R3 = 1, R5 = 2, C1 = 3, C3 = 4, C5 = 5                                    // guess numbers: row 1, row 3, row 5, column 1, column 3, column 5
 const asca = "a".charCodeAt(), ascz = "z".charCodeAt();
-const gry = "rgb(237, 239, 241)"    //"#EDEFF1";
-const yel = "rgb(233, 186, 58)"     //"#E9BA3A";
-const grn = "rgb(111, 176, 92)"     //"#6FB05C";
-const blk = "rgb(0, 0, 0)"          //"#000000";
-const wht = "rgb(255, 255, 255)"    //"#FFFFFF";
+const gry = "#EDEFF1";
+const yel = "#E9BA3A";
+const grn = "#6FB05C";
+const blk = "#000000";
+const wht = "#FFFFFF";
 
 // 5-letter dictionary
-const word = [                                                                          // word string table where word[i] is word i and word[i][l] is letter l of word i
+const ws = [                                                                            // word string table where ws[i] is word i and ws[i][l] is letter l of word i
     "aahed", "aalii", "aargh", "aarti", "abaca", "abaci", "aback", "abacs", "abaft", "abaka", "abamp", "aband", "abase", "abash", "abask", "abate", "abaya", "abbas", "abbed", "abbes",
     "abbey", "abbot", "abcee", "abeam", "abear", "abele", "abers", "abets", "abhor", "abide", "abies", "abled", "abler", "ables", "ablet", "ablow", "abmho", "abode", "abohm", "aboil",
     "aboma", "aboon", "abord", "abore", "abort", "about", "above", "abram", "abray", "abrim", "abrin", "abris", "absey", "absit", "abuna", "abune", "abuse", "abuts", "abuzz", "abyes",
@@ -662,14 +662,70 @@ const word = [                                                                  
     "zones", "zonks", "zooea", "zooey", "zooid", "zooks", "zooms", "zoons", "zooty", "zoppa", "zoppo", "zoril", "zoris", "zorro", "zouks", "zowee", "zowie", "zulus", "zupan", "zupas",
     "zuppa", "zurfs", "zuzim", "zygal", "zygon", "zymes", "zymic"
 ];
-const words = word.length;                                                              // words in dictionary
 
 // Guess words
-const entry =    ["     ", "     ", "     ", "     ", "     ", "     "];                // entry[n][l]    is the entry character at letter l of guess n
-const entryHue = ["gbbbg", "bbgbb", "gbbbg", "gbbbg", "bbgbb", "gbbbg"];                // entryHue[n][l] is the entry hue       at letter l of guess n
-const test =     ["goulm", "tmiuk", "ysdry", "getry", "uaiod", "mmkuy"];                // test[n][l]     is the test  character at letter l of guess n
-const testHue =  ["gyyyg", "ybgby", "gbybg", "gbybg", "ybgyy", "gbybg"];                // testHue[n][l]  is the test  hue       at letter l of guess n
-const final =    ["     ", "     ", "     ", "     ", "     ", "     "];                // final[n][l]    is the final character at letter l of guess n
+const entry =    ["", "", "", "", "", ""];                                              // entry[n] is initial guess word n
+const test =     ["goulm", "tmiuk", "ysdry", "getry", "uaiod", "mmkuy"];                // test[n] is test guess word n 
+const current =  ["", "", "", "", "", ""];                                              // current[n] is current guess word n
+const solution = ["", "", "", "", "", ""];                                              // solution[n] is final guess word n
+
+// Tile characters
+const entryChr = [                                                                      // entryChr[x] is the initial guess character at tile index x
+    "", "", "", "", "",
+    "",     "",     "",
+    "", "", "", "", "",
+    "",     "",     "",
+    "", "", "", "", ""
+];
+
+const testChr = [                                                                       // testChr[x] is the test guess character at tile index x
+    "g", "o", "u", "l", "m",
+    "e",      "a",      "m",
+    "t", "m", "i", "u", "k",
+    "r",      "o",      "u",
+    "y", "s", "d", "r", "y"
+];
+
+const currentChr = [                                                                    // currentChr[x] is the current guess character at tile index x
+    "", "", "", "", "",
+    "",     "",     "",
+    "", "", "", "", "",
+    "",     "",     "",
+    "", "", "", "", ""
+];
+
+const solutionChr = [                                                                   // solutionChr[x] is the final guess character at tile index x
+    "", "", "", "", "",
+    "",     "",     "",
+    "", "", "", "", "",
+    "",     "",     "",
+    "", "", "", "", ""
+];
+
+// Tile hues
+const entryHue = [                                                                      // entryHue[x] is the initial guess hue at tile index x
+    grn, gry, gry, gry, grn,
+    gry,      gry,      gry,
+    gry, gry, grn, gry, gry,
+    gry,      gry,      gry,
+    grn, gry, gry, gry, grn
+];
+
+const testHue = [                                                                       // testHue[x] is the test guess hue at tile index x
+    grn, yel, yel, yel, grn,
+    gry,      gry,      gry,
+    yel, gry, grn, gry, yel,
+    gry,      yel,      gry,
+    grn, gry, yel, gry, grn
+];
+
+const currentHue = [                                                                    // currentHue[x] is the current guess hue at tile index x
+    grn, gry, gry, gry, grn,
+    gry,      gry,      gry,
+    gry, gry, grn, gry, gry,
+    gry,      gry,      gry,
+    grn, gry, gry, gry, grn
+];
 
 // Conversion tables
 const nl2x = [                                                                          // nl2x[n][l] is the tile index x for letter l of guess n
@@ -698,7 +754,23 @@ const rc2x = [                                                                  
     [16, 17, 18, 19, 20]
 ];
 
-const x2n = [                                                                           // x2n[x] is the primary guess number at tile index x
+const rc2n = [                                                                          // rc2n[r][c] is the primary guess number for column c of row r (or -1 if no primary guess number)
+    [R1, R1, R1, R1, R1],
+    [C1, -1, C3, -1, C5],
+    [R3, R3, R3, R3, R3],
+    [C1, -1, C3, -1, C5],
+    [R5, R5, R5, R5, R5]
+];
+
+const rc2l = [                                                                          // rc2l[r][c] is the primary guess letter for column c of row r (or -1 if no primary guess letter)
+    [L1, L2, L3, L4, L5],
+    [L2, -1, L2, -1, L2],
+    [L1, L2, L3, L4, L5],
+    [L4, -1, L4, -1, L4],
+    [L1, L2, L3, L4, L5],
+];
+
+const x2n = [                                                                           // x2n[x] is the guess number at tile index x
     R1, R1, R1, R1, R1,  
     C1,     C3,     C5,
     R3, R3, R3, R3, R3,
@@ -706,7 +778,7 @@ const x2n = [                                                                   
     R5, R5, R5, R5, R5
 ];
 
-const x2l = [                                                                           // x2l[x] is the primary guess letter at tile index x
+const x2l = [                                                                           // x2l[x] is the guess letter at tile index x
     L1, L2, L3, L4, L5,
     L2,     L2,     L2,
     L1, L2, L3, L4, L5,
@@ -722,90 +794,99 @@ let cursor = 0;
 // Navigation values
 let solved = false;
 
-// Eliminate words based on entry characters and entry hues
-function phase1(wp, cw, cp) {
-    let ye, ng;
-    for (let n = R1; n <= C5; n++) {                                                    // for each entry number,
-        for (let l = L1; l <= L5; l++) {                                                    // for each entry letter,
-            for (let i = 0; i < words; i++) {                                                   // for each word index,
-                switch (entryHue[n][l]) {
-                case "g":                                                                           // if this entry hue is green,
-                    if (word[i][l] != entry[n][l]) wp[i][n] = false;                                    // if this word character doesn't match this entry character, this word is impossible
+// Eliminate words based on guess characters and guess hues
+function phase1(wp, gc, gh, cw, cp) {
+    let yg, nw;
+    for (let gn = R1; gn <= C5; gn++) {                                                 // for each guess number,
+        for (let gl = L1; gl <= L5; gl++) {                                                 // for each guess letter,
+            for (let wi = 0; wi < ws.length; wi++) {                                            // for each word index,
+                switch (gh[gn][gl]) {
+                case grn:                                                                           // if this guess hue is green,
+                    if (ws[wi][gl] != gc[gn][gl]) wp[wi][gn] = false;                                   // if this word character doesn't match this guess character, this word is impossible
                     break;
-                case "y":                                                                           // if this entry hue is yellow,
-                    if (word[i][l] == entry[n][l]) wp[i][n] = false;                                    // if this word character matches this entry character, this word is impossible
+                case yel:                                                                           // if this guess hue is yellow,
+                    if (ws[wi][gl] == gc[gn][gl]) wp[wi][gn] = false;                                   // if this word character matches this guess character, this word is impossible
                     else {                                                                              // otherwise,
-                        ye = 0;                                                                             // count non-intersecting yellow entry letters that match this yellow entry letter
-                        ng = 0;                                                                             // count non-green word letters that match this yellow entry letter
-                        for (let p = L1; p <= L5; p++) {
-                            if ((p == L2 || p == L4) && entryHue[n][p] == "y" && entry[n][p] == entry[n][l]) ye++;
-                            if (entryHue[n][p] != "g" && word[i][p] == entry[n][l]) ng++;
+                        yg = 0;                                                                             // count non-intersecting yellow guess letters that match this yellow guess letter
+                        nw = 0;                                                                             // count non-green word letters that match this yellow guess letter
+                        for (let l = L1; l <= L5; l++) {
+                            if ((l == L2 || l == L4) && gh[gn][l] == yel && gc[gn][l] == gc[gn][gl]) yg++;
+                            if (gh[gn][l] != grn && ws[wi][l] == gc[gn][gl]) nw++;
                         };
-                        if (ye > ng) wp[i][n] = false;                                                      // if yellow count is greater than non-green count, this word is impossible
+                        if (yg > nw) wp[wi][gn] = false;                                                    // if yellow count is greater than non-green count, this word is impossible
                     };
                     break;
-                case "b":                                                                           // if this entry hue is blank,
-                    if (word[i][l] == entry[n][l]) wp[i][n] = false;                                    // if this word character matches this entry character, this word is impossible
+                case gry:                                                                           // if this guess hue is blank,
+                    if (ws[wi][gl] == gc[gn][gl]) wp[wi][gn] = false;                                   // if this word character matches this guess character, this word is impossible
                     else {                                                                              // otherwise,
-                        ye = 0;                                                                             // count yellow entry letters that match this blank entry letter
-                        ng = 0;                                                                             // count non-green word letters that match this blank entry letter
-                        for (let p = L1; p <= L5; p++) {
-                            if (entryHue[n][p] == "y" && entry[n][p] == entry[n][l]) ye++;
-                            if (entryHue[n][p] != "g" && word[i][p] == entry[n][l]) ng++;
-                        };
-                        if (ng > ye) wp[i][n] = false;                                                      // if non-green count is greater than yellow count, this word is impossible
+                        yg = 0;                                                                             // count yellow guess letters that match this blank guess letter
+                        nw = 0;                                                                             // count non-green word letters that match this blank guess letter
+                        for (let l = L1; l <= L5; l++) {
+                            if (gh[gn][l] == yel && gc[gn][l] == gc[gn][gl]) yg++;
+                            if (gh[gn][l] != grn && ws[wi][l] == gc[gn][gl]) nw++;
+                        }
+                        if (nw > yg) wp[wi][gn] = false;                                                    // if non-green count is greater than yellow count, this word is impossible
                     };
                 };
             };
         };
     };
-    for (let n = R1; n <= C5; n++) {                                                    // populate current words table and current possibilities array
-        cp[n] = 0;
-        for (let i = 0; i < words; i++) {
-            cw[i][n] = "";
-            if (wp[i][n]) {
-                cw[cp[n]][n] = word[i];
-                cp[n]++;
+    
+    // Initialize current words table with possible words and current possibilities vector with their counts
+    for (let gn = R1; gn <= C5; gn++) {
+        cp[gn] = 0;
+        for (let wi = 0; wi < ws.length; wi++) {
+            cw[wi][gn] = "";
+            if (wp[wi][gn]) {
+                cw[cp[gn]][gn] = ws[wi];
+                cp[gn]++;
             };
         };
     };
 };
 
 // Eliminate words by letter counts
-function phase2(wp, cw, cp) {
-    const ea = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];                   // count ascii codes of available (primary, non-green) entry characters (e.g. ea[0] is number of a's in all entries)
-    for (let n = R1; n <= C5; n++) {                                                    // for each entry number,
-        for (let l = L1; l <= L5; l++) {                                                    // for each entry letter,
-            if (nl2p[n][l] && entryHue[n][l] != "g") {                                          // if entry letter is primary and not green,
-                ea[entry[n][l].charCodeAt() - asca]++;                                              // increment corresponding ascii count
+function phase2(wp, gc, gh, cw, cp) {
+    
+    // Count ascii codes of available (primary, non-green) guess letters
+    const ga = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];                   // guess ascii count vector where ga[ac] is the count of primary, non-green ascii code ac-"a"
+    for (let gn = R1; gn <= C5; gn++) {                                                 // for each guess number,
+        for (let gl = L1; gl <= L5; gl++) {                                                 // for each guess letter,
+            if (nl2p[gn][gl] && gh[gn][gl] != grn) {                                            // if guess letter is primary and not green,
+                ga[gc[gn][gl].charCodeAt() - asca]++;                                               // increment corresponding ascii code count
             };
         };
     };
-    const wa = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];                   // count ascii codes of non-green word characters (e.g. wa[0] is number of a's in a word)
-    for (let n = R1; n <= C5; n++) {                                                    // For each entry number,
-        for (let i = 0; i < words; i++) {                                               // for each word index,
-            if (!wp[i][n]) continue;                                                            // if this word is not possible, skip it
-            wa.fill(0);                                                                         // count ascii codes of non-green characters in this word
-            for (let l = L1; l <= L5; l++) {
-                if (word[i][l] != entry[n][l]) {
-                    wa[word[i][l].charCodeAt() - asca]++;
+    
+    // Eliminate words that require more ascii codes than the guesses provide
+    const wa = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];                   // word ascii count vector where wa[ac] is the count of non-green ascii code ac-"a"
+    for (let gn = R1; gn <= C5; gn++) {                                                 // For each guess number,
+        for (let wi = 0; wi < ws.length; wi++) {                                            // for each word index,
+            if (wp[wi][gn]) {                                                                   // if this word is possible,
+                wa.fill(0);                                                                         // count ascii codes of non-green word characters
+                for (let gl = L1; gl <= L5; gl++) {
+                    if (ws[wi][gl] != gc[gn][gl]) {
+                        wa[ws[wi][gl].charCodeAt() - asca]++;
+                    };
                 };
-            };
-            for (let a = 0; a <= ascz - asca; a++) {                                            // if this word requires any more codes than the entries provide, mark this word as impossible
-                if (wa[a] > ea[a]) {
-                    wp[i][n] = false;                                                                   // note that this word is impossible
-                    break;
+                for (let ac = 0; ac <= ascz - asca; ac++) {                                         // for each ascii code,
+                    if (wa[ac] > ga[ac]) {                                                              // if this word requires more ascii codes than the guesses prowide,
+                        wp[wi][gn] = false;                                                                 // note that this word is impossible
+                        break;                                                                              // stop looking
+                    };
                 };
             };
         };
     };
-    for (let n = R1; n <= C5; n++) {                                                    // populate current words table and current possibilities array
-        cp[n] = 0;
-        for (let i = 0; i < words; i++) {
-            cw[i][n] = "";
-            if (wp[i][n]) {
-                cw[cp[n]][n] = word[i];
-                cp[n]++;
+    
+    // Initialize current words table with possible words and current possibilities vector with their counts
+    for (let gn = R1; gn <= C5; gn++) {
+        cp[gn] = 0;
+        for (let wi = 0; wi < ws.length; wi++) {
+            cw[wi][gn] = "";
+            if (wp[wi][gn]) {
+                cw[cp[gn]][gn] = ws[wi];
+                cp[gn]++;
             };
         };
     };
@@ -818,44 +899,45 @@ function phase3(cw, cp) {
     let xl;                                                                             // intersecting guess letter from L1 to L5
     let pi;                                                                             // possible word index
     do {                                                                                // Do while conflicts are found,
-        cf = false;                                                                         // no conflict found (yet)
-        for (let n = R1; n <= C5; n++) {                                                    // For each guess number,
-            if (cp[n] != 1) continue;                                                           // if more or less than one possible word for this guess number, move on to next guess number
-            for (let l = L1; l <= L5; l += 2) {                                                 // for each intersecting guess letter,
-                switch (n) {                                                                        // calculate intersecting guess number and intersecting guess letter
-                case R1:
-                    switch (l) {case L1: xn = C1; break; case L3: xn = C3; break; case L5: xn = C5};
-                    xl = L1;
-                    break;
-                case R3:
-                    switch (l) {case L1: xn = C1; break; case L3: xn = C3; break; case L5: xn = C5};
-                    xl = L3;
-                    break;
-                case R5:
-                    switch (l) {case L1: xn = C1; break; case L3: xn = C3; break; case L5: xn = C5};
-                    xl = L5;
-                    break;
-                case C1:
-                    switch (l) {case L1: xn = R1; break; case L3: xn = R3; break; case L5: xn = R5};
-                    xl = L1;
-                    break;
-                case C3:
-                    switch (l) {case L1: xn = R1; break; case L3: xn = R3; break; case L5: xn = R5};
-                    xl = L3;
-                    break;
-                case C5:
-                    switch (l) {case L1: xn = R1; break; case L3: xn = R3; break; case L5: xn = R5};
-                    xl = L5;
-                };
-                pi = 0;
-                while (pi < cp[xn]) {                                                               // for each possible word of the intersecting guess number,
-                    if (cw[pi][xn][xl] == cw[0][n][l]) pi++;                                            // if the intersecting letters match, move on to the next possible word
-                    else {                                                                              // otherwise,
-                        cf = true;                                                                          // note conflict was found
-                        for (let p2 = pi; p2 < cp[xn]; p2++) {                                              // eliminate the impossible word
-                            cw[p2][xn] = cw[p2 + 1][xn];
+        cf = false;                                                                         // no conflicts (yet)
+        for (let gn = R1; gn <= C5; gn++) {                                                 // For each guess number,
+            if (cp[gn] == 1) {                                                                  // if only one possible word,
+                for (let gl = L1; gl <= L5; gl += 2) {                                              // for each intersecting guess letter,
+                    switch (gn) {                                                                       // calculate intersecting guess number and intersecting guess letter
+                    case R1:
+                        switch (gl) {case L1: xn = C1; break; case L3: xn = C3; break; case L5: xn = C5};
+                        xl = L1;
+                        break;
+                    case R3:
+                        switch (gl) {case L1: xn = C1; break; case L3: xn = C3; break; case L5: xn = C5};
+                        xl = L3;
+                        break;
+                    case R5:
+                        switch (gl) {case L1: xn = C1; break; case L3: xn = C3; break; case L5: xn = C5};
+                        xl = L5;
+                        break;
+                    case C1:
+                        switch (gl) {case L1: xn = R1; break; case L3: xn = R3; break; case L5: xn = R5};
+                        xl = L1;
+                        break;
+                    case C3:
+                        switch (gl) {case L1: xn = R1; break; case L3: xn = R3; break; case L5: xn = R5};
+                        xl = L3;
+                        break;
+                    case C5:
+                        switch (gl) {case L1: xn = R1; break; case L3: xn = R3; break; case L5: xn = R5};
+                        xl = L5;
+                    };
+                    pi = 0;
+                    while (pi < cp[xn]) {                                                               // for each possible word of the intersecting guess number,
+                        if (cw[pi][xn][xl] == cw[0][gn][gl]) pi++;                                          // if the intersecting letters match, move on to the next possible word
+                        else {                                                                              // otherwise,
+                            cf = true;                                                                          // note conflict was found
+                            for (let p2 = pi; p2 < cp[xn]; p2++) {                                              // eliminate the impossible word
+                                cw[p2][xn] = cw[p2 + 1][xn];
+                            };
+                            cp[xn]--;                                                                           // note one less possible word
                         };
-                        cp[xn]--;                                                                           // note one less possible word
                     };
                 };
             };
@@ -864,20 +946,30 @@ function phase3(cw, cp) {
 };
 
 // Count the primary character codes in wordArray; return "<#a's>, <#b's>, ... <#z's>"
-function codeCount(guess) {
-    const ca = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];                   // code count array where ca[0] is the count of a's in the guess words
-    for (let n = R1; n <= C5; n++) {                                                    // for guess number,
-        for (let l = L1; l <= L5; l++) {                                                    // for each guess letter,
-            if (nl2p[n][l]) ca[guess[n][l].charCodeAt() - asca]++;                              // if guess letter is primary, increment corresponding code count
+function codeCount(wordArray) {
+    const ca = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];                   // code count array where ca[0] is the count of a's in the wordArray ... ca[25] is the count of z's in the wordArray
+    if (Array.isArray(wordArray[0])) {                                                  // if wordArray is an array of arrays,
+        for (let wn = 0; wn < wordArray.length; wn++) {                                     // for each word number (row),
+            for (let wl = 0; wl < wordArray[wn].length; wl++) {                                 // for each word letter (column),
+                const ci = wordArray[wn][wl].charCodeAt() - asca;                                   // calculate this word letter's code index
+                if (nl2p[wn][wl] && ci >= 0 && ci < ca.length) ca[ci]++;                            // if word letter is primary and code index is in range, increment this code's count
+            };
+        };
+    } else {                                                                            // otherwise (wordArray is an array of strings),
+        for (let wn = 0; wn < wordArray.length; wn++) {                                     // for each word number,
+            for (let wl = 0; wl < wordArray[wn].length; wl++) {                                 // for each word letter,
+                const ci = wordArray[wn].charCodeAt(wl) - asca;                                     // calculate this word letter's code index
+                if (nl2p[wn][wl] && ci >= 0 && ci < ca.length) ca[ci]++;                            // if word letter is primary and code index is in range, increment this code's count
+            };
         };
     };
     return ca.toString();                                                               // return "<#a's>, <#b's>, ... <#z's>" in the wordArray
 };
 
 // Identify solutions where the duplicates match and the letters are some scramble of the guess letters
-function phase4(cw, cp, sw) {
-    let R1w, R3w, R5w, C1w, C3w, C5w;
-    const es = codeCount(entry);                                                        // entry string is "<#a's>, <#b's>, ... <#z's>" in the entry words
+function phase4(gc, cw, cp, sw) {
+    let R1w, R3w, R5w, C1w, C3w, C5w;                                                   // declare guess word variables
+    const gs = codeCount(gc);                                                           // guess string is "<#a's>, <#b's>, ... <#z's>" in the guess character table
     for (let R1i = 0; R1i < cp[R1]; R1i++) {
         R1w = cw[R1i][R1];
         for (let R3i = 0; R3i < cp[R3]; R3i++) {
@@ -890,7 +982,7 @@ function phase4(cw, cp, sw) {
                         C3w = cw[C3i][C3];
                         for (let C5i = 0; C5i < cp[C5]; C5i++) {
                             C5w = cw[C5i][C5];
-                            if (codeCount ([R1w, R3w, R5w, C1w, C3w, C5w]) == es                                // if this code count string matches the entry code count string ...
+                            if (codeCount ([R1w, R3w, R5w, C1w, C3w, C5w]) == gs                                // if this code count string matches the guess code count string ...
                                 && R1w[L1] == C1w[L1] && R1w[L3] == C3w[L1] && R1w[L5] == C5w[L1]               // ... and the secondaries match the primaries,
                                 && R3w[L1] == C1w[L3] && R3w[L3] == C3w[L3] && R3w[L5] == C5w[L3] 
                                 && R5w[L1] == C1w[L5] && R5w[L3] == C3w[L5] && R5w[L5] == C5w[L5]) {
@@ -905,394 +997,391 @@ function phase4(cw, cp, sw) {
 };
     
 // Eliminate solutions that violate yellow intersection rule
-function phase5(sw) {
-    let nr, nf, xn, xc;
-    let i = 0;                                                                          // solution index
-    while (i < sw.length) {                                                             // while solution index is in range,
+function phase5(gc, gh, sw) {
+    let nr;                                                                             // number required
+    let nf;                                                                             // number found
+    let xn;                                                                             // intersecting guess number from R1 to C5
+    let xc;                                                                             // intersection character
+    let si = 0;                                                                         // solution index
+    while (si < sw.length) {                                                            // while this solution exists,
         nr = 0;                                                                             // initialize number required for this solution
         nf = 0;                                                                             // initialize number found for this solution
-        for (let n = R1; n <= C5; n++) {                                                    // for each guess number,
-            for (let l = L1; l <= L5; l += 2) {                                                 // for each intersecting guess letter,
-                if (entryHue[n][l] != "y") continue;                                                // if intersection isn't yellow, move on to next intersection
-                switch (n) {                                                                        // calculate intersecting guess number
-                case R1:
-                case R3:
-                case R5:
-                    switch (l) {case L1: xn=C1; break; case L3: xn=C3; break; case L5: xn=C5};
-                    break;
-                case C1:
-                case C3:
-                case C5:
-                    switch (l) {case L1: xn=R1; break; case L3: xn=R3; break; case L5: xn=R5};
-                };
-                xc = entry[n][l];                                                                   // note intersection character
-                nr = 1;                                                                             // count number of intersection characters required in the intersecting words
-                nf = 0;                                                                             // count number of intersection characters found in the intersecting words
-                for (let l = L1; l <= L5; l++) {                                                    // for each guess letter,
-                    if (entry[n][l] == xc) {                                                            // if this entry character matches the intersection character,
-                        switch (entryHue[n][l]) {
-                        case "g":                                                                           // if this entry hue is green,
-                            nr++;                                                                               // increment number of intersection characters required
-                            break;
-                        case "y":                                                                           // if this entry hue is yellow,
-                            if (l == L2 || l == L4) nr++;                                                       // if not intersection, increment number of intersection characters required
-                        };
+        for (let gn = R1; gn <= C5; gn++) {                                                 // for each guess number,
+            for (let gl = L1; gl <= L5; gl += 2) {                                              // for each intersecting guess letter,
+                if (gh[gn][gl] == yel) {                                                            // if intersection is yellow,
+                    switch (gn) {                                                                       // calculate intersecting guess number
+                    case R1:
+                    case R3:
+                    case R5:
+                        switch (gl) {case L1: xn=C1; break; case L3: xn=C3; break; case L5: xn=C5};
+                        break;
+                    case C1:
+                    case C3:
+                    case C5:
+                        switch (gl) {case L1: xn=R1; break; case L3: xn=R3; break; case L5: xn=R5};
                     };
-                    if (entry[xn][l] == xc) {                                                           // if this intersecting entry character matches the intersection character,
-                        switch (entryHue[xn][l]) {
-                        case "g":                                                                           // if this intersecting entry hue is green,
-                            nr++;                                                                               // increment number of intersection characters required
-                            break;
-                        case "y":                                                                           // if this intersecting entry hue is yellow,
-                            if (l == L2 || l == L4) nr++;                                                       // if not intersection, increment number of intersection characters required
+                    xc = gc[gn][gl];                                                                    // note intersection character
+                    nr = 1;                                                                             // count number of intersection characters required in the intersecting words
+                    nf = 0;                                                                             // count number of intersection characters found in the intersecting words
+                    for (let gl = L1; gl <= L5; gl++) {                                                 // for each letter of this guess, this intersecting guess, this solution, and this intersecting solution,
+                        if (gc[gn][gl] == xc) {                                                             // if this guess letter matches the intersection character,
+                            switch (gh[gn][gl]) {
+                            case grn:                                                                           // if this guess cell is green,
+                                nr++;                                                                               // increment number of intersection characters required
+                                break;
+                            case yel:                                                                           // if this guess cell is yellow,
+                                if (gl == L2 || gl == L4) nr++;                                                     // if not intersection, increment number of intersection characters required
+                            };
                         };
+                        if (gc[xn][gl] == xc) {                                                             // if this intersecting guess letter matches the intersection character,
+                            switch (gh[xn][gl]) {
+                            case grn:                                                                           // if this intersecting guess cell is green,
+                                nr++;                                                                               // increment number of intersection characters required
+                                break;
+                            case yel:                                                                           // if this intersecting guess cell is yellow,
+                                if (gl == L2 || gl == L4) nr++;                                                     // if not intersection, increment number of intersection characters required
+                            };
+                        };
+                        if (sw[si][gn][gl] == xc) nf++;                                                     // if this solution character matches the intersection character, increment number of intersection characters found
+                        if (sw[si][xn][gl] == xc) nf++;                                                     // if this intersecting solution character matches the intersection character, inc number of intersection chars found
                     };
-                    if (sw[i][n][l] == xc) nf++;                                                        // if this solution character matches the intersection character, increment number of intersection characters found
-                    if (sw[i][xn][l] == xc) nf++;                                                       // if this intersecting solution character matches the intersection character, inc number of intersection chars found
-                };
-                if (nr > nf) {                                                                      // if number required is greater than number found,
-                    sw.splice(i, 1);                                                                    // eliminate this solution
-                    break;                                                                              // stop evaluating this solution
+                    if (nr > nf) {                                                                      // if number required is greater than number found,
+                        for (let s3 = si; s3 <= ns; s3++) {                                                 // eliminate this solution
+                            for (let g3 = R1; g3 <= C5; g3++) {
+                                sw[s3][g3] = sw[s3 + 1][g3];
+                            };
+                        };
+                        break;                                                                              // stop evaluating this solution
+                    };
                 };
             };
             if (nr > nf) break;
         };
-        if (nr <= nf) i++;
+        if (nr <= nf) si++;
     };
 };
 
-// Display current words
-function display(current) {
-    let x, n, l, nr, nf, cx, cn, cl, rx, rn, rl;
-    const tilElm = document.querySelectorAll("#puzzle button");
-    for (n = R1; n <= C5; n++) {                                                        // set tile characters based on current words
-        for (l = L1; l <= L5; l++) {
-            x = nl2x[n][l];
-            tilElm[x].innerText = current[n][l].toUpperCase();
-        };
-    };
-    if (current == entry) {                                                             // if displaying entry, set tile colors based on entry hues
-        for (n = R1; n <= C5; n++) {
-            for (l = L1; l <= L5; l++) {
-                x = nl2x[n][l];
-                switch (entryHue[n][l]) {
-                case "b":
-                    tilElm[x].style.backgroundColor = gry;
-                    tilElm[x].style.borderColor = gry;
-                    tilElm[x].style.color = blk;
-                    break;
-                case "y":
-                    tilElm[x].style.backgroundColor = yel;
-                    tilElm[x].style.borderColor = yel;
-                    tilElm[x].style.color = wht;
-                    break;
-                case "g":
-                    tilElm[x].style.backgroundColor = grn;
-                    tilElm[x].style.borderColor = grn;
-                    tilElm[x].style.color = wht;
-                };
+// Display words
+function display(wordArray) {
+    const tileElement = document.querySelectorAll("#puzzle button");
+    if (wordArray == entry) {                                                           // if display(entry),
+        for (let x = 0; x < positions; x++) {                                               // reset display to initial characters and hues
+            tileElement[x].innerText = entryChr[x].toUpperCase();
+            tileElement[x].style.backgroundColor = entryHue[x];
+            tileElement[x].style.borderColor = entryHue[x];
+            if (entryHue[x] == gry) {
+                tileElement[x].style.color = blk;
+            } else {
+                tileElement[x].style.color = wht;
             };
         };
-    } else {                                                                            // otherwise, set tile colors based on current words vs. final words
-        for (let r = L1; r <= L5; r++) {                                                    // for each tile row,
-            for (let c = L1; c <= L5; c++) {                                                    // for each tile column,
-                x = rc2x[r][c];                                                                     // look up this tile index based on this tile row and this tile column
-                if (x == -1) continue;                                                              // if dead area, skip this column
-                n = x2n[x];                                                                         // look up this primary guess number based on this tile index
-                l = x2l[x];                                                                         // look up this primary guess letter based on this tile index
-                tilElm[x].style.backgroundColor = gry;                                              // tentatively color this tile gray
-                tilElm[x].style.borderColor = gry;
-                tilElm[x].style.color = blk;
-                if (current[n][l] == final[n][l]) {                                                 // if this current character (target) matches this final character,
-                    tilElm[x].style.backgroundColor = grn;                                              // color this tile green
-                    tilElm[x].style.borderColor = grn;
-                    tilElm[x].style.color = wht;
+        return;
+    };
+    for (let x = 0; x < positions; x++) {                                               // for each tile index,
+        currentChr[x] = wordArray[x2n[x]][x2l[x]]                                           // initialize this current character and hue
+        currentHue[x] = gry;
+    };
+    let nr, nf;
+    for (let r = L1; r <= L5; r++) {                                                    // for each tile row,
+        for (let c = L1; c <= L5; c++) {                                                    // for each tile column,
+            if (rc2x[r][c] != -1) {                                                             // if not dead area,
+                if (currentChr[rc2x[r][c]] == solutionChr[rc2x[r][c]]) {                            // if this current character (target) matches this solution character,
+                    currentHue[rc2x[r][c]] = grn;                                                       // color this tile green
                 } else {                                                                            // otherwise,
                     nr = 0;                                                                             // count number of yellows required
                     nf = 0;                                                                             // count number of yellows found
                     if (c == L1 || c == L3 || c == L5) {                                                // if this tile is on a column,
                         for (let cr = L1; cr <= L5; cr++) {                                                 // for each row of this column,
-                            cx = rc2x[cr][c];                                                                   // look up this tile index based on this tile row and this tile column
-                            cn = x2n[cx];                                                                       // look up this primary guess number based on this tile index
-                            cl = x2l[cx];                                                                       // look up this primary guess letter based on the this tile index
-                            if (current[cn][cl] != final[cn][cl]) {                                             // if this current character doesn't match this final character,
-                                if (final[cn][cl] == current[n][l]) nr++;                                           // if this final character matches the target, increment number of yellows required
-                                if (current[cn][cl] == current[n][l]) {                                             // if this current character matches the target,
-                                    if (getComputedStyle(tilElm[cx]).backgroundColor == yel) nf++;                      // if this tile color is already yellow, increment number of yellows found
+                            if (currentChr[rc2x[cr][c]] != solutionChr[rc2x[cr][c]]) {                          // if this current character doesn't match this solution character,
+                                if (solutionChr[rc2x[cr][c]] == currentChr[rc2x[r][c]]) nr++;                       // if this solution character matches the target, increment number of yellows required
+                                if (currentChr[rc2x[cr][c]] == currentChr[rc2x[r][c]]) {                            // if this current character matches the target,
+                                    if (currentHue[rc2x[cr][c]] == yel) nf++;                                           // if this current hue is already yellow, increment number of yellows found
                                 };
                             };
                         };
                     };
                     if (r == L1 || r == L3 || r == L5) {                                                // if this tile is on a row,
                         for (let rc = L1; rc <= L5; rc++) {                                                 // for each column of this row,
-                            rx = rc2x[r][rc];                                                                   // look up this tile index based on this tile row and this tile column
-                            rn = x2n[rx];                                                                       // look up this primary guess number based on this tile index
-                            rl = x2l[rx];                                                                       // look up this primary guess letter based on the this tile index
-                            if (current[rn][rl] != final[rn][rl]) {                                             // if this current character doesn't match this final character,
-                                if (final[rn][rl] == current[n][l]) nr++;                                           // if this final character matches the target, increment number of yellows required
-                                if (current[rn][rl] == current[n][l]) {                                             // if this current character matches the target,
-                                    if (getComputedStyle(tilElm[rx]).backgroundColor == yel) nf++;                      // if this tile color is already yellow, increment number of yellows found
+                            if (currentChr[rc2x[r][rc]] != solutionChr[rc2x[r][rc]]) {                          // if this current character doesn't match this solution character,
+                                if (solutionChr[rc2x[r][rc]] == currentChr[rc2x[r][c]]) nr++;                       // if this solution character matches the target, increment number of yellows required
+                                if (currentChr[rc2x[r][rc]] == currentChr[rc2x[r][c]]) {                            // if this current character matches the target,
+                                    if (currentHue[rc2x[r][rc]] == yel) nf++;                                           // if this current hue is already yellow, increment number of yellows found
                                 };
                             };
                         };
                     };
-                    if (nr > nf) {                                                                      // if more yellows are required than found, color this tile yellow
-                        tilElm[x].style.backgroundColor = yel;
-                        tilElm[x].style.borderColor = yel;
-                        tilElm[x].style.color = yel;
-                    };
+                    if (nr > nf) currentHue[rc2x[r][c]] = yel;                                          // if more yellows are required than found, color this cell yellow
                 };
             };
         };
     };
+    for (let x = 0; x < positions; x++) {
+        tileElement[x].innerText = currentChr[x].toUpperCase();
+        tileElement[x].style.backgroundColor = currentHue[x];
+        tileElement[x].style.borderColor = currentHue[x];
+        if (currentHue[x] == gry) {
+            tileElement[x].style.color = blk;
+        } else {
+            tileElement[x].style.color = wht;
+        };
+    };
 };
+
 
 // Solve waffle puzzle
 function solve() {
-    const wp = [];                                                                      // word possible table where wp[wi][gn] is true if word wi is still possible for guess gn
+
+    // Initialize guess character and guess hue tables based on tiles
+    const gc = [];                                                                      // guess character where gc[n][l] is the character of letter l of guess n
+    const gh = [];                                                                      // guess hue table where gh[n][l] is the hue of letter l of guess n
+    for (let gn = R1; gn <= C5; gn++) {                                                 // for each guess number
+        gc[gn] = ["", "", "", "", ""];                                                      // initialize these guess characters
+        gh[gn] = [blk, blk, blk, blk, blk];                                                 // initialize these guess hues
+        for (let gl = L1; gl <= L5; gl++) {                                                 // for each guess letter,
+            gc[gn][gl] = entryChr[nl2x[gn][gl]];                                                // this guess character is this entry tile character
+            gh[gn][gl] = entryHue[nl2x[gn][gl]];                                                // this guess hue is this entry tile hue
+        };
+    };
+    
+    // Initialize other tables
+    const wp = [];                                                                      // word boolean table where wp[wi][gn] is true if word wi is still possible for guess gn
     const cw = [];                                                                      // current word table where cw[pi][gn] is the current possible word pi for guess gn
     const cp = [0,0,0,0,0,0];                                                           // current possibilites table where cp[gn] is the current number of possible words for guess gn
     const sw = [];                                                                      // solution word table where sw[si][gn] is solution si for guess gn
-    for (let i = 0; i < words; i++) {                                                   // for each word index,
-        wp[i] = [true, true, true, true, true, true];                                       // initialize these word possibles
-        cw[i] = ["", "", "", "", "", ""];                                                   // initialize these current words
+    for (let wi = 0; wi < ws.length; wi++) {                                            // for each word index,
+        wp[wi] = [true, true, true, true, true, true];                                      // initialize these word booleans
+        cw[wi] = ["", "", "", "", "", ""];                                                  // initialize these current words
     };
-    phase1(wp, cw, cp);                                                                 // Eliminate words based on entry characters and entry hues
-    phase2(wp, cw, cp);                                                                 // Eliminate words that require more ascii codes than the guesses provide
+
+    // Solve puzzle
+    phase1(wp, gc, gh, cw, cp);                                                         // Eliminate words based on guess letters and guess hues
+    phase2(wp, gc, gh, cw, cp);                                                         // Eliminate words that require more ascii codes than the guesses provide
     phase3(cw, cp)                                                                      // Eliminate words due to conflicting intersecting words
-    phase4(cw, cp, sw);                                                                 // Identify 6-word solutions with right letters and matching dupes
-    phase5(sw);                                                                         // Eliminate any 6-word solutions that violate the yellow intersection rule
+    phase4(gc, cw, cp, sw);                                                             // Identify 6-word solutions with right letters and matching dupes
+    phase5(gc, gh, sw);                                                                 // Eliminate any 6-word solutions that violate the yellow intersection rule
+
+    // Display results
     if (sw.length != 1) {                                                               // If no 6-word solution or more than one, flag error
-        document.getElementById("left").style.visibility = "visible";
+        document.getElementById("leftDiv").style.visibility = "visible";
         document.getElementById("prompt").innerText = "Solution not found: please fix puzzle";
     } else {                                                                            // otherwise,
         solved = true;                                                                      // flag solution was found
         for (let n = R1; n <= C5; n++) {                                                    // for each guess number,
-            final[n] = "";                                                                      // build this final word
-            for (let l = L1; l <= L5; l++) {
-                final[n] += sw[0][n][l];
+            for (let l = L1; l <= L5; l++) {                                                    // for each guess letter,
+                solution[n] += sw[0][n][l];                                                         // build solution word
+                solutionChr[nl2x[n][l]] = sw[0][n][l];                                              // save solution character
             };
         };
-        document.getElementById("left").style.visibility = "visible";                       // make left arrow visble
+        document.getElementById("leftDiv").style.visibility = "visible";                    // make left arrow visble
         document.getElementById("prompt").innerText = "Solution: final state";              // display solution prompt
-        document.getElementById("right").style.visibility = "visible";                      // make right arrow visible
-        display(final);                                                                     // display solution
+        document.getElementById("rightDiv").style.visibility = "visible";                   // make right arrow visible
+        display(solution);                                                                  // display solution
+    };
+};
+
+document.getElementById("rightDiv").onclick = function() {
+    switch (document.getElementById("prompt").innerText.slice(0, 7)) {
+    case "Puzzle:": // to Solution
+        if (solved) {
+            document.getElementById("prompt").innerText = "Solution: final state";
+            display(solution);
+        } else {
+            document.getElementById("leftDiv").style.visibility = "hidden";
+            document.getElementById("prompt").innerText = "Solution: calculating...";
+            document.getElementById("rightDiv").style.visibility = "hidden";
+            document.getElementById("keyboard").style.display = "none";
+            setTimeout(solve, 1);                                                           // invoke solve() after 1 millisecond
+        };
+        break;
+    case "Solutio": // to Swap 1
+        document.getElementById("prompt").innerText = "Swap 1: please slide tile";
+        // display swap 1
+        break;
+    case "Swap 1:": // to Swap 2
+        document.getElementById("prompt").innerText = "Swap 2: please slide tile";
+        // display swap 2
+        break;
+    case "Swap 2:": // to Swap 3
+        document.getElementById("prompt").innerText = "Swap 3: please slide tile";
+        // display swap 3
+        break;
+    case "Swap 3:": // to Swap 4
+        document.getElementById("prompt").innerText = "Swap 4: please slide tile";
+        // display swap 4
+        break;
+    case "Swap 4:": // to Swap 5
+        document.getElementById("prompt").innerText = "Swap 5: please slide tile";
+        // display swap 5
+        break;
+    case "Swap 5:": // to Swap 6
+        document.getElementById("prompt").innerText = "Swap 6: please slide tile";
+        // display swap 6
+        break;
+    case "Swap 6:": // to Swap 7
+        document.getElementById("prompt").innerText = "Swap 7: please slide tile";
+        // display swap 7
+        break;
+    case "Swap 7:": // to Swap 8
+        document.getElementById("prompt").innerText = "Swap 8: please slide tile";
+        // display swap 8
+        break;
+    case "Swap 8:": // to Swap 9
+        document.getElementById("prompt").innerText = "Swap 9: please slide tile";
+        // display swap 9
+        break;
+    case "Swap 9:": // to Swap 10
+        document.getElementById("prompt").innerText = "Swap 10: please slide tile";
+        document.getElementById("rightDiv").style.visibility = "hidden";
+        // display swap 10
+    };
+};
+
+document.getElementById("leftDiv").onclick = function() {
+    switch (document.getElementById("prompt").innerText.slice(0, 7)) {
+    case "Puzzle:": // to Reload
+        location.reload();
+        break;
+    case "Solutio": // to Puzzle
+        if (solved) {
+            document.getElementById("prompt").innerText = "Puzzle: initial state";
+        } else {
+            document.getElementById("prompt").innerText = "Puzzle: please click keys and tiles";
+            document.getElementById("keyboard").style.display = "block";
+        }
+        display(entry);
+        break;
+    case "Swap 1:": // to Solution
+        document.getElementById("prompt").innerText = "Solution: final state";
+        display(solution);
+        break;
+    case "Swap 2:": // to Swap 1
+        document.getElementById("prompt").innerText = "Swap 1: please slide tile";
+        // display swap 1
+        break;
+    case "Swap 3:": // to Swap 2
+        document.getElementById("prompt").innerText = "Swap 2: please slide tile";
+        // display swap 2
+        break;
+    case "Swap 4:": // to Swap 3
+        document.getElementById("prompt").innerText = "Swap 3: please slide tile";
+        // display swap 3
+        break;
+    case "Swap 5:": // to Swap 4
+        document.getElementById("prompt").innerText = "Swap 4: please slide tile";
+        // display swap 4
+        break;
+    case "Swap 6:": // to Swap 5
+        document.getElementById("prompt").innerText = "Swap 5: please slide tile";
+        // display swap 5
+        break;
+    case "Swap 7:": // to Swap 6
+        document.getElementById("prompt").innerText = "Swap 6: please slide tile";
+        // display swap 6
+        break;
+    case "Swap 8:": // to Swap 7
+        document.getElementById("prompt").innerText = "Swap 7: please slide tile";
+        // display swap 7
+        break;
+    case "Swap 9:": // to Swap 8
+        document.getElementById("prompt").innerText = "Swap 8: please slide tile";
+        // display swap 8
+        break;
+    case "Swap 10": // to Swap 9
+        document.getElementById("prompt").innerText = "Swap 9: please slide tile";
+        document.getElementById("rightDiv").style.visibility = "visible";
+        // display swap 9
     };
 };
 
 // Initialize javascript after window loads
 window.onload = function() {
-    let x;
-    const tilElm = document.querySelectorAll("#puzzle button");                         // tilElm[x] is the document element for tile index x
-    const keyElm = document.querySelectorAll("#keyboard button");                       // keyElm[x] is the document element for key index x
-    document.getElementById("right").onclick = function() {                             // initialize the right arrow handler
-        switch (document.getElementById("prompt").innerText.slice(0, 7)) {
-        case "Puzzle:":                                                                     // if the prompt starts with "Puzzle:", transition to "Solution" 
-            if (solved) {                                                                       // if puzzle is solved, display final state
-                document.getElementById("prompt").innerText = "Solution: final state";
-                display(final);
-            } else {                                                                            // otherwise, calculate and display final state
-                document.getElementById("left").style.visibility = "hidden";
-                document.getElementById("prompt").innerText = "Solution: calculating...";
-                document.getElementById("right").style.visibility = "hidden";
-                document.getElementById("keyboard").style.display = "none";
-                for (let n = R1; n <= C5; n++) {                                                    // build entry and entryHue from tiles
-                    entry[n] = "";
-                    entryHue[n] = "";
-                    for (let l = L1; l <= L5; l++) {
-                        x = nl2x[n][l];
-                        entry[n] += tilElm[x].innerText.toLowerCase();
-                        switch (getComputedStyle(tilElm[x]).backgroundColor) {
-                        case gry:
-                            entryHue[n] += "b";
-                            break;
-                        case yel:
-                            entryHue[n] += "y";
-                            break;
-                        case grn:
-                            entryHue[n] += "g";
-                        };
-                    };
-                };
-                setTimeout(solve, 1);                                                               // update display and then invoke solve()
-            };
-            break;
-        case "Solutio":                                                                     // if the prompt starts with "Solutio", transition to Swap 1
-            document.getElementById("prompt").innerText = "Swap 1: please slide tile";
-            // display swap 1
-            break;
-        case "Swap 1:":                                                                     // if the prompt starts with "Swap 1:", transition to Swap 2
-            document.getElementById("prompt").innerText = "Swap 2: please slide tile";
-            // display swap 2
-            break;
-        case "Swap 2:":                                                                     // if the prompt starts with "Swap 2:", transition to Swap 3
-            document.getElementById("prompt").innerText = "Swap 3: please slide tile";
-            // display swap 3
-            break;
-        case "Swap 3:":                                                                     // if the prompt starts with "Swap 3:", transition to Swap 4
-            document.getElementById("prompt").innerText = "Swap 4: please slide tile";
-            // display swap 4
-            break;
-        case "Swap 4:":                                                                     // if the prompt starts with "Swap 4:", transition to Swap 5
-            document.getElementById("prompt").innerText = "Swap 5: please slide tile";
-            // display swap 5
-            break;
-        case "Swap 5:":                                                                     // if the prompt starts with "Swap 5:", transition to Swap 6
-            document.getElementById("prompt").innerText = "Swap 6: please slide tile";
-            // display swap 6
-            break;
-        case "Swap 6:":                                                                     // if the prompt starts with "Swap 6:", transition to Swap 7
-            document.getElementById("prompt").innerText = "Swap 7: please slide tile";
-            // display swap 7
-            break;
-        case "Swap 7:":                                                                     // if the prompt starts with "Swap 7:", transition to Swap 8
-            document.getElementById("prompt").innerText = "Swap 8: please slide tile";
-            // display swap 8
-            break;
-        case "Swap 8:":                                                                     // if the prompt starts with "Swap 8:", transition to Swap 9
-            document.getElementById("prompt").innerText = "Swap 9: please slide tile";
-            // display swap 9
-            break;
-        case "Swap 9:":                                                                     // if the prompt starts with "Swap 9:", transition to Swap 10
-            document.getElementById("prompt").innerText = "Swap 10: please slide tile";
-            document.getElementById("right").style.visibility = "hidden";
-            // display swap 10
-        };
-    };
-    document.getElementById("left").onclick = function() {                              // initialize the back arrow handler
-        switch (document.getElementById("prompt").innerText.slice(0, 7)) {
-        case "Puzzle:":                                                                     // if the prompt starts with "Puzzle:", reload the web page
-            location.reload();
-            break;
-        case "Solutio":                                                                     // if the prompt starts with "Solutio", transition to Puzzle
-            if (solved) {                                                                       // if puzzle is solved, display entry
-                document.getElementById("prompt").innerText = "Puzzle: initial state";
-                display(entry);
-            } else {                                                                            // otherwise, display defective entry and request corrections
-                document.getElementById("prompt").innerText = "Puzzle: please click keys and tiles";
-                document.getElementById("keyboard").style.display = "block";
-                display(entry);
-            }
-            break;
-        case "Swap 1:":                                                                     // if the prompt starts with "Swap 1:", transition to Solution
-            document.getElementById("prompt").innerText = "Solution: final state";
-            display(final);
-            break;
-        case "Swap 2:":                                                                     // if the prompt starts with "Swap 2:", transition to Swap 1
-            document.getElementById("prompt").innerText = "Swap 1: please slide tile";
-            // display swap 1
-            break;
-        case "Swap 3:":                                                                     // if the prompt starts with "Swap 3:", transition to Swap 2
-            document.getElementById("prompt").innerText = "Swap 2: please slide tile";
-            // display swap 2
-            break;
-        case "Swap 4:":                                                                     // if the prompt starts with "Swap 4:", transition to Swap 3
-            document.getElementById("prompt").innerText = "Swap 3: please slide tile";
-            // display swap 3
-            break;
-        case "Swap 5:":                                                                     // if the prompt starts with "Swap 5:", transition to Swap 4
-            document.getElementById("prompt").innerText = "Swap 4: please slide tile";
-            // display swap 4
-            break;
-        case "Swap 6:":                                                                     // if the prompt starts with "Swap 6:", transition to Swap 5
-            document.getElementById("prompt").innerText = "Swap 5: please slide tile";
-            // display swap 5
-            break;
-        case "Swap 7:":                                                                     // if the prompt starts with "Swap 7:", transition to Swap 6
-            document.getElementById("prompt").innerText = "Swap 6: please slide tile";
-            // display swap 6
-            break;
-        case "Swap 8:":                                                                     // if the prompt starts with "Swap 8:", transition to Swap 7
-            document.getElementById("prompt").innerText = "Swap 7: please slide tile";
-            // display swap 7
-            break;
-        case "Swap 9:":                                                                     // if the prompt starts with "Swap 9:", transition to Swap 8
-            document.getElementById("prompt").innerText = "Swap 8: please slide tile";
-            // display swap 8
-            break;
-        case "Swap 10":                                                                     // if the prompt starts with "Swap 10", transition to Swap 9
-            document.getElementById("prompt").innerText = "Swap 9: please slide tile";
-            document.getElementById("right").style.visibility = "visible";
-            // display swap 9
-        };
-    };
-    for (let x = 0; x < positions; x++) {                                               // for each tile index,
-        tilElm[x].onclick = function() {                                                    // initialize this tile handler
-            if (document.getElementById("prompt").innerText.slice(0, 7) != "Puzzle:") return;   // if not in puzzle screen, ignore this tile click
-            document.getElementById("left").style.visibility = "visible";
-            document.getElementById("right").style.visibility = "visible";
+    // Initialize on-screen tile click handler
+    const tileElement = document.querySelectorAll("#puzzle button");
+    for (let tile = 0; tile < positions; tile++) {
+        tileElement[tile].onclick = function() {
+            if (document.getElementById("prompt").innerText.slice(0, 7) != "Puzzle:") return;
+            document.getElementById("leftDiv").style.visibility = "visible";
+            document.getElementById("rightDiv").style.visibility = "visible";
             document.getElementById("prompt").innerText = "Puzzle: please click \u25B7 when done";
             solved = false;
-            switch (getComputedStyle(tilElm[x]).backgroundColor) {
+            switch (entryHue[tile]) {
             case gry:
-                tilElm[x].style.backgroundColor = yel;
-                tilElm[x].style.borderColor = yel;
-                tilElm[x].style.color = wht;
+                tileElement[tile].style.backgroundColor = yel;
+                tileElement[tile].style.borderColor = yel;
+                tileElement[tile].style.color = wht;
+                entryHue[tile] = yel;
                 break;
             case yel:
-                tilElm[x].style.backgroundColor = grn;
-                tilElm[x].style.borderColor = grn;
-                tilElm[x].style.color = wht;
+                tileElement[tile].style.backgroundColor = grn;
+                tileElement[tile].style.borderColor = grn;
+                tileElement[tile].style.color = wht;
+                entryHue[tile] = grn;
                 break;
             case grn:
-                tilElm[x].style.backgroundColor = gry;
-                tilElm[x].style.borderColor = gry;
-                tilElm[x].style.color = blk;
-            };
+                tileElement[tile].style.backgroundColor = gry;
+                tileElement[tile].style.borderColor = gry;
+                tileElement[tile].style.color = blk;
+                entryHue[tile] = gry;
+            }
         };
     };
-    for (let key = 0; key < keys; key++) {                                              // for each key index,
-        keyElm[key].onclick = function() {                                                  // initialize this on-screen keyboard key click handler
-            if (document.getElementById("prompt").innerText.slice(0, 7) != "Puzzle:") return;   // if not in puzzle screen, ignore this key click
+    // Initialize on-screen keyboard key click handler
+    const keyElement = document.querySelectorAll("#keyboard button");
+    for (let key = 0; key < keys; key++) {
+        keyElement[key].onclick = function() {
+            if (document.getElementById("prompt").innerText.slice(0, 7) != "Puzzle:") return;
             solved = false;
             if (key == backSpace && cursor > 0) {
                 cursor -= 1;
-                tilElm[cursor].innerText = "";
-                document.getElementById("right").style.visibility = "hidden";
+                entryChr[cursor] = "";
+                tileElement[cursor].innerText = "";
+                entry[x2n[cursor]] = entry[x2n[cursor]].slice(0, -1);
+                document.getElementById("rightDiv").style.visibility = "hidden";
             } else if (key < backSpace && cursor < positions) {
-                tilElm[cursor].innerText = keyElm[key].innerText;
+                entryChr[cursor] = keyElement[key].innerText.toLowerCase();
+                tileElement[cursor].innerText = keyElement[key].innerText;
+                entry[x2n[cursor]] += keyElement[key].innerText.toLowerCase();
                 cursor += 1;
-                document.getElementById("left").style.visibility = "visible";
+                document.getElementById("leftDiv").style.visibility = "visible";
             };
         };
     };
-    document.onkeydown = function(e) {                                                  // initialize the physical keyboard keydown handler
-        if (document.getElementById("prompt").innerText.slice(0, 7) != "Puzzle:") return;   // if not in puzzle screen, ignore this keydown
+    // Initialize physical keyboard keydown handler
+    document.onkeydown = function(e) {
+        if (document.getElementById("prompt").innerText.slice(0, 7) != "Puzzle:") return;
         solved = false;
         const key = e.key.toUpperCase();
         if (key == "BACKSPACE" && cursor > 0) {
             cursor -= 1;
-            tilElm[cursor].innerText = "";
-            document.getElementById("right").style.visibility = "hidden";
+            entryChr[cursor] = "";
+            tileElement[cursor].innerText = "";
+            entry[x2n[cursor]] = entry[x2n[cursor]].slice(0, -1);
+            document.getElementById("rightDiv").style.visibility = "hidden";
         } else if (key.length == 1 && key >= "A" && key <= "Z" && cursor < positions) {
-            tilElm[cursor].innerText = key;
+            entryChr[cursor] = key.toLowerCase();
+            tileElement[cursor].innerText = key;
+            entry[x2n[cursor]] += key.toLowerCase();
             cursor += 1;
-            document.getElementById("left").style.visibility = "visible";
+            document.getElementById("leftDiv").style.visibility = "visible";
         };
     };
-    for (let n = R1; n <= C5; n++) {                                                    // initialize entry data with test data
-        for (let l = L1; l <= L5; l++) {
-            tilElm[nl2x[n][l]].innerText = test[n][l].toUpperCase();
-            switch (testHue[n][l]) {
-            case "b":
-                tilElm[nl2x[n][l]].style.backgroundColor = gry;
-                tilElm[nl2x[n][l]].style.borderColor = gry;
-                tilElm[nl2x[n][l]].style.color = blk;
-                break;
-            case "y":
-                tilElm[nl2x[n][l]].style.backgroundColor = yel;
-                tilElm[nl2x[n][l]].style.borderColor = yel;
-                tilElm[nl2x[n][l]].style.color = wht;
-                break;
-            case "g":
-                tilElm[nl2x[n][l]].style.backgroundColor = grn;
-                tilElm[nl2x[n][l]].style.borderColor = grn;
-                tilElm[nl2x[n][l]].style.color = wht;
-            };
+
+    // Initial entry data with test data
+    for (let n = 0; n < test.length; n++) entry[n] = test[n];
+    for (let x = 0; x < positions; x++) {
+        entryChr[x] = testChr[x];
+        entryHue[x] = testHue[x];
+        tileElement[x].innerText = entryChr[x].toUpperCase();
+        tileElement[x].style.backgroundColor = entryHue[x];
+        tileElement[x].style.borderColor = entryHue[x];
+        if (entryHue[x] == gry) {
+            tileElement[x].style.color = blk;
+        } else {
+            tileElement[x].style.color = wht;
         };
     };
     cursor = positions;
-    document.getElementById("left").style.visibility = "visible";
-    document.getElementById("right").style.visibility = "visible";
+    document.getElementById("leftDiv").style.visibility = "visible";
+    document.getElementById("rightDiv").style.visibility = "visible";
     document.getElementById("prompt").innerText = "Puzzle: please click \u25B7 when done"
 };
