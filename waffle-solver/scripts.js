@@ -1270,7 +1270,7 @@ window.onload = function() {
             document.getElementById("left").style.visibility = "visible";
         };
     };
-    for (let n = R1; n <= C5; n++) {                                                    // initialize entry data with test data
+    /* for (let n = R1; n <= C5; n++) {                                                    // initialize entry data with test data
         for (let l = L1; l <= L5; l++) {
             tilElm[nl2x[n][l]].innerText = test[n][l].toUpperCase();
             switch (testHue[n][l]) {
@@ -1294,5 +1294,5 @@ window.onload = function() {
     cursor = positions;
     document.getElementById("left").style.visibility = "visible";
     document.getElementById("right").style.visibility = "visible";
-    document.getElementById("prompt").innerText = "Puzzle: please click \u25B7 when done"
+    document.getElementById("prompt").innerText = "Puzzle: please click \u25B7 when done" */
 };
