@@ -1342,6 +1342,7 @@ window.onload = function() {
                 display(final);                                                                     // display final
             } else {                                                                            // otherwise,
                 prompt("", "Finding today's final tiles...", "");                                   // update prompt
+                document.getElementById("results").style.display = "flex";
                 for (let n = R1; n <= C5; n++) {                                                    // build entry and entryHue from tiles
                     entry[n] = "";
                     entryHue[n] = "";
