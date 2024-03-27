@@ -154,7 +154,7 @@ body {
 
 #results {
     width: var(--body-width);
-    display: flex;
+    display: none;
     flex-direction: column;
 }
 
