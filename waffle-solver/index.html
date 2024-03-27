@@ -13,8 +13,13 @@
             Waffle Solver
         </div>
         <div id="main">
-            <div class="side">
-                <button id="left" type="button">&#x25C1;</button>
+            <div id="leftSide">
+                <div>
+                    <button id="leftButton" type="button">&#x25C1;</button>
+                </div>
+                <div id="leftText">
+                    Reload
+                </div>
             </div>
             <div id="puzzle">
                 <button type="button"></button><button type="button"></button><button type="button"></button>
@@ -25,12 +30,17 @@
                 <button type="button"></button><button type="button"></button><button type="button"></button>
                 <button type="button"></button><button type="button"></button><button type="button"></button>
             </div>
-            <div class="side">
-                <button id="right" type="button">&#x25B7;</button>
+            <div id="rightSide">
+                <div>
+                    <button id="rightButton" type="button">&#x25B7;</button>
+                </div>
+                <div id="rightText">
+                    Colors
+                </div>
             </div>
         </div>
-        <div id="prompt">
-            Puzzle: please click keys and tiles
+        <div id="centerText">
+            Touch keys to enter today's letters
         </div>
         <div id="keyboard">
             <button type="button">Q</button><button type="button">W</button><button type="button">E</button>
@@ -42,6 +52,29 @@
             <button type="button">L</button><button type="button">Z</button><button type="button">X</button>
             <button type="button">C</button><button type="button">V</button><button type="button">B</button>
             <button type="button">N</button><button type="button">M</button><button type="button">&#x232B;</button>
+        </div>
+        <div id="results">
+            <div id="headings">
+                <div>Phase</div><div>Row 1</div><div>Row 3</div><div>Row 5</div><div>Col 1</div><div>Col 3</div><div>Col 5</div>
+            </div>
+            <div id="P0">
+                <div>0</div><div>12,947</div><div>12,947</div><div>12,947</div><div>12,947</div><div>12,947</div><div>12,947</div>
+            </div>
+            <div id="P1">
+                <div>1</div><div></div><div></div><div></div><div></div><div></div><div></div>
+            </div>
+            <div id="P2">
+                <div>2</div><div></div><div></div><div></div><div></div><div></div><div></div>
+            </div>
+            <div id="P3">
+                <div>3</div><div></div><div></div><div></div><div></div><div></div><div></div>
+            </div>
+            <div id="P4">
+                <div>4</div><div></div><div></div><div></div><div></div><div></div><div></div>
+            </div>
+            <div id="P5">
+                <div>5</div><div></div><div></div><div></div><div></div><div></div><div></div>
+            </div>
         </div>
     </body>
     <script src="scripts.js" defer></script>

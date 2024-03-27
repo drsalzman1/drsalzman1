@@ -1,18 +1,20 @@
 "use strict";
 
 // Puzzle constants
-const guesses = 6, letters = 5, positions = 21, numSwaps = 10
+const guesses = 6, letters = 5, tiles = 21, levels = 10
 const L1 = 0, L2 = 1, L3 = 2, L4 = 3, L5 = 4                                            // guess letters: letter 1, letter2, letter 3, letter 4, letter 5
 const R1 = 0, R3 = 1, R5 = 2, C1 = 3, C3 = 4, C5 = 5                                    // guess numbers: row 1, row 3, row 5, column 1, column 3, column 5
 const asca = "a".charCodeAt(), ascz = "z".charCodeAt();
-const gry = "rgb(237, 239, 241)"    //"#EDEFF1";
-const yel = "rgb(233, 186, 58)"     //"#E9BA3A";
-const grn = "rgb(111, 176, 92)"     //"#6FB05C";
-const blk = "rgb(0, 0, 0)"          //"#000000";
-const wht = "rgb(255, 255, 255)"    //"#FFFFFF";
+const gry = "rgb(237, 239, 241)";                                                       // "#EDEFF1"
+const yel = "rgb(233, 186, 58)";                                                        // "#E9BA3A"
+const grn = "rgb(111, 176, 92)";                                                        // "#6FB05C"
+const blk = "rgb(0, 0, 0)";                                                             // "#000000"
+const wht = "rgb(255, 255, 255)";                                                       // "#FFFFFF"
+const red = "rgb(255, 0, 0)";                                                           // "#FF0000"
+const blu = "rgb(0, 0, 255)";                                                           // "#0000FF"
 
 // 5-letter dictionary
-const word = [                                                                          // word string table where word[i] is word i and word[i][l] is letter l of word i
+const word = [                                                                          // word string table where word[w] is word w and word[w][l] is letter l of word w
     "aahed", "aalii", "aargh", "aarti", "abaca", "abaci", "aback", "abacs", "abaft", "abaka", "abamp", "aband", "abase", "abash", "abask", "abate", "abaya", "abbas", "abbed", "abbes",
     "abbey", "abbot", "abcee", "abeam", "abear", "abele", "abers", "abets", "abhor", "abide", "abies", "abled", "abler", "ables", "ablet", "ablow", "abmho", "abode", "abohm", "aboil",
     "aboma", "aboon", "abord", "abore", "abort", "about", "above", "abram", "abray", "abrim", "abrin", "abris", "absey", "absit", "abuna", "abune", "abuse", "abuts", "abuzz", "abyes",
@@ -665,14 +667,14 @@ const word = [                                                                  
 const words = word.length;                                                              // words in dictionary
 
 // Guess words
-const entry =    ["     ", "     ", "     ", "     ", "     ", "     "];                // entry[n][l]    is the entry character at letter l of guess n
+const entry =    ["",      "",      "",      "",      "",      ""     ];                // entry[n][l]    is the entry character at letter l of guess n
 const entryHue = ["gbbbg", "bbgbb", "gbbbg", "gbbbg", "bbgbb", "gbbbg"];                // entryHue[n][l] is the entry hue       at letter l of guess n
 const test =     ["goulm", "tmiuk", "ysdry", "getry", "uaiod", "mmkuy"];                // test[n][l]     is the test  character at letter l of guess n
 const testHue =  ["gyyyg", "ybgby", "gbybg", "gbybg", "ybgyy", "gbybg"];                // testHue[n][l]  is the test  hue       at letter l of guess n
-const final =    ["     ", "     ", "     ", "     ", "     ", "     "];                // final[n][l]    is the final character at letter l of guess n
+const final =    ["",      "",      "",      "",      "",      ""     ];                // final[n][l]    is the final character at letter l of guess n
 
 // Conversion tables
-const nl2x = [                                                                          // nl2x[n][l] is the tile index x for letter l of guess n
+const nl2t = [                                                                          // nl2t[n][l] is the tile index for letter l of guess n
     [ 0,  1,  2,  3,  4],
     [ 8,  9, 10, 11, 12],
     [16, 17, 18, 19, 20],
@@ -690,7 +692,7 @@ const nl2p = [                                                                  
     [false, true, false, true, false]
 ];
 
-const rc2x = [                                                                          // rc2x[r][c] is the tile index for column c of row r (or -1 if no tile index)
+const rc2t = [                                                                          // rc2t[r][c] is the tile index for column c of row r (or -1 if no tile index)
     [ 0,  1,  2,  3,  4],
     [ 5, -1,  6, -1,  7],
     [ 8,  9, 10, 11, 12],
@@ -698,7 +700,7 @@ const rc2x = [                                                                  
     [16, 17, 18, 19, 20]
 ];
 
-const x2n = [                                                                           // x2n[x] is the primary guess number at tile index x
+const t2n = [                                                                           // t2n[t] is the primary guess number for tile t
     R1, R1, R1, R1, R1,  
     C1,     C3,     C5,
     R3, R3, R3, R3, R3,
@@ -706,7 +708,7 @@ const x2n = [                                                                   
     R5, R5, R5, R5, R5
 ];
 
-const x2l = [                                                                           // x2l[x] is the primary guess letter at tile index x
+const t2l = [                                                                           // t2l[t] is the primary guess letter for tile t
     L1, L2, L3, L4, L5,
     L2,     L2,     L2,
     L1, L2, L3, L4, L5,
@@ -714,46 +716,142 @@ const x2l = [                                                                   
     L1, L2, L3, L4, L5
 ];
 
+const moves = 420;                                                                      // 420 possible moves: 0..209 double greens; 210..419 single greens
+const single = 210;                                                                     // 210 is the first possible single green move
+const m2st = [                                                                          // m2st[m] is the source tile for move m
+    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+        1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
+            2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  
+                3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  
+                    4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  
+                        5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  
+                            6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  
+                                7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  
+                                    8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  
+                                        9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  
+                                            10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 
+                                                11, 11, 11, 11, 11, 11, 11, 11, 11, 
+                                                    12, 12, 12, 12, 12, 12, 12, 12, 
+                                                        13, 13, 13, 13, 13, 13, 13, 
+                                                            14, 14, 14, 14, 14, 14, 
+                                                                15, 15, 15, 15, 15, 
+                                                                    16, 16, 16, 16, 
+                                                                        17, 17, 17, 
+                                                                            18, 18, 
+                                                                                19,
+    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+        1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
+            2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  
+                3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  
+                    4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  
+                        5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  
+                            6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  
+                                7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  
+                                    8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  
+                                        9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  
+                                            10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 
+                                                11, 11, 11, 11, 11, 11, 11, 11, 11, 
+                                                    12, 12, 12, 12, 12, 12, 12, 12, 
+                                                        13, 13, 13, 13, 13, 13, 13, 
+                                                            14, 14, 14, 14, 14, 14, 
+                                                                15, 15, 15, 15, 15, 
+                                                                    16, 16, 16, 16, 
+                                                                        17, 17, 17, 
+                                                                            18, 18, 
+                                                                                19
+];
+
+const m2dt = [                                                                          // m2st[m] is the destinaton tile for move m
+    1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+        2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+            3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                    5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                        6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                            7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                                8,  9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                                    9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                                        10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                                            11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                                                12, 13, 14, 15, 16, 17, 18, 19, 20,
+                                                    13, 14, 15, 16, 17, 18, 19, 20,
+                                                        14, 15, 16, 17, 18, 19, 20,
+                                                            15, 16, 17, 18, 19, 20,
+                                                                16, 17, 18, 19, 20,
+                                                                    17, 18, 19, 20,
+                                                                        18, 19, 20,
+                                                                            19, 20,
+                                                                                20,
+    1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+        2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+            3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                    5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                        6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                            7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                                8,  9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                                    9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                                        10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                                            11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                                                12, 13, 14, 15, 16, 17, 18, 19, 20,
+                                                    13, 14, 15, 16, 17, 18, 19, 20,
+                                                        14, 15, 16, 17, 18, 19, 20,
+                                                            15, 16, 17, 18, 19, 20,
+                                                                16, 17, 18, 19, 20,
+                                                                    17, 18, 19, 20,
+                                                                        18, 19, 20,
+                                                                            19, 20,
+                                                                                20
+];
+
 // Text entry values
 const keys = 27;
 const backSpace = 26;
 let cursor = 0;
 
+// getMoves variables
+const curC = ["","","","","","","","","","","","","","","","","","","","",""];          // curC[t] is the current character for tile t
+const finC = ["","","","","","","","","","","","","","","","","","","","",""];          // finC[t] is the final   character for tile t
+const move = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];                                            // move[m] is the move index for move m
+
 // Navigation values
-let solved = false;
+let state = "Letters";                                                                  // start in the "Enter Letters" state
+let number = 1;                                                                         // start number at one
+let foundFinal = false;                                                                 // start with final guess words not yet found
+let foundMoves = false;                                                                 // start with moves not yet found
 
 // Eliminate words based on entry characters and entry hues
 function phase1(wp, cw, cp) {
     let ye, ng;
     for (let n = R1; n <= C5; n++) {                                                    // for each entry number,
         for (let l = L1; l <= L5; l++) {                                                    // for each entry letter,
-            for (let i = 0; i < words; i++) {                                                   // for each word index,
+            for (let w = 0; w < words; w++) {                                                   // for each word index,
                 switch (entryHue[n][l]) {
                 case "g":                                                                           // if this entry hue is green,
-                    if (word[i][l] != entry[n][l]) wp[i][n] = false;                                    // if this word character doesn't match this entry character, this word is impossible
+                    if (word[w][l] != entry[n][l]) wp[w][n] = false;                                    // if this word character doesn't match this entry character, this word is impossible
                     break;
                 case "y":                                                                           // if this entry hue is yellow,
-                    if (word[i][l] == entry[n][l]) wp[i][n] = false;                                    // if this word character matches this entry character, this word is impossible
+                    if (word[w][l] == entry[n][l]) wp[w][n] = false;                                    // if this word character matches this entry character, this word is impossible
                     else {                                                                              // otherwise,
                         ye = 0;                                                                             // count non-intersecting yellow entry letters that match this yellow entry letter
                         ng = 0;                                                                             // count non-green word letters that match this yellow entry letter
                         for (let p = L1; p <= L5; p++) {
                             if ((p == L2 || p == L4) && entryHue[n][p] == "y" && entry[n][p] == entry[n][l]) ye++;
-                            if (entryHue[n][p] != "g" && word[i][p] == entry[n][l]) ng++;
+                            if (entryHue[n][p] != "g" && word[w][p] == entry[n][l]) ng++;
                         };
-                        if (ye > ng) wp[i][n] = false;                                                      // if yellow count is greater than non-green count, this word is impossible
+                        if (ye > ng) wp[w][n] = false;                                                      // if yellow count is greater than non-green count, this word is impossible
                     };
                     break;
                 case "b":                                                                           // if this entry hue is blank,
-                    if (word[i][l] == entry[n][l]) wp[i][n] = false;                                    // if this word character matches this entry character, this word is impossible
+                    if (word[w][l] == entry[n][l]) wp[w][n] = false;                                    // if this word character matches this entry character, this word is impossible
                     else {                                                                              // otherwise,
                         ye = 0;                                                                             // count yellow entry letters that match this blank entry letter
                         ng = 0;                                                                             // count non-green word letters that match this blank entry letter
                         for (let p = L1; p <= L5; p++) {
                             if (entryHue[n][p] == "y" && entry[n][p] == entry[n][l]) ye++;
-                            if (entryHue[n][p] != "g" && word[i][p] == entry[n][l]) ng++;
+                            if (entryHue[n][p] != "g" && word[w][p] == entry[n][l]) ng++;
                         };
-                        if (ng > ye) wp[i][n] = false;                                                      // if non-green count is greater than yellow count, this word is impossible
+                        if (ng > ye) wp[w][n] = false;                                                      // if non-green count is greater than yellow count, this word is impossible
                     };
                 };
             };
@@ -761,10 +859,10 @@ function phase1(wp, cw, cp) {
     };
     for (let n = R1; n <= C5; n++) {                                                    // populate current words table and current possibilities array
         cp[n] = 0;
-        for (let i = 0; i < words; i++) {
-            cw[i][n] = "";
-            if (wp[i][n]) {
-                cw[cp[n]][n] = word[i];
+        for (let w = 0; w < words; w++) {
+            cw[w][n] = "";
+            if (wp[w][n]) {
+                cw[cp[n]][n] = word[w];
                 cp[n]++;
             };
         };
@@ -773,27 +871,28 @@ function phase1(wp, cw, cp) {
 
 // Eliminate words by letter counts
 function phase2(wp, cw, cp) {
+    let ac;
     const ea = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];                   // count ascii codes of available (primary, non-green) entry characters (e.g. ea[0] is number of a's in all entries)
     for (let n = R1; n <= C5; n++) {                                                    // for each entry number,
         for (let l = L1; l <= L5; l++) {                                                    // for each entry letter,
-            if (nl2p[n][l] && entryHue[n][l] != "g") {                                          // if entry letter is primary and not green,
-                ea[entry[n][l].charCodeAt() - asca]++;                                              // increment corresponding ascii count
+            if (l < entry[n].length && nl2p[n][l] && entryHue[n][l] != "g") {                   // if letter is in range, this entry letter is primary, and this entry hue isn't green,
+                ea[entry[n][l].charCodeAt() - asca]++;                                          // increment the corresponding ascii count
             };
         };
     };
     const wa = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];                   // count ascii codes of non-green word characters (e.g. wa[0] is number of a's in a word)
     for (let n = R1; n <= C5; n++) {                                                    // For each entry number,
-        for (let i = 0; i < words; i++) {                                               // for each word index,
-            if (!wp[i][n]) continue;                                                            // if this word is not possible, skip it
+        for (let w = 0; w < words; w++) {                                               // for each word index,
+            if (!wp[w][n]) continue;                                                            // if this word is not possible, skip it
             wa.fill(0);                                                                         // count ascii codes of non-green characters in this word
             for (let l = L1; l <= L5; l++) {
-                if (word[i][l] != entry[n][l]) {
-                    wa[word[i][l].charCodeAt() - asca]++;
+                if (word[w][l] != entry[n][l]) {
+                    wa[word[w][l].charCodeAt() - asca]++;
                 };
             };
             for (let a = 0; a <= ascz - asca; a++) {                                            // if this word requires any more codes than the entries provide, mark this word as impossible
                 if (wa[a] > ea[a]) {
-                    wp[i][n] = false;                                                                   // note that this word is impossible
+                    wp[w][n] = false;                                                                   // note that this word is impossible
                     break;
                 };
             };
@@ -801,10 +900,10 @@ function phase2(wp, cw, cp) {
     };
     for (let n = R1; n <= C5; n++) {                                                    // populate current words table and current possibilities array
         cp[n] = 0;
-        for (let i = 0; i < words; i++) {
-            cw[i][n] = "";
-            if (wp[i][n]) {
-                cw[cp[n]][n] = word[i];
+        for (let w = 0; w < words; w++) {
+            cw[w][n] = "";
+            if (wp[w][n]) {
+                cw[cp[n]][n] = word[w];
                 cp[n]++;
             };
         };
@@ -868,7 +967,7 @@ function codeCount(guess) {
     const ca = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];                   // code count array where ca[0] is the count of a's in the guess words
     for (let n = R1; n <= C5; n++) {                                                    // for guess number,
         for (let l = L1; l <= L5; l++) {                                                    // for each guess letter,
-            if (nl2p[n][l]) ca[guess[n][l].charCodeAt() - asca]++;                              // if guess letter is primary, increment corresponding code count
+            if (l < guess[n].length && nl2p[n][l]) ca[guess[n][l].charCodeAt() - asca]++;       // if this letter is in range and this guess letter is primary, increment corresponding code count
         };
     };
     return ca.toString();                                                               // return "<#a's>, <#b's>, ... <#z's>" in the wordArray
@@ -963,83 +1062,87 @@ function phase5(sw) {
 
 // Display current words
 function display(current) {
-    let x, n, l, nr, nf, cx, cn, cl, rx, rn, rl;
+    let t, n, l, nr, nf, ct, cn, cl, rt, rn, rl;
     const tilElm = document.querySelectorAll("#puzzle button");
     for (n = R1; n <= C5; n++) {                                                        // set tile characters based on current words
         for (l = L1; l <= L5; l++) {
-            x = nl2x[n][l];
-            tilElm[x].innerText = current[n][l].toUpperCase();
+            t = nl2t[n][l];
+            if (l < current[n].length) {
+                tilElm[t].innerText = current[n][l].toUpperCase();
+            } else {
+                tilElm[t].innerText = "";    
+            };
         };
     };
     if (current == entry) {                                                             // if displaying entry, set tile colors based on entry hues
         for (n = R1; n <= C5; n++) {
             for (l = L1; l <= L5; l++) {
-                x = nl2x[n][l];
+                t = nl2t[n][l];
                 switch (entryHue[n][l]) {
                 case "b":
-                    tilElm[x].style.backgroundColor = gry;
-                    tilElm[x].style.borderColor = gry;
-                    tilElm[x].style.color = blk;
+                    tilElm[t].style.backgroundColor = gry;
+                    tilElm[t].style.borderColor = gry;
+                    tilElm[t].style.color = blk;
                     break;
                 case "y":
-                    tilElm[x].style.backgroundColor = yel;
-                    tilElm[x].style.borderColor = yel;
-                    tilElm[x].style.color = wht;
+                    tilElm[t].style.backgroundColor = yel;
+                    tilElm[t].style.borderColor = yel;
+                    tilElm[t].style.color = wht;
                     break;
                 case "g":
-                    tilElm[x].style.backgroundColor = grn;
-                    tilElm[x].style.borderColor = grn;
-                    tilElm[x].style.color = wht;
+                    tilElm[t].style.backgroundColor = grn;
+                    tilElm[t].style.borderColor = grn;
+                    tilElm[t].style.color = wht;
                 };
             };
         };
     } else {                                                                            // otherwise, set tile colors based on current words vs. final words
         for (let r = L1; r <= L5; r++) {                                                    // for each tile row,
             for (let c = L1; c <= L5; c++) {                                                    // for each tile column,
-                x = rc2x[r][c];                                                                     // look up this tile index based on this tile row and this tile column
-                if (x == -1) continue;                                                              // if dead area, skip this column
-                n = x2n[x];                                                                         // look up this primary guess number based on this tile index
-                l = x2l[x];                                                                         // look up this primary guess letter based on this tile index
-                tilElm[x].style.backgroundColor = gry;                                              // tentatively color this tile gray
-                tilElm[x].style.borderColor = gry;
-                tilElm[x].style.color = blk;
+                t = rc2t[r][c];                                                                     // look up this tile index based on this tile row and this tile column
+                if (t == -1) continue;                                                              // if dead area, skip this column
+                n = t2n[t];                                                                         // look up this primary guess number based on this tile index
+                l = t2l[t];                                                                         // look up this primary guess letter based on this tile index
+                tilElm[t].style.backgroundColor = gry;                                              // tentatively color this tile gray
+                tilElm[t].style.borderColor = gry;
+                tilElm[t].style.color = blk;
                 if (current[n][l] == final[n][l]) {                                                 // if this current character (target) matches this final character,
-                    tilElm[x].style.backgroundColor = grn;                                              // color this tile green
-                    tilElm[x].style.borderColor = grn;
-                    tilElm[x].style.color = wht;
+                    tilElm[t].style.backgroundColor = grn;                                              // color this tile green
+                    tilElm[t].style.borderColor = grn;
+                    tilElm[t].style.color = wht;
                 } else {                                                                            // otherwise,
                     nr = 0;                                                                             // count number of yellows required
                     nf = 0;                                                                             // count number of yellows found
                     if (c == L1 || c == L3 || c == L5) {                                                // if this tile is on a column,
                         for (let cr = L1; cr <= L5; cr++) {                                                 // for each row of this column,
-                            cx = rc2x[cr][c];                                                                   // look up this tile index based on this tile row and this tile column
-                            cn = x2n[cx];                                                                       // look up this primary guess number based on this tile index
-                            cl = x2l[cx];                                                                       // look up this primary guess letter based on the this tile index
+                            ct = rc2t[cr][c];                                                                   // look up this tile index based on this tile row and this tile column
+                            cn = t2n[ct];                                                                       // look up this primary guess number based on this tile index
+                            cl = t2l[ct];                                                                       // look up this primary guess letter based on the this tile index
                             if (current[cn][cl] != final[cn][cl]) {                                             // if this current character doesn't match this final character,
                                 if (final[cn][cl] == current[n][l]) nr++;                                           // if this final character matches the target, increment number of yellows required
                                 if (current[cn][cl] == current[n][l]) {                                             // if this current character matches the target,
-                                    if (getComputedStyle(tilElm[cx]).backgroundColor == yel) nf++;                      // if this tile color is already yellow, increment number of yellows found
+                                    if (getComputedStyle(tilElm[ct]).backgroundColor == yel) nf++;                      // if this tile color is already yellow, increment number of yellows found
                                 };
                             };
                         };
                     };
                     if (r == L1 || r == L3 || r == L5) {                                                // if this tile is on a row,
                         for (let rc = L1; rc <= L5; rc++) {                                                 // for each column of this row,
-                            rx = rc2x[r][rc];                                                                   // look up this tile index based on this tile row and this tile column
-                            rn = x2n[rx];                                                                       // look up this primary guess number based on this tile index
-                            rl = x2l[rx];                                                                       // look up this primary guess letter based on the this tile index
+                            rt = rc2t[r][rc];                                                                   // look up this tile index based on this tile row and this tile column
+                            rn = t2n[rt];                                                                       // look up this primary guess number based on this tile index
+                            rl = t2l[rt];                                                                       // look up this primary guess letter based on the this tile index
                             if (current[rn][rl] != final[rn][rl]) {                                             // if this current character doesn't match this final character,
                                 if (final[rn][rl] == current[n][l]) nr++;                                           // if this final character matches the target, increment number of yellows required
                                 if (current[rn][rl] == current[n][l]) {                                             // if this current character matches the target,
-                                    if (getComputedStyle(tilElm[rx]).backgroundColor == yel) nf++;                      // if this tile color is already yellow, increment number of yellows found
+                                    if (getComputedStyle(tilElm[rt]).backgroundColor == yel) nf++;                      // if this tile color is already yellow, increment number of yellows found
                                 };
                             };
                         };
                     };
                     if (nr > nf) {                                                                      // if more yellows are required than found, color this tile yellow
-                        tilElm[x].style.backgroundColor = yel;
-                        tilElm[x].style.borderColor = yel;
-                        tilElm[x].style.color = yel;
+                        tilElm[t].style.backgroundColor = yel;
+                        tilElm[t].style.borderColor = yel;
+                        tilElm[t].style.color = wht;
                     };
                 };
             };
@@ -1047,62 +1150,205 @@ function display(current) {
     };
 };
 
-// Solve waffle puzzle
-function solve() {
+// display specified prompts
+function prompt(leftText, centerText, rightText, keyboard = "none") {
+    document.getElementById("leftText").innerText = leftText;                           // update left text (left arrow action)
+    if (leftText == "") {                                                               // if left text is empty,
+        document.getElementById("leftSide").style.visibility = "hidden";                    // make left side hidden
+    } else {                                                                            // otherwise,
+        document.getElementById("leftSide").style.visibility = "visible";                   // make left side visible
+    };
+    document.getElementById("centerText").innerText = centerText;                       // update center text (user instructions)
+    document.getElementById("rightText").innerText = rightText;                         // update left text (left arrow action)
+    if (rightText == "") {                                                              // if right text is empty,
+        document.getElementById("rightSide").style.visibility = "hidden";                   // make right side hidden
+    } else {                                                                            // otherwise,
+        document.getElementById("rightSide").style.visibility = "visible";                  // make right side visible
+    };
+    document.getElementById("keyboard").style.display = keyboard;                       // keyboard can be "block" (visible) or "none" (default)
+};
+
+function displayMove(number, noAnimation = false) {
+    let t, n, l, m, st, sc, dt, dc;
+    const cc = ["","","","","","","","","","","","","","","","","","","","",""];        // cc[t] is the current character for tile t
+    const cs = ["","","","","",""];                                                     // cs[n] is the current string for guess n
+    const tilElm = document.querySelectorAll("#puzzle button");
+    for (t = 0; t < tiles; t++) {                                                       // initialize the current characters based on the entry strings
+        n = t2n[t];
+        l = t2l[t];
+        cc[t] = entry[n][l];
+    };
+    for (let level = 0; level < number-1; level++) {                                    // scramble the current characters based on the preceeding moves
+        m = move[level];
+        st = m2st[m];
+        sc = cc[st];
+        dt = m2dt[m];
+        dc = cc[dt];
+        cc[st] = dc;
+        cc[dt] = sc;
+    };
+    for (n = R1; n <= C5; n++) {                                                        // build the current strings based on the current characters
+        cs[n] = "";
+        for (l = L1; l <= L5; l++) {
+            t = nl2t[n][l];
+            cs[n] += cc[t];
+        };
+    };
+    display(cs);                                                                        // display the current (pre-move) strings
+    m = move[number-1];                                                                 // scramble the current characters based on the current move
+    st = m2st[m];
+    sc = cc[st];
+    dt = m2dt[m];
+    dc = cc[dt];
+    cc[st] = dc;
+    cc[dt] = sc;
+    for (n = R1; n <= C5; n++) {                                                        // build the current strings based on the current characters
+        cs[n] = "";
+        for (l = L1; l <= L5; l++) {
+            t = nl2t[n][l];
+            cs[n] += cc[t];
+        };
+    };
+    if (noAnimation) {                                                                  // if no animation is requested,
+        display(cs);                                                                        // display the current (post-move) strings
+    } else {                                                                            // otherwise,
+        const sx = tilElm[st].offsetLeft;                                                   // animate movement of this source tile to this destination tile
+        const sy = tilElm[st].offsetTop;
+        const dx = tilElm[dt].offsetLeft;
+        const dy = tilElm[dt].offsetTop;
+        tilElm[st].style.transition = "transform 1s";
+        tilElm[st].style.transform = "translate(" + (dx-sx) + "px, " + (dy-sy) + "px)";
+        tilElm[st].style.zIndex = "1";
+        tilElm[st].ontransitionend = function() {                                           // when animation is complete,
+            tilElm[st].style.transition = "transform 0s";                                       // restore this source tile location
+            tilElm[st].style.transform = "none";
+            tilElm[st].style.zIndex = "0";
+            display(cs);                                                                        // display the current (post-move) strings
+            tilElm[st].style.color = blu;
+            tilElm[dt].style.color = blu;
+            };
+    };
+};
+
+// Find final guess words
+function findFinal() {
     const wp = [];                                                                      // word possible table where wp[wi][gn] is true if word wi is still possible for guess gn
     const cw = [];                                                                      // current word table where cw[pi][gn] is the current possible word pi for guess gn
     const cp = [0,0,0,0,0,0];                                                           // current possibilites table where cp[gn] is the current number of possible words for guess gn
     const sw = [];                                                                      // solution word table where sw[si][gn] is solution si for guess gn
-    for (let i = 0; i < words; i++) {                                                   // for each word index,
-        wp[i] = [true, true, true, true, true, true];                                       // initialize these word possibles
-        cw[i] = ["", "", "", "", "", ""];                                                   // initialize these current words
+    for (let w = 0; w < words; w++) {                                                   // for each word index,
+        wp[w] = [true, true, true, true, true, true];                                       // initialize these word possibles
+        cw[w] = ["", "", "", "", "", ""];                                                   // initialize these current words
     };
     phase1(wp, cw, cp);                                                                 // Eliminate words based on entry characters and entry hues
     phase2(wp, cw, cp);                                                                 // Eliminate words that require more ascii codes than the guesses provide
     phase3(cw, cp)                                                                      // Eliminate words due to conflicting intersecting words
     phase4(cw, cp, sw);                                                                 // Identify 6-word solutions with right letters and matching dupes
     phase5(sw);                                                                         // Eliminate any 6-word solutions that violate the yellow intersection rule
-    if (sw.length != 1) {                                                               // If no 6-word solution or more than one, flag error
-        document.getElementById("left").style.visibility = "visible";
-        document.getElementById("prompt").innerText = "Solution not found: please fix puzzle";
+    if (sw.length != 1) {                                                               // If no 6-word solution or more than one,
+        prompt("Colors", "No final tiles - please fix puzzle", "");                         // update prompt
     } else {                                                                            // otherwise,
-        solved = true;                                                                      // flag solution was found
+        foundFinal = true;                                                                  // flag solution was found
         for (let n = R1; n <= C5; n++) {                                                    // for each guess number,
             final[n] = "";                                                                      // build this final word
             for (let l = L1; l <= L5; l++) {
                 final[n] += sw[0][n][l];
             };
         };
-        document.getElementById("left").style.visibility = "visible";                       // make left arrow visble
-        document.getElementById("prompt").innerText = "Solution: final state";              // display solution prompt
-        document.getElementById("right").style.visibility = "visible";                      // make right arrow visible
+        prompt("Colors", "Today's final tiles", "Move 1");                                  // update prompt
         display(final);                                                                     // display solution
     };
 };
 
+// Find the moves (character exchanges) required to transform entry string into final string
+function findMoves(level = 0) {
+    let n, l, st, sc, dt, dc;
+    if (level == 0) {                                                                   // if first level, initialize the current and final arrays
+        for (let t = 0; t < tiles; t++) {
+            n = t2n[t];
+            l = t2l[t];
+            curC[t] = entry[n][l];
+            finC[t] = final[n][l];
+        };
+    };
+    for (let m = 0; m < moves; m++) {                                                   // for each possible move,
+        st = m2st[m];                                                                       // look up this move's source tile
+        sc = curC[st];                                                                      // look up this source tile's current character
+        if (sc == finC[st]) continue;                                                       // if source character is already green, move on to next move
+        dt = m2dt[m];                                                                       // look up this move's destination tile
+        dc = curC[dt];                                                                      // look up this destination tile's current character
+        if (dc == finC[dt]) continue;                                                       // if destination character is already green, move on to next move
+        if (m < single) {                                                                   // if we're still looking for double green moves,
+            if (sc != finC[dt] || dc != finC[st]) continue;                                     // if the result wouldn't be a double green, move on to next move
+        } else {                                                                            // otherwise,
+            if (sc != finC[dt] && dc != finC[st]) continue;                                     // if the result wouldn't be a single green, move on to next move
+        };
+        curC[st] = dc;                                                                      // tentatively swap the source and destination characters
+        curC[dt] = sc;
+        if (level == levels - 1) {                                                          // if this is the last level,
+            if (curC.toString() == finC.toString()) {                                           // if the current string matches the final string,
+                foundMoves = true                                                                   // note that we found the correct moves
+                move[level] = m;                                                                    // note the move at this level
+                return true;                                                                        // report that we found the correct moves
+            };
+            curC[st] = sc;                                                                      // restore the source and destination characters
+            curC[dt] = dc;
+            return false;                                                                       // report that we didn't find the correct moves
+        };
+        if (findMoves(level + 1)) {                                                         // if a recursion to the next level finds the correct moves,
+            move[level] = m;                                                                    // note the move at this level
+            if (level == 0) {                                                                   // if at bottom level,
+                state = "Moves";                                                                    // change state to "Moves"
+                number = 1;                                                                         // start with move 1
+                prompt("Final", "Today's move 1", "Move 2");                                        // update prompt
+                displayMove(number);
+            };
+            return true;                                                                        // report that we found the correct moves
+        };
+        curC[st] = sc;                                                                      // restore the source and destination characters
+        curC[dt] = dc;
+        if (m < single) break;                                                              // if we already found a double green, we won't find anything better
+    };
+    if (level == 0) prompt("Colors", "No moves - please fix puzzle.", "");              // if at bottom level, flag error
+    return false;                                                                       // report that we didn't find the correct moves
+};
+
+//          +---------+     +--------+     +-------+     +-------+
+//  load -> | Letters | <-> | Colors | <-> | Final | <-> | Moves |
+//          +---------+     +--------+     +-------+     +-------+
+//                               A             |no           |no
+//                               +-------------+-------------+
+//
 // Initialize javascript after window loads
 window.onload = function() {
-    let x;
-    const tilElm = document.querySelectorAll("#puzzle button");                         // tilElm[x] is the document element for tile index x
-    const keyElm = document.querySelectorAll("#keyboard button");                       // keyElm[x] is the document element for key index x
-    document.getElementById("right").onclick = function() {                             // initialize the right arrow handler
-        switch (document.getElementById("prompt").innerText.slice(0, 7)) {
-        case "Puzzle:":                                                                     // if the prompt starts with "Puzzle:", transition to "Solution" 
-            if (solved) {                                                                       // if puzzle is solved, display final state
-                document.getElementById("prompt").innerText = "Solution: final state";
-                display(final);
-            } else {                                                                            // otherwise, calculate and display final state
-                document.getElementById("left").style.visibility = "hidden";
-                document.getElementById("prompt").innerText = "Solution: calculating...";
-                document.getElementById("right").style.visibility = "hidden";
-                document.getElementById("keyboard").style.display = "none";
+    let t;
+    const tilElm = document.querySelectorAll("#puzzle button");                         // tilElm[t] is the document element for tile index t
+    const keyElm = document.querySelectorAll("#keyboard button");                       // keyElm[t] is the document element for key index t
+    document.getElementById("rightSide").onclick = function() {                         // if user clicks the right side,
+        switch (state) {
+        case "Letters":                                                                     // if state is "Letters",
+            state = "Colors";                                                                   // change state to "Colors"
+            prompt("Letters", "Touch tiles to enter today's colors", "Final");                  // update prompt
+            for (let t of [0, 4, 10, 16, 20]) {                                                 // fill in gimme's
+                tilElm[t].style.backgroundColor = grn;
+                tilElm[t].style.borderColor = grn;
+                tilElm[t].style.color = wht;
+            };
+            break;
+        case "Colors":                                                                      // if state is "Colors", 
+            state = "Final";                                                                    // change state to "Final"
+            if (foundFinal) {                                                                   // if final already found,
+                prompt("Colors", "Today's final tiles", "Move 1");                                  // update prompt
+                display(final);                                                                     // display final
+            } else {                                                                            // otherwise,
+                prompt("", "Finding today's final tiles...", "");                                   // update prompt
                 for (let n = R1; n <= C5; n++) {                                                    // build entry and entryHue from tiles
                     entry[n] = "";
                     entryHue[n] = "";
                     for (let l = L1; l <= L5; l++) {
-                        x = nl2x[n][l];
-                        entry[n] += tilElm[x].innerText.toLowerCase();
-                        switch (getComputedStyle(tilElm[x]).backgroundColor) {
+                        t = nl2t[n][l];
+                        entry[n] += tilElm[t].innerText.toLowerCase();
+                        switch (getComputedStyle(tilElm[t]).backgroundColor) {
                         case gry:
                             entryHue[n] += "b";
                             break;
@@ -1114,185 +1360,146 @@ window.onload = function() {
                         };
                     };
                 };
-                setTimeout(solve, 1);                                                               // update display and then invoke solve()
+                setTimeout(findFinal, 100);                                                         // invoke findFinal after pause to update screen
             };
             break;
-        case "Solutio":                                                                     // if the prompt starts with "Solutio", transition to Swap 1
-            document.getElementById("prompt").innerText = "Swap 1: please slide tile";
-            // display swap 1
+        case "Final":                                                                       // if state is "Final",
+            state = "Moves";                                                                    // change state to "Moves"
+            number = 1;                                                                         // start with move 1
+            if (foundMoves) {                                                                   // if moves already found,
+                prompt("Final", "Today's move 1", "Move 2");                                        // update prompt
+                displayMove(number);                                                                // display first move
+            } else {                                                                            // otherwise,
+                prompt("", "Finding today's moves...", "");                                         // update prompt
+                setTimeout(findMoves, 100);                                                         // invoke findMoves after pause to update screen
+            };
             break;
-        case "Swap 1:":                                                                     // if the prompt starts with "Swap 1:", transition to Swap 2
-            document.getElementById("prompt").innerText = "Swap 2: please slide tile";
-            // display swap 2
-            break;
-        case "Swap 2:":                                                                     // if the prompt starts with "Swap 2:", transition to Swap 3
-            document.getElementById("prompt").innerText = "Swap 3: please slide tile";
-            // display swap 3
-            break;
-        case "Swap 3:":                                                                     // if the prompt starts with "Swap 3:", transition to Swap 4
-            document.getElementById("prompt").innerText = "Swap 4: please slide tile";
-            // display swap 4
-            break;
-        case "Swap 4:":                                                                     // if the prompt starts with "Swap 4:", transition to Swap 5
-            document.getElementById("prompt").innerText = "Swap 5: please slide tile";
-            // display swap 5
-            break;
-        case "Swap 5:":                                                                     // if the prompt starts with "Swap 5:", transition to Swap 6
-            document.getElementById("prompt").innerText = "Swap 6: please slide tile";
-            // display swap 6
-            break;
-        case "Swap 6:":                                                                     // if the prompt starts with "Swap 6:", transition to Swap 7
-            document.getElementById("prompt").innerText = "Swap 7: please slide tile";
-            // display swap 7
-            break;
-        case "Swap 7:":                                                                     // if the prompt starts with "Swap 7:", transition to Swap 8
-            document.getElementById("prompt").innerText = "Swap 8: please slide tile";
-            // display swap 8
-            break;
-        case "Swap 8:":                                                                     // if the prompt starts with "Swap 8:", transition to Swap 9
-            document.getElementById("prompt").innerText = "Swap 9: please slide tile";
-            // display swap 9
-            break;
-        case "Swap 9:":                                                                     // if the prompt starts with "Swap 9:", transition to Swap 10
-            document.getElementById("prompt").innerText = "Swap 10: please slide tile";
-            document.getElementById("right").style.visibility = "hidden";
-            // display swap 10
+        case "Moves":                                                                       // if state is "Moves",
+            number++;                                                                           // advance to next move
+            if (number < levels) {                                                              // update prompt
+                prompt("Move " + (number-1), "Today's move " + number, "Move " + (number+1));
+            } else {
+                prompt("Move 9", "Today's move 10", "");
+            };
+            displayMove(number);
         };
     };
-    document.getElementById("left").onclick = function() {                              // initialize the back arrow handler
-        switch (document.getElementById("prompt").innerText.slice(0, 7)) {
-        case "Puzzle:":                                                                     // if the prompt starts with "Puzzle:", reload the web page
-            location.reload();
+    document.getElementById("leftSide").onclick = function() {                          // if user clicks the left side,
+        switch (state) {
+        case "Letters":                                                                     // if state is "Enter Letters",
+            location.reload();                                                                  // reload page
             break;
-        case "Solutio":                                                                     // if the prompt starts with "Solutio", transition to Puzzle
-            if (solved) {                                                                       // if puzzle is solved, display entry
-                document.getElementById("prompt").innerText = "Puzzle: initial state";
-                display(entry);
-            } else {                                                                            // otherwise, display defective entry and request corrections
-                document.getElementById("prompt").innerText = "Puzzle: please click keys and tiles";
-                document.getElementById("keyboard").style.display = "block";
-                display(entry);
-            }
+        case "Colors":                                                                      // if state is "Colors",
+            state = "Letters"   ;                                                               // change state to "Letters"
+            if (foundFinal) {                                                                   // update prompt
+                prompt("Reload", "Today's letters", "Colors");
+            } else {
+                prompt("Reload", "Touch keys to enter today's letters", "Colors", "block");
+            };
             break;
-        case "Swap 1:":                                                                     // if the prompt starts with "Swap 1:", transition to Solution
-            document.getElementById("prompt").innerText = "Solution: final state";
-            display(final);
+        case "Final":                                                                       // if state is "Final",
+            state = "Colors";                                                                   // change state to "Colors"
+            if (foundFinal) {                                                                   // update prompt
+                prompt("Letters", "Today's colors", "Final");
+            } else {
+                prompt("Letters", "Touch tiles to enter today's colors.", "Final");
+            };
+            display(entry);                                                                     // display entry
             break;
-        case "Swap 2:":                                                                     // if the prompt starts with "Swap 2:", transition to Swap 1
-            document.getElementById("prompt").innerText = "Swap 1: please slide tile";
-            // display swap 1
-            break;
-        case "Swap 3:":                                                                     // if the prompt starts with "Swap 3:", transition to Swap 2
-            document.getElementById("prompt").innerText = "Swap 2: please slide tile";
-            // display swap 2
-            break;
-        case "Swap 4:":                                                                     // if the prompt starts with "Swap 4:", transition to Swap 3
-            document.getElementById("prompt").innerText = "Swap 3: please slide tile";
-            // display swap 3
-            break;
-        case "Swap 5:":                                                                     // if the prompt starts with "Swap 5:", transition to Swap 4
-            document.getElementById("prompt").innerText = "Swap 4: please slide tile";
-            // display swap 4
-            break;
-        case "Swap 6:":                                                                     // if the prompt starts with "Swap 6:", transition to Swap 5
-            document.getElementById("prompt").innerText = "Swap 5: please slide tile";
-            // display swap 5
-            break;
-        case "Swap 7:":                                                                     // if the prompt starts with "Swap 7:", transition to Swap 6
-            document.getElementById("prompt").innerText = "Swap 6: please slide tile";
-            // display swap 6
-            break;
-        case "Swap 8:":                                                                     // if the prompt starts with "Swap 8:", transition to Swap 7
-            document.getElementById("prompt").innerText = "Swap 7: please slide tile";
-            // display swap 7
-            break;
-        case "Swap 9:":                                                                     // if the prompt starts with "Swap 9:", transition to Swap 8
-            document.getElementById("prompt").innerText = "Swap 8: please slide tile";
-            // display swap 8
-            break;
-        case "Swap 10":                                                                     // if the prompt starts with "Swap 10", transition to Swap 9
-            document.getElementById("prompt").innerText = "Swap 9: please slide tile";
-            document.getElementById("right").style.visibility = "visible";
-            // display swap 9
+        case "Moves":                                                                       // if state is "Moves",
+            if (number == 1) {                                                                  // if move 1 is being displayed,
+                state = "Final";                                                                    // change state to "Final"
+                prompt("Colors", "Today's final tiles", "Move 1");                                  // update prompt
+                display(final);                                                                     // display final
+            } else {                                                                            // otherwise,
+                number--;                                                                           // decrement move number
+                if (number == 1) {                                                                  // update prompt
+                    prompt("Final", "Today's move 1", "Move 2");
+                } else {
+                    prompt("Move " + (number-1), "Today's move " + number, "Move " + (number+1));
+                }
+                displayMove(number, true);
+            };
         };
     };
-    for (let x = 0; x < positions; x++) {                                               // for each tile index,
-        tilElm[x].onclick = function() {                                                    // initialize this tile handler
-            if (document.getElementById("prompt").innerText.slice(0, 7) != "Puzzle:") return;   // if not in puzzle screen, ignore this tile click
-            document.getElementById("left").style.visibility = "visible";
-            document.getElementById("right").style.visibility = "visible";
-            document.getElementById("prompt").innerText = "Puzzle: please click \u25B7 when done";
-            solved = false;
-            switch (getComputedStyle(tilElm[x]).backgroundColor) {
+    for (let t = 0; t < tiles; t++) {                                                   // for each tile index,
+        tilElm[t].onclick = function() {                                                    // if user clicks this tile,
+            if (state != "Colors") return;                                                      // if user is not entering colors, ignore this tile click
+            foundFinal = false;
+            switch (getComputedStyle(tilElm[t]).backgroundColor) {
             case gry:
-                tilElm[x].style.backgroundColor = yel;
-                tilElm[x].style.borderColor = yel;
-                tilElm[x].style.color = wht;
+                tilElm[t].style.backgroundColor = yel;
+                tilElm[t].style.borderColor = yel;
+                tilElm[t].style.color = wht;
                 break;
             case yel:
-                tilElm[x].style.backgroundColor = grn;
-                tilElm[x].style.borderColor = grn;
-                tilElm[x].style.color = wht;
+                tilElm[t].style.backgroundColor = grn;
+                tilElm[t].style.borderColor = grn;
+                tilElm[t].style.color = wht;
                 break;
             case grn:
-                tilElm[x].style.backgroundColor = gry;
-                tilElm[x].style.borderColor = gry;
-                tilElm[x].style.color = blk;
+                tilElm[t].style.backgroundColor = gry;
+                tilElm[t].style.borderColor = gry;
+                tilElm[t].style.color = blk;
             };
         };
     };
     for (let key = 0; key < keys; key++) {                                              // for each key index,
-        keyElm[key].onclick = function() {                                                  // initialize this on-screen keyboard key click handler
-            if (document.getElementById("prompt").innerText.slice(0, 7) != "Puzzle:") return;   // if not in puzzle screen, ignore this key click
-            solved = false;
+        keyElm[key].onclick = function() {                                                  // if user clicks this on-screen key,
+            if (state != "Letters") return;                                                     // if user is not entering letters, ignore this on-screen key click
+            foundFinal = false;
             if (key == backSpace && cursor > 0) {
+                if (cursor < tiles) tilElm[cursor].style.borderColor = gry;
                 cursor -= 1;
                 tilElm[cursor].innerText = "";
-                document.getElementById("right").style.visibility = "hidden";
-            } else if (key < backSpace && cursor < positions) {
+                tilElm[cursor].style.borderColor = blk;
+            } else if (key < backSpace && cursor < tiles) {
                 tilElm[cursor].innerText = keyElm[key].innerText;
+                tilElm[cursor].style.borderColor = gry;
                 cursor += 1;
-                document.getElementById("left").style.visibility = "visible";
+                if (cursor < tiles) tilElm[cursor].style.borderColor = blk;
             };
         };
     };
-    document.onkeydown = function(e) {                                                  // initialize the physical keyboard keydown handler
-        if (document.getElementById("prompt").innerText.slice(0, 7) != "Puzzle:") return;   // if not in puzzle screen, ignore this keydown
-        solved = false;
+    document.onkeydown = function(e) {                                                  // if user presses a physical key, 
+        if (state != "Letters") return;                                                     // if user is not entering letters, ignore this keydown
+        foundFinal = false;
         const key = e.key.toUpperCase();
         if (key == "BACKSPACE" && cursor > 0) {
+            if (cursor < tiles) tilElm[cursor].style.borderColor = gry;
             cursor -= 1;
             tilElm[cursor].innerText = "";
-            document.getElementById("right").style.visibility = "hidden";
-        } else if (key.length == 1 && key >= "A" && key <= "Z" && cursor < positions) {
+            tilElm[cursor].style.borderColor = blk;
+        } else if (key.length == 1 && key >= "A" && key <= "Z" && cursor < tiles) {
             tilElm[cursor].innerText = key;
+            tilElm[cursor].style.borderColor = gry;
             cursor += 1;
-            document.getElementById("left").style.visibility = "visible";
+            if (cursor < tiles) tilElm[cursor].style.borderColor = blk;
         };
     };
-    /* for (let n = R1; n <= C5; n++) {                                                    // initialize entry data with test data
+    /*
+    for (let n = R1; n <= C5; n++) {                                                    // initialize entry data with test data
         for (let l = L1; l <= L5; l++) {
-            tilElm[nl2x[n][l]].innerText = test[n][l].toUpperCase();
+            tilElm[nl2t[n][l]].innerText = test[n][l].toUpperCase();
             switch (testHue[n][l]) {
             case "b":
-                tilElm[nl2x[n][l]].style.backgroundColor = gry;
-                tilElm[nl2x[n][l]].style.borderColor = gry;
-                tilElm[nl2x[n][l]].style.color = blk;
+                tilElm[nl2t[n][l]].style.backgroundColor = gry;
+                tilElm[nl2t[n][l]].style.borderColor = gry;
+                tilElm[nl2t[n][l]].style.color = blk;
                 break;
             case "y":
-                tilElm[nl2x[n][l]].style.backgroundColor = yel;
-                tilElm[nl2x[n][l]].style.borderColor = yel;
-                tilElm[nl2x[n][l]].style.color = wht;
+                tilElm[nl2t[n][l]].style.backgroundColor = yel;
+                tilElm[nl2t[n][l]].style.borderColor = yel;
+                tilElm[nl2t[n][l]].style.color = wht;
                 break;
             case "g":
-                tilElm[nl2x[n][l]].style.backgroundColor = grn;
-                tilElm[nl2x[n][l]].style.borderColor = grn;
-                tilElm[nl2x[n][l]].style.color = wht;
+                tilElm[nl2t[n][l]].style.backgroundColor = grn;
+                tilElm[nl2t[n][l]].style.borderColor = grn;
+                tilElm[nl2t[n][l]].style.color = wht;
             };
         };
     };
-    cursor = positions;
-    document.getElementById("left").style.visibility = "visible";
-    document.getElementById("right").style.visibility = "visible";
-    document.getElementById("prompt").innerText = "Puzzle: please click \u25B7 when done" */
+    cursor = tiles;
+    prompt("Reload", "Touch keys to enter today's letters.", "Colors", "block");
+    */
 };
