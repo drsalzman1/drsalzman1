@@ -76,8 +76,8 @@ body {
     background-color: var(--gry);
     border-color: var(--gry);
     border-style: outset;
-    border-width: 3px;
-    border-radius: 5px;
+    border-width: 4px;
+    border-radius: 8px;
     position: absolute;
     z-index: 0;
 }

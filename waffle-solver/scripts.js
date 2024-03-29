@@ -23,6 +23,7 @@ const blk = "rgb(0, 0, 0)";
 const wht = "rgb(255, 255, 255)";
 const tiles = 21;
 const levels = 10;
+const pause = 500;
 
 // Text entry values
 const keys = 27;
@@ -880,6 +881,183 @@ let sets;
 let start;
 let lap;
 
+// Count the primary character codes in wordArray; return "<#a's>, <#b's>, ... <#z's>"
+function codeCount(guess) {
+    const ca = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    for (let n = R1; n <= C5; n++)
+        for (let l = L1; l <= L5; l++)
+            if (l < guess[n].length && nl2p[n][l])
+                ca[guess[n][l].charCodeAt() - asca]++;
+    return ca.toString();
+}
+
+// Display the left prompt, right prompt, and center prompt
+function prompt(leftText, centerText, rightText) {
+    document.getElementById("leftText").innerText = leftText;
+    if (leftText == "")
+        document.getElementById("leftSide").style.visibility = "hidden";
+    else
+        document.getElementById("leftSide").style.visibility = "visible";
+    document.getElementById("rightText").innerText = rightText;
+    if (rightText == "")
+        document.getElementById("rightSide").style.visibility = "hidden";
+    else
+        document.getElementById("rightSide").style.visibility = "visible";
+    document.getElementById("centerText").innerText = centerText;
+}
+
+// Display current words
+function display(current) {
+    let t, n, l, nr, nf, ct, cn, cl, rt, rn, rl;
+    const tilElm = document.querySelectorAll("#puzzle button");
+    // Fill in tile characters from current words
+    for (n = R1; n <= C5; n++)
+        for (l = L1; l <= L5; l++) {
+            t = nl2t[n][l];
+            if (l < current[n].length)
+                tilElm[t].innerText = current[n][l].toUpperCase();
+            else
+                tilElm[t].innerText = "";
+        }
+    // If final has not been found, color tiles based on entry
+    if (!foundFinal) {
+        for (n = R1; n <= C5; n++) {
+            for (l = L1; l <= L5; l++) {
+                t = nl2t[n][l];
+                switch (entryHue[n][l]) {
+                case "b":
+                    tilElm[t].style.backgroundColor = gry;
+                    tilElm[t].style.borderColor = gry;
+                    tilElm[t].style.color = blk;
+                    break;
+                case "y":
+                    tilElm[t].style.backgroundColor = yel;
+                    tilElm[t].style.borderColor = yel;
+                    tilElm[t].style.color = wht;
+                    break;
+                case "g":
+                    tilElm[t].style.backgroundColor = grn;
+                    tilElm[t].style.borderColor = grn;
+                    tilElm[t].style.color = wht;
+                }
+            }
+        }
+        return;
+    }
+    // Color tiles based on final
+    for (let r = L1; r <= L5; r++)
+        for (let c = L1; c <= L5; c++) {
+            t = rc2t[r][c];
+            if (t == -1)
+                continue;
+            n = t2n[t];
+            l = t2l[t];
+            tilElm[t].style.backgroundColor = gry;
+            tilElm[t].style.borderColor = gry;
+            tilElm[t].style.color = blk;
+            if (current[n][l] == final[n][l]) {
+                tilElm[t].style.backgroundColor = grn;
+                tilElm[t].style.borderColor = grn;
+                tilElm[t].style.color = wht;
+            } else {
+                nr = 0;
+                nf = 0;
+                if (c == L1 || c == L3 || c == L5)
+                    for (let cr = L1; cr <= L5; cr++) {
+                        ct = rc2t[cr][c];
+                        cn = t2n[ct];
+                        cl = t2l[ct];
+                        if (current[cn][cl] != final[cn][cl]) {
+                            if (final[cn][cl] == current[n][l])
+                                nr++;
+                            if (current[cn][cl] == current[n][l] && getComputedStyle(tilElm[ct]).backgroundColor == yel)
+                                nf++;
+                        }
+                    }
+                if (r == L1 || r == L3 || r == L5)
+                    for (let rc = L1; rc <= L5; rc++) {
+                        rt = rc2t[r][rc];
+                        rn = t2n[rt];
+                        rl = t2l[rt];
+                        if (current[rn][rl] != final[rn][rl]) {
+                            if (final[rn][rl] == current[n][l])
+                                nr++;
+                            if (current[rn][rl] == current[n][l] && getComputedStyle(tilElm[rt]).backgroundColor == yel)
+                                nf++;
+                        }
+                    }
+                if (nr > nf) {
+                    tilElm[t].style.backgroundColor = yel;
+                    tilElm[t].style.borderColor = yel;
+                    tilElm[t].style.color = wht;
+                }
+            }
+        }
+}
+
+// Display move
+function displayMove(number, noAnimation = false) {
+    let t, n, l, m, st, sc, dt, dc;
+    const cc = ["","","","","","","","","","","","","","","","","","","","",""];
+    const cs = ["","","","","",""];
+    const tilElm = document.querySelectorAll("#puzzle button");
+    for (t = 0; t < tiles; t++) {
+        n = t2n[t];
+        l = t2l[t];
+        cc[t] = entry[n][l];
+    }
+    for (let level = 0; level < number-1; level++) {
+        m = move[level];
+        st = m2st[m];
+        sc = cc[st];
+        dt = m2dt[m];
+        dc = cc[dt];
+        cc[st] = dc;
+        cc[dt] = sc;
+    }
+    for (n = R1; n <= C5; n++) {
+        cs[n] = "";
+        for (l = L1; l <= L5; l++) {
+            t = nl2t[n][l];
+            cs[n] += cc[t];
+        }
+    }
+    display(cs);
+    m = move[number-1];
+    st = m2st[m];
+    sc = cc[st];
+    dt = m2dt[m];
+    dc = cc[dt];
+    cc[st] = dc;
+    cc[dt] = sc;
+    for (n = R1; n <= C5; n++) {
+        cs[n] = "";
+        for (l = L1; l <= L5; l++) {
+            t = nl2t[n][l];
+            cs[n] += cc[t];
+        }
+    }
+    if (noAnimation) {
+        display(cs);
+        return;
+    }
+    const sx = tilElm[st].offsetLeft;
+    const sy = tilElm[st].offsetTop;
+    const dx = tilElm[dt].offsetLeft;
+    const dy = tilElm[dt].offsetTop;
+    tilElm[st].style.transition = "transform 1s";
+    tilElm[st].style.transform = "translate(" + (dx-sx) + "px, " + (dy-sy) + "px)";
+    tilElm[st].style.zIndex = "1";
+    tilElm[st].ontransitionend = function() {
+        tilElm[st].style.transition = "transform 0s";
+        tilElm[st].style.transform = "none";
+        tilElm[st].style.zIndex = "0";
+        display(cs);
+        tilElm[st].style.borderColor = blk;
+        tilElm[dt].style.borderColor = blk;
+    }
+}
+
 // Eliminate words based on entry characters and entry hues
 function phase1() {
     let ye, ng;
@@ -998,16 +1176,6 @@ function phase3() {
     } while (cf == true);
 }
 
-// Count the primary character codes in wordArray; return "<#a's>, <#b's>, ... <#z's>"
-function codeCount(guess) {
-    const ca = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-    for (let n = R1; n <= C5; n++)
-        for (let l = L1; l <= L5; l++)
-            if (l < guess[n].length && nl2p[n][l])
-                ca[guess[n][l].charCodeAt() - asca]++;
-    return ca.toString();
-}
-
 // Identify solutions where the duplicates match and the letters are some scramble of the guess letters
 function phase4() {
     let R1w, R3w, R5w, C1w, C3w, C5w;
@@ -1092,268 +1260,77 @@ function phase5() {
     }
 }
 
-// Display current words
-function display(current) {
-    let t, n, l, nr, nf, ct, cn, cl, rt, rn, rl;
-    const tilElm = document.querySelectorAll("#puzzle button");
-    // Fill in tile characters from current words
-    for (n = R1; n <= C5; n++)
-        for (l = L1; l <= L5; l++) {
-            t = nl2t[n][l];
-            if (l < current[n].length)
-                tilElm[t].innerText = current[n][l].toUpperCase();
-            else
-                tilElm[t].innerText = "";
-        }
-    // If final has not been found, color tiles based on entry
-    if (!foundFinal) {
-        for (n = R1; n <= C5; n++) {
-            for (l = L1; l <= L5; l++) {
-                t = nl2t[n][l];
-                switch (entryHue[n][l]) {
-                case "b":
-                    tilElm[t].style.backgroundColor = gry;
-                    tilElm[t].style.borderColor = gry;
-                    tilElm[t].style.color = blk;
-                    break;
-                case "y":
-                    tilElm[t].style.backgroundColor = yel;
-                    tilElm[t].style.borderColor = yel;
-                    tilElm[t].style.color = wht;
-                    break;
-                case "g":
-                    tilElm[t].style.backgroundColor = grn;
-                    tilElm[t].style.borderColor = grn;
-                    tilElm[t].style.color = wht;
-                }
-            }
-        }
-        return;
-    }
-    // Color tiles based on final
-    for (let r = L1; r <= L5; r++)
-        for (let c = L1; c <= L5; c++) {
-            t = rc2t[r][c];
-            if (t == -1)
-                continue;
-            n = t2n[t];
-            l = t2l[t];
-            tilElm[t].style.backgroundColor = gry;
-            tilElm[t].style.borderColor = gry;
-            tilElm[t].style.color = blk;
-            if (current[n][l] == final[n][l]) {
-                tilElm[t].style.backgroundColor = grn;
-                tilElm[t].style.borderColor = grn;
-                tilElm[t].style.color = wht;
-            } else {
-                nr = 0;
-                nf = 0;
-                if (c == L1 || c == L3 || c == L5)
-                    for (let cr = L1; cr <= L5; cr++) {
-                        ct = rc2t[cr][c];
-                        cn = t2n[ct];
-                        cl = t2l[ct];
-                        if (current[cn][cl] != final[cn][cl]) {
-                            if (final[cn][cl] == current[n][l])
-                                nr++;
-                            if (current[cn][cl] == current[n][l] && getComputedStyle(tilElm[ct]).backgroundColor == yel)
-                                nf++;
-                        }
-                    }
-                if (r == L1 || r == L3 || r == L5)
-                    for (let rc = L1; rc <= L5; rc++) {
-                        rt = rc2t[r][rc];
-                        rn = t2n[rt];
-                        rl = t2l[rt];
-                        if (current[rn][rl] != final[rn][rl]) {
-                            if (final[rn][rl] == current[n][l])
-                                nr++;
-                            if (current[rn][rl] == current[n][l] && getComputedStyle(tilElm[rt]).backgroundColor == yel)
-                                nf++;
-                        }
-                    }
-                if (nr > nf) {
-                    tilElm[t].style.backgroundColor = yel;
-                    tilElm[t].style.borderColor = yel;
-                    tilElm[t].style.color = wht;
-                }
-            }
-        }
-}
-
-// Display the left prompt, right prompt, and center prompt
-function prompt(leftText, centerText, rightText) {
-    document.getElementById("leftText").innerText = leftText;
-    if (leftText == "")
-        document.getElementById("leftSide").style.visibility = "hidden";
-    else
-        document.getElementById("leftSide").style.visibility = "visible";
-    document.getElementById("rightText").innerText = rightText;
-    if (rightText == "")
-        document.getElementById("rightSide").style.visibility = "hidden";
-    else
-        document.getElementById("rightSide").style.visibility = "visible";
-    document.getElementById("centerText").innerText = centerText;
-}
-
-// Display move
-function displayMove(number, noAnimation = false) {
-    let t, n, l, m, st, sc, dt, dc;
-    const cc = ["","","","","","","","","","","","","","","","","","","","",""];
-    const cs = ["","","","","",""];
-    const tilElm = document.querySelectorAll("#puzzle button");
-    for (t = 0; t < tiles; t++) {
-        n = t2n[t];
-        l = t2l[t];
-        cc[t] = entry[n][l];
-    }
-    for (let level = 0; level < number-1; level++) {
-        m = move[level];
-        st = m2st[m];
-        sc = cc[st];
-        dt = m2dt[m];
-        dc = cc[dt];
-        cc[st] = dc;
-        cc[dt] = sc;
-    }
-    for (n = R1; n <= C5; n++) {
-        cs[n] = "";
-        for (l = L1; l <= L5; l++) {
-            t = nl2t[n][l];
-            cs[n] += cc[t];
-        }
-    }
-    display(cs);
-    m = move[number-1];
-    st = m2st[m];
-    sc = cc[st];
-    dt = m2dt[m];
-    dc = cc[dt];
-    cc[st] = dc;
-    cc[dt] = sc;
-    for (n = R1; n <= C5; n++) {
-        cs[n] = "";
-        for (l = L1; l <= L5; l++) {
-            t = nl2t[n][l];
-            cs[n] += cc[t];
-        }
-    }
-    if (noAnimation) {
-        display(cs);
-        return;
-    }
-    const sx = tilElm[st].offsetLeft;
-    const sy = tilElm[st].offsetTop;
-    const dx = tilElm[dt].offsetLeft;
-    const dy = tilElm[dt].offsetTop;
-    tilElm[st].style.transition = "transform 1s";
-    tilElm[st].style.transform = "translate(" + (dx-sx) + "px, " + (dy-sy) + "px)";
-    tilElm[st].style.zIndex = "1";
-    tilElm[st].ontransitionend = function() {
-        tilElm[st].style.transition = "transform 0s";
-        tilElm[st].style.transform = "none";
-        tilElm[st].style.zIndex = "0";
-        display(cs);
-        tilElm[st].style.borderColor = blk;
-        tilElm[dt].style.borderColor = blk;
-    }
-}
-
-// Find final guess words (called every 100ms)
-function findFinal(phase, ticks) {
+// Find final guess words
+function findFinal(phase = 0) {
     let element;
-    if (ticks == 1)
-        switch (phase) {
-        case 1:
-            for (let w = 0; w < words; w++) {
-                wp[w] = [true, true, true, true, true, true];
-                cw[w] = ["", "", "", "", "", ""];
-            }
-            cp.fill(0);
-            sw.length = 0;
-            element = document.querySelectorAll("#P0 div");
-            element[0].innerText = "Initial";
-            for (let n = R1; n <= C5; n++)
-                element[n + 1].innerText = words.toLocaleString();
-            element = document.querySelectorAll("#P1 div");
-            element[0].innerText = "";
-            for (let n = R1; n <= C5; n++)
-                element[n + 1].innerText = "";
-            element = document.querySelectorAll("#P2 div");
-            element[0].innerText = "";
-            for (let n = R1; n <= C5; n++)
-                element[n + 1].innerText = "";
-            element = document.querySelectorAll("#P3 div");
-            element[0].innerText = "";
-            for (let n = R1; n <= C5; n++)
-                element[n + 1].innerText = "";
-            element = document.querySelectorAll("#P4 div");
-            element[0].innerText = "";
-            for (let n = R1; n <= C5; n++)
-                element[n + 1].innerText = "";
-            element = document.querySelectorAll("#P5 div");
-            element[0].innerText = "";
-            for (let n = R1; n <= C5; n++)
-                element[n + 1].innerText = "";
-            document.getElementById("results").style.display = "flex";
-            phase1();
-            setTimeout(findFinal, 100, 1, 2);
-            return;
-        case 2:
-            phase2();
-            setTimeout(findFinal, 100, 2, 2);
-            return;
-        case 3:
-            phase3();
-            setTimeout(findFinal, 100, 3, 2);
-            return;
-        case 4:
-            phase4();
-            setTimeout(findFinal, 100, 4, 2);
-            return;
-        case 5:
-            phase5();
-            setTimeout(findFinal, 100, 5, 2);
-            return;
-        }
-    if (ticks < 10) {
-        document.getElementById("centerText").innerText += "\u25A2";
-        setTimeout(findFinal, 100, phase, ticks + 1);
-        return;
-    }
     switch (phase) {
+    case 0:
+        for (let w = 0; w < words; w++) {
+            wp[w] = [true, true, true, true, true, true];
+            cw[w] = ["", "", "", "", "", ""];
+        }
+        cp.fill(0);
+        sw.length = 0;
+        element = document.querySelectorAll("#P0 div");
+        element[0].innerText = "Initial";
+        for (let n = R1; n <= C5; n++)
+            element[n + 1].innerText = words.toLocaleString();
+        element = document.querySelectorAll("#P1 div");
+        element[0].innerText = "";
+        for (let n = R1; n <= C5; n++)
+            element[n + 1].innerText = "";
+        element = document.querySelectorAll("#P2 div");
+        element[0].innerText = "";
+        for (let n = R1; n <= C5; n++)
+            element[n + 1].innerText = "";
+        element = document.querySelectorAll("#P3 div");
+        element[0].innerText = "";
+        for (let n = R1; n <= C5; n++)
+            element[n + 1].innerText = "";
+        element = document.querySelectorAll("#P4 div");
+        element[0].innerText = "";
+        for (let n = R1; n <= C5; n++)
+            element[n + 1].innerText = "";
+        element = document.querySelectorAll("#P5 div");
+        element[0].innerText = "";
+        for (let n = R1; n <= C5; n++)
+            element[n + 1].innerText = "";
+        document.getElementById("results").style.display = "flex";
+        phase1();
+        setTimeout(findFinal, pause, 1);
+        return;
     case 1:
         element = document.querySelectorAll("#P1 div");
         element[0].innerText = "Step 1";
         for (let n = R1; n <= C5; n++)
             element[n + 1].innerText = cp[n].toLocaleString();
-        document.getElementById("centerText").innerText = "\u25A2";
-        setTimeout(findFinal, 100, 2, 1);
-        break;
+        phase2();
+        setTimeout(findFinal, pause, 2);
+        return;
     case 2:
         element = document.querySelectorAll("#P2 div");
         element[0].innerText = "Step 2";
         for (let n = R1; n <= C5; n++)
             element[n + 1].innerText = cp[n].toLocaleString();
-        document.getElementById("centerText").innerText = "\u25A2";
-        setTimeout(findFinal, 100, 3, 1);
-        break;
+        phase3();
+        setTimeout(findFinal, pause, 3);
+        return;
     case 3:
         element = document.querySelectorAll("#P3 div");
         element[0].innerText = "Step 3";
         for (let n = R1; n <= C5; n++)
             element[n + 1].innerText = cp[n].toLocaleString();
-        document.getElementById("centerText").innerText = "\u25A2";
-        setTimeout(findFinal, 100, 4, 1);
-        break;
+        phase4();
+        setTimeout(findFinal, pause, 4);
+        return;
     case 4:
         element = document.querySelectorAll("#P4 div");
         element[0].innerText = "Step 4";
         for (let n = R1; n <= C5; n++)
             element[n + 1].innerText = sw.length.toLocaleString();
-        document.getElementById("centerText").innerText = "\u25A2";
-        setTimeout(findFinal, 100, 5, 1);
-        break;
+        phase5();
+        setTimeout(findFinal, pause, 5);
+        return;
     case 5:
         element = document.querySelectorAll("#P5 div");
         element[0].innerText = "Step 5";
@@ -1376,7 +1353,7 @@ function findFinal(phase, ticks) {
 
 // Update prompt; undo moves; resume nextSet
 function update() {
-    document.getElementById("centerText").innerText = "Move sets evaluated: " + sets.toLocaleString();
+    prompt("", sets.toLocaleString() + " move set(s) evaluated in " + Math.round((Date.now() - start) / 1000).toLocaleString() + " seconds", "");
     for (let x = 9, st, sc, dt, dc; x >= 0; x--) {
         st = m2st[move[x]];
         sc = curC[st];
@@ -1491,16 +1468,16 @@ function nextSet() {
                                             move[9] = m;
                                             curC[st] = dc;
                                             curC[dt] = sc;
-                                            sets++;
-                                            if (Date.now() - lap > 100) {
+                                            if (Date.now() - lap > pause) {
                                                 lap = Date.now();
                                                 update();
                                                 return;
                                             }
+                                            sets++;
                                             if (curC.toString() == finC.toString()) {
                                                 foundMoves = true;
                                                 number = 0;
-                                                prompt("Final", sets.toLocaleString() + " move sets evaluated in " + Math.round((Date.now() - start) / 1000).toLocaleString() + " seconds", "Move 1");
+                                                prompt("Final", sets.toLocaleString() + " move set(s) evaluated in " + Math.round((Date.now() - start) / 1000).toLocaleString() + " seconds", "Move 1");
                                                 return;
                                             }
                                             curC[st] = sc;
@@ -1604,7 +1581,6 @@ window.onload = function() {
                 display(final);
                 break;
             }
-            prompt("", "\u25A2", "");
             for (let n = R1; n <= C5; n++) {
                 entry[n] = "";
                 entryHue[n] = "";
@@ -1623,7 +1599,8 @@ window.onload = function() {
                     }
                 }
             }
-            setTimeout(findFinal, 100, 1, 1);
+            prompt("", "Finding final tiles...", "");
+            setTimeout(findFinal, pause);
             break;
         case "Final":
             state = "Moves";
@@ -1634,7 +1611,7 @@ window.onload = function() {
                 break;
             }
             document.getElementById("results").style.display = "none";
-            prompt("", "Move sets evaluated: 0", "");
+            prompt("", "0 move set(s) evaluated in 0 seconds", "");
             findMoves();
             break;
         case "Moves":
