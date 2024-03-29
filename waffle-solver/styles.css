@@ -173,3 +173,8 @@ body {
     font-weight: bold;
     text-decoration-line: underline;
 }
+
+#P0 :nth-child(1), #P1 :nth-child(1), #P2 :nth-child(1), #P3 :nth-child(1), #P4 :nth-child(1), #P5 :nth-child(1) {
+    font-weight: bold;
+    text-align: right;
+}
