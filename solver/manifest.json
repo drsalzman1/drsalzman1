@@ -1,0 +1,39 @@
+{
+  "background_color": "#ffffff",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "Solver",
+  "description": "This is a simple wafflegame.net solver that I wrote to learn HTML, CSS and Javascript.",
+  "orientation": "any",
+  "scope": "./",
+  "short_name": "Solver",
+  "start_url": "index.html",
+  "id": "solver",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "regular-icon.svg",
+      "sizes": "640x640",
+      "purpose": "any"
+    },
+    {
+      "src": "maskable-icon.svg",
+      "sizes": "640x640",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots" : [
+    {
+      "src": "screen-shot-1323x778.png",
+      "sizes": "1323x778",
+      "form_factor": "wide",
+      "label": "Homescreen"
+    },
+    {
+      "src": "screen-shot-835x1313.png",
+      "sizes": "835x1313",
+      "form_factor": "narrow",
+      "label": "Homescreen"
+    }
+  ]
+}
