@@ -856,11 +856,17 @@ const curC = ["","","","","","","","","","","","","","","","","","","","",""];
 // finC[t] is the final character for tile t
 const finC = ["","","","","","","","","","","","","","","","","","","","",""];
 
-// possible[n][p] is possible word p for guess n
-const possible = [[], [], [], [], [], []];
+// wp[w][n] is true if word w for guess n is still possible
+const wp = [];
 
-// set[i][n] is solution set i for guess n
-const set = [];
+// cw[w][n] is the current possible word w for guess n
+const cw = [];
+
+// cp[n] is the current possible word count for guess n 
+const cp = [0,0,0,0,0,0];
+
+// sw[w][n] is solution set word w for guess n
+const sw = [];
 
 // move[m] is the move index for move m
 const move = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -881,7 +887,7 @@ function codeCount(guess) {
     for (let n = R1; n <= C5; n++)
         for (let l = L1; l <= L5; l++)
             if (l < guess[n].length && nl2p[n][l])
-                ca[guess[n].charCodeAt(l) - asca]++;
+                ca[guess[n][l].charCodeAt() - asca]++;
     return ca.toString();
 }
 
@@ -1052,22 +1058,20 @@ function displayMove(number, noAnimation = false) {
     }
 }
 
-// Identify possible words based on dictionary words, entry characters and entry hues
+// Eliminate words based on entry characters and entry hues
 function phase1() {
-    let ok, ye, ng;
-    for (let n = R1; n <= C5; n++) {
-        possible[n].length = 0;
-        for (let w = 0; w < words; w++) {
-            ok = true;
-            for (let l = L1; ok && l <= L5; l++) {
+    let ye, ng;
+    for (let n = R1; n <= C5; n++)
+        for (let l = L1; l <= L5; l++)
+            for (let w = 0; w < words; w++)
                 switch (entryHue[n][l]) {
                 case "g":
                     if (word[w][l] != entry[n][l])
-                        ok = false;
+                        wp[w][n] = false;
                     break;
                 case "y":
                     if (word[w][l] == entry[n][l]) {
-                        ok = false;
+                        wp[w][n] = false;
                         break;
                     }
                     ye = 0;
@@ -1079,11 +1083,11 @@ function phase1() {
                             ng++;
                     }
                     if (ye > ng)
-                        ok = false;
+                        wp[w][n] = false;
                     break;
                 case "b":
                     if (word[w][l] == entry[n][l]) {
-                        ok = false;
+                        wp[w][n] = false;
                         break;
                     }
                     ye = 0;
@@ -1095,39 +1099,51 @@ function phase1() {
                             ng++;
                     }
                     if (ng > ye)
-                        ok = false;
+                        wp[w][n] = false;
                 }
-            }
-            if (ok) {
-                possible[n].push(word[w]);
+    for (let n = R1; n <= C5; n++) {
+        cp[n] = 0;
+        for (let w = 0; w < words; w++) {
+            cw[w][n] = "";
+            if (wp[w][n]) {
+                cw[cp[n]][n] = word[w];
+                cp[n]++;
             }
         }
     }
 }
 
-// Eliminate possible words by letter counts
+// Eliminate words by letter counts
 function phase2() {
-    let ok;
+    let ac;
     const ea = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     const wa = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     for (let n = R1; n <= C5; n++)
         for (let l = L1; l <= L5; l++)
             if (l < entry[n].length && nl2p[n][l] && entryHue[n][l] != "g")
-                ea[entry[n].charCodeAt(l) - asca]++;
-    for (let n = R1; n <= C5; n++) {
-        for (let p = 0; p < possible[n].length; p++) {
+                ea[entry[n][l].charCodeAt() - asca]++;
+    for (let n = R1; n <= C5; n++)
+        for (let w = 0; w < words; w++) {
+            if (!wp[w][n])
+                continue;
             wa.fill(0);
             for (let l = L1; l <= L5; l++)
-                if (possible[n][p][l] != entry[n][l])
-                    wa[possible[n][p].charCodeAt(l) - asca]++;
-            ok = true;
+                if (word[w][l] != entry[n][l])
+                    wa[word[w][l].charCodeAt() - asca]++;
             for (let a = 0; a <= ascz - asca; a++)
                 if (wa[a] > ea[a]) {
-                    ok = false;
+                    wp[w][n] = false;
                     break;
                 }
-            if (!ok)
-                possible[n].splice(p, 1);
+        }
+    for (let n = R1; n <= C5; n++) {
+        cp[n] = 0;
+        for (let w = 0; w < words; w++) {
+            cw[w][n] = "";
+            if (wp[w][n]) {
+                cw[cp[n]][n] = word[w];
+                cp[n]++;
+            }
         }
     }
 }
@@ -1138,7 +1154,7 @@ function phase3() {
     do {
         cf = false;
         for (let n = R1; n <= C5; n++) {
-            if (possible[n].length != 1)
+            if (cp[n] != 1)
                 continue;
             for (let l = L1; l <= L5; l++) {
                 xn = nl2xn[n][l];
@@ -1146,12 +1162,14 @@ function phase3() {
                     continue;
                 xl = nl2xl[n][l];
                 pi = 0;
-                while (pi < possible[xn].length)
-                    if (possible[xn][pi][xl] == possible[n][0][l])
+                while (pi < cp[xn])
+                    if (cw[pi][xn][xl] == cw[0][n][l])
                         pi++;
                     else {
                         cf = true;
-                        possible[xn].splice(pi, 1);
+                        for (let p2 = pi; p2 < cp[xn]; p2++)
+                            cw[p2][xn] = cw[p2 + 1][xn];
+                        cp[xn]--;
                     }
             }
         }
@@ -1162,27 +1180,26 @@ function phase3() {
 function phase4() {
     let R1w, R3w, R5w, C1w, C3w, C5w;
     const es = codeCount(entry);
-    set.length = 0;
-    for (let R1i = 0; R1i < possible[R1].length; R1i++) {
-        R1w = possible[R1][R1i];
-        for (let R3i = 0; R3i < possible[R3].length; R3i++) {
-            R3w = possible[R3][R3i];
-            for (let R5i = 0; R5i < possible[R5].length; R5i++) {
-                R5w = possible[R5][R5i];
-                for (let C1i = 0; C1i < possible[C1].length; C1i++) {
-                    C1w = possible[C1][C1i];
+    for (let R1i = 0; R1i < cp[R1]; R1i++) {
+        R1w = cw[R1i][R1];
+        for (let R3i = 0; R3i < cp[R3]; R3i++) {
+            R3w = cw[R3i][R3];
+            for (let R5i = 0; R5i < cp[R5]; R5i++) {
+                R5w = cw[R5i][R5];
+                for (let C1i = 0; C1i < cp[C1]; C1i++) {
+                    C1w = cw[C1i][C1];
                     if (R1w[L1] != C1w[L1] || R3w[L1] != C1w[L3] || R5w[L1] != C1w[L5])
                         continue;
-                    for (let C3i = 0; C3i < possible[C3].length; C3i++) {
-                        C3w = possible[C3][C3i];
+                    for (let C3i = 0; C3i < cp[C3]; C3i++) {
+                        C3w = cw[C3i][C3];
                         if (R1w[L3] != C3w[L1] || R3w[L3] != C3w[L3] || R5w[L3] != C3w[L5])
                             continue;
-                        for (let C5i = 0; C5i < possible[C5].length; C5i++) {
-                            C5w = possible[C5][C5i];
+                        for (let C5i = 0; C5i < cp[C5]; C5i++) {
+                            C5w = cw[C5i][C5];
                             if (R1w[L5] != C5w[L1] || R3w[L5] != C5w[L3] || R5w[L5] != C5w[L5])
                                 continue;
                             if (codeCount ([R1w, R3w, R5w, C1w, C3w, C5w]) == es)
-                                set.push([R1w, R3w, R5w, C1w, C3w, C5w]);
+                                sw.push([R1w, R3w, R5w, C1w, C3w, C5w]);
                         }
                     }
                 }
@@ -1195,7 +1212,7 @@ function phase4() {
 function phase5() {
     let nr, nf, xn, xc;
     let i = 0;
-    while (i < set.length) {
+    while (i < sw.length) {
         nr = 0;
         nf = 0;
         for (let n = R1; n <= C5; n++) {
@@ -1225,13 +1242,13 @@ function phase5() {
                             if (l == L2 || l == L4)
                                 nr++;
                         }
-                    if (set[i][n][l] == xc)
+                    if (sw[i][n][l] == xc)
                         nf++;
-                    if (set[i][xn][l] == xc)
+                    if (sw[i][xn][l] == xc)
                         nf++;
                 }
                 if (nr > nf) {
-                    set.splice(i, 1);
+                    sw.splice(i, 1);
                     break;
                 }
             }
@@ -1248,6 +1265,12 @@ function findFinal(phase = 0) {
     let element;
     switch (phase) {
     case 0:
+        for (let w = 0; w < words; w++) {
+            wp[w] = [true, true, true, true, true, true];
+            cw[w] = ["", "", "", "", "", ""];
+        }
+        cp.fill(0);
+        sw.length = 0;
         element = document.querySelectorAll("#P0 div");
         element[0].innerText = "Initial";
         for (let n = R1; n <= C5; n++)
@@ -1280,7 +1303,7 @@ function findFinal(phase = 0) {
         element = document.querySelectorAll("#P1 div");
         element[0].innerText = "Step 1";
         for (let n = R1; n <= C5; n++)
-            element[n + 1].innerText = possible[n].length.toLocaleString();
+            element[n + 1].innerText = cp[n].toLocaleString();
         phase2();
         setTimeout(findFinal, pause, 2);
         return;
@@ -1288,7 +1311,7 @@ function findFinal(phase = 0) {
         element = document.querySelectorAll("#P2 div");
         element[0].innerText = "Step 2";
         for (let n = R1; n <= C5; n++)
-            element[n + 1].innerText = possible[n].length.toLocaleString();
+            element[n + 1].innerText = cp[n].toLocaleString();
         phase3();
         setTimeout(findFinal, pause, 3);
         return;
@@ -1296,7 +1319,7 @@ function findFinal(phase = 0) {
         element = document.querySelectorAll("#P3 div");
         element[0].innerText = "Step 3";
         for (let n = R1; n <= C5; n++)
-            element[n + 1].innerText = possible[n].length.toLocaleString();
+            element[n + 1].innerText = cp[n].toLocaleString();
         phase4();
         setTimeout(findFinal, pause, 4);
         return;
@@ -1304,7 +1327,7 @@ function findFinal(phase = 0) {
         element = document.querySelectorAll("#P4 div");
         element[0].innerText = "Step 4";
         for (let n = R1; n <= C5; n++)
-            element[n + 1].innerText = set.length.toLocaleString();
+            element[n + 1].innerText = sw.length.toLocaleString();
         phase5();
         setTimeout(findFinal, pause, 5);
         return;
@@ -1312,8 +1335,8 @@ function findFinal(phase = 0) {
         element = document.querySelectorAll("#P5 div");
         element[0].innerText = "Step 5";
         for (let n = R1; n <= C5; n++)
-            element[n + 1].innerText = set.length.toLocaleString();
-        if (set.length != 1) {
+            element[n + 1].innerText = sw.length.toLocaleString();
+        if (sw.length != 1) {
             prompt("Colors", "No final tiles - please fix puzzle", "");
             return;
         }
@@ -1321,7 +1344,7 @@ function findFinal(phase = 0) {
         for (let n = R1; n <= C5; n++) {
             final[n] = "";
             for (let l = L1; l <= L5; l++)
-                final[n] += set[0][n][l];
+                final[n] += sw[0][n][l];
         }
         prompt("Colors", "Today's final tiles", "Move 1");
         display(final);
@@ -1647,13 +1670,6 @@ window.onload = function() {
     // Handle tile clicks
     for (let t = 0; t < tiles; t++) {
         tilElm[t].onclick = function() {
-            if (state == "Letters") {
-                if (cursor < tiles)
-                    tilElm[cursor].style.borderColor = getComputedStyle(tilElm[cursor]).backgroundColor;
-                cursor = t;
-                tilElm[t].style.borderColor = blk;
-                return;
-            }
             if (state != "Colors")
                 return;
             foundFinal = false;
@@ -1719,6 +1735,12 @@ window.onload = function() {
                 tilElm[cursor].style.borderColor = blk;
         }
     }
+    // Initialize arrays
+    for (let w = 0; w < words; w++) {
+        wp[w] = [true, true, true, true, true, true];
+        cw[w] = ["", "", "", "", "", ""];
+    }
+    cp.fill(0);
     /*
     // initialize entry data with test data
     for (let n = R1; n <= C5; n++) {
