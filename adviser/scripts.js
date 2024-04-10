@@ -1,21 +1,14 @@
 "use strict";
 
-// Puzzle constants
-const guesses = 6;
+// global constants
 const letters = 5;
-const patterns = 3**5;
-const log2 = 0.693147180559945;
 const tiles = 30;
-const asca = "a".charCodeAt();
-const ascz = "z".charCodeAt();
 const drk = "rgb(120, 124, 126)";
 const yel = "rgb(201, 180, 88)";
 const grn = "rgb(106, 170, 100)";
 const gry = "rgb(211, 214, 218)";
 const blk = "rgb(0, 0, 0)";
 const wht = "rgb(255, 255, 255)";
-
-// Text entry values
 const keys = 27;
 const backSpace = 26;
 
@@ -601,7 +594,7 @@ const all = [
     "towie", "towns", "towny", "towse", "towsy", "towts", "towze", "towzy", "toxic", "toxin", "toyed", "toyer", "toyon", "toyos", "tozed", "tozes", "tozie", "trabs", "trace", "track",
     "tract", "trade", "trads", "tragi", "traik", "trail", "train", "trait", "tramp", "trams", "trank", "tranq", "trans", "trant", "trape", "traps", "trapt", "trash", "trass", "trats",
     "tratt", "trave", "trawl", "trayf", "trays", "tread", "treat", "treck", "treed", "treen", "trees", "trefa", "treif", "treks", "trema", "trems", "trend", "tress", "trest", "trets",
-    "trews", "treyf", "treys", "triac", "triad", "trial", "tribe", "trice", "trick", "tride", "tried", "trier", "tries", "triff", "trigo", "trigs", "trike", "trild", "trill", "trims",
+    "trews", "treyf", "treys", "triac", "triad", "word", "tribe", "trice", "trick", "tride", "tried", "trier", "tries", "triff", "trigo", "trigs", "trike", "trild", "trill", "trims",
     "trine", "trins", "triol", "trior", "trios", "tripe", "trips", "tripy", "trist", "trite", "troad", "troak", "troat", "trock", "trode", "trods", "trogs", "trois", "troke", "troll",
     "tromp", "trona", "tronc", "trone", "tronk", "trons", "troop", "trooz", "trope", "troth", "trots", "trout", "trove", "trows", "troys", "truce", "truck", "trued", "truer", "trues",
     "trugo", "trugs", "trull", "truly", "trump", "trunk", "truss", "trust", "truth", "tryer", "tryke", "tryma", "tryps", "tryst", "tsade", "tsadi", "tsars", "tsked", "tsuba", "tsubo",
@@ -671,7 +664,7 @@ const all = [
     "zuppa", "zurfs", "zuzim", "zygal", "zygon", "zymes", "zymic"
 ];
 
-// common words accroding to Wordle in alphabetic order
+// common words according to Wordle in alphabetic order
 const common = [
     "aback", "abase", "abate", "abbey", "abbot", "abhor", "abide", "abled", "abode", "abort", "about", "above", "abuse", "abyss", "acorn", "acrid", "actor", "acute", "adage", "adapt", 
     "adept", "admin", "admit", "adobe", "adopt", "adore", "adorn", "adult", "affix", "afire", "afoot", "afoul", "after", "again", "agape", "agate", "agent", "agile", "aging", "aglow", 
@@ -778,7 +771,7 @@ const common = [
     "thigh", "thing", "think", "third", "thong", "thorn", "those", "three", "threw", "throb", "throw", "thrum", "thumb", "thump", "thyme", "tiara", "tibia", "tidal", "tiger", "tight", 
     "tilde", "timer", "timid", "tipsy", "titan", "tithe", "title", "toast", "today", "toddy", "token", "tonal", "tonga", "tonic", "tooth", "topaz", "topic", "torch", "torso", "torus", 
     "total", "totem", "touch", "tough", "towel", "tower", "toxic", "toxin", "trace", "track", "tract", "trade", "trail", "train", "trait", "tramp", "trash", "trawl", "tread", "treat", 
-    "trend", "triad", "trial", "tribe", "trice", "trick", "tried", "tripe", "trite", "troll", "troop", "trope", "trout", "trove", "truce", "truck", "truer", "truly", "trump", "trunk", 
+    "trend", "triad", "word", "tribe", "trice", "trick", "tried", "tripe", "trite", "troll", "troop", "trope", "trout", "trove", "truce", "truck", "truer", "truly", "trump", "trunk", 
     "truss", "trust", "truth", "tryst", "tubal", "tuber", "tulip", "tulle", "tumor", "tunic", "turbo", "tutor", "twang", "tweak", "tweed", "tweet", "twice", "twine", "twirl", "twist", 
     "twixt", "tying", "udder", "ulcer", "ultra", "umbra", "uncle", "uncut", "under", "undid", "undue", "unfed", "unfit", "unify", "union", "unite", "unity", "unlit", "unmet", "unset", 
     "untie", "until", "unwed", "unzip", "upper", "upset", "urban", "urine", "usage", "usher", "using", "usual", "usurp", "utile", "utter", "vague", "valet", "valid", "valor", "value", 
@@ -791,68 +784,23 @@ const common = [
     "yacht", "yearn", "yeast", "yield", "young", "youth", "zebra", "zesty", "zonal"
 ];
 
-// Navigation values
+// document elements and element arrays
+const leftText   = document.getElementById("leftText");
+const leftSide   = document.getElementById("leftSide");
+const rightText  = document.getElementById("rightText");
+const rightSide  = document.getElementById("rightSide");
+const centerText = document.getElementById("centerText");
+const column     = document.querySelectorAll("#table div");
+const tile       = document.querySelectorAll("#puzzle button");
+const key        = document.querySelectorAll("#keyboard button");
+
+// navigation values
 let state = "Letters";
 let cursor = 0;
 
-// guess[n][l] is the lower-case tile letter for letter l of guess n
-let guess   = ["     ", "     ", "     ", "     ", "     ", "     "];
-
-// pattern[n][l] is the tile color (" ", "b", "y", "g") for letter l of guess n
-let pattern = ["     ", "     ", "     ", "     ", "     ", "     "];
-
-// possible[p] is possible word p
-let possible = [];
-
-// Display the left prompt, right prompt, and center prompt
-function prompt(leftText, centerText, rightText) {
-    document.getElementById("leftText").innerText = leftText;
-    if (leftText == "")
-        document.getElementById("leftSide").style.visibility = "hidden";
-    else
-        document.getElementById("leftSide").style.visibility = "visible";
-    document.getElementById("rightText").innerText = rightText;
-    if (rightText == "")
-        document.getElementById("rightSide").style.visibility = "hidden";
-    else
-        document.getElementById("rightSide").style.visibility = "visible";
-    document.getElementById("centerText").innerText = centerText;
-}
-
-// calculate pattern byte for guess based on solution where byte is 0 for "bbbbb", 1 for "bbbby", 2 for "bbbbg", 3 for "bbbyb", ...
-function patternByte(solution, guess) {
-    let byte = 0, yellowsNeeded, yellowsBefore;
-    const yellow = [false, false, false, false, false];
-    for (let l = 0; l < letters; l++) {
-        if (guess[l] == solution[l]) {
-            byte += 2;
-        } else {
-            yellowsNeeded = 0;
-            for (let j = 0; j < letters; j++) {
-                if (solution[j] == guess[l] && solution[j] != guess[j]) {
-                    yellowsNeeded++;
-                }
-            }
-            if (yellowsNeeded > 0) {
-                yellowsBefore = 0;
-                for (let j = 0; j < l; j++) {
-                    if (guess[j] == guess[l] && yellow[j]) {
-                        yellowsBefore++;
-                    }
-                }
-            }
-            if (yellowsNeeded > yellowsBefore) {
-                byte += 1;
-                yellow[l] = true;
-            }
-        }
-        byte *= 3;
-    }
-    return byte / 3;
-}
-
 // filter possible words by guess and pattern arrays
-function filter() {
+function filter(possible, guess, pattern) {
+    const guesses = 6;
     let ok, yellows, nonGreens;
     let p = 0;
     while (p < possible.length) {
@@ -880,7 +828,7 @@ function filter() {
                             ok = false;
                     }
                     break;
-                case "b":
+                case "d":
                     if (possible[p][l] == guess[n][l])
                         ok = false;
                     else {
@@ -909,16 +857,65 @@ function filter() {
     }
 }
 
+// calculate pattern byte for word vs. solution where byte is 0 for "ddddd", 1 for "ddddy", 2 for "ddddg", 3 for "dddyd", ...
+function patternByte(solution, word) {
+    let byte = 0, yellowsNeeded, yellowsBefore;
+    const yellow = [false, false, false, false, false];
+    for (let l = 0; l < letters; l++) {
+        if (word[l] == solution[l]) {
+            byte += 2;
+        } else {
+            yellowsNeeded = 0;
+            for (let j = 0; j < letters; j++) {
+                if (solution[j] == word[l] && solution[j] != word[j]) {
+                    yellowsNeeded++;
+                }
+            }
+            if (yellowsNeeded > 0) {
+                yellowsBefore = 0;
+                for (let j = 0; j < l; j++) {
+                    if (word[j] == word[l] && yellow[j]) {
+                        yellowsBefore++;
+                    }
+                }
+            }
+            if (yellowsNeeded > yellowsBefore) {
+                byte += 1;
+                yellow[l] = true;
+            }
+        }
+        byte *= 3;
+    }
+    return byte / 3;
+}
+
+// display the left, right and center prompts
+function prompt(left, center, right) {
+    leftText.innerText = left;
+    if (left == "")
+        leftSide.style.visibility = "hidden";
+    else
+        leftSide.style.visibility = "visible";
+    rightText.innerText = right;
+    if (right == "")
+        rightSide.style.visibility = "hidden";
+    else
+        rightSide.style.visibility = "visible";
+    centerText.innerText = center;
+}
+
 // analyze guess and pattern arrays
-function analyze() {
+function analyze(guess, pattern) {
+    const patterns = 3**5;
     const count = Array(patterns);
     const bits = Array(all.length).fill(0);
+
     // filter common (or all) words based on guess and pattern arrays
-    possible = [...common];
-    filter();
+    let possible = [...common];
+    filter(possible, guess, pattern);
     if (possible.length == 0) {
         possible = [...all];
-        filter();
+        filter(possible, guess, pattern);
     }
     // calculate information bits provided by each dictionary word for each possible solution
     for (let w = 0; w < all.length; w++) {
@@ -946,7 +943,6 @@ function analyze() {
     possibleSorted.sort((a,b) => b[1] - a[1]);
 
     // display results
-    const column = document.querySelectorAll("#table div");
     column[1].innerHTML = all.length.toLocaleString() + "<br>" + common.length.toLocaleString() + "<br>" + possible.length.toLocaleString();
     column[3].innerHTML = "";
     column[4].innerHTML = "";
@@ -963,7 +959,6 @@ function analyze() {
     // update state and move cursor to first white tile
     state = "Letters";
     prompt("Reload", "Touch keys to enter letters", "Colors");
-    const tile = document.querySelectorAll("#puzzle button");
     cursor = tiles;
     for (let t = 0; t < tiles; t++) {
         if (getComputedStyle(tile[t]).backgroundColor == wht) {
@@ -974,12 +969,9 @@ function analyze() {
     }
 }
 
-// Initialize javascript after window loads
+// initialize javascript after window loads
 window.onload = function() {
-    const tile = document.querySelectorAll("#puzzle button");
-    const key = document.querySelectorAll("#keyboard button");
-    // Handle right side clicks
-    document.getElementById("rightSide").onclick = function() {
+    rightSide.onclick = function() {
         switch (state) {
         case "Letters":
             state = "Colors";
@@ -999,17 +991,14 @@ window.onload = function() {
         case "Colors":
             state = "Analyze";
             prompt("", "Analyzing...", "");
-            guess.fill("");
-            pattern.fill("");
+            const guess   = ["", "", "", "", "", ""];
+            const pattern = ["", "", "", "", "", ""];
             for (let t = 0, n; t < tiles; t++) {
                 n = Math.trunc(t / letters);
                 guess[n] += tile[t].innerText.toLowerCase();
                 switch(getComputedStyle(tile[t]).backgroundColor) {
-                case wht:
-                    pattern[n] += "";
-                    break;
                 case drk:
-                    pattern[n] += "b";
+                    pattern[n] += "d";
                     break;
                 case yel:
                     pattern[n] += "y";
@@ -1018,11 +1007,10 @@ window.onload = function() {
                     pattern[n] += "g";
                 }
             }
-            setTimeout(analyze, 0);
+            setTimeout(analyze, 0, guess, pattern);
         }
     }
-    // Handle left side clicks
-    document.getElementById("leftSide").onclick = function() {
+    leftSide.onclick = function() {
         switch (state) {
         case "Letters":
             location.reload();
@@ -1038,10 +1026,8 @@ window.onload = function() {
                     break;
                 }
             }
-            // analyze()
         }
     }
-    // Handle tile clicks
     for (let t = 0; t < tiles; t++) {
         tile[t].onclick = function() {
             if (state == "Letters") {
@@ -1074,7 +1060,6 @@ window.onload = function() {
             }
         }
     }
-    // Handle on-screen key clicks
     for (let k = 0; k < keys; k++) {
         key[k].onclick = function() {
             if (state != "Letters")
@@ -1094,7 +1079,6 @@ window.onload = function() {
             }
         }
     }
-    // Handle physical key presses
     document.onkeydown = function(e) {
         if (state != "Letters" || e.ctrlKey || e.altKey || e.shiftKey)
             return;

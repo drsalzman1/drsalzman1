@@ -1,34 +1,34 @@
 :root {
-    --body-width:       min(1.000*100vw, 1.000*550px);
-    --body-font-size:   min(0.035*100vw, 0.035*550px);
-    --header-font-size: min(0.050*100vw, 0.050*550px);
-    --arrow-font-size:  min(0.080*100vw, 0.080*550px);
-    --arrow-margin:     min(0.050*100vw, 0.050*550px);
-    --side-width:       min(0.155*100vw, 0.155*550px);
-    --puzzle-width:     min(0.690*100vw, 0.690*550px);
-    --puzzle-height:    min(0.830*100vw, 0.830*550px);
-    --tile-size:        min(0.130*100vw, 0.130*550px);
-    --tile-font-size:   min(0.060*100vw, 0.060*550px);
-    --tile-pitch:       min(0.140*100vw, 0.140*550px);
-    --keyboard-width:   min(1.000*100vw, 1.000*550px);
-    --keyboard-height:  min(0.380*100vw, 0.380*550px);
-    --key-width:        min(0.090*100vw, 0.090*550px);
-    --key-height:       min(0.110*100vw, 0.110*550px);
-    --key-font-size:    min(0.045*100vw, 0.045*550px);
-    --key-horizontal:   min(0.100*100vw, 0.100*550px);
-    --key-vertical:     min(0.120*100vw, 0.120*550px);
-    --row1-offset:      min(0.005*100vw, 0.005*550px);
-    --row2-offset:      min(0.055*100vw, 0.055*550px);
-    --row3-offset:      min(0.105*100vw, 0.105*550px);
-    --bs-font-size:     min(0.040*100vw, 0.040*550px);
-    --column1-width:    min(0.140*100vw, 0.140*550px);
-    --column2-width:    min(0.130*100vw, 0.130*550px);
-    --column3-width:    min(0.100*100vw, 0.100*550px);
-    --column4-width:    min(0.140*100vw, 0.140*550px);
-    --column5-width:    min(0.100*100vw, 0.100*550px);
-    --column6-width:    min(0.100*100vw, 0.100*550px);
-    --column7-width:    min(0.140*100vw, 0.140*550px);
-    --column8-width:    min(0.100*100vw, 0.100*550px);
+    --body-width:       min(1.000*100vw, 1.000*450px);
+    --body-font-size:   min(0.035*100vw, 0.035*450px);
+    --header-font-size: min(0.050*100vw, 0.050*450px);
+    --arrow-font-size:  min(0.080*100vw, 0.080*450px);
+    --arrow-margin:     min(0.050*100vw, 0.050*450px);
+    --side-width:       min(0.155*100vw, 0.155*450px);
+    --puzzle-width:     min(0.690*100vw, 0.690*450px);
+    --puzzle-height:    min(0.830*100vw, 0.830*450px);
+    --tile-size:        min(0.130*100vw, 0.130*450px);
+    --tile-font-size:   min(0.060*100vw, 0.060*450px);
+    --tile-pitch:       min(0.140*100vw, 0.140*450px);
+    --keyboard-width:   min(1.000*100vw, 1.000*450px);
+    --keyboard-height:  min(0.380*100vw, 0.380*450px);
+    --key-width:        min(0.090*100vw, 0.090*450px);
+    --key-height:       min(0.110*100vw, 0.110*450px);
+    --key-font-size:    min(0.045*100vw, 0.045*450px);
+    --key-horizontal:   min(0.100*100vw, 0.100*450px);
+    --key-vertical:     min(0.120*100vw, 0.120*450px);
+    --row1-offset:      min(0.005*100vw, 0.005*450px);
+    --row2-offset:      min(0.055*100vw, 0.055*450px);
+    --row3-offset:      min(0.105*100vw, 0.105*450px);
+    --bs-font-size:     min(0.040*100vw, 0.040*450px);
+    --column1-width:    min(0.140*100vw, 0.140*450px);
+    --column2-width:    min(0.130*100vw, 0.130*450px);
+    --column3-width:    min(0.100*100vw, 0.100*450px);
+    --column4-width:    min(0.140*100vw, 0.140*450px);
+    --column5-width:    min(0.100*100vw, 0.100*450px);
+    --column6-width:    min(0.100*100vw, 0.100*450px);
+    --column7-width:    min(0.140*100vw, 0.140*450px);
+    --column8-width:    min(0.100*100vw, 0.100*450px);
     --gry:              #D3D6DA;
 }
 
@@ -65,7 +65,7 @@ body {
 }
 
 #leftButton, #rightButton {
-    background-color: transparent;
+    background-color: white;
     border-style: none;
     font-size: var(--arrow-font-size);
 }
