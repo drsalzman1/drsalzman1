@@ -1,0 +1,39 @@
+{
+  "background_color": "#ffffff",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "Adviser",
+  "description": "This is a simple Wordle adviser that I wrote to learn HTML, CSS and Javascript.",
+  "orientation": "any",
+  "scope": "./",
+  "short_name": "Adviser",
+  "start_url": "index.html",
+  "id": "adviser",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "640x640",
+      "purpose": "any"
+    },
+    {
+      "src": "icon.svg",
+      "sizes": "640x640",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots" : [
+    {
+      "src": "wide.png",
+      "sizes": "2012x1300",
+      "form_factor": "wide",
+      "label": "Homescreen"
+    },
+    {
+      "src": "narrow.png",
+      "sizes": "712x1297",
+      "form_factor": "narrow",
+      "label": "Homescreen"
+    }
+  ]
+}

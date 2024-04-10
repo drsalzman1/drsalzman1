@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Adviser</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="manifest" href="manifest.json">
+        <link rel="icon" href="icon.svg">
+        <link rel="stylesheet" href="styles.css">
+    </head>
+    <body>
+        <div id="header">
+            Wordle Adviser
+        </div>
+        <div id="main">
+            <div id="leftSide">
+                <div>
+                    <button id="leftButton" type="button">&#x25C1;</button>
+                </div>
+                <div id="leftText">
+                    Reload
+                </div>
+            </div>
+            <div id="puzzle">
+                <button type="button"> </button><button type="button"> </button><button type="button"> </button><button type="button"> </button><button type="button"> </button>
+                <button type="button"> </button><button type="button"> </button><button type="button"> </button><button type="button"> </button><button type="button"> </button>
+                <button type="button"> </button><button type="button"> </button><button type="button"> </button><button type="button"> </button><button type="button"> </button>
+                <button type="button"> </button><button type="button"> </button><button type="button"> </button><button type="button"> </button><button type="button"> </button>
+                <button type="button"> </button><button type="button"> </button><button type="button"> </button><button type="button"> </button><button type="button"> </button>
+                <button type="button"> </button><button type="button"> </button><button type="button"> </button><button type="button"> </button><button type="button"> </button>
+            </div>
+            <div id="rightSide">
+                <div>
+                    <button id="rightButton" type="button">&#x25B7;</button>
+                </div>
+                <div id="rightText">
+                    Colors
+                </div>
+            </div>
+        </div>
+        <div id="centerText">
+            Touch keys to enter letters
+        </div>
+        <div id="keyboard">
+            <button type="button">Q</button><button type="button">W</button><button type="button">E</button><button type="button">R</button><button type="button">T</button><button type="button">Y</button><button type="button">U</button><button type="button">I</button><button type="button">O</button><button type="button">P</button>
+            <button type="button">A</button><button type="button">S</button><button type="button">D</button><button type="button">F</button><button type="button">G</button><button type="button">H</button><button type="button">J</button><button type="button">K</button><button type="button">L</button>
+            <button type="button">Z</button><button type="button">X</button><button type="button">C</button><button type="button">V</button><button type="button">B</button><button type="button">N</button><button type="button">M</button><button type="button">&#x232B;</button>
+        </div>
+        <div id="title">
+            Analysis based on dictionaries, guesses & information theory:
+        </div>
+        <div id="results">
+            <div id="headings">
+                <div>Words</div><div>Count</div><div></div><div>All</div><div>Bits</div><div></div><div>Possible</div><div>Bits</div>
+            </div>
+            <div id="table">
+                <div>All<br>Common<br>Possible</div>
+                <div>12,947<br>2,309<br>2,309</div>
+                <div></div>
+                <div>SOARE<br>ROATE<br>RAISE<br>REAST<br>RAILE<br>SLATE<br>SALET<br>CRATE<br>IRATE<br>TRACE</div>
+                <div>5.89<br>5.88<br>5.88<br>5.87<br>5.87<br>5.86<br>5.84<br>5.84<br>5.83<br>5.83</div>
+                <div></div>
+                <div>RAISE<br>SLATE<br>CRATE<br>IRATE<br>TRACE<br>ARISE<br>STARE<br>SNARE<br>AROSE<br>LEAST</div>
+                <div>5.88<br>5.86<br>5.84<br>5.83<br>5.83<br>5.82<br>5.81<br>5.77<br>5.77<br>5.75</div>
+            </div>
+        </div>
+    </body>
+    <script src="scripts.js" defer></script>
+</html>
