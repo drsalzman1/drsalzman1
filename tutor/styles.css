@@ -1,0 +1,172 @@
+:root {
+    --body-width:       min(96vw, 450px);
+    --body-font-size:   calc(var(--body-width) / 30);
+    --header-font-size: calc(var(--body-width) / 20);
+    --tile-width:       calc(var(--body-width) / 9);
+    --tile-font-size:   calc(var(--body-width) / 14);
+    --mark-width:       calc(var(--tile-width) / 3);
+    --mark-font-size:   calc(var(--body-width) / 40);
+    --keypad-width:     calc(var(--body-width) * 0.44);
+    --key-width:        calc(var(--body-width) / 7.3);
+    --text-width:       calc(var(--body-width) * 0.56);
+    --input-width:      calc(var(--body-width) / 40);
+    --options-width:    calc(var(--body-width) * 0.94);
+}
+
+body {
+    width: var(--body-width);
+    margin: auto;
+    font-family: sans-serif;
+    font-size: var(--body-font-size);
+    user-select: none;
+}
+
+#header {
+    width: var(--body-width);
+    font-size: var(--header-font-size);
+    font-weight: 600;
+    text-align: center;
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+#base {
+    width: var(--body-width);
+    height: var(--body-width);
+    display: flex;
+    flex-flow: row wrap;
+    position: absolute;
+}
+
+#base div {
+    width: var(--tile-width);
+    height: var(--tile-width);
+    padding-top: 1px;
+    line-height: var(--tile-width);
+    font-size: var(--tile-font-size);
+    font-weight: 600;
+    text-align: center;
+    border: 1px solid lightgray;
+    box-sizing: border-box;
+}
+
+#base :nth-child(1), #base :nth-child(2), #base :nth-child(3) {border-top: 3px solid black;}
+#base :nth-child(4), #base :nth-child(5), #base :nth-child(6) {border-top: 3px solid black;}
+#base :nth-child(7), #base :nth-child(8), #base :nth-child(9) {border-top: 3px solid black;}
+#base :nth-child(9n-8) {border-left: 3px solid black;}
+#base :nth-child(3n+0) {border-right: 3px solid black;}
+#base :nth-child(27n-8), #base :nth-child(27n-7), #base :nth-child(27n-6) {border-bottom: 3px solid black;}
+#base :nth-child(27n-5), #base :nth-child(27n-4), #base :nth-child(27n-3) {border-bottom: 3px solid black;}
+#base :nth-child(27n-2), #base :nth-child(27n-1), #base :nth-child(27n-0) {border-bottom: 3px solid black;}
+
+#note {
+    width: var(--body-width);
+    height: var(--body-width);
+    display: flex;
+    flex-flow: row wrap;
+    position: absolute;
+}
+
+#note div {
+    width: var(--tile-width);
+    height: var(--tile-width);
+    padding-top: 0.6%;
+    color: gray;
+    font-size: var(--mark-font-size);
+    text-align: center;
+    box-sizing: border-box;
+}
+
+#overlay {
+    width: var(--body-width);
+    height: var(--body-width);
+    display: flex;
+    flex-flow: row wrap;
+    position: relative;
+}
+
+.tile {
+    width: var(--tile-width);
+    height: var(--tile-width);
+    padding-top: 0.6%;
+    display: flex;
+    flex-flow: row wrap;
+    box-sizing: border-box;
+}
+
+.tile div {
+    width: var(--mark-width);
+    height: var(--mark-width);
+    color: gray;
+    font-size: var(--mark-font-size);
+    font-weight: normal;
+    text-align: center;
+    border: none;
+}
+
+p {
+    margin: 0;
+    font-weight: bold;
+    text-align: center;
+    border: 1px solid black;
+    box-sizing: border-box;
+}
+
+input {
+    width: var(--input-width);
+    height: var(--input-width);
+}
+
+#text1 {
+    padding-top: 12px;
+}
+
+#text2 {
+    padding-top: 12px;
+    display: none;
+}
+
+#text3 {
+    padding-top: 12px;
+    display: none;
+}
+
+#controls {
+    margin-top: 16px;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+}
+
+#keypad {
+    width: var(--keypad-width);
+    height: var(--keypad-width);
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    align-content: space-between;
+}
+
+#keypad div {
+    width: var(--key-width);
+    height: var(--key-width);
+    padding-top: 5%;
+    font-size: var(--tile-font-size);
+    font-weight: 600;
+    text-align: center;
+    background-color: lightgray;
+    border: 4px outset lightgray;
+    box-sizing: border-box;
+}
+
+#mode {
+    padding-left: 12px;
+    box-sizing: border-box;
+}
+
+#options {
+    width: var(--options-width);
+    margin: auto;
+    padding-top: 20px;
+    box-sizing: border-box;
+}
