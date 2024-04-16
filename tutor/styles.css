@@ -6,8 +6,8 @@
     --square-font-size: calc(var(--body-width) / 14);
     --mark-width:       calc(var(--square-width) / 3);
     --mark-font-size:   calc(var(--body-width) / 40);
-    --keypad-width:     calc(var(--body-width) * 0.44);
-    --key-width:        calc(var(--body-width) / 7.3);
+    --keypad-width:     calc(var(--body-width) * 0.36);
+    --key-width:        calc(var(--body-width) / 9);
     --text-width:       calc(var(--body-width) * 0.56);
     --input-width:      calc(var(--body-width) / 40);
     --button-width:     calc(var(--body-width) / 6);
@@ -59,12 +59,14 @@ h1 {
 #puzzle div {
     width: var(--square-width);
     height: var(--square-width);
-    padding-top: 2%;
     font-size: var(--square-font-size);
     font-weight: 600;
-    text-align: center;
     border: 1px solid lightgray;
     box-sizing: border-box;
+    display: flex;
+    flex-direction:column;
+    text-align: center;
+    justify-content: center;
 }
 
 #puzzle :nth-child(3n+0) {border-right: 1px solid black;}
@@ -119,7 +121,25 @@ h1 {
     margin-top: 20px;
     display: flex;
     flex-flow: row wrap;
-    justify-content: space-evenly;
+    justify-content: space-between;
+}
+
+#controls h2 {
+    margin: 0px;
+    font-size: var(--body-font-size);
+    font-weight: bold;
+}
+
+#controls input {
+    width: var(--input-width);
+    height: var(--input-width);
+    outline: none;
+}
+
+#mode, #options {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 #keypad {
@@ -134,58 +154,22 @@ h1 {
 #keypad div {
     width: var(--key-width);
     height: var(--key-width);
-    padding-top: 5%;
     font-size: var(--square-font-size);
     font-weight: 600;
-    text-align: center;
     background-color: lightgray;
     border: 4px outset lightgray;
     box-sizing: border-box;
-}
-
-h2 {
-    margin: 0px;
-    padding: 3px 12px 2px 12px;
-    font-size: var(--body-font-size);
-    font-weight: bold;
-    text-align: center;
-    border: 1px solid black;
-}
-
-#mode input {
-    width: var(--input-width);
-    height: var(--input-width);
-    outline: none;
-}
-
-#mode div {
-    margin-top: 12px;
-    display: block;
-}
-
-#options {
-    margin-top: 20px;
     display: flex;
-    flex-flow: row wrap;
+    flex-direction: column;
+    text-align: center;
     justify-content: center;
 }
 
-#options input {
-    width: var(--input-width);
-    height: var(--input-width);
-    outline: none;
-}
-
-#options div div {
-    margin-top: 12px;
-    display: block;
-}
-
 #buttons {
-    margin-top: 20px;
+    margin: 20px 0px;
     display: flex;
     flex-flow: row wrap;
-    justify-content: space-evenly;
+    justify-content: space-between;
 }
 
 #buttons input {
