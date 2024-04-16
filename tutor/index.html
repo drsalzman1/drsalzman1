@@ -9,10 +9,10 @@
         <link rel="stylesheet" href="styles.css">
     </head>
     <body>
-        <div id="header">
+        <h1>
             Sudoku Tutor
-        </div>
-        <div id="base">
+        </h1>
+        <div id="notes">
             <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
             <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
             <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
@@ -23,7 +23,7 @@
             <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
             <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
         </div>
-        <div id="note">
+        <div id="puzzle">
             <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
             <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
             <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
@@ -34,134 +34,185 @@
             <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
             <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
         </div>
-        <div id="overlay">
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            <div class="tile"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+        <div id="marks">
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
         </div>
-        <div id="text1">
-            This app teaches you to solve a Sudoku puzzle using the Nishio (trial and error) method.
-            To start, pencil in the squares from a puzzle by touching squares and entering numbers. 
-            To erase a mistake, change the mode to erase squares, touch the square, and change the mode back to pencil in squares.
-            When done, change the mode to pencil in marks.
-        </div>
-        <div id="text2">
-            Next, pencil in the obvious marks by touching squares and entering numbers. 
-            For example, a 1 and 2 in the top-left square indicates that the top-left square may be a 1 or a 2.
-            That is, neither a 1 nor a 2 have been penciled into the top row, left row, or the top-left 3x3 box of squares.
-            To erase a mistake, change the mode to erase marks, touch the square, enter the number, and change the mode back to pencil in marks.
-            When done, change the mode to pencil in squares.
-        </div>
-        <div id="text3">
-            Next, pencil in each square with only one mark and erase the corresponding marks in that square's row, column and box.
-            If the puzzle isn't yet solved, tentatively pencil in a square with only two marks and then continue solving the puzzle until it is either solved or you hit a dead end.
-            The tutor will number each tentative square and save the puzzle. If you hit a dead end, erase the most recent tentative square to recall the puzzle at that point.
+        <div id="text">
+            <div>
+                <b>Introduction:</b> 
+                This app teaches you to solve Sudoku puzzles using the Nishio (trial and error) method.
+                Each puzzle has 81 "squares" arranged in 9 "rows", 9 "columns" and 9 3x3 "boxes".
+                Each digit from 1 to 9 appears exactly once in each row, column and box.<br>
+                <br>
+                When ready, change the entry mode to "Copy Squares".
+            </div>
+            <div>
+                <b>Copy Squares:</b> 
+                Copy the pre-filled squares from the puzzle you want to solve. 
+                To copy a square, select (touch) a destination square then enter (touch) its source number on the keypad.
+                To erase a square, select a square then enter its number on the keypad.<br>
+                <br>
+                When done, change the entry mode to "Enter Marks".
+            </div>
+            <div>
+                <b>Enter Marks:</b> 
+                Mark the possible values for each empty square. 
+                To enter marks, select a square then enter the numbers that don't yet appear in the square's row, column or box.
+                To erase marks, select a square then enter the numbers of the marks to be erased.<br>
+                <br>
+                When done, change the entry mode to "Enter Squares".
+            </div>
+            <div>
+                <b>Enter Squares:</b> 
+                Enter the value of each empty square.
+                To enter a square, select the square, enter a value, and update any affected marks.
+                If you're unsure of a value, touch "Save" before entering the trial value.
+                If you hit a dead end, touch "Recall".<br>
+                <br>
+                Note that multiple save levels are supported.
+            </div>
         </div>
         <div id="controls">
             <div id="keypad">
                 <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div><div>8</div><div>9</div>
             </div>
             <div id="mode">
-                <p>Entry Mode</p><br>
-                <input type="radio" id="mode1" name="mode" checked>
-                <label for="mode1">Pencil in squares</label><br><br>
-                <input type="radio" id="mode2" name="mode">
-                <label for="mode2">Erase squares</label><br><br>
-                <input type="radio" id="mode3" name="mode">
-                <label for="mode3">Pencil in marks</label><br><br>
-                <input type="radio" id="mode4" name="mode">
-                <label for="mode4">Erase marks</label>
+                <h2>
+                    Entry Mode
+                </h2>
+                <div>
+                    <input type="radio" id="mode0" name="mode" checked>
+                    <label for="mode0">Introduction</label>
+                </div>
+                <div>
+                    <input type="radio" id="mode1" name="mode">
+                    <label for="mode1">Copy Squares</label>
+                </div>
+                <div>
+                    <input type="radio" id="mode2" name="mode">
+                    <label for="mode2">Enter Marks</label>
+                </div>
+                <div>
+                    <input type="radio" id="mode3" name="mode">
+                    <label for="mode3">Enter Squares</label>
+                </div>
+                <div id="test">
+                </div>
             </div>
         </div>
         <div id="options">
-            <p>Automation Options</p><br>
-            <input type="checkbox" id="mark" name="box1">
-            <label for="box1">Pencil in marks based on row, column and 3x3 box squares</label><br><br>
-            <input type="checkbox" id="highlight" name="box2">
-            <label for="box2">Shade one-mark squares green and two-mark squares blue</label><br><br>
-            <input type="checkbox" id="single" name="box3">
-            <label for="box3">Pencil in squares that only have one mark</label><br><br>
-            <input type="checkbox" id="final" name="box4">
-            <label for="box4">Pencil in all squares using the Nishio method</label><br><br>
+            <div>
+                <h2>
+                    Automation Options
+                </h2>
+                <div>
+                    <input type="checkbox" id="box0" name="box1">
+                    <label for="box0">Mark possibilities with no row, column or box conflicts</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="box1" name="box2">
+                    <label for="box1">Shade squares with one possibilty green; two blue</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="box2" name="box3">
+                    <label for="box2">Enter squares with only one possibility</label>
+                </div>
+            </div>
+        </div>
+        <div id="buttons">
+            <div>
+                <input type="button" id="restart" value="Restart">
+            </div>
+            <div>
+                <input type="button" id="save" value="Save">
+            </div>
+            <div>
+                <input type="button" id="recall" value="Recall">
+            </div>
+            <div>
+                <input type="button" id="finish" value="Finish">
+            </div>
         </div>
     </body>
-    <!-- <script src="scripts.js" defer></script> -->
+    <script src="scripts.js" defer></script>
 </html>
