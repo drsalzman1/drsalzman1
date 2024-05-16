@@ -2,13 +2,13 @@
   "background_color": "#ffffff",
   "dir": "ltr",
   "display": "standalone",
-  "name": "Adviser",
-  "description": "This is a simple Wordle adviser that I wrote to learn HTML, CSS and Javascript.",
+  "name": "Tutor",
+  "description": "This is a simple Sudoku tutor that I wrote to learn HTML, CSS and Javascript.",
   "orientation": "any",
   "scope": "./",
-  "short_name": "Adviser",
+  "short_name": "Tutor",
   "start_url": "index.html",
-  "id": "adviser",
+  "id": "tutor",
   "theme_color": "#ffffff",
   "icons": [
     {
@@ -25,13 +25,13 @@
   "screenshots" : [
     {
       "src": "wide.png",
-      "sizes": "2012x1300",
+      "sizes": "606x1092",
       "form_factor": "wide",
       "label": "Homescreen"
     },
     {
       "src": "narrow.png",
-      "sizes": "712x1297",
+      "sizes": "510x957",
       "form_factor": "narrow",
       "label": "Homescreen"
     }

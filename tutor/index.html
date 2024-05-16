@@ -12,17 +12,6 @@
         <h1>
             Sudoku Tutor
         </h1>
-        <div id="notes">
-            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
-            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
-            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
-            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
-            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
-            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
-            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
-            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
-            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
-        </div>
         <div id="puzzle">
             <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
             <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
@@ -117,101 +106,96 @@
             <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
             <div class="square"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
         </div>
-        <div id="text">
-            <div>
-                <b>Introduction:</b> 
-                This app teaches you to solve Sudoku puzzles using the Nishio (trial and error) method.
-                Each puzzle has 81 "squares" arranged in 9 "rows", 9 "columns" and 9 3x3 "boxes".
-                Each digit from 1 to 9 appears exactly once in each row, column and box.<br>
-                <br>
-                When ready, change the entry mode to "Copy Squares".
+        <div id="main">
+            <div id="leftSide">
+                <div>
+                    <button id="leftButton" type="button">&#x25C1;</button>
+                </div>
+                <div id="leftText">
+                    Reload
+                </div>
             </div>
-            <div>
-                <b>Copy Squares:</b> 
-                Copy the pre-filled squares from the puzzle you want to solve. 
-                To copy a square, select (touch) a destination square then enter (touch) its source number on the keypad.
-                To erase a square, select a square then enter its number on the keypad.<br>
-                <br>
-                When done, change the entry mode to "Enter Marks".
+            <div id="center">
+                <section id="intro">
+                    <b>App Purpose:</b> Learn to solve Sudoku puzzles using the Nishio (backtrack) method.<br>
+                    <br>
+                    <b>Game Objective:</b> Enter the digits 1 through 9 once in each of the puzzle's nine rows, nine columns, and nine 3x3 boxes.<br>
+                    <br>
+                    <b>Standard Automation:</b>
+                    <ul>
+                        <li>Mark blanks with unused digits</li>
+                        <li>Shade blanks with no marks red</li>
+                        <li>Shade single marks green</li>
+                        <li>Shade double marks yellow</li>
+                        <li>Prevent entry of used digits</li>
+                        <li>Select the blank with the fewest marks</li>
+                    </ul>
+                    <br>
+                    <b>Optional Automation:</b><br>
+                    <div id="options">
+                        <input type="checkbox" id="singles">
+                        <label for="singles">Enter blanks with single marks<br></label>
+                    </div>
+                    <br>
+                    <b>Puzzle Entry:</b><br>
+                    <div id="entry">
+                        <div>
+                            <input type="radio" id="mode0" name="mode" checked>
+                            <label for="mode0">Manual</label>
+                        </div>
+                        <div>
+                            <input type="radio" id="mode1" name="mode">
+                            <label for="mode1">Easy</label>
+                        </div>
+                        <div>
+                            <input type="radio" id="mode2" name="mode">
+                            <label for="mode2">Medium</label>
+                        </div>
+                        <div>
+                            <input type="radio" id="mode3" name="mode">
+                            <label for="mode3">Hard</label>
+                        </div>
+                    </div>
+                </section>
+                <section id="enter">
+                    <b>Enter Puzzle:</b> Enter each of the pre-filled squares from the puzzle you want to solve. 
+                    To copy a square: select (touch) a destination square, then enter (touch) its source number on the keypad.
+                    To erase the most recent square: touch "Back".
+                </section>
+                <section id="solve">
+                    <b>Solve Puzzle:</b> Enter the value of each blank.
+                    To enter a value: select the blank with the fewest marks, then enter one of its marks.
+                    If you hit a dead end (red): touch "Back" until you return to a blank with an untried mark, then enter one of its untried marks.
+                </section>
+                <div id="controls">
+                    <div id="keypad">
+                        <div>1</div><div>2</div><div>3</div>
+                        <div>4</div><div>5</div><div>6</div>
+                        <div>7</div><div>8</div><div>9</div>
+                    </div>
+                    <div id="buttons">
+                        <div>
+                            <input type="button" id="back" value="Back" disabled>
+                        </div>
+                        <div>
+                            <input type="button" id="next" value="Next">
+                        </div>
+                        <div>
+                            <input type="button" id="finish" value="Finish">
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div>
-                <b>Enter Marks:</b> 
-                Mark the possible values for each empty square. 
-                To enter marks, select a square then enter the numbers that don't yet appear in the square's row, column or box.
-                To erase marks, select a square then enter the numbers of the marks to be erased.<br>
-                <br>
-                When done, change the entry mode to "Enter Squares".
-            </div>
-            <div>
-                <b>Enter Squares:</b> 
-                Enter the value of each empty square.
-                To enter a square, select the square, enter a value, and update any affected marks.
-                If you're unsure of a value, touch "Save" before entering the trial value.
-                If you hit a dead end, touch "Recall".<br>
-                <br>
-                Note that multiple save levels are supported.
+            <div id="rightSide">
+                <div>
+                    <button id="rightButton" type="button">&#x25B7;</button>
+                </div>
+                <div id="rightText">
+                    Start
+                </div>
             </div>
         </div>
-        <div id="controls">
-            <div id="mode">
-                <h2>
-                    Entry Mode:
-                </h2>
-                <div>
-                    <input type="radio" name="mode" checked>
-                    <label for="mode0">Introduction</label>
-                </div>
-                <div>
-                    <input type="radio" name="mode">
-                    <label for="mode1">Copy Squares</label>
-                </div>
-                <div>
-                    <input type="radio" name="mode">
-                    <label for="mode2">Enter Marks</label>
-                </div>
-                <div>
-                    <input type="radio" name="mode">
-                    <label for="mode3">Enter Squares</label>
-                </div>
-            </div>
-            <div id="keypad">
-                <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div><div>8</div><div>9</div>
-            </div>
-            <div id="options">
-                <h2>
-                    Auto Options:
-                </h2>
-                <div>
-                    <input type="checkbox" name="box0">
-                    <label for="box0">Enter marks</label>
-                </div>
-                <div>
-                    <input type="checkbox" name="box1">
-                    <label for="box1">Shade squares</label>
-                </div>
-                <div>
-                    <input type="checkbox" name="box2">
-                    <label for="box2">Enter squares</label>
-                </div>
-                <div>
-                    <input type="checkbox" name="box3">
-                    <label for="box3">Save trials</label>
-                </div>
-            </div>
-        </div>
-        <div id="buttons">
-            <div>
-                <input type="button" id="restart" value="Restart">
-            </div>
-            <div>
-                <input type="button" id="save" value="Save">
-            </div>
-            <div>
-                <input type="button" id="recall" value="Recall">
-            </div>
-            <div>
-                <input type="button" id="finish" value="Finish">
-            </div>
+        <div id="test">
         </div>
     </body>
     <script src="scripts.js" defer></script>

@@ -5,11 +5,13 @@
     --square-width:     calc(var(--body-width) / 9);
     --square-font-size: calc(var(--body-width) / 14);
     --mark-width:       calc(var(--square-width) / 3);
-    --mark-font-size:   calc(var(--body-width) / 40);
+    --mark-font-size:   calc(var(--body-width) / 35);
+    --arrow-font-size:  calc(var(--body-width) / 20);
+    --side-width:       calc(var(--body-width) * 0.10);
+    --center-width:     calc(var(--body-width) * 0.70);
     --keypad-width:     calc(var(--body-width) * 0.36);
     --key-width:        calc(var(--body-width) / 9);
-    --text-width:       calc(var(--body-width) * 0.56);
-    --input-width:      calc(var(--body-width) / 40);
+    --input-width:      calc(var(--body-width) / 36);
     --button-width:     calc(var(--body-width) / 6);
 }
 
@@ -29,24 +31,6 @@ h1 {
     text-align: center;
 }
 
-#notes {
-    width: var(--body-width);
-    height: var(--body-width);
-    display: flex;
-    flex-flow: row wrap;
-    position: absolute;
-}
-
-#notes div {
-    width: var(--square-width);
-    height: var(--square-width);
-    padding-top: 0.6%;
-    color: gray;
-    font-size: var(--mark-font-size);
-    text-align: center;
-    box-sizing: border-box;
-}
-
 #puzzle {
     width: var(--body-width);
     height: var(--body-width);
@@ -64,7 +48,7 @@ h1 {
     border: 1px solid lightgray;
     box-sizing: border-box;
     display: flex;
-    flex-direction:column;
+    flex-direction: column;
     text-align: center;
     justify-content: center;
 }
@@ -77,7 +61,7 @@ h1 {
 #puzzle :nth-child(27n-8), #puzzle :nth-child(27n-7), #puzzle :nth-child(27n-6) {border-bottom: 1px solid black;}
 #puzzle :nth-child(27n-5), #puzzle :nth-child(27n-4), #puzzle :nth-child(27n-3) {border-bottom: 1px solid black;}
 #puzzle :nth-child(27n-2), #puzzle :nth-child(27n-1), #puzzle :nth-child(27n-0) {border-bottom: 1px solid black;}
-#puzzle :nth-child(1) {border: 2px dashed black}
+#puzzle :nth-child(1) {border: 3px dashed black}
 
 #marks {
     width: var(--body-width);
@@ -89,7 +73,6 @@ h1 {
 .square {
     width: var(--square-width);
     height: var(--square-width);
-    padding-top: 0.6%;
     display: flex;
     flex-flow: row wrap;
     box-sizing: border-box;
@@ -98,53 +81,103 @@ h1 {
 .square div {
     width: var(--mark-width);
     height: var(--mark-width);
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
     color: gray;
     font-size: var(--mark-font-size);
     font-weight: normal;
-    text-align: center;
     border: none;
 }
 
-#text {
-    margin-top: 12px;
+#main {
+    width: var(--body-width);
+    margin-top: 20px;
+    display: flex;
+    flex-direction: row;
+    align-items: start;
+    justify-content: space-between;
 }
 
-#text div {
+#leftSide, #rightSide {
+    width: var(--side-width);
+    margin-top: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+#leftButton, #rightButton {
+    background-color: white;
+    border-style: none;
+    font-size: var(--arrow-font-size);
+}
+
+#center {
+    width: var(--center-width);
+}
+
+#intro {
+    display: block;
+}
+
+#enter {
     display: none;
 }
 
-#text :nth-child(1) {
-    display: inline;
+#solve {
+    display: none;
 }
 
-#controls {
-    margin-top: 20px;
+#intro ul {
+    display: list-item;
+    padding: 0;
+    margin: 0 0 0 25px;
+}
+
+#intro #options {
     display: flex;
-    flex-flow: row wrap;
-    justify-content: space-between;
+    flex-flow: row;
+    align-items: center;
 }
 
-#controls h2 {
-    margin: 0px;
-    font-size: var(--body-font-size);
-    font-weight: bold;
-}
-
-#controls input {
+#intro #options input {
     width: var(--input-width);
     height: var(--input-width);
+    margin: 0px 6px 0px 6px;
     outline: none;
 }
 
-#mode, #options {
+#intro #entry {
     display: flex;
-    flex-direction: column;
+    flex-flow: row;
+    align-items: center;
     justify-content: space-between;
+}
+
+#intro #entry div {
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+}
+
+#intro #entry div input {
+    width: var(--input-width);
+    height: var(--input-width);
+    margin: 0px 6px 0px 6px;
+    outline: none;
+}
+
+#controls {
+    display: none;
 }
 
 #keypad {
     width: var(--keypad-width);
     height: var(--keypad-width);
+    margin: 20px auto 0px auto;
     display: flex;
     flex-flow: row wrap;
     justify-content: space-between;
@@ -154,6 +187,7 @@ h1 {
 #keypad div {
     width: var(--key-width);
     height: var(--key-width);
+    color: black;
     font-size: var(--square-font-size);
     font-weight: 600;
     background-color: lightgray;
@@ -166,9 +200,9 @@ h1 {
 }
 
 #buttons {
-    margin: 20px 0px;
+    margin: 20px 0px 0px 0px;
     display: flex;
-    flex-flow: row wrap;
+    flex-flow: row;
     justify-content: space-between;
 }
 
