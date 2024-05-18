@@ -1,5 +1,5 @@
 :root {
-    --body-width:       min(96vw, 450px);
+    --body-width:       min(96vw, 1000px);
     --body-font-size:   calc(var(--body-width) / 30);
     --header-font-size: calc(var(--body-width) / 20);
     --card-width:       calc(var(--body-width) * 0.26);
