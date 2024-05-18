@@ -1,26 +1,26 @@
 :root {
-    --body-width:       min(100vw, 640px);
+    --body-width:       100vw;
     --body-height:      100vh;
     --body-font-size:   calc(var(--body-width) / 30);
-    --felt-width:       min(var(--body-width), var(--body-height));
-    --felt-height:      var(--felt-width);
-    --card-width:       calc(var(--felt-width) * 0.15);
+    --felt-width:       calc(var(--body-width));
+    --felt-height:      calc(var(--body-height));
+    --felt-padding:     calc(min(var(--felt-width), var(--felt-height)) * 0.02);
+    --card-width:       calc(min(var(--felt-width) * 0.175, var(--felt-height) * 0.16));
     --card-height:      calc(var(--card-width) / 2.5 * 3.5);
-    --play-top:         calc(var(--felt-height) / 2 - var(--card-height) - var(--play-pitch) / 2);
-    --play-left:        calc((var(--felt-width) - (var(--card-width))) / 2);
-    --play-pitch:       calc(var(--felt-width) * 0.02);
-    --south-top:        calc(var(--felt-height) * 0.98 - var(--card-height));
-    --south-left:       calc(var(--felt-width) * 0.02);
-    --south-pitch:      calc((var(--felt-width) - var(--south-left) * 2 - var(--card-width)) / 19);
-    --north-top:        calc(var(--felt-height) * 0.02);
-    --north-left:       calc(var(--felt-width) * 0.25);
-    --north-pitch:      calc((var(--felt-width) - var(--north-left) * 2 - var(--card-width)) / 19);
-    --west-top:         calc(var(--felt-height) * 0.22);
-    --west-left:        calc(var(--felt-width) * 0.02 + var(--card-height) * 0.14);
-    --west-pitch:       calc(var(--north-pitch));
-    --east-top:         calc(var(--felt-height) * 0.22);
-    --east-left:        calc(var(--felt-width) * 0.98 - var(--card-height) * 0.86);
-    --east-pitch:       calc(var(--north-pitch));
+    --play-top:         calc((var(--felt-height) - var(--card-height) * 2 - var(--felt-padding)) / 2);
+    --play-left:        calc((var(--felt-width) - var(--card-width)) / 2);
+    --south-pitch:      calc((var(--felt-width) - var(--card-width) - var(--felt-padding) * 2) / 19);
+    --south-top:        calc(var(--felt-height) - var(--card-height) - var(--felt-padding));
+    --south-left:       calc(var(--felt-padding));
+    --north-pitch:      calc(min((var(--felt-width) - var(--card-width) * 3 - var(--felt-padding) * 4) / 19, var(--card-width) / 8));
+    --north-top:        calc(var(--felt-padding));
+    --north-left:       calc((var(--felt-width) - var(--north-pitch) * 19 - var(--card-width)) / 2);
+    --west-pitch:       calc(min((var(--felt-height) - var(--card-height) * 3 - var(--felt-padding) * 4) / 19, var(--card-width) / 8));
+    --west-top:         calc((var(--felt-height) - var(--west-pitch) * 19 - var(--card-height)) / 2);
+    --west-left:        calc(var(--felt-padding));
+    --east-pitch:       calc(var(--west-pitch));
+    --east-top:         calc(var(--west-top));
+    --east-left:        calc(var(--felt-width) - var(--card-width) - var(--felt-padding));
 }
 
 body {
@@ -49,18 +49,18 @@ body {
 }
 
 #play :nth-child(2) {
-    top: calc(var(--play-top) + var(--card-height) / 2 + var(--play-pitch) / 2); 
-    left: calc(var(--play-left) + var(--card-width) + var(--play-pitch));
+    top: calc(var(--play-top) + var(--card-height) / 2 + var(--felt-padding) / 2); 
+    left: calc(var(--play-left) + var(--card-width) + var(--felt-padding));
 }
 
 #play :nth-child(3) {
-    top: calc(var(--play-top) + var(--card-height) + var(--play-pitch)); 
+    top: calc(var(--play-top) + var(--card-height) + var(--felt-padding)); 
     left: var(--play-left);
 }
 
 #play :nth-child(4) {
-    top: calc(var(--play-top) + var(--card-height) / 2 + var(--play-pitch) / 2); 
-    left: calc(var(--play-left) - var(--card-width) - var(--play-pitch));
+    top: calc(var(--play-top) + var(--card-height) / 2 + var(--felt-padding) / 2); 
+    left: calc(var(--play-left) - var(--card-width) - var(--felt-padding));
 }
 
 #south img {
@@ -93,7 +93,6 @@ body {
 #west img {
     width: var(--card-width);
     position: absolute;
-    transform: rotate(90deg);
     left: var(--west-left);
 }
 
@@ -148,7 +147,6 @@ body {
 #east img {
     width: var(--card-width);
     position: absolute;
-    transform: rotate(90deg);
     left: var(--east-left);
 }
 
