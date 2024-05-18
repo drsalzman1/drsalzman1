@@ -1,0 +1,56 @@
+:root {
+    --body-width:       min(96vw, 450px);
+    --body-font-size:   calc(var(--body-width) / 30);
+    --header-font-size: calc(var(--body-width) / 20);
+    --card-width:       calc(var(--body-width) * 0.26);
+    --card-height:      calc(var(--card-width) / 2.5 * 3.5);
+    --card-pitch:       calc((var(--body-width) - var(--card-width)) / 19);
+}
+
+body {
+    width: var(--body-width);
+    margin: auto;
+    font-family: sans-serif;
+    font-size: var(--body-font-size);
+    user-select: none;
+}
+
+h1 {
+    width: var(--body-width);
+    margin: 8px 0px;
+    font-size: var(--header-font-size);
+    font-weight: 600;
+    text-align: center;
+}
+
+#south {
+    width: var(--body-width);
+    height: var(--card-height);
+    position: relative;
+}
+
+#south img {
+    width: var(--card-width);
+    position: absolute;
+}
+
+#south :nth-child(1) {left: calc(var(--card-pitch) * 0);}
+#south :nth-child(2) {left: calc(var(--card-pitch) * 1);}
+#south :nth-child(3) {left: calc(var(--card-pitch) * 2);}
+#south :nth-child(4) {left: calc(var(--card-pitch) * 3);}
+#south :nth-child(5) {left: calc(var(--card-pitch) * 4);}
+#south :nth-child(6) {left: calc(var(--card-pitch) * 5);}
+#south :nth-child(7) {left: calc(var(--card-pitch) * 6);}
+#south :nth-child(8) {left: calc(var(--card-pitch) * 7);}
+#south :nth-child(9) {left: calc(var(--card-pitch) * 8);}
+#south :nth-child(10) {left: calc(var(--card-pitch) * 9);}
+#south :nth-child(11) {left: calc(var(--card-pitch) * 10);}
+#south :nth-child(12) {left: calc(var(--card-pitch) * 11);}
+#south :nth-child(13) {left: calc(var(--card-pitch) * 12);}
+#south :nth-child(14) {left: calc(var(--card-pitch) * 13);}
+#south :nth-child(15) {left: calc(var(--card-pitch) * 14);}
+#south :nth-child(16) {left: calc(var(--card-pitch) * 15);}
+#south :nth-child(17) {left: calc(var(--card-pitch) * 16);}
+#south :nth-child(18) {left: calc(var(--card-pitch) * 17);}
+#south :nth-child(19) {left: calc(var(--card-pitch) * 18);}
+#south :nth-child(20) {left: calc(var(--card-pitch) * 19);}

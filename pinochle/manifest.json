@@ -1,0 +1,39 @@
+{
+  "background_color": "#ffffff",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "Pinochle",
+  "description": "This is a simple double-deck Pinochle game that I wrote to learn HTML, CSS and Javascript.",
+  "orientation": "any",
+  "scope": "./",
+  "short_name": "Pinochle",
+  "start_url": "index.html",
+  "id": "pinochle",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "640x640",
+      "purpose": "any"
+    },
+    {
+      "src": "icon.svg",
+      "sizes": "640x640",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots" : [
+    {
+      "src": "wide.png",
+      "sizes": "606x1092",
+      "form_factor": "wide",
+      "label": "Homescreen"
+    },
+    {
+      "src": "narrow.png",
+      "sizes": "510x957",
+      "form_factor": "narrow",
+      "label": "Homescreen"
+    }
+  ]
+}
