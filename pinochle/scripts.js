@@ -69,12 +69,12 @@ function touch(event, player, index) {
     const lx = Number.parseFloat(getComputedStyle(l).left);
     const ly = Number.parseFloat(getComputedStyle(l).top);
     const translate = ["20% 0%", "0% 20%", "-20% 0%", "0% -20%"];
-    //event.preventDefault();
+    event.preventDefault();
     if (getComputedStyle(h).translate == translate[player]) {
         h.style.transition = "translate 1s";
         h.style.translate = (lx-hx) + "px " + (ly-hy) + "px";
-        corner.innerText = "Play ";
-        corner.innerText += (lx-hx) + "px " + (ly-hy) + "px" ;
+        corner.innerText = "";
+        corner.innerText = "Play: " + (lx-hx) + "px " + (ly-hy) + "px" ;
         h.ontransitionend = function() {
             h.style.transition = "translate 0s";
             h.style.translate = "0px 0px";
@@ -82,8 +82,8 @@ function touch(event, player, index) {
             h.src = "";
         }
     } else {
-        corner.innerText = "Select ";
-        corner.innerText += translate[player];
+        corner.innerText = "";
+        corner.innerText = "Select: " + translate[player];
         for (let p = west; p <= south; p++)
             for (let i = 0; i < dealt; i++)
                 if (p == player && i == index)
