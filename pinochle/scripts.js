@@ -100,9 +100,9 @@ window.onload = function() {
         north[i].ontouchstart = function(e) {touchCard(e, north[i], "0% 20%",  playNorth);}
         east[i].ontouchstart  = function(e) {touchCard(e, east[i],  "-20% 0%", playEast );}
         south[i].ontouchstart = function(e) {touchCard(e, south[i], "0% -20%", playSouth);}
-        west[i].ontouchmove   = function(e) {moveCard(e,  west,     "20% 0%" );}
+        /*west[i].ontouchmove   = function(e) {moveCard(e,  west,     "20% 0%" );}
         north[i].ontouchmove  = function(e) {moveCard(e,  north,    "0% 20%" );}
         east[i].ontouchmove   = function(e) {moveCard(e,  east,     "-20% 0%");}
-        south[i].ontouchmove  = function(e) {moveCard(e,  south,    "0% -20%");}
+        south[i].ontouchmove  = function(e) {moveCard(e,  south,    "0% -20%");}*/
     }
 }
