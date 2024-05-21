@@ -24,7 +24,7 @@ const reload    = document.getElementById("reload");
 
 // Other constants
 const dealt     = 20;
-const version   = "v0.12";
+const version   = "v0.13";
 
 // Global variables
 let picked      = null;
@@ -41,7 +41,7 @@ function enter (event, player, index) {
 function leave (event, player, index) {
     const h = handImage[player][index];
     event.preventDefault();
-    h.style.translate = "0% 0%";
+    h.style.translate = "none";
 }
 
 function press (event, player, index) {
@@ -55,8 +55,8 @@ function press (event, player, index) {
     h.style.transition = "translate 1s";
     h.style.translate = (lx-hx) + "px " + (ly-hy) + "px";
     h.ontransitionend = function() {
-        h.style.transition = "translate 0s";
-        h.style.translate = "0px 0px";
+        h.style.transition = "none";
+        h.style.translate = "none";
         l.src = h.src;
         h.src = "";
     }
@@ -76,8 +76,8 @@ function touch(event, player, index) {
         h.style.translate = (lx-hx) + "px " + (ly-hy) + "px";
         corner.innerText = "Play: " + (lx-hx) + "px " + (ly-hy) + "px" ;
         h.ontransitionend = function() {
-            h.style.transition = "translate 0s";
-            h.style.translate = "0px 0px";
+            h.style.transition = "none";
+            h.style.translate = "none";
             l.src = h.src;
             h.src = "";
         }
@@ -88,7 +88,7 @@ function touch(event, player, index) {
                 if (p == player && i == index)
                     handImage[p][i].style.translate = translate[p];
                 else
-                    handImage[p][i].style.translate = "0% 0%";
+                    handImage[p][i].style.translate = "none";
     }
 }
 
@@ -100,7 +100,7 @@ function slide(event, player, index) {
     const translate = ["20% 0%", "0% 20%", "-20% 0%", "0% -20%"];
     event.preventDefault();
     for (let i = 0; i < dealt; i++) {
-        h[i].style.translate = "0% 0%";
+        h[i].style.translate = "none";
         cardL[i] = h[i].offsetLeft;
         cardR[i] = h[i].offsetLeft + h[i].offsetWidth;
         cardT[i] = h[i].offsetTop;
@@ -122,7 +122,6 @@ function slide(event, player, index) {
 
 // initialize javascript after window loads
 window.onload = function() {
-    //corner.innerText = "";
     corner.innerText = version;
     reload.onclick = function() {
         location.reload();
