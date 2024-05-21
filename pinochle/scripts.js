@@ -121,7 +121,8 @@ function slide(event, player, index) {
 
 // initialize javascript after window loads
 window.onload = function() {
-    corner.innerText = "Version 0.1";
+    corner.innerText = "";
+    corner.innerText = "v0.1";
     reload.onclick = function() {
         location.reload();
     }
