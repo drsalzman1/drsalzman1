@@ -69,7 +69,7 @@ function touch(event, player, index) {
     const lx = Number.parseFloat(getComputedStyle(l).left);
     const ly = Number.parseFloat(getComputedStyle(l).top);
     const translate = ["20% 0%", "0% 20%", "-20% 0%", "0% -20%"];
-    event.preventDefault();
+    //event.preventDefault();
     if (getComputedStyle(h).translate == translate[player]) {
         h.style.transition = "translate 1s";
         h.style.translate = (lx-hx) + "px " + (ly-hy) + "px";
@@ -125,7 +125,6 @@ function slide(event, player, index) {
 window.onload = function() {
     reload.onclick = function() {
         location.reload();
-        corner.innerText = "Reload";
     }
     for (let p = west; p <= south; p++) {
         for (let i = 0; i < dealt; i++) {
