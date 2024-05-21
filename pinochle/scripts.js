@@ -20,7 +20,7 @@ function bumpCard (e, s, t) {
 }
 
 function playCard (e, s, d) {
-    bumpCard(e, s, "0%", "0%");
+    bumpCard(e, s, "0% 0%");
     const sx = s.offsetLeft;
     const sy = s.offsetTop;
     const dx = d.offsetLeft;
