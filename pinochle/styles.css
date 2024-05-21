@@ -57,29 +57,29 @@ body {
     left: calc(var(--felt-width) - var(--felt-padding) - var(--icon-width));
 }
 
-#play img {
+#lay img {
     width: var(--card-width);
     position: absolute;
 }
 
-#play :nth-child(1) {
+#lay :nth-child(1) {
+    top: calc(var(--play-top) + var(--card-height) / 2 + var(--felt-padding) / 2); 
+    left: calc(var(--play-left) - var(--card-width) - var(--felt-padding));
+}
+
+#lay :nth-child(2) {
     top: var(--play-top); 
     left: var(--play-left);
 }
 
-#play :nth-child(2) {
+#lay :nth-child(3) {
     top: calc(var(--play-top) + var(--card-height) / 2 + var(--felt-padding) / 2); 
     left: calc(var(--play-left) + var(--card-width) + var(--felt-padding));
 }
 
-#play :nth-child(3) {
+#lay :nth-child(4) {
     top: calc(var(--play-top) + var(--card-height) + var(--felt-padding)); 
     left: var(--play-left);
-}
-
-#play :nth-child(4) {
-    top: calc(var(--play-top) + var(--card-height) / 2 + var(--felt-padding) / 2); 
-    left: calc(var(--play-left) - var(--card-width) - var(--felt-padding));
 }
 
 #west img {
@@ -189,10 +189,3 @@ body {
 #south :nth-child(18) {left: calc(var(--south-left) + var(--south-pitch) * 17);}
 #south :nth-child(19) {left: calc(var(--south-left) + var(--south-pitch) * 18);}
 #south :nth-child(20) {left: calc(var(--south-left) + var(--south-pitch) * 19);}
-
-#msg {
-    width: var(--card-width);
-    height: var(--card-height);
-    top: var(--felt-padding);
-    left: var(--felt-padding);
-}
