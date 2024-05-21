@@ -24,6 +24,7 @@ const reload    = document.getElementById("reload");
 
 // Other constants
 const dealt     = 20;
+const version   = "v0.12";
 
 // Global variables
 let picked      = null;
@@ -122,7 +123,7 @@ function slide(event, player, index) {
 // initialize javascript after window loads
 window.onload = function() {
     //corner.innerText = "";
-    corner.innerText = "v0.11";
+    corner.innerText = version;
     reload.onclick = function() {
         location.reload();
     }
