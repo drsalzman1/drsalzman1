@@ -73,7 +73,7 @@ function touch(event, player, index) {
     if (getComputedStyle(h).translate == translate[player]) {
         h.style.transition = "translate 1s";
         h.style.translate = (lx-hx) + "px " + (ly-hy) + "px";
-        corner.innerText = (lx-hx) + "px " + (ly-hy) + "px";
+        corner.innerText = (lx-hx) + "px " + (ly-hy) + "px" ;
         h.ontransitionend = function() {
             h.style.transition = "translate 0s";
             h.style.translate = "0px 0px";
