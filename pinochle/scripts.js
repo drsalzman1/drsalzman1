@@ -23,7 +23,7 @@ const corner    = document.getElementById("corner");
 const reload    = document.getElementById("reload");
 
 // Other constants
-const deal      = 20;
+const dealt     = 20;
 
 // Global variables
 let picked      = null;
@@ -51,33 +51,27 @@ function playCard (e, s, d) {
     }
 }
 
-function touchCard(event, player, index) {
+function touch(event, player, index) {
     const h = handImage[player][index];
     const l = layImage[player];
+    const hx = Number.parseFloat(getComputedStyle(h).left);
+    const hy = Number.parseFloat(getComputedStyle(h).top);
+    const lx = Number.parseFloat(getComputedStyle(l).left);
+    const ly = Number.parseFloat(getComputedStyle(l).top);
     const translate = ["20% 0%", "0% 20%", "-20% 0%", "0% -20%"];
     event.preventDefault();
     if (getComputedStyle(h).translate == translate[player]) {
-        const dx = Number.parseFloat(getComputedStyle(h).width) * 0.2;
-        const dy = Number.parseFloat(getComputedStyle(h).height) * 0.2;
-        const deltaX = [dx, 0, -dx, 0];
-        const deltaY = [0, dy, 0, -dy];
-        const hx = Number.parseFloat(getComputedStyle(h).left); // + deltaX[player];
-        const hy = Number.parseFloat(getComputedStyle(h).top); //  + deltaY[player];
-        const lx = Number.parseFloat(getComputedStyle(l).left);
-        const ly = Number.parseFloat(getComputedStyle(l).top);
-        h.style.transition = "translate 1s"; //"transform 1s";
+        h.style.transition = "translate 1s";
         h.style.translate = (lx-hx) + "px " + (ly-hy) + "px";
-        //h.style.transform = "translate(" + (lx-hx) + "px, " + (ly-hy) + "px)";
         h.ontransitionend = function() {
+            h.style.transition = "translate 0s";
             h.style.translate = "0px 0px";
-            // h.style.transform = "none";
-            h.style.transition = "translate 0s"; //"transform 0s";
             l.src = h.src;
             h.src = "";
         }
     } else {
         for (let p = west; p <= south; p++)
-            for (let i = 0; i < deal; i++)
+            for (let i = 0; i < dealt; i++)
                 if (p == player && i == index)
                     handImage[p][i].style.translate = translate[p];
                 else
@@ -85,23 +79,35 @@ function touchCard(event, player, index) {
     }
 }
 
-/*function touchCard(e, s, t, d) {
-    const cardT = getComputedStyle(s).translate;
-    for (let i = 0; i < west.length; i++)
-        bumpCard(e, west[i], "0% 0%");
-    for (let i = 0; i < north.length; i++)
-        bumpCard(e, north[i], "0% 0%");
-    for (let i = 0; i < east.length; i++)
-        bumpCard(e, east[i], "0% 0%");
-    for (let i = 0; i < south.length; i++)
-        bumpCard(e, south[i], "0% 0%");
-    if (cardT == "none" || cardT == "0% 0%")
-        bumpCard(e, s, t);
-    else
-        playCard(e, s, d);
-}*/
+function slide(event, player, index) {
+    const cardL = [], cardR = [], cardT = [], cardB = [];
+    const h = handImage[player];
+    const touchX = event.changedTouches[0].clientX;
+    const touchY = event.changedTouches[0].clientY;
+    const translate = ["20% 0%", "0% 20%", "-20% 0%", "0% -20%"];
+    event.preventDefault();
+    for (let i = 0; i < dealt; i++) {
+        h[i].style.translate = "0% 0%";
+        cardL[i] = h[i].offsetLeft;
+        cardR[i] = h[i].offsetLeft + h[i].offsetWidth;
+        cardT[i] = h[i].offsetTop;
+        cardB[i] = h[i].offsetTop + h[i].offsetHeight;
+    }
+    if (touchX >= cardL[0] && touchX < cardR.at(-1) && touchY >= cardT[0] && touchY < cardB.at(-1)) {
+        for (let i = 0; i < dealt; i++) {
+            if (touchX >= cardL[i] && touchX < cardR[i] && touchY >= cardT[i] && touchY < cardB[i]) {
+                if (i + 1 < dealt && (player == south || player == north) && touchX >= cardL[i + 1])
+                    continue;
+                if (i + 1 < dealt && (player == west || player == east) && touchY >= cardT[i + 1])
+                    continue;
+                h[i].style.translate = translate[player];
+                break;
+            }
+        }
+    }
+}
 
-function moveCard(e, side, t) {
+/*function moveCard(e, side, t) {
     const cardL = [], cardR = [], cardT = [], cardB = [];
     const touchX = e.changedTouches[0].clientX;
     const touchY = e.changedTouches[0].clientY;
@@ -125,7 +131,7 @@ function moveCard(e, side, t) {
             break;
         }
     }
-}
+}*/
 
 // initialize javascript after window loads
 window.onload = function() {
@@ -133,7 +139,7 @@ window.onload = function() {
         location.reload();
     }
     for (let p = west; p <= south; p++) {
-        for (let i = 0; i < deal; i++) {
+        for (let i = 0; i < dealt; i++) {
             /*west[i].onmouseenter  = function(e) {bumpCard(e,  west[i],  "20% 0%" );}
             north[i].onmouseenter = function(e) {bumpCard(e,  north[i], "0% 20%" );}
             east[i].onmouseenter  = function(e) {bumpCard(e,  east[i],  "-20% 0%");}
@@ -146,11 +152,8 @@ window.onload = function() {
             north[i].onmousedown  = function(e) {playCard(e,  north[i], playNorth);}
             east[i].onmousedown   = function(e) {playCard(e,  east[i],  playEast );}
             south[i].onmousedown  = function(e) {playCard(e,  south[i], playSouth);}*/
-            handImage[p][i].ontouchstart  = function(e) {touchCard(e, p, i);}
-            /*west[i].ontouchmove   = function(e) {moveCard(e,  west,     "20% 0%" );}
-            north[i].ontouchmove  = function(e) {moveCard(e,  north,    "0% 20%" );}
-            east[i].ontouchmove   = function(e) {moveCard(e,  east,     "-20% 0%");}
-            south[i].ontouchmove  = function(e) {moveCard(e,  south,    "0% -20%");}*/
+            handImage[p][i].ontouchstart = function(e) {touch(e, p, i);}
+            handImage[p][i].ontouchmove  = function(e) {slide(e, p, i);}
         }
     }
 }
