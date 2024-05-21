@@ -80,7 +80,7 @@ function moveCard(e, side, t) {
 // initialize javascript after window loads
 window.onload = function() {
     for (let i = 0; i < south.length; i++) {
-        west[i].onmouseenter  = function(e) {bumpCard(e,  west[i],  "20% 0%" );}
+        /*west[i].onmouseenter  = function(e) {bumpCard(e,  west[i],  "20% 0%" );}
         north[i].onmouseenter = function(e) {bumpCard(e,  north[i], "0% 20%" );}
         east[i].onmouseenter  = function(e) {bumpCard(e,  east[i],  "-20% 0%");}
         south[i].onmouseenter = function(e) {bumpCard(e,  south[i], "0% -20%");}
@@ -91,7 +91,7 @@ window.onload = function() {
         west[i].onmousedown   = function(e) {playCard(e,  west[i],  playWest );}
         north[i].onmousedown  = function(e) {playCard(e,  north[i], playNorth);}
         east[i].onmousedown   = function(e) {playCard(e,  east[i],  playEast );}
-        south[i].onmousedown  = function(e) {playCard(e,  south[i], playSouth);}
+        south[i].onmousedown  = function(e) {playCard(e,  south[i], playSouth);}*/
         west[i].ontouchstart  = function(e) {touchCard(e, west[i],  "20% 0%",  playWest );}
         north[i].ontouchstart = function(e) {touchCard(e, north[i], "0% 20%",  playNorth);}
         east[i].ontouchstart  = function(e) {touchCard(e, east[i],  "-20% 0%", playEast );}
