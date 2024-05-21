@@ -73,7 +73,8 @@ function touch(event, player, index) {
     if (getComputedStyle(h).translate == translate[player]) {
         h.style.transition = "translate 1s";
         h.style.translate = (lx-hx) + "px " + (ly-hy) + "px";
-        corner.innerText = (lx-hx) + "px " + (ly-hy) + "px" ;
+        corner.innerText = "Play ";
+        corner.innerText += (lx-hx) + "px " + (ly-hy) + "px" ;
         h.ontransitionend = function() {
             h.style.transition = "translate 0s";
             h.style.translate = "0px 0px";
@@ -81,7 +82,8 @@ function touch(event, player, index) {
             h.src = "";
         }
     } else {
-        corner.innerText = translate[player];
+        corner.innerText = "Select ";
+        corner.innerText += translate[player];
         for (let p = west; p <= south; p++)
             for (let i = 0; i < dealt; i++)
                 if (p == player && i == index)
@@ -123,6 +125,7 @@ function slide(event, player, index) {
 window.onload = function() {
     reload.onclick = function() {
         location.reload();
+        corner.innerText = "Reload";
     }
     for (let p = west; p <= south; p++) {
         for (let i = 0; i < dealt; i++) {
