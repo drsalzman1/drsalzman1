@@ -73,7 +73,6 @@ function touch(event, player, index) {
     if (getComputedStyle(h).translate == translate[player]) {
         h.style.transition = "translate 1s";
         h.style.translate = (lx-hx) + "px " + (ly-hy) + "px";
-        corner.innerText = "";
         corner.innerText = "Play: " + (lx-hx) + "px " + (ly-hy) + "px" ;
         h.ontransitionend = function() {
             h.style.transition = "translate 0s";
@@ -82,7 +81,6 @@ function touch(event, player, index) {
             h.src = "";
         }
     } else {
-        corner.innerText = "";
         corner.innerText = "Select: " + translate[player];
         for (let p = west; p <= south; p++)
             for (let i = 0; i < dealt; i++)
@@ -123,6 +121,7 @@ function slide(event, player, index) {
 
 // initialize javascript after window loads
 window.onload = function() {
+    corner.innerText = "Version 0.1";
     reload.onclick = function() {
         location.reload();
     }
