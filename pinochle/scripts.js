@@ -24,7 +24,7 @@ const reload    = document.getElementById("reload");
 
 // Other constants
 const dealt     = 20;
-const version   = "v0.13";
+const version   = "v0.14";
 
 // Global variables
 let picked      = null;
@@ -114,6 +114,7 @@ function slide(event, player, index) {
                 if (i + 1 < dealt && (player == west || player == east) && touchY >= cardT[i + 1])
                     continue;
                 h[i].style.translate = translate[player];
+                corner.innerText = "Slide: " + translate[player];
                 break;
             }
         }
@@ -132,7 +133,7 @@ window.onload = function() {
             //handImage[p][i].onmouseleave = function(e) {leave(e, p, i);}
             //handImage[p][i].onmousedown  = function(e) {press(e, p, i);}
             handImage[p][i].ontouchstart = function(e) {touch(e, p, i);}
-            //handImage[p][i].ontouchmove  = function(e) {slide(e, p, i);}
+            handImage[p][i].ontouchmove  = function(e) {slide(e, p, i);}
         }
     }
 }
