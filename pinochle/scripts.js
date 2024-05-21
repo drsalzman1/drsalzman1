@@ -1,13 +1,14 @@
 "use strict";
 
-const west  = document.querySelectorAll("#west img");
-const north = document.querySelectorAll("#north img");
-const east  = document.querySelectorAll("#east img");
-const south = document.querySelectorAll("#south img");
-const play  = document.querySelectorAll("#play img");
+const west      = document.querySelectorAll("#west img");
+const north     = document.querySelectorAll("#north img");
+const east      = document.querySelectorAll("#east img");
+const south     = document.querySelectorAll("#south img");
+const play      = document.querySelectorAll("#play img");
 
-const felt  = document.getElementById("felt");
-const msg   = document.getElementById("msg");
+const felt      = document.getElementById("felt");
+const corner    = document.getElementById("corner");
+const reload    = document.getElementById("reload");
 
 const playWest  = play[3];
 const playNorth = play[0];
@@ -79,6 +80,9 @@ function moveCard(e, side, t) {
 
 // initialize javascript after window loads
 window.onload = function() {
+    reload.onclick = function() {
+        location.reload();
+    }
     for (let i = 0; i < south.length; i++) {
         /*west[i].onmouseenter  = function(e) {bumpCard(e,  west[i],  "20% 0%" );}
         north[i].onmouseenter = function(e) {bumpCard(e,  north[i], "0% 20%" );}

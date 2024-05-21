@@ -1,7 +1,7 @@
 :root {
     --body-width:       100vw;
     --body-height:      100vh;
-    --body-font-size:   calc(var(--body-width) / 30);
+    --body-font-size:   calc(min(4vw, 4vh));
     --felt-width:       calc(var(--body-width));
     --felt-height:      calc(var(--body-height));
     --felt-padding:     calc(min(var(--felt-width), var(--felt-height)) * 0.02);
@@ -21,6 +21,7 @@
     --east-pitch:       calc(var(--west-pitch));
     --east-top:         calc(var(--west-top));
     --east-left:        calc(var(--felt-width) - var(--card-width) - var(--felt-padding));
+    --icon-width:       calc(min(4vw, 4vh));
 }
 
 body {
@@ -29,6 +30,7 @@ body {
     font-family: sans-serif;
     font-size: var(--body-font-size);
     user-select: none;
+    touch-action: none;
 }
 
 #felt {
@@ -36,6 +38,23 @@ body {
     height: var(--felt-height);
     background-color: darkgreen;
     position: relative;
+}
+
+#corner {
+    color: white;
+    width: var(--card-width);
+    height: var(--card-height);
+    position: absolute;
+    top: var(--felt-padding);
+    left: var(--felt-padding);
+}
+
+#reload {
+    filter: invert(100%);
+    width: var(--icon-width);
+    position: absolute;
+    top: var(--felt-padding);
+    left: calc(var(--felt-width) - var(--felt-padding) - var(--icon-width));
 }
 
 #play img {
