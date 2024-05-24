@@ -9,18 +9,6 @@
     --card-height:      calc(var(--card-width) / 2.5 * 3.5);
     --play-top:         calc((var(--felt-height) - var(--card-height) * 2 - var(--felt-padding)) / 2);
     --play-left:        calc((var(--felt-width) - var(--card-width)) / 2);
-    --south-pitch:      calc((var(--felt-width) - var(--card-width) - var(--felt-padding) * 2) / 19);
-    --south-top:        calc(var(--felt-height) - var(--card-height) - var(--felt-padding));
-    --south-left:       calc(var(--felt-padding));
-    --north-pitch:      calc(min((var(--felt-width) - var(--card-width) * 3 - var(--felt-padding) * 4) / 19, var(--card-width) / 8));
-    --north-top:        calc(var(--felt-padding));
-    --north-left:       calc((var(--felt-width) - var(--north-pitch) * 19 - var(--card-width)) / 2);
-    --west-pitch:       calc(min((var(--felt-height) - var(--card-height) * 3 - var(--felt-padding) * 4) / 19, var(--card-width) / 8));
-    --west-top:         calc((var(--felt-height) - var(--west-pitch) * 19 - var(--card-height)) / 2);
-    --west-left:        calc(var(--felt-padding));
-    --east-pitch:       calc(var(--west-pitch));
-    --east-top:         calc(var(--west-top));
-    --east-left:        calc(var(--felt-width) - var(--card-width) - var(--felt-padding));
     --icon-width:       calc(min(4vw, 4vh));
 }
 
@@ -85,107 +73,19 @@ body {
 #west img {
     width: var(--card-width);
     position: absolute;
-    left: var(--west-left);
 }
-
-#west :nth-child(1) {top: calc(var(--west-top) + var(--west-pitch) * 0);}
-#west :nth-child(2) {top: calc(var(--west-top) + var(--west-pitch) * 1);}
-#west :nth-child(3) {top: calc(var(--west-top) + var(--west-pitch) * 2);}
-#west :nth-child(4) {top: calc(var(--west-top) + var(--west-pitch) * 3);}
-#west :nth-child(5) {top: calc(var(--west-top) + var(--west-pitch) * 4);}
-#west :nth-child(6) {top: calc(var(--west-top) + var(--west-pitch) * 5);}
-#west :nth-child(7) {top: calc(var(--west-top) + var(--west-pitch) * 6);}
-#west :nth-child(8) {top: calc(var(--west-top) + var(--west-pitch) * 7);}
-#west :nth-child(9) {top: calc(var(--west-top) + var(--west-pitch) * 8);}
-#west :nth-child(10) {top: calc(var(--west-top) + var(--west-pitch) * 9);}
-#west :nth-child(11) {top: calc(var(--west-top) + var(--west-pitch) * 10);}
-#west :nth-child(12) {top: calc(var(--west-top) + var(--west-pitch) * 11);}
-#west :nth-child(13) {top: calc(var(--west-top) + var(--west-pitch) * 12);}
-#west :nth-child(14) {top: calc(var(--west-top) + var(--west-pitch) * 13);}
-#west :nth-child(15) {top: calc(var(--west-top) + var(--west-pitch) * 14);}
-#west :nth-child(16) {top: calc(var(--west-top) + var(--west-pitch) * 15);}
-#west :nth-child(17) {top: calc(var(--west-top) + var(--west-pitch) * 16);}
-#west :nth-child(18) {top: calc(var(--west-top) + var(--west-pitch) * 17);}
-#west :nth-child(19) {top: calc(var(--west-top) + var(--west-pitch) * 18);}
-#west :nth-child(20) {top: calc(var(--west-top) + var(--west-pitch) * 19);}
 
 #north img {
     width: var(--card-width);
     position: absolute;
-    top: var(--north-top);
 }
-
-#north :nth-child(1) {left: calc(var(--north-left) + var(--north-pitch) * 0);}
-#north :nth-child(2) {left: calc(var(--north-left) + var(--north-pitch) * 1);}
-#north :nth-child(3) {left: calc(var(--north-left) + var(--north-pitch) * 2);}
-#north :nth-child(4) {left: calc(var(--north-left) + var(--north-pitch) * 3);}
-#north :nth-child(5) {left: calc(var(--north-left) + var(--north-pitch) * 4);}
-#north :nth-child(6) {left: calc(var(--north-left) + var(--north-pitch) * 5);}
-#north :nth-child(7) {left: calc(var(--north-left) + var(--north-pitch) * 6);}
-#north :nth-child(8) {left: calc(var(--north-left) + var(--north-pitch) * 7);}
-#north :nth-child(9) {left: calc(var(--north-left) + var(--north-pitch) * 8);}
-#north :nth-child(10) {left: calc(var(--north-left) + var(--north-pitch) * 9);}
-#north :nth-child(11) {left: calc(var(--north-left) + var(--north-pitch) * 10);}
-#north :nth-child(12) {left: calc(var(--north-left) + var(--north-pitch) * 11);}
-#north :nth-child(13) {left: calc(var(--north-left) + var(--north-pitch) * 12);}
-#north :nth-child(14) {left: calc(var(--north-left) + var(--north-pitch) * 13);}
-#north :nth-child(15) {left: calc(var(--north-left) + var(--north-pitch) * 14);}
-#north :nth-child(16) {left: calc(var(--north-left) + var(--north-pitch) * 15);}
-#north :nth-child(17) {left: calc(var(--north-left) + var(--north-pitch) * 16);}
-#north :nth-child(18) {left: calc(var(--north-left) + var(--north-pitch) * 17);}
-#north :nth-child(19) {left: calc(var(--north-left) + var(--north-pitch) * 18);}
-#north :nth-child(20) {left: calc(var(--north-left) + var(--north-pitch) * 19);}
 
 #east img {
     width: var(--card-width);
     position: absolute;
-    left: var(--east-left);
 }
-
-#east :nth-child(1) {top: calc(var(--east-top) + var(--east-pitch) * 0);}
-#east :nth-child(2) {top: calc(var(--east-top) + var(--east-pitch) * 1);}
-#east :nth-child(3) {top: calc(var(--east-top) + var(--east-pitch) * 2);}
-#east :nth-child(4) {top: calc(var(--east-top) + var(--east-pitch) * 3);}
-#east :nth-child(5) {top: calc(var(--east-top) + var(--east-pitch) * 4);}
-#east :nth-child(6) {top: calc(var(--east-top) + var(--east-pitch) * 5);}
-#east :nth-child(7) {top: calc(var(--east-top) + var(--east-pitch) * 6);}
-#east :nth-child(8) {top: calc(var(--east-top) + var(--east-pitch) * 7);}
-#east :nth-child(9) {top: calc(var(--east-top) + var(--east-pitch) * 8);}
-#east :nth-child(10) {top: calc(var(--east-top) + var(--east-pitch) * 9);}
-#east :nth-child(11) {top: calc(var(--east-top) + var(--east-pitch) * 10);}
-#east :nth-child(12) {top: calc(var(--east-top) + var(--east-pitch) * 11);}
-#east :nth-child(13) {top: calc(var(--east-top) + var(--east-pitch) * 12);}
-#east :nth-child(14) {top: calc(var(--east-top) + var(--east-pitch) * 13);}
-#east :nth-child(15) {top: calc(var(--east-top) + var(--east-pitch) * 14);}
-#east :nth-child(16) {top: calc(var(--east-top) + var(--east-pitch) * 15);}
-#east :nth-child(17) {top: calc(var(--east-top) + var(--east-pitch) * 16);}
-#east :nth-child(18) {top: calc(var(--east-top) + var(--east-pitch) * 17);}
-#east :nth-child(19) {top: calc(var(--east-top) + var(--east-pitch) * 18);}
-#east :nth-child(20) {top: calc(var(--east-top) + var(--east-pitch) * 19);}
 
 #south img {
     width: var(--card-width);
     position: absolute;
-    top: var(--south-top);
 }
-
-#south :nth-child(1) {left: calc(var(--south-left) + var(--south-pitch) * 0);}
-#south :nth-child(2) {left: calc(var(--south-left) + var(--south-pitch) * 1);}
-#south :nth-child(3) {left: calc(var(--south-left) + var(--south-pitch) * 2);}
-#south :nth-child(4) {left: calc(var(--south-left) + var(--south-pitch) * 3);}
-#south :nth-child(5) {left: calc(var(--south-left) + var(--south-pitch) * 4);}
-#south :nth-child(6) {left: calc(var(--south-left) + var(--south-pitch) * 5);}
-#south :nth-child(7) {left: calc(var(--south-left) + var(--south-pitch) * 6);}
-#south :nth-child(8) {left: calc(var(--south-left) + var(--south-pitch) * 7);}
-#south :nth-child(9) {left: calc(var(--south-left) + var(--south-pitch) * 8);}
-#south :nth-child(10) {left: calc(var(--south-left) + var(--south-pitch) * 9);}
-#south :nth-child(11) {left: calc(var(--south-left) + var(--south-pitch) * 10);}
-#south :nth-child(12) {left: calc(var(--south-left) + var(--south-pitch) * 11);}
-#south :nth-child(13) {left: calc(var(--south-left) + var(--south-pitch) * 12);}
-#south :nth-child(14) {left: calc(var(--south-left) + var(--south-pitch) * 13);}
-#south :nth-child(15) {left: calc(var(--south-left) + var(--south-pitch) * 14);}
-#south :nth-child(16) {left: calc(var(--south-left) + var(--south-pitch) * 15);}
-#south :nth-child(17) {left: calc(var(--south-left) + var(--south-pitch) * 16);}
-#south :nth-child(18) {left: calc(var(--south-left) + var(--south-pitch) * 17);}
-#south :nth-child(19) {left: calc(var(--south-left) + var(--south-pitch) * 18);}
-#south :nth-child(20) {left: calc(var(--south-left) + var(--south-pitch) * 19);}
