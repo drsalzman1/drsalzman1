@@ -74,7 +74,7 @@ const reload     = document.getElementById("reload");
 
 // Other constants
 const backSrc    = "cards/bb.svg";
-const version    = "v0.19";
+const version    = "v0.20";
 
 // Global variables
 let dealer       = south;
