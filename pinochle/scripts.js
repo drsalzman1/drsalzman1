@@ -12,7 +12,7 @@ const as = 0, ts = 1, ks = 2, qs = 3, js = 4;
 const ah = 5, th = 6, kh = 7, qh = 8, jh = 9;
 const ac = 10, tc = 11, kc = 12, qc = 13, jc = 14;
 const ad = 15, td = 16, kd = 17, qd = 18, jd = 19;
-const xx = 20, dealt = 20;
+const xx = 20, cards = 20;
 
 // cardSrc[v] = source file for card value v
 const cardSrc = [
@@ -47,16 +47,16 @@ const layImg = document.querySelectorAll("#lay img");
 const hand = [[],[],[],[]];
 
 // handLeft[p][c] = x coordinate of left edge of player p's card c
-const handLeft = [[Array(dealt)],[Array(dealt)],[Array(dealt)],[Array(dealt)]];
+const handLeft = [[Array(cards)],[Array(cards)],[Array(cards)],[Array(cards)]];
 
 // handRight[p][c] = x coordinate of right edge of player p's card c
-const handRight = [[Array(dealt)],[Array(dealt)],[Array(dealt)],[Array(dealt)]];
+const handRight = [[Array(cards)],[Array(cards)],[Array(cards)],[Array(cards)]];
 
 // handTop[p][c] = y coordinate of top edge of player p's card c
-const handTop = [[Array(dealt)],[Array(dealt)],[Array(dealt)],[Array(dealt)]];
+const handTop = [[Array(cards)],[Array(cards)],[Array(cards)],[Array(cards)]];
 
 // handBottom[p][c] = y coordinate of bottom edge of player p's card c
-const handBottom = [[Array(dealt)],[Array(dealt)],[Array(dealt)],[Array(dealt)]];
+const handBottom = [[Array(cards)],[Array(cards)],[Array(cards)],[Array(cards)]];
 
 // handImg[p][c] = card image element for player p's card c
 const handImg = [
@@ -122,21 +122,30 @@ function show(player) {
         handRight [player][c]            = handLeft[player][c] + cardWidth;
         handBottom[player][c]            = handTop [player][c] + cardHeight;
     }
-    for (let c = hand[player].length; c < handImg[player].length; c++) {
-        handImg   [player][c].style.left = "0px";
-        handImg   [player][c].style.top  = "0px";
-        handLeft  [player][c]            = 0;
-        handTop   [player][c]            = 0;
-        handRight [player][c]            = cardWidth;
-        handBottom[player][c]            = cardHeight;
+}
+
+// Play pinochle after cards are dealt
+function play() {
+    for (let p = 0; p < players; p++) {
+        hand[p].sort(function(a, b){return a-b});
+        if (p == south) {
+            for (let i = 0; i < hand[south].length; i++)
+                handImg[south][i].src = cardSrc[hand[south][i]];
+            show(south);
+        }
     }
 }
 
-// Start pinochle game
-function start() {
-    dealer = Math.floor(Math.random() * players);
-    shuffle(deck);
-    deal(0);
+// Deal deck starting with deck[0] and the player clockwise from the dealer
+function deal(card) {
+    const player = (dealer + card + 1) % players;
+    handImg[player][hand[player].length].src = backSrc;
+    hand[player].push(deck[card]);
+    show(player);
+    if (card + 1 < deck.length)
+        setTimeout(deal, 0, card + 1);
+    else
+        play();
 }
 
 // Shuffle an array in place
@@ -152,30 +161,11 @@ function shuffle(array) {
     return;
 }
 
-// Deal deck starting with deck[0] and the player clockwise from the dealer
-function deal(card) {
-    const player = (dealer + card + 1) % players;
-    if (player == south)
-        handImg[player][hand[player].length].src = cardSrc[deck[card]];
-    else
-        handImg[player][hand[player].length].src = backSrc;
-    hand[player].push(deck[card]);
-    show(player);
-    if (card + 1 < deck.length)
-        setTimeout(deal, 10, card + 1);
-    else
-        play();
-}
-
-// Play pinochle after cards are dealt
-function play() {
-    for (let p = 0; p < players; p++) {
-        hand[p].sort(function(a, b){return a-b});
-        if (p == south)
-            for (let i = 0; i < hand[south].length; i++)
-                handImg[south][i].src = cardSrc[hand[south][i]];
-        show(south);
-    }
+// Start pinochle game
+function start() {
+    dealer = Math.floor(Math.random() * players);
+    shuffle(deck);
+    setTimeout(deal, 0, 0);
 }
 
 // Convert x,y coordinates to that hand's player index (or undefined)
@@ -382,8 +372,8 @@ window.onload = function() {
     felt.ontouchstart = touch;
     felt.ontouchmove  = slide;
     for (let p = west; p <= south; p++) {
-        layImg[p].draggable = false;       
-        for (let c = 0; c < dealt; c++)
+        layImg[p].draggable = false;
+        for (let c = 0; c < cards; c++)
             handImg[p][c].draggable = false;
     }
     start();
