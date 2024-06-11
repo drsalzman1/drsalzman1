@@ -208,7 +208,6 @@ function xy2c(x, y) {
 function mouse(e) {
     const p = xy2p (e.clientX, e.clientY);
     const c = xy2c (e.clientX, e.clientY);
-    console.log ("Mouse t:" + e.currentTarget.id + ", x:" + (e.clientX | 0) + ", y:" + (e.clientY | 0) + ", p:" + p + ", c:" + c + ", selectedLeft:" + (selectedLeft | 0));
     if (rendered && (p == undefined || handImg[p][c] != selectedImg) && selectedImg != null) {
         selectedImg.style.left = selectedLeft + "px";
         selectedImg.style.top  = selectedTop  + "px";
@@ -218,9 +217,9 @@ function mouse(e) {
         selectedImg  = handImg [p][c];
         selectedLeft = handLeft[p][c];
         selectedTop  = handTop [p][c];
-        bumpedLeft   = selectedLeft + cardWidth  * [+0.2, +0.0, -0.2, +0.0][p];
+        bumpedLeft   = selectedLeft + cardWidth  * [+0.4, +0.0, -0.4, +0.0][p];
         bumpedRight  = bumpedLeft   + cardWidth;
-        bumpedTop    = selectedTop  + cardHeight * [+0.0, +0.2, +0.0, -0.2][p];
+        bumpedTop    = selectedTop  + cardHeight * [+0.0, +0.4, +0.0, -0.4][p];
         bumpedBottom = bumpedTop    + cardHeight;
         selectedImg.style.left = bumpedLeft + "px";
         selectedImg.style.top  = bumpedTop  + "px";
@@ -232,7 +231,6 @@ function mouse(e) {
 function press(e) {
     const p = xy2p (e.clientX, e.clientY);
     const c = xy2c (e.clientX, e.clientY);
-    console.log ("Press t:" + e.currentTarget.id + ", x:" + (e.clientX | 0) + ", y:" + (e.clientY | 0) + ", p:" + p + ", c:" + c + ", selectedLeft:" + (selectedLeft | 0));
     if (rendered && p != undefined) {
         rendered = false;
         const hi = handImg[p][c];
@@ -280,7 +278,6 @@ function touch(e) {
     felt.onmousemove = "";
     const p = xy2p (e.touches[0].clientX, e.touches[0].clientY);
     const c = xy2c (e.touches[0].clientX, e.touches[0].clientY);
-    console.log ("Touch t:" + e.currentTarget.id + ", x:" + (e.touches[0].clientX | 0) + ", y:" + (e.touches[0].clientY | 0) + ", p:" + p + ", c:" + c + ", selectedLeft:" + (selectedLeft | 0));
     if (rendered && (p == undefined || handImg[p][c] != selectedImg) && selectedImg != null) {
         selectedImg.style.left = selectedLeft + "px";
         selectedImg.style.top  = selectedTop  + "px";
@@ -290,9 +287,9 @@ function touch(e) {
         selectedImg  = handImg [p][c];
         selectedLeft = handLeft[p][c];
         selectedTop  = handTop [p][c];
-        bumpedLeft   = selectedLeft + cardWidth  * [+0.2, +0.0, -0.2, +0.0][p];
+        bumpedLeft   = selectedLeft + cardWidth  * [+0.4, +0.0, -0.4, +0.0][p];
         bumpedRight  = bumpedLeft   + cardWidth;
-        bumpedTop    = selectedTop  + cardHeight * [+0.0, +0.2, +0.0, -0.2][p];
+        bumpedTop    = selectedTop  + cardHeight * [+0.0, +0.4, +0.0, -0.4][p];
         bumpedBottom = bumpedTop    + cardHeight;
         selectedImg.style.left = bumpedLeft + "px";
         selectedImg.style.top  = bumpedTop  + "px";
@@ -342,7 +339,6 @@ function touch(e) {
 function slide(e) {
     const p = xy2p (e.touches[0].clientX, e.touches[0].clientY);
     const c = xy2c (e.touches[0].clientX, e.touches[0].clientY);
-    console.log ("Slide t:" + e.currentTarget.id + ", x:" + (e.touches[0].clientX | 0) + ", y:" + (e.touches[0].clientY | 0) + ", p:" + p + ", c:" + c + ", selectedLeft:" + (selectedLeft | 0));
     if (rendered && (p == undefined || handImg[p][c] != selectedImg) && selectedImg != null) {
         selectedImg.style.left = selectedLeft + "px";
         selectedImg.style.top  = selectedTop  + "px";
@@ -352,9 +348,9 @@ function slide(e) {
         selectedImg  = handImg [p][c];
         selectedLeft = handLeft[p][c];
         selectedTop  = handTop [p][c];
-        bumpedLeft   = selectedLeft + cardWidth  * [+0.2, +0.0, -0.2, +0.0][p];
+        bumpedLeft   = selectedLeft + cardWidth  * [+0.4, +0.0, -0.4, +0.0][p];
         bumpedRight  = bumpedLeft   + cardWidth;
-        bumpedTop    = selectedTop  + cardHeight * [+0.0, +0.2, +0.0, -0.2][p];
+        bumpedTop    = selectedTop  + cardHeight * [+0.0, +0.4, +0.0, -0.4][p];
         bumpedBottom = bumpedTop    + cardHeight;
         selectedImg.style.left = bumpedLeft + "px";
         selectedImg.style.top  = bumpedTop  + "px";
