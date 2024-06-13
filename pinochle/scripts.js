@@ -23,7 +23,7 @@ const cardSrc = [
 ];
 
 
-// deck[c] = card value of double pinocle deck's card c
+// deck[d] = card value of double pinocle deck's card d
 const deck = [
     as, as, as, as, ts, ts, ts, ts, ks, ks, ks, ks, qs, qs, qs, qs, js, js, js, js,
     ah, ah, ah, ah, th, th, th, th, kh, kh, kh, kh, qh, qh, qh, qh, jh, jh, jh, jh,
@@ -71,10 +71,14 @@ const root       = document.querySelector(":root");
 const felt       = document.getElementById("felt");
 const corner     = document.getElementById("corner");
 const reload     = document.getElementById("reload");
+const canvas     = document.getElementById("canvas");
+const ctx        = canvas.getContext("2d");
 
 // Other constants
 const backSrc    = "cards/bb.svg";
 const version    = "v0.20";
+const back       = new Image();
+back.src         = backSrc;
 
 // Global variables
 let dealer       = south;
@@ -92,60 +96,80 @@ let feltPadding  = 0;
 let cardWidth    = 0;
 let cardHeight   = 0;
 
-// Show player's hand
-function show(player) {
+// Deal variables
+let startTime    = 0;
+let dealTime     = 5000;
+let cardTime     = dealTime / deck.length;
+
+// Locate the edges of each player's hand cards
+function edges() {
     const westPitch  = Math.min((feltHeight - cardHeight * 3 - feltPadding * 4) / 19, cardWidth / 8);
     const northPitch = Math.min((feltWidth  - cardWidth  * 3 - feltPadding * 4) / 19, cardWidth / 8);
     const eastPitch  = Math.min((feltHeight - cardHeight * 3 - feltPadding * 4) / 19, cardWidth / 8);
     const southPitch = (feltWidth - cardWidth - feltPadding * 2) / 19;
-    const covered = hand[player].length - 1;
-    for (let c = 0; c < hand[player].length; c++) {
-        switch (player) {
-        case west:
-            handLeft[player][c] = feltPadding;
-            handTop [player][c] = (feltHeight - westPitch * covered - cardHeight) / 2 + westPitch * c;
-            break;
-        case north:
-            handLeft[player][c] = (feltWidth - northPitch * covered - cardWidth) / 2 + northPitch * c;
-            handTop [player][c] = feltPadding;
-            break;
-        case east:
-            handLeft[player][c] = feltWidth - cardWidth - feltPadding;
-            handTop [player][c] = (feltHeight - eastPitch * covered - cardHeight) / 2 + eastPitch * c;
-            break;
-        case south:
-            handLeft[player][c] = (feltWidth - southPitch * covered - cardWidth) / 2 + southPitch * c;
-            handTop [player][c] = feltHeight - cardHeight - feltPadding;
+    for (let p = west; p <= south; p++) {
+        for (let c = 0; c < hand[p].length; c++) {
+            switch (p) {
+            case west:
+                handLeft[p][c] = feltPadding;
+                handTop [p][c] = (feltHeight - westPitch * (hand[p].length - 1) - cardHeight) / 2 + westPitch * c;
+                break;
+            case north:
+                handLeft[p][c] = (feltWidth - northPitch * (hand[p].length - 1) - cardWidth) / 2 + northPitch * c;
+                handTop [p][c] = feltPadding;
+                break;
+            case east:
+                handLeft[p][c] = feltWidth - cardWidth - feltPadding;
+                handTop [p][c] = (feltHeight - eastPitch * (hand[p].length - 1) - cardHeight) / 2 + eastPitch * c;
+                break;
+            case south:
+                handLeft[p][c] = (feltWidth - southPitch * (hand[p].length - 1) - cardWidth) / 2 + southPitch * c;
+                handTop [p][c] = feltHeight - cardHeight - feltPadding;
+            }
+            handRight [p][c] = handLeft[p][c] + cardWidth;
+            handBottom[p][c] = handTop [p][c] + cardHeight;
         }
-        handImg   [player][c].style.left = handLeft[player][c] + "px";
-        handImg   [player][c].style.top  = handTop [player][c] + "px";
-        handRight [player][c]            = handLeft[player][c] + cardWidth;
-        handBottom[player][c]            = handTop [player][c] + cardHeight;
     }
 }
 
-// Play pinochle after cards are dealt
-function play() {
-    for (let p = 0; p < players; p++) {
+// Redraw each player's hand
+function redraw() {
+    edges();
+    for (let p = west; p <= south; p++) {
         hand[p].sort(function(a, b){return a-b});
-        if (p == south) {
-            for (let i = 0; i < hand[south].length; i++)
-                handImg[south][i].src = cardSrc[hand[south][i]];
-            show(south);
-        }
+        for (let c = 0; c < hand[p].length; c++) {
+            if (p == south)
+                handImg[p][c].src = cardSrc[hand[p][c]];
+            else
+                handImg[p][c].src = backSrc;
+            handImg [p][c].style.left = handLeft[p][c] + "px";
+            handImg [p][c].style.top  = handTop [p][c] + "px";
+        }       
     }
 }
 
-// Deal deck starting with deck[0] and the player clockwise from the dealer
-function deal(card) {
-    const player = (dealer + card + 1) % players;
-    handImg[player][hand[player].length].src = backSrc;
-    hand[player].push(deck[card]);
-    show(player);
-    if (card + 1 < deck.length)
-        setTimeout(deal, 0, card + 1);
-    else
-        play();
+// Draw cards flying from dealer's deck until deck is depleted
+function draw() {
+    let p, c, r, l, t;
+    const elapsed = performance.now() - startTime;
+    ctx.clearRect(0, 0, feltWidth, feltHeight);
+    if (elapsed > dealTime) {
+        redraw();
+        return;
+    }
+    if (elapsed <= dealTime - cardTime)
+        ctx.drawImage(back, layLeft[dealer], layTop[dealer], cardWidth, cardHeight);
+    for (let d = 0; d < deck.length; d++) {
+        p = (dealer + d + 1) % players;
+        c = Math.floor(d / players);
+        r = Math.min((elapsed - d * cardTime) / cardTime, 1);
+        if (r > 0) {
+            l = handLeft[p][c] * r + layLeft[dealer] * (1 - r);
+            t = handTop [p][c] * r + layTop [dealer] * (1 - r);
+            ctx.drawImage(back, l, t, cardWidth, cardHeight);
+        }
+    }
+    window.requestAnimationFrame(draw);
 }
 
 // Shuffle an array in place
@@ -161,11 +185,17 @@ function shuffle(array) {
     return;
 }
 
-// Start pinochle game
-function start() {
+// Deal deck starting with deck[0] and the player clockwise from the dealer
+function deal() {
     dealer = Math.floor(Math.random() * players);
     shuffle(deck);
-    setTimeout(deal, 0, 0);
+    for (let d = 0, p; d < deck.length; d++) {
+        p = (dealer + d + 1) % players;
+        hand[p].push(deck[d]);
+    }
+    edges();
+    startTime = performance.now();
+    window.requestAnimationFrame(draw);
 }
 
 // Convert x,y coordinates to that hand's player index (or undefined)
@@ -253,7 +283,7 @@ function press(e) {
                 else
                     handImg[p][c].src = backSrc;
             handImg[p][hand[p].length].src = "";
-            show(p);
+            redraw();
             setTimeout(function(){rendered = true;}, 0);
         }
     }
@@ -317,7 +347,7 @@ function touch(e) {
                 else
                     handImg[p][c].src = backSrc;
             handImg[p][hand[p].length].src = "";
-            show(p);
+            redraw();
             setTimeout(function(){rendered = true;}, 0);
         }
     }
@@ -357,8 +387,10 @@ function resize () {
     for (let p = west; p <= south; p++) {
         layLeft[p] = Number.parseFloat(getComputedStyle(layImg[p]).left);
         layTop [p] = Number.parseFloat(getComputedStyle(layImg[p]).top);
-        show(p);
     }
+    canvas.width = feltWidth;
+    canvas.height = feltHeight;
+    redraw();
 }
 
 // Initialize javascript and start game after window loads
@@ -376,5 +408,5 @@ window.onload = function() {
         for (let c = 0; c < cards; c++)
             handImg[p][c].draggable = false;
     }
-    start();
+    deal();
 }

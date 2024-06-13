@@ -28,6 +28,10 @@ body {
     position: relative;
 }
 
+#canvas {
+    position: absolute;
+}
+
 #corner {
     color: white;
     width: var(--card-width);
