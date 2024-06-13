@@ -74,11 +74,16 @@ const reload     = document.getElementById("reload");
 const canvas     = document.getElementById("canvas");
 const ctx        = canvas.getContext("2d");
 
+// Deal constants
+const dealTime   = 2000;
+const set        = 4;
+const sets       = deck.length / set;
+const setTime    = dealTime / sets;
+
 // Other constants
-const backSrc    = "cards/bb.svg";
+const backSrc    = "cards/gb.svg";
 const version    = "v0.21";
 const back       = new Image();
-back.src         = backSrc;
 
 // Global variables
 let dealer       = south;
@@ -95,11 +100,20 @@ let feltHeight   = 0;
 let feltPadding  = 0;
 let cardWidth    = 0;
 let cardHeight   = 0;
-
-// Deal variables
 let startTime    = 0;
-let dealTime     = 5000;
-let cardTime     = dealTime / deck.length;
+
+// Shuffle an array in place
+function shuffle(array) {
+    let currentIndex = array.length, randomIndex, temp;
+    while (currentIndex > 0) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+        temp = array[currentIndex];
+        array[currentIndex] = array[randomIndex];
+        array[randomIndex] = temp;
+    }
+    return;
+}
 
 // Locate the edges of each player's hand cards
 function edges() {
@@ -157,32 +171,21 @@ function draw() {
         redraw();
         return;
     }
-    if (elapsed <= dealTime - cardTime)
+    if (elapsed <= dealTime - setTime)
         ctx.drawImage(back, layLeft[dealer], layTop[dealer], cardWidth, cardHeight);
-    for (let d = 0; d < deck.length; d++) {
-        p = (dealer + d + 1) % players;
-        c = Math.floor(d / players);
-        r = Math.min((elapsed - d * cardTime) / cardTime, 1);
+    for (let s = 0; s < sets; s++) {
+        r = Math.min((elapsed - s * setTime) / setTime, 1);
         if (r > 0) {
-            l = handLeft[p][c] * r + layLeft[dealer] * (1 - r);
-            t = handTop [p][c] * r + layTop [dealer] * (1 - r);
-            ctx.drawImage(back, l, t, cardWidth, cardHeight);
+            p = (dealer + s + 1) % players;
+            c = Math.floor(s / players) * set;
+            for (let i = 0; i < set; i++) {
+                l = handLeft[p][c + i] * r + layLeft[dealer] * (1 - r);
+                t = handTop [p][c + i] * r + layTop [dealer] * (1 - r);
+                ctx.drawImage(back, l, t, cardWidth, cardHeight);
+            }
         }
     }
     window.requestAnimationFrame(draw);
-}
-
-// Shuffle an array in place
-function shuffle(array) {
-    let currentIndex = array.length, randomIndex, temp;
-    while (currentIndex > 0) {
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex--;
-        temp = array[currentIndex];
-        array[currentIndex] = array[randomIndex];
-        array[randomIndex] = temp;
-    }
-    return;
 }
 
 // Deal deck starting with deck[0] and the player clockwise from the dealer
@@ -194,6 +197,7 @@ function deal() {
         hand[p].push(deck[d]);
     }
     edges();
+    back.src  = backSrc;
     startTime = performance.now();
     window.requestAnimationFrame(draw);
 }
