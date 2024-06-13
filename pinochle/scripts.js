@@ -82,7 +82,7 @@ const setTime    = dealTime / sets;
 
 // Other constants
 const backSrc    = "cards/gb.svg";
-const version    = "v0.21";
+const version    = "v0.22";
 const back       = new Image();
 
 // Global variables
@@ -399,6 +399,7 @@ function resize () {
 
 // Initialize javascript and start game after window loads
 window.onload = function() {
+    document.documentElement.requestFullscreen();
     resize();
     window.onresize   = resize;
     corner.innerText  = version;
