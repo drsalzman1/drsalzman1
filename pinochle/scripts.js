@@ -76,7 +76,7 @@ const ctx        = canvas.getContext("2d");
 
 // Other constants
 const backSrc    = "cards/bb.svg";
-const version    = "v0.20";
+const version    = "v0.21";
 const back       = new Image();
 back.src         = backSrc;
 
