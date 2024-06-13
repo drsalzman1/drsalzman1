@@ -82,7 +82,7 @@ const setTime    = dealTime / sets;
 
 // Other constants
 const backSrc    = "cards/gb.svg";
-const version    = "v0.23";
+const version    = "v0.24";
 const back       = new Image();
 
 // Global variables
