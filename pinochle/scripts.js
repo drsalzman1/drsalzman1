@@ -95,7 +95,7 @@ const flipTime   = dealTime / 10;
 const sortTime   = dealTime / 2;
 
 // Other constants
-const version    = "v0.30";
+const version    = "v0.31";
 
 // Global variables
 let dealer       = s;
@@ -193,31 +193,23 @@ function shuffle(array) {
 // Locate each player's hand cards
 function locate() {
     let pitch = Math.min((feltHigh - cardHigh * 2 - cardWide - padding * 4) / 19, cardWide / 8);
-    if (hand[w][0].v == gb)
-        pitch = -pitch;
     for (let c = 0; c < hand[w].length; c++) {
         hand[w][c].x = cardHigh/2 + padding;
-        hand[w][c].y = feltHigh/2 - pitch*(c-(hand[w].length-1)/2);
+        hand[w][c].y = feltHigh/2 + pitch*(c-(hand[w].length-1)/2);
     }
     pitch = Math.min((feltWide - cardWide * 2 - cardWide - padding * 4) / 19, cardWide / 8);
-    if (hand[n][0].v == gb)
-        pitch = -pitch;
     for (let c = 0; c < hand[n].length; c++) {
-        hand[n][c].x = feltWide/2 + pitch*(c-(hand[n].length-1)/2);
+        hand[n][c].x = feltWide/2 - pitch*(c-(hand[n].length-1)/2);
         hand[n][c].y = cardHigh/2 + padding;
     }
     pitch = Math.min((feltHigh - cardHigh * 2 - cardWide - padding * 4) / 19, cardWide / 8);
-    if (hand[e][0].v == gb)
-        pitch = -pitch;
     for (let c = 0; c < hand[e].length; c++) {
         hand[e][c].x = feltWide - cardHigh/2 - padding;
-        hand[e][c].y = feltHigh/2 + pitch*(c-(hand[w].length-1)/2);
+        hand[e][c].y = feltHigh/2 - pitch*(c-(hand[w].length-1)/2);
     }
     pitch = (feltWide - cardWide - padding * 2) / 19;
-    if (hand[s][0].v == gb)
-        pitch = -pitch;
     for (let c = 0; c < hand[s].length; c++) {
-        hand[s][c].x = feltWide/2 - pitch*(c-(hand[n].length-1)/2);
+        hand[s][c].x = feltWide/2 + pitch*(c-(hand[n].length-1)/2);
         hand[s][c].y = feltHigh - cardHigh/2 - padding
     }
 }
@@ -271,6 +263,21 @@ function draw() {
         window.requestAnimationFrame(onDrawn);
     else
         window.requestAnimationFrame(draw);
+}
+
+// Redraw all hands after a change in the felt size
+function redraw() {
+    locate();
+    for (let d = 0; d < maxDeck; d++) {
+        let p = (dealer + d + 1) % players;
+        let c = Math.floor(d / players);
+        start[d].x = hand[p][c].x;
+        start[d].y = hand[p][c].y;
+        final[d].x = hand[p][c].x;
+        final[d].y = hand[p][c].y;
+    }
+    onDrawn = function() {};
+    window.requestAnimationFrame(draw);
 }
 
 // Sort all hands and display south's hand
@@ -531,7 +538,7 @@ function resize () {
     canvas.height = feltHigh;
     for (let v = 0; v < src.length; v++)
         img[v].src = src[v];
-    draw();
+    redraw();
 }
 
 // Initialize javascript and start game after window loads
