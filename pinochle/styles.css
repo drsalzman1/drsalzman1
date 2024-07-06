@@ -4,9 +4,9 @@
     --body-font-size:   calc(min(4vw, 4vh));
     --felt-width:       calc(var(--body-width));
     --felt-height:      calc(var(--body-height));
-    --felt-padding:     calc(min(var(--felt-width), var(--felt-height)) * 0.02);
-    --card-width:       calc(min(var(--felt-width) * 0.175, var(--felt-height) * 0.16));
-    --card-height:      calc(var(--card-width) / 2.5 * 3.5);
+    --felt-padding:     calc(min(var(--felt-width)*0.01,   var(--felt-height)*0.01  ));
+    --card-height:      calc(min(var(--felt-width)*0.95/4, var(--felt-height)*0.95/4));
+    --card-width:       calc(var(--card-height) / 3.5 * 2.5);
     --icon-width:       calc(min(4vw, 4vh));
 }
 
