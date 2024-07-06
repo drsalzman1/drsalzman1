@@ -47,13 +47,20 @@ const img = [
     new Image()
 ];
 
-// v = value; x,y = center; t = t
+// v = value; x,y = center; t = t; ?0 = before anaimation; ?1 = after animation
 class Card {
     constructor() {
-        this.v = gb;
+        this.v = 0;
         this.x = 0;
         this.y = 0;
-        this.t = 0;
+        this.v0 = 0; 
+        this.x0 = 0;
+        this.y0 = 0;
+        this.t0 = 0;
+        this.v1 = 0;
+        this.x1 = 0;
+        this.y1 = 0;
+        this.t1 = 0;
     }
 }
 
@@ -63,22 +70,6 @@ const hand = [
     [new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card],
     [new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card],
     [new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card]
-];
-
-// start[d] = deck card d before start t
-const start = [
-    new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card,
-    new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card,
-    new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card,
-    new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card
-];
-
-// final[d] = deck card d after final t
-const final = [
-    new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card,
-    new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card,
-    new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card,
-    new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card
 ];
 
 // Page elements
@@ -93,19 +84,15 @@ const dealTime   = 2000;
 const flyTime    = dealTime / 20;
 const flipTime   = dealTime / 10;
 const sortTime   = dealTime / 2;
+const selectTime = dealTime / 40;
 
 // Other constants
-const version    = "v0.31";
+const version    = "v0.40";
 
 // Global variables
 let dealer       = s;
-let selectedImg  = null;
-let selectedTop  = 0;
-let selectedLeft = 0;
-let bumpedLeft   = 0;
-let bumpedRight  = 0;
-let bumpedTop    = 0;
-let bumpedBottom = 0;
+let selectedP    = null;
+let selectedC    = null;
 let rendered     = true;
 let feltWide     = 0;
 let feltHigh     = 0;
@@ -220,43 +207,48 @@ function draw() {
     const now = performance.now();
     ctx.clearRect(0, 0, feltWide, feltHigh);
     rendered = true;
-    for (let d = 0; d < maxDeck; d++) {
-        let p = (dealer + d + 1) % players;
-        let r = [Math.PI/2, 0, Math.PI/2, 0][p];
-        if (now < final[d].t)
-            rendered = false;
-        if (now <= start[d].t) {
-            ctx.translate(start[d].x, start[d].y);
-            ctx.rotate(r);
-            ctx.drawImage(img[start[d].v], -cardWide/2, -cardHigh/2, cardWide, cardHigh);
-            ctx.resetTransform();
-        }
-        if (now >= final[d].t) {
-            ctx.translate(final[d].x, final[d].y);
-            ctx.rotate(r);
-            ctx.drawImage(img[final[d].v], -cardWide/2, -cardHigh/2, cardWide, cardHigh);
-            ctx.resetTransform();
-            Object.assign(start[d], final[d]);
+    for (let p = w; p <= s; p++) {
+        for (let c = 0; c < hand[p].length; c++) {
+            let r = [Math.PI/2, 0, Math.PI/2, 0][p];
+            if (now < hand[p][c].t1)
+                rendered = false;
+            if (now <= hand[p][c].t0) {
+                ctx.translate(hand[p][c].x0, hand[p][c].y0);
+                ctx.rotate(r);
+                ctx.drawImage(img[hand[p][c].v0], -cardWide/2, -cardHigh/2, cardWide, cardHigh);
+                ctx.resetTransform();
+            }
+            if (now >= hand[p][c].t1) {
+                ctx.translate(hand[p][c].x1, hand[p][c].y1);
+                ctx.rotate(r);
+                ctx.drawImage(img[hand[p][c].v1], -cardWide/2, -cardHigh/2, cardWide, cardHigh);
+                ctx.resetTransform();
+                hand[p][c].v0 = hand[p][c].v1;
+                hand[p][c].x0 = hand[p][c].x1;
+                hand[p][c].y0 = hand[p][c].y1;
+                hand[p][c].t0 = hand[p][c].t1;
+            }
         }
     }
-    for (let d = 0; d < maxDeck; d++) {
-        if (now > start[d].t && now < final[d].t) {
-            let s = (final[d].t - now) / (final[d].t - start[d].t);
-            let f = (now - start[d].t) / (final[d].t - start[d].t);
-            let p = (dealer + d + 1) % players;
-            let r = [Math.PI/2, 0, Math.PI/2, 0][p];
-            let x = start[d].x*s + final[d].x*f;
-            let y = start[d].y*s + final[d].y*f;
-            let e = 1;
-            if (start[d].v == gb && final[d].v != gb)
-                e = Math.abs(s * 2 - 1);
-            ctx.translate(x, y);
-            ctx.rotate(r);
-            if (s > 0.5)
-                ctx.drawImage(img[start[d].v], -cardWide/2, -cardHigh/2*e, cardWide, cardHigh*e);
-            else
-                ctx.drawImage(img[final[d].v], -cardWide/2, -cardHigh/2*e, cardWide, cardHigh*e);
-            ctx.resetTransform();
+    for (let p = w; p <= s; p++) {
+        for (let c = 0; c < hand[p].length; c++) {
+            if (now > hand[p][c].t0 && now < hand[p][c].t1) {
+                let s = (hand[p][c].t1 - now) / (hand[p][c].t1 - hand[p][c].t0);
+                let f = (now - hand[p][c].t0) / (hand[p][c].t1 - hand[p][c].t0);
+                let r = [Math.PI/2, 0, Math.PI/2, 0][p];
+                let x = hand[p][c].x0*s + hand[p][c].x1*f;
+                let y = hand[p][c].y0*s + hand[p][c].y1*f;
+                let e = 1;
+                if (hand[p][c].v0 == gb && hand[p][c].v1 != gb)
+                    e = Math.abs(s * 2 - 1);
+                ctx.translate(x, y);
+                ctx.rotate(r);
+                if (s > 0.5)
+                    ctx.drawImage(img[hand[p][c].v0], -cardWide/2, -cardHigh/2*e, cardWide, cardHigh*e);
+                else
+                    ctx.drawImage(img[hand[p][c].v1], -cardWide/2, -cardHigh/2*e, cardWide, cardHigh*e);
+                ctx.resetTransform();
+            }
         }
     }
     if (rendered)
@@ -268,13 +260,13 @@ function draw() {
 // Redraw all hands after a change in the felt size
 function redraw() {
     locate();
-    for (let d = 0; d < maxDeck; d++) {
-        let p = (dealer + d + 1) % players;
-        let c = Math.floor(d / players);
-        start[d].x = hand[p][c].x;
-        start[d].y = hand[p][c].y;
-        final[d].x = hand[p][c].x;
-        final[d].y = hand[p][c].y;
+    for (let p = w; p <= s; p++) {
+        for (let c = 0; c < hand[p].length; c++) {
+            hand[p][c].x0 = hand[p][c].x;
+            hand[p][c].y0 = hand[p][c].y;
+            hand[p][c].x1 = hand[p][c].x;
+            hand[p][c].y1 = hand[p][c].y;
+        }
     }
     onDrawn = function() {};
     window.requestAnimationFrame(draw);
@@ -297,13 +289,13 @@ function sort() {
             hand[p][c].v = v;
         }
     }
-    for (let d = 0; d < maxDeck; d++) {
-        let p = (dealer + d + 1) % players;
-        let c = Math.floor(d / players);
-        start[d].t = now;
-        if (p == s)
-            final[d].v = hand[p][c].v;
-        final[d].t = now + sortTime;
+    for (let p = w; p <= s; p++) {
+        for (let c = 0; c < maxHand; c++) {
+            hand[p][c].t0 = now;
+            if (p == s)
+                hand[p][c].v1 = hand[p][c].v;
+            hand[p][c].t1 = now + sortTime;
+        }
     }
     onDrawn = function() {};
     window.requestAnimationFrame(draw);
@@ -312,13 +304,13 @@ function sort() {
 // Flip south's hand
 function flip() {
     const now = performance.now();
-    for (let d = 0; d < maxDeck; d++) {
-        let p = (dealer + d + 1) % players;
-        let c = Math.floor(d / players);
-        start[d].t = now;
-        if (p == s)
-            final[d].v = hand[p][c].v;
-        final[d].t = now + flipTime;
+    for (let p = w; p <= s; p++) {
+        for (let c = 0; c < maxHand; c++) {
+            hand[p][c].t0 = now;
+            if (p == s)
+                hand[p][c].v1 = hand[p][c].v;
+            hand[p][c].t1 = now + flipTime;
+        }
     }
     onDrawn = sort;
     window.requestAnimationFrame(draw);
@@ -331,18 +323,21 @@ function deal() {
     dealer = Math.floor(Math.random() * players);
     shuffle(deck);
     locate();
-    for (let d = 0; d < maxDeck; d++) {
-        let p = (dealer + d + 1) % players;
-        let c = Math.floor(d / players);
-        hand[p][c].v = deck[d];
-        start[d].v = gb;
-        start[d].x = [-cardHigh, feltWide/2, feltWide+cardHigh, feltWide/2][dealer];
-        start[d].y = [feltHigh/2, -cardHigh, feltHigh/2, feltHigh+cardHigh][dealer];
-        start[d].t = now + d * (dealTime - flyTime) / maxDeck;
-        final[d].v = gb;
-        final[d].x = hand[p][c].x;
-        final[d].y = hand[p][c].y;
-        final[d].t = start[d].t + flyTime;
+    let d = 0;
+    for (let c = 0; c < maxHand; c++) {
+        for (let i = 0; i < players; i++) {
+            let p = (dealer + i + 1) % players;
+            hand[p][c].v = deck[d];
+            hand[p][c].v0 = gb;
+            hand[p][c].x0 = [-cardHigh, feltWide/2, feltWide+cardHigh, feltWide/2][dealer];
+            hand[p][c].y0 = [feltHigh/2, -cardHigh, feltHigh/2, feltHigh+cardHigh][dealer];
+            hand[p][c].t0 = now + d * (dealTime - flyTime) / maxDeck;
+            hand[p][c].v1 = gb;
+            hand[p][c].x1 = hand[p][c].x;
+            hand[p][c].y1 = hand[p][c].y;
+            hand[p][c].t1 = hand[p][c].t0 + flyTime;
+            d++;
+        }
     }
     onDrawn = flip;
     window.requestAnimationFrame(draw);
@@ -352,9 +347,17 @@ function deal() {
 function xy2p(x, y) {
     for (let p = s; p >= w; p--) {
         for (let c = hand[p].length - 1; c >= 0; c--) {
-            if (x > handLeft[p][c] && x < handRight[p][c] && y > handTop[p][c] && y < handBottom[p][c])
+            let l = hand[p][c].x - [cardHigh/2, cardWide/2, cardHigh/2, cardWide/2][p];
+            let r = hand[p][c].x + [cardHigh/2, cardWide/2, cardHigh/2, cardWide/2][p];
+            let t = hand[p][c].y - [cardWide/2, cardHigh/2, cardWide/2, cardHigh/2][p];
+            let b = hand[p][c].y + [cardWide/2, cardHigh/2, cardWide/2, cardHigh/2][p];
+            if (x > l && x < r && y > t && y < b)
                 return p;
-            if (handImg[p][c] == selectedImg && x > bumpedLeft && x < bumpedRight && y > bumpedTop && y < bumpedBottom)
+            l = hand[p][c].x1 - [0, cardWide/2, cardHigh/2, cardWide/2][p];
+            r = hand[p][c].x1 + [cardHigh/2, cardWide/2, 0, cardWide/2][p];
+            t = hand[p][c].y1 - [cardWide/2, 0, cardWide/2, cardHigh/2][p];
+            b = hand[p][c].y1 + [cardWide/2, cardHigh/2, cardWide/2, 0][p];
+            if (p == selectedP && c == selectedC && x > l && x < r && y > t && y < b)
                 return p;
         }
     }
@@ -364,41 +367,53 @@ function xy2p(x, y) {
 function xy2c(x, y) {
     for (let p = s; p >= w; p--) {
         for (let c = hand[p].length - 1; c >= 0; c--) {
-            if (x > handLeft[p][c] && x < handRight[p][c] && y > handTop[p][c] && y < handBottom[p][c])
+            let l = hand[p][c].x - [cardHigh/2, cardWide/2, cardHigh/2, cardWide/2][p];
+            let r = hand[p][c].x + [cardHigh/2, cardWide/2, cardHigh/2, cardWide/2][p];
+            let t = hand[p][c].y - [cardWide/2, cardHigh/2, cardWide/2, cardHigh/2][p];
+            let b = hand[p][c].y + [cardWide/2, cardHigh/2, cardWide/2, cardHigh/2][p];
+            if (x > l && x < r && y > t && y < b)
                 return c;
-            if (handImg[p][c] == selectedImg && x > bumpedLeft && x < bumpedRight && y > bumpedTop && y < bumpedBottom)
+            l = hand[p][c].x1 - [0, cardWide/2, cardHigh/2, cardWide/2][p];
+            r = hand[p][c].x1 + [cardHigh/2, cardWide/2, 0, cardWide/2][p];
+            t = hand[p][c].y1 - [cardWide/2, 0, cardWide/2, cardHigh/2][p];
+            b = hand[p][c].y1 + [cardWide/2, cardHigh/2, cardWide/2, 0][p];
+            if (p == selectedP && c == selectedC && x > l && x < r && y > t && y < b)
                 return c;
         }
     }
 }
 
 // Mouse move event: 
-//      if rendered and (off-hand or off-selected) and any card is selected: unselect card and ...
+//      if rendered and (off-hand or off-selected) and any card is selected: unselect card that and ...
 //      if rendered and on-hand and off-selected: select this card
 function mouse(e) {
+    const now = performance.now();
     const p = xy2p (e.clientX, e.clientY);
     const c = xy2c (e.clientX, e.clientY);
-    if (rendered && (p == undefined || handImg[p][c] != selectedImg) && selectedImg != null) {
-        selectedImg.style.left = selectedLeft + "px";
-        selectedImg.style.top  = selectedTop  + "px";
-        selectedImg = null;
+    if (rendered && (p == undefined || p != selectedP || c != selectedC) && selectedP != null) {
+        hand[selectedP][selectedC].x1 = hand[selectedP][selectedC].x;
+        hand[selectedP][selectedC].y1 = hand[selectedP][selectedC].y;
+        hand[selectedP][selectedC].t1 = now;
+        selectedP = null;
+        selectedC = null;
+        onDrawn = function() {};
+        window.requestAnimationFrame(draw);
     }
-    if (rendered && p != undefined && handImg[p][c] != selectedImg) {
-        selectedImg  = handImg [p][c];
-        selectedLeft = handLeft[p][c];
-        selectedTop  = handTop [p][c];
-        bumpedLeft   = selectedLeft + cardWide  * [+0.4, +0.0, -0.4, +0.0][p];
-        bumpedRight  = bumpedLeft   + cardWide;
-        bumpedTop    = selectedTop  + cardHigh * [+0.0, +0.4, +0.0, -0.4][p];
-        bumpedBottom = bumpedTop    + cardHigh;
-        selectedImg.style.left = bumpedLeft + "px";
-        selectedImg.style.top  = bumpedTop  + "px";
+    if (rendered && p != undefined && (p != selectedP || c != selectedC)) {
+        selectedP = p;
+        selectedC = c;
+        hand[selectedP][selectedC].x1 = hand[selectedP][selectedC].x + [cardHigh/2, 0, -cardHigh/2, 0][selectedP];
+        hand[selectedP][selectedC].y1 = hand[selectedP][selectedC].y + [0, cardHigh/2, 0, -cardHigh/2][selectedP];
+        hand[selectedP][selectedC].t1 = now;
+        onDrawn = function() {};
+        window.requestAnimationFrame(draw);
     }
 }
 
 // Mouse press event: 
 //      if rendered and on-hand: transiton card to lay and remove card from hand
 function press(e) {
+    const now = performance.now();
     const p = xy2p (e.clientX, e.clientY);
     const c = xy2c (e.clientX, e.clientY);
     if (rendered && p != undefined) {
@@ -446,25 +461,29 @@ function press(e) {
 function touch(e) {
     felt.onmousedown = "";
     felt.onmousemove = "";
+    const now = performance.now();
     const p = xy2p (e.touches[0].clientX, e.touches[0].clientY);
     const c = xy2c (e.touches[0].clientX, e.touches[0].clientY);
-    if (rendered && (p == undefined || handImg[p][c] != selectedImg) && selectedImg != null) {
-        selectedImg.style.left = selectedLeft + "px";
-        selectedImg.style.top  = selectedTop  + "px";
-        selectedImg = null;
+    if (rendered && (p == undefined || p != selectedP || c != selectedC) && selectedP != null) {
+        hand[selectedP][selectedC].x1 = hand[selectedP][selectedC].x;
+        hand[selectedP][selectedC].y1 = hand[selectedP][selectedC].y;
+        hand[selectedP][selectedC].t1 = now;
+        selectedP = null;
+        selectedC = null;
+        onDrawn = function() {};
+        window.requestAnimationFrame(draw);
     }
-    if (rendered && p != undefined && handImg[p][c] != selectedImg) {
-        selectedImg  = handImg [p][c];
-        selectedLeft = handLeft[p][c];
-        selectedTop  = handTop [p][c];
-        bumpedLeft   = selectedLeft + cardWide  * [+0.4, +0.0, -0.4, +0.0][p];
-        bumpedRight  = bumpedLeft   + cardWide;
-        bumpedTop    = selectedTop  + cardHigh * [+0.0, +0.4, +0.0, -0.4][p];
-        bumpedBottom = bumpedTop    + cardHigh;
-        selectedImg.style.left = bumpedLeft + "px";
-        selectedImg.style.top  = bumpedTop  + "px";
+    if (rendered && p != undefined && (p != selectedP || c != selectedC)) {
+        selectedP = p;
+        selectedC = c;
+        hand[selectedP][selectedC].x1 = hand[selectedP][selectedC].x + [cardHigh/2, 0, -cardHigh/2, 0][selectedP];
+        hand[selectedP][selectedC].y1 = hand[selectedP][selectedC].y + [0, cardHigh/2, 0, -cardHigh/2][selectedP];
+        hand[selectedP][selectedC].t1 = now;
+        onDrawn = function() {};
+        window.requestAnimationFrame(draw);
         return;
     }
+    /*
     if (rendered && p != undefined && handImg[p][c] == selectedImg) {
         rendered = false;
         const hi = handImg[p][c];
@@ -501,29 +520,33 @@ function touch(e) {
             setTimeout(function(){rendered = true;}, 0);
         }
     }
+    */
 }
 
 // Touch slide event: 
 //      if rendered and (off-hand or off-selected) and any card is selected: unselect card and ...
 //      if rendered and on-hand and off-selected: select this card
 function slide(e) {
+    const now = performance.now();
     const p = xy2p (e.touches[0].clientX, e.touches[0].clientY);
     const c = xy2c (e.touches[0].clientX, e.touches[0].clientY);
-    if (rendered && (p == undefined || handImg[p][c] != selectedImg) && selectedImg != null) {
-        selectedImg.style.left = selectedLeft + "px";
-        selectedImg.style.top  = selectedTop  + "px";
-        selectedImg = null;
+    if (rendered && (p == undefined || p != selectedP || c != selectedC) && selectedP != null) {
+        hand[selectedP][selectedC].x1 = hand[selectedP][selectedC].x;
+        hand[selectedP][selectedC].y1 = hand[selectedP][selectedC].y;
+        hand[selectedP][selectedC].t1 = now;
+        selectedP = null;
+        selectedC = null;
+        onDrawn = function() {};
+        window.requestAnimationFrame(draw);
     }
-    if (rendered && p != undefined && handImg[p][c] != selectedImg) {
-        selectedImg  = handImg [p][c];
-        selectedLeft = handLeft[p][c];
-        selectedTop  = handTop [p][c];
-        bumpedLeft   = selectedLeft + cardWide  * [+0.4, +0.0, -0.4, +0.0][p];
-        bumpedRight  = bumpedLeft   + cardWide;
-        bumpedTop    = selectedTop  + cardHigh * [+0.0, +0.4, +0.0, -0.4][p];
-        bumpedBottom = bumpedTop    + cardHigh;
-        selectedImg.style.left = bumpedLeft + "px";
-        selectedImg.style.top  = bumpedTop  + "px";
+    if (rendered && p != undefined && (p != selectedP || c != selectedC)) {
+        selectedP = p;
+        selectedC = c;
+        hand[selectedP][selectedC].x1 = hand[selectedP][selectedC].x + [cardHigh/2, 0, -cardHigh/2, 0][selectedP];
+        hand[selectedP][selectedC].y1 = hand[selectedP][selectedC].y + [0, cardHigh/2, 0, -cardHigh/2][selectedP];
+        hand[selectedP][selectedC].t1 = now;
+        onDrawn = function() {};
+        window.requestAnimationFrame(draw);
     }
 }
 
@@ -547,9 +570,9 @@ window.onload = function() {
     window.onresize   = resize;
     corner.innerText  = version;
     reload.draggable  = false;
-    //felt.onmousemove  = mouse;
+    felt.onmousemove  = mouse;
     //felt.onmousedown  = press;
-    //felt.ontouchstart = touch;
-    //felt.ontouchmove  = slide;
+    felt.ontouchstart = touch;
+    felt.ontouchmove  = slide;
     deal();
 }

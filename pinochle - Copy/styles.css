@@ -7,8 +7,6 @@
     --felt-padding:     calc(min(var(--felt-width), var(--felt-height)) * 0.02);
     --card-width:       calc(min(var(--felt-width) * 0.175, var(--felt-height) * 0.16));
     --card-height:      calc(var(--card-width) / 2.5 * 3.5);
-    --play-top:         calc((var(--felt-height) - var(--card-height) * 2 - var(--felt-padding)) / 2);
-    --play-left:        calc((var(--felt-width) - var(--card-width)) / 2);
     --icon-width:       calc(min(4vw, 4vh));
 }
 
@@ -47,49 +45,4 @@ body {
     position: absolute;
     top: var(--felt-padding);
     left: calc(var(--felt-width) - var(--felt-padding) - var(--icon-width));
-}
-
-#lay img {
-    width: var(--card-width);
-    position: absolute;
-}
-
-#lay :nth-child(1) {
-    top: calc(var(--play-top) + var(--card-height) / 2 + var(--felt-padding) / 2); 
-    left: calc(var(--play-left) - var(--card-width) - var(--felt-padding));
-}
-
-#lay :nth-child(2) {
-    top: var(--play-top); 
-    left: var(--play-left);
-}
-
-#lay :nth-child(3) {
-    top: calc(var(--play-top) + var(--card-height) / 2 + var(--felt-padding) / 2); 
-    left: calc(var(--play-left) + var(--card-width) + var(--felt-padding));
-}
-
-#lay :nth-child(4) {
-    top: calc(var(--play-top) + var(--card-height) + var(--felt-padding)); 
-    left: var(--play-left);
-}
-
-#west img {
-    width: var(--card-width);
-    position: absolute;
-}
-
-#north img {
-    width: var(--card-width);
-    position: absolute;
-}
-
-#east img {
-    width: var(--card-width);
-    position: absolute;
-}
-
-#south img {
-    width: var(--card-width);
-    position: absolute;
 }
