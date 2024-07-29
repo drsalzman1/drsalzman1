@@ -47,83 +47,93 @@ const img = [
     new Image()
 ];
 
-// v = card value; x,y = card center; t = time
-class Card {
+// hand[p][c] = player p's card c's card value (or -1)
+const hand = [Array(maxHand), Array(maxHand), Array(maxHand), Array(maxHand)];
+
+// held[p] = number of cards remianing in player p's hand
+const held = [20, 20, 20, 20];
+
+// Position class
+class P {
     constructor() {
-        this.v = gb;
-        this.x = 0;
-        this.y = 0;
-        this.t = 0;
+        this.x = 0;                 // x at card center
+        this.y = 0;                 // y at card center
+     }
+}
+
+// Animation class
+class A {
+    constructor() {
+        this.v = 0;                 // card value
+        this.x = 0;                 // x at card center
+        this.y = 0;                 // y at card center
+        this.m = 0;                 // multiplier for card height (0 to 1)
+        this.c = 0;                 // clock value
+     }
+}
+
+// Card groups
+const stackd = 0;                   // in dealer's stacked or player's stacked position
+const normal = 1;                   // in player's normal hand position
+const bumped = 2;                   // in player's bumped hand position
+const played = 3;                   // in player's played position 
+
+// Card class
+class C {
+    constructor() {
+        this.i    = 0;              // deck index
+        this.v    = 0;              // card value
+        this.g    = 0;              // card group
+        this.z    = 0;              // draw order
+        this.stck = new P;          // stackd position
+        this.norm = new P;          // normal position
+        this.bump = new P;          // bumped position
+        this.play = new P;          // played position
+        this.strt = new A;          // start animation
+        this.fnsh = new A;          // finish animation
     }
 }
 
-// stck[p] = player p's off-felt card stack
-const stck = [new Card, new Card, new Card, new Card, new Card];
-
-// cntr[p] = player p's center card; card value is gb if no center card
-const cntr = [new Card, new Card, new Card, new Card, new Card];
-
-// hand[p][c] = player p's card c's normal; hand[p].length = number of cards in player p's hand
-const hand = [
-    [new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card],
-    [new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card],
-    [new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card],
-    [new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card]
-];
-
-// bump[p][c] = player p's card c's bumped; bump[p].length = number of cards in player p's hand
-const bump = [
-    [new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card],
-    [new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card],
-    [new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card],
-    [new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card]
-];
-
-// strt[p][c] = player p's card c's start;  strt[p].length = number of cards in player p's hand
-const strt = [
-    [new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card],
-    [new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card],
-    [new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card],
-    [new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card]
-];
-
-// fnsh[p][c] = player p's card c's finish; fnsh[p].length = number of cards in player p's hand
-const fnsh = [
-    [new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card],
-    [new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card],
-    [new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card],
-    [new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card, new Card]
+// deck[i] = deck card i
+const deck = [
+    new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,
+    new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,
+    new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,
+    new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C
 ];
 
 // Page elements
-const felt       = document.getElementById("felt");
-const corner     = document.getElementById("corner");
-const reload     = document.getElementById("reload");
-const canvas     = document.getElementById("canvas");
-const ctx        = canvas.getContext("2d");
+const felt     = document.getElementById("felt");
+const corner   = document.getElementById("corner");
+const reload   = document.getElementById("reload");
+const canvas   = document.getElementById("canvas");
+const ctx      = canvas.getContext("2d");
 
 // Animation constants
-const dealTime   = 2000;
-const flyTime    = dealTime / 20;
-const flipTime   = dealTime / 10;
-const sortTime   = dealTime / 20;
-const selectTime = dealTime / 40;
-const playTime    = dealTime / 10;
+const dealTime  = 2000;             // milliseconds to deal all cards
+const flyTime   = dealTime / 20;    // milliseconds to deal a card
+const flipTime  = dealTime / 10;    // milliseconds to flip a card
+const sortTime  = dealTime / 40;    // milliseconds to sort a card
+const bumpTime  = dealTime / 20;    // milliseconds to bump/umbump a card
+const playTime  = dealTime / 10;    // milliseconds to play a card
+const closeTime = dealTime / 10;    // milliseconds to close gap in hand
+const pullTime  = dealTime / 10;    // milliseconds to pull a trick
 
 // Other constants
-const version    = "v0.40";
+const version  = "v0.70";           // version number to display
 
 // Global variables
-let dealer       = s;
-let bumpedP      = null;
-let bumpedC      = null;
-let rendered     = true;
-let feltWide     = 0;
-let feltHigh     = 0;
-let padding      = 0;
-let cardWide     = 0;
-let cardHigh     = 0;
-let onDrawn      = function() {}
+let dealer  = 0;                    // the player who dealt
+let bidder  = 0;                    // the next player to bid
+let taker   = 0;                    // the player who won the bid
+let turn    = 0;                    // the next player to play
+let puller  = 0;                    // the player who won the play
+let feltW   = 0;                    // felt width
+let feltH   = 0;                    // felt height
+let pad     = 0;                    // padding width and height
+let cardW   = 0;                    // card width
+let cardH   = 0;                    // card height
+let onDrawn = function() {};        // function to invoke when all cards are drawn
 
 // Returns number of rank arounds in player's hand
 function arounds(player, rank) {
@@ -188,6 +198,227 @@ function meld(player, trump) {
     return m;
 }
 
+// Locate all card positions
+function locate() {
+    const p1 = Math.min((feltH - cardH * 2 - cardW - pad * 4) / 19, cardW / 8);
+    const p2 = (feltW - cardW - pad * 2) / 19;
+    let h = 0;
+    for (let i = 0; i < maxDeck; i++) {
+        const p = Math.floor(i / maxHand);
+        const c = i % maxHand;
+        if (c == 0)
+            h = 0;
+        deck[i].stck.x = [-cardH/2, feltW/2, feltW + cardH/2, feltW/2][p];
+        deck[i].stck.y = [feltH/2, -cardH/2, feltH/2, feltH + cardH/2][p];
+        deck[i].norm.x = [cardH/2+pad, feltW/2-p1*(h-(held[p]-1)/2), feltW-cardH/2-pad, feltW/2+p2*(h-(held[p]-1)/2)][p];
+        deck[i].norm.y = [feltH/2+p1*(h-(held[p]-1)/2), cardH/2+pad, feltH/2-p1*(h-(held[p]-1)/2), feltH-cardH/2-pad][p];
+        deck[i].bump.x = deck[i].norm.x + [cardH/2, 0, -cardH/2, 0][p];
+        deck[i].bump.y = deck[i].norm.y + [0, cardH/2, 0, -cardH/2][p];
+        deck[i].play.x = feltW/2 + [-cardH/2-pad/2, cardW/2+pad/2, cardH/2+pad/2, -cardW/2-pad/2][p];
+        deck[i].play.y = feltH/2 + [-cardW/2-pad/2, -cardH/2-pad/2, cardW/2+pad/2, cardH/2+pad/2][p];
+        deck[i].strt.x = [deck[i].stck.x, deck[i].norm.x, deck[i].bump.x, deck[i].play.x][deck[i].g];
+        deck[i].strt.y = [deck[i].stck.y, deck[i].norm.y, deck[i].bump.y, deck[i].play.y][deck[i].g];
+        deck[i].fnsh.x = [deck[i].stck.x, deck[i].norm.x, deck[i].bump.x, deck[i].play.x][deck[i].g];
+        deck[i].fnsh.y = [deck[i].stck.y, deck[i].norm.y, deck[i].bump.y, deck[i].play.y][deck[i].g];
+        if (hand[p][c] != -1)
+            h++;
+    }
+}
+
+// Draw cards in z order until each card is at its final state then reset its start state for the next operation
+function draw() {
+    let rendered = true;
+    const now = performance.now();
+    deck.sort((a,b)=>a.z-b.z);
+    ctx.clearRect(0, 0, feltW, feltH);
+    for (let i = 0; i < maxDeck; i++) {
+        const p = Math.floor(deck[i].i / maxHand);
+        const r = [Math.PI/2, 0, Math.PI/2, 0][p];
+        if (now < deck[i].fnsh.c)
+            rendered = false;
+        if (now <= deck[i].strt.c) {
+            ctx.translate(deck[i].strt.x, deck[i].strt.y);
+            ctx.rotate(r);
+            ctx.drawImage(img[deck[i].strt.v], -cardW/2, -cardH/2*deck[i].strt.m, cardW, cardH*deck[i].strt.m);
+            ctx.resetTransform();
+        }
+        if (now >= deck[i].fnsh.c) {
+            ctx.translate(deck[i].fnsh.x, deck[i].fnsh.y);
+            ctx.rotate(r);
+            ctx.drawImage(img[deck[i].fnsh.v], -cardW/2, -cardH/2*deck[i].fnsh.m, cardW, cardH*deck[i].fnsh.m);
+            ctx.resetTransform();
+            deck[i].strt.v = deck[i].fnsh.v;
+            deck[i].strt.x = deck[i].fnsh.x;
+            deck[i].strt.y = deck[i].fnsh.y;
+            deck[i].strt.m = deck[i].fnsh.m;
+        }
+        if (now > deck[i].strt.c && now < deck[i].fnsh.c) {
+            const ps = (deck[i].fnsh.c - now) / (deck[i].fnsh.c - deck[i].strt.c);
+            const pf = (now - deck[i].strt.c) / (deck[i].fnsh.c - deck[i].strt.c);
+            const x = deck[i].strt.x*ps + deck[i].fnsh.x*pf;
+            const y = deck[i].strt.y*ps + deck[i].fnsh.y*pf;
+            const m = deck[i].strt.m*ps + deck[i].fnsh.m*pf;
+            ctx.translate(x, y);
+            ctx.rotate(r);
+            ctx.drawImage(img[deck[i].strt.v], -cardW/2, -cardH/2*m, cardW, cardH*m);
+            ctx.resetTransform();
+        }
+    }
+    deck.sort((a,b)=>a.i-b.i);
+    if (rendered)
+        onDrawn();
+    else
+        window.requestAnimationFrame(draw);
+}
+
+// Redraw all cards after a change in the felt size
+function redraw() {
+    console.log("redraw");
+    const now = performance.now();
+    locate();
+    for (let i = 0; i < maxDeck; i++) {
+        deck[i].strt.c = now;
+        deck[i].fnsh.c = now;
+    }
+    window.requestAnimationFrame(draw);
+}
+
+// Pull play cards after all players have played
+function pull() {
+    console.log("pull");
+    const now = performance.now();
+    for (let i = 0; i < maxDeck; i++) {
+        if (deck[i].g == played) {
+            deck[i].g = stackd;
+            deck[i].strt.c = now;
+            deck[i].fnsh.x = deck[puller*maxHand].stck.x;
+            deck[i].fnsh.y = deck[puller*maxHand].stck.y;
+            deck[i].fnsh.c = now + pullTime;
+        }
+    }
+    onDrawn = function() {};
+    window.requestAnimationFrame(draw);
+}
+
+// Close hand after card i is played
+function close(i) {
+    console.log("close");
+    const now = performance.now();
+    const p = Math.floor(i / maxHand);
+    const c = i % maxHand;
+    hand[p][c] = -1;
+    held[p]--;
+    locate();
+    for (let i = 0; i < maxDeck; i++) {
+        deck[i].strt.c = now;
+        deck[i].fnsh.c = now + closeTime;
+    }
+    if (turn == (taker + players - 0) % players) 
+        onDrawn = pull;
+    else
+        onDrawn = function() {};
+    window.requestAnimationFrame(draw);
+}
+
+// Play deck card i (part 2)
+function play2(i) {
+    console.log("play2");
+    const now = performance.now();
+    deck[i].g = played;
+    deck[i].z = -1;
+    deck[i].strt.v = deck[i].v;
+    deck[i].strt.c = now;
+    deck[i].fnsh.v = deck[i].v;
+    deck[i].fnsh.x = deck[i].play.x;
+    deck[i].fnsh.y = deck[i].play.y;
+    deck[i].fnsh.m = 1;
+    deck[i].fnsh.c = now + playTime / 2;
+    onDrawn = function() {close(i)};
+    window.requestAnimationFrame(draw);
+    turn = (turn + 1) % players;
+}
+
+// Play deck card i (part 1)
+function play1(i) {
+    console.log("-----");
+    console.log("play1");
+    const now = performance.now();
+    const p = Math.floor(i / maxHand);
+    deck[i].strt.c = now;
+    deck[i].fnsh.x = (deck[i].fnsh.x + deck[i].play.x) / 2;
+    deck[i].fnsh.y = (deck[i].fnsh.y + deck[i].play.y) / 2;
+    if (p != s) 
+        deck[i].fnsh.m = 0;
+    deck[i].fnsh.c = now + playTime / 2;
+    onDrawn = function() {play2(i);};
+    window.requestAnimationFrame(draw);
+}
+
+// Sort all hands and display south's hand
+function sort() {
+    console.log("sort");
+    const now = performance.now();
+    for (let d = 0; d < maxDeck; d++) {
+        const p = Math.floor(d / maxHand);
+        const c = d % maxHand;
+        let v = deck[p*maxHand+c].v;
+        let j = c;
+        for (let i = c + 1; i < maxHand; i++) {
+            if (deck[p*maxHand+i].v > v) {
+                v = deck[p*maxHand+i].v;
+                j = i;
+            }
+        }
+        deck[p*maxHand+j].v = deck[p*maxHand+c].v;
+        deck[p*maxHand+c].v = v;
+        hand[p][c] = v;
+        if (p == s) {
+            deck[p*maxHand+c].strt.c = now;
+            deck[p*maxHand+c].fnsh.v = deck[p*maxHand+c].v;
+            deck[p*maxHand+c].fnsh.c = now + sortTime * c;
+        }
+    }
+    onDrawn = function() {};
+    window.requestAnimationFrame(draw);
+}
+
+// Flip south's hand (part 2)
+function flip2() {
+    console.log("flip2");
+    const now = performance.now();
+    for (let i = 0; i < maxDeck; i++) {
+        const p = Math.floor(i / maxHand);
+        if (p == s) {
+            deck[i].z = i % maxHand;
+            deck[i].strt.v = deck[i].v;
+            deck[i].strt.m = 0;
+            deck[i].strt.c = now;
+            deck[i].fnsh.v = deck[i].v;
+            deck[i].fnsh.m = 1;
+            deck[i].fnsh.c = now + flipTime / 2;
+        }
+    }
+    onDrawn = sort;
+    window.requestAnimationFrame(draw);
+}
+
+// Flip south's hand (part 1)
+function flip1() {
+    console.log("flip1");
+    const now = performance.now();
+    for (let i = 0; i < maxDeck; i++) {
+        const p = Math.floor(i / maxHand);
+        if (p == s) {
+            deck[i].strt.m = 1;
+            deck[i].strt.c = now;
+            deck[i].fnsh.m = 0;
+            deck[i].fnsh.c = now + flipTime / 2;
+        }
+    }
+    onDrawn = flip2;
+    window.requestAnimationFrame(draw);
+}
+
 // Shuffle an array in place
 function shuffle(array) {
     let currentIndex = array.length;
@@ -201,359 +432,187 @@ function shuffle(array) {
     return;
 }
 
-// Locate each player's hand cards and lay card
-function locate() {
-    let pitch = Math.min((feltHigh - cardHigh * 2 - cardWide - padding * 4) / 19, cardWide / 8);
-    stck[w].x = -cardHigh/2;
-    stck[w].y = feltHigh/2;
-    cntr[w].x = feltWide/2 - cardHigh/2 - padding/2;
-    cntr[w].y = feltHigh/2 - cardWide/2 - padding/2;
-    for (let c = 0; c < hand[w].length; c++) {
-        hand[w][c].x = cardHigh/2 + padding;
-        hand[w][c].y = feltHigh/2 + pitch*(c-(hand[w].length-1)/2);
-        bump[w][c].x = cardHigh/2 + padding + cardHigh/2;
-        bump[w][c].y = feltHigh/2 + pitch*(c-(hand[w].length-1)/2);
-    }
-    pitch = Math.min((feltWide - cardWide * 2 - cardWide - padding * 4) / 19, cardWide / 8);
-    stck[n].x = feltWide/2;
-    stck[n].y = -cardHigh/2;
-    cntr[n].x = feltWide/2 + cardWide/2 + padding/2;
-    cntr[n].y = feltHigh/2 - cardHigh/2 - padding/2;
-    for (let c = 0; c < hand[n].length; c++) {
-        hand[n][c].x = feltWide/2 - pitch*(c-(hand[n].length-1)/2);
-        hand[n][c].y = cardHigh/2 + padding;
-        bump[n][c].x = feltWide/2 - pitch*(c-(hand[n].length-1)/2);
-        bump[n][c].y = cardHigh/2 + padding + cardHigh/2;
-    }
-    pitch = Math.min((feltHigh - cardHigh * 2 - cardWide - padding * 4) / 19, cardWide / 8);
-    stck[e].x = feltWide + cardHigh/2;
-    stck[e].y = feltHigh/2;
-    cntr[e].x = feltWide/2 + cardHigh/2 + padding/2;
-    cntr[e].y = feltHigh/2 + cardWide/2 + padding/2;
-    for (let c = 0; c < hand[e].length; c++) {
-        hand[e][c].x = feltWide - cardHigh/2 - padding;
-        hand[e][c].y = feltHigh/2 - pitch*(c-(hand[w].length-1)/2);
-        bump[e][c].x = feltWide - cardHigh/2 - padding - cardHigh/2;
-        bump[e][c].y = feltHigh/2 - pitch*(c-(hand[w].length-1)/2);
-    }
-    pitch = (feltWide - cardWide - padding * 2) / 19;
-    stck[s].x = feltWide/2;
-    stck[s].y = feltHigh + cardHigh/2;
-    cntr[s].x = feltWide/2 - cardWide/2 - padding/2;
-    cntr[s].y = feltHigh/2 + cardHigh/2 + padding/2;
-    for (let c = 0; c < hand[s].length; c++) {
-        hand[s][c].x = feltWide/2 + pitch*(c-(hand[n].length-1)/2);
-        hand[s][c].y = feltHigh - cardHigh/2 - padding;
-        bump[s][c].x = feltWide/2 + pitch*(c-(hand[n].length-1)/2);
-        bump[s][c].y = feltHigh - cardHigh/2 - padding - cardHigh/2;
-    }
-}
-
-// Draw cards until each card is at its final position then reset its start position for the next operation
-// Cards with high indices cover ones with low indices; cards in motion cover static cards
-function draw() {
-    const now = performance.now();
-    ctx.clearRect(0, 0, feltWide, feltHigh);
-    rendered = true;
-    for (let p = w; p <= s; p++) {
-        let r = [Math.PI/2, 0, Math.PI/2, 0][p];
-        for (let c = 0; c < hand[p].length; c++) {
-            if (now < fnsh[p][c].t)
-                rendered = false;
-            if (now <= strt[p][c].t) {
-                ctx.translate(strt[p][c].x, strt[p][c].y);
-                ctx.rotate(r);
-                ctx.drawImage(img[strt[p][c].v], -cardWide/2, -cardHigh/2, cardWide, cardHigh);
-                ctx.resetTransform();
-            }
-            if (now >= fnsh[p][c].t) {
-                ctx.translate(fnsh[p][c].x, fnsh[p][c].y);
-                ctx.rotate(r);
-                ctx.drawImage(img[fnsh[p][c].v], -cardWide/2, -cardHigh/2, cardWide, cardHigh);
-                ctx.resetTransform();
-                strt[p][c].v = fnsh[p][c].v;
-                strt[p][c].x = fnsh[p][c].x;
-                strt[p][c].y = fnsh[p][c].y;
-                strt[p][c].t = fnsh[p][c].t;
-            }
-        }
-    }
-    for (let p = w; p <= s; p++) {
-        for (let c = 0; c < hand[p].length; c++) {
-            let r = [Math.PI/2, 0, Math.PI/2, 0][p];
-            if (now > strt[p][c].t && now < fnsh[p][c].t) {
-                let s = (fnsh[p][c].t - now) / (fnsh[p][c].t - strt[p][c].t);
-                let f = (now - strt[p][c].t) / (fnsh[p][c].t - strt[p][c].t);
-                let x = strt[p][c].x*s + fnsh[p][c].x*f;
-                let y = strt[p][c].y*s + fnsh[p][c].y*f;
-                let e = 1;
-                if (strt[p][c].v == gb && fnsh[p][c].v != gb)
-                    e = Math.abs(s * 2 - 1);
-                ctx.translate(x, y);
-                ctx.rotate(r);
-                if (s > 0.5)
-                    ctx.drawImage(img[strt[p][c].v], -cardWide/2, -cardHigh/2*e, cardWide, cardHigh*e);
-                else
-                    ctx.drawImage(img[fnsh[p][c].v], -cardWide/2, -cardHigh/2*e, cardWide, cardHigh*e);
-                ctx.resetTransform();
-            }
-        }
-    }
-    if (rendered)
-        window.requestAnimationFrame(onDrawn);
-    else
-        window.requestAnimationFrame(draw);
-}
-
-// Redraw all hands after a change in the felt size
-function redraw() {
-    locate();
-    for (let p = w; p <= s; p++) {
-        for (let c = 0; c < hand[p].length; c++) {
-            fnsh[p][c].x = hand[p][c].x;
-            fnsh[p][c].y = hand[p][c].y;
-        }
-    }
-    if (bumpedP != null) {
-        fnsh[bumpedP][bumpedC].x = bump[bumpedP][bumpedC].x;
-        fnsh[bumpedP][bumpedC].y = bump[bumpedP][bumpedC].y;
-    }
-    onDrawn = function() {};
-    window.requestAnimationFrame(draw);
-}
-
-// Play player p's card c
-function play(p, c) {
-    const now = performance.now();
-    hand[p][c].x = cntr[p].x;
-    hand[p][c].y = cntr[p].y;
-    strt[p][c].t = now;
-    fnsh[p][c].v = hand[p][c].v;
-    fnsh[p][c].x = hand[p][c].x;
-    fnsh[p][c].y = hand[p][c].y;
-    fnsh[p][c].t = now + playTime;
-    onDrawn = function() {};
-    window.requestAnimationFrame(draw);
-}
-
-// Sort all hands and display south's hand
-function sort() {
-    const now = performance.now();
-    for (let p = w; p <= s; p++) {
-        for (let c = 0; c < maxHand; c++) {
-            let v = hand[p][c].v;
-            let j = c;
-            for (let i = c + 1; i < maxHand; i++) {
-                if (hand[p][i].v > v) {
-                    v = hand[p][i].v;
-                    j = i;
-                }
-            }
-            hand[p][j].v = hand[p][c].v;
-            hand[p][c].v = v;
-            if (p == s) {
-                fnsh[p][c].v = hand[p][c].v;
-                fnsh[p][c].t = now + sortTime * c;
-            }
-        }
-    }
-    onDrawn = function() {};
-    window.requestAnimationFrame(draw);
-}
-
-// Flip south's hand
-function flip() {
-    const now = performance.now();
-    for (let p = w; p <= s; p++) {
-        for (let c = 0; c < maxHand; c++) {
-            strt[p][c].t = now;
-            if (p == s)
-                fnsh[p][c].v = hand[p][c].v;
-            fnsh[p][c].t = now + flipTime;
-        }
-    }
-    onDrawn = sort;
-    window.requestAnimationFrame(draw);
-}
-
-// Deal shuffled deck starting with the player clockwise from the dealer
+// Deal shuffled deck starting with the first bidder
 function deal() {
+    console.log("deal");
     const now = performance.now();
-    const deck = Array.from(new Array(maxDeck), (v, k) => k % maxHand);
+    const seq = Array.from(new Array(maxDeck), (v, k) => k % maxHand);
     dealer = Math.floor(Math.random() * players);
-    shuffle(deck);
+    bidder = taker = turn = puller = (dealer + 1) % players;
+    shuffle(seq);
     locate();
-    let d = 0;
-    for (let c = 0; c < maxHand; c++) {
-        for (let i = 0; i < players; i++) {
-            let p = (dealer + i + 1) % players;
-            hand[p][c].v = deck[d];
-            strt[p][c].v = gb;
-            strt[p][c].x = stck[dealer].x;
-            strt[p][c].y = stck[dealer].y;
-            strt[p][c].t = now + d * (dealTime - flyTime) / maxDeck;
-            fnsh[p][c].v = gb;
-            fnsh[p][c].x = hand[p][c].x;
-            fnsh[p][c].y = hand[p][c].y;
-            fnsh[p][c].t = strt[p][c].t + flyTime;
-            d++;
-        }
+    for (let s = 0; s < maxDeck; s++) {
+        const p = (bidder + s) % players;
+        const c = Math.floor(s / 4);
+        const i = p * maxHand + c;
+        const d = dealer * maxHand + c;
+        deck[i].i = i;
+        deck[i].v = seq[s];
+        deck[i].g = normal;
+        deck[i].z = maxHand - c - 1;
+        deck[i].strt.v = gb;
+        deck[i].strt.x = deck[d].stck.x;
+        deck[i].strt.y = deck[d].stck.y;
+        deck[i].strt.m = 1;
+        deck[i].strt.c = now + s * (dealTime - flyTime) / maxDeck;
+        deck[i].fnsh.v = gb;
+        deck[i].fnsh.x = deck[i].norm.x;
+        deck[i].fnsh.y = deck[i].norm.y;
+        deck[i].fnsh.m = 1;
+        deck[i].fnsh.c = deck[i].strt.c + flyTime;
     }
-    onDrawn = flip;
+    onDrawn = flip1;
     window.requestAnimationFrame(draw);
 }
 
-// Convert x,y coordinates to that hand's player index (or undefined)
-function xy2p(x, y) {
-    for (let p = s; p >= w; p--) {
-        for (let c = hand[p].length - 1; c >= 0; c--) {
-            let l = hand[p][c].x - [cardHigh/2, cardWide/2, cardHigh/2, cardWide/2][p];
-            let r = hand[p][c].x + [cardHigh/2, cardWide/2, cardHigh/2, cardWide/2][p];
-            let t = hand[p][c].y - [cardWide/2, cardHigh/2, cardWide/2, cardHigh/2][p];
-            let b = hand[p][c].y + [cardWide/2, cardHigh/2, cardWide/2, cardHigh/2][p];
-            if (x > l && x < r && y > t && y < b)
-                return p;
-            l = bump[p][c].x - [0, cardWide/2, cardHigh/2, cardWide/2][p];
-            r = bump[p][c].x + [cardHigh/2, cardWide/2, 0, cardWide/2][p];
-            t = bump[p][c].y - [cardWide/2, 0, cardWide/2, cardHigh/2][p];
-            b = bump[p][c].y + [cardWide/2, cardHigh/2, cardWide/2, 0][p];
-            if (p == bumpedP && c == bumpedC && x > l && x < r && y > t && y < b)
-                return p;
+// Convert x,y coordinates to index of top card (or undefined)
+function xy2i(x, y) {
+    let topI, l, r, t, b;
+    deck.sort((a,b)=>a.z-b.z);
+    for (let d = 0; d < maxDeck; d++) {
+        const i = deck[d].i;
+        const p = Math.floor(i / maxHand);
+        switch(deck[d].g) {
+        case normal:
+            l = deck[d].norm.x - [cardH/2, cardW/2, cardH/2, cardW/2][p];
+            r = deck[d].norm.x + [cardH/2, cardW/2, cardH/2, cardW/2][p];
+            t = deck[d].norm.y - [cardW/2, cardH/2, cardW/2, cardH/2][p];
+            b = deck[d].norm.y + [cardW/2, cardH/2, cardW/2, cardH/2][p];
+            if (x >= l && x <= r && y >= t && y <= b)
+                topI = i;
+            break;
+        case bumped:
+            l = deck[d].norm.x - [cardH/2, cardW/2, cardH/1, cardW/2][p];
+            r = deck[d].norm.x + [cardH/1, cardW/2, cardH/2, cardW/2][p];
+            t = deck[d].norm.y - [cardW/2, cardH/2, cardW/2, cardH/1][p];
+            b = deck[d].norm.y + [cardW/2, cardH/1, cardW/2, cardH/2][p];
+            if (x >= l && x <= r && y >= t && y <= b)
+                topI = i;
         }
     }
+    deck.sort((a,b)=>a.i-b.i);
+    return topI;
 }
 
-// Convert x,y coordinates to that hand's card index (or undefined)
-function xy2c(x, y) {
-    for (let p = s; p >= w; p--) {
-        for (let c = hand[p].length - 1; c >= 0; c--) {
-            let l = hand[p][c].x - [cardHigh/2, cardWide/2, cardHigh/2, cardWide/2][p];
-            let r = hand[p][c].x + [cardHigh/2, cardWide/2, cardHigh/2, cardWide/2][p];
-            let t = hand[p][c].y - [cardWide/2, cardHigh/2, cardWide/2, cardHigh/2][p];
-            let b = hand[p][c].y + [cardWide/2, cardHigh/2, cardWide/2, cardHigh/2][p];
-            if (x > l && x < r && y > t && y < b)
-                return c;
-            l = bump[p][c].x - [0, cardWide/2, cardHigh/2, cardWide/2][p];
-            r = bump[p][c].x + [cardHigh/2, cardWide/2, 0, cardWide/2][p];
-            t = bump[p][c].y - [cardWide/2, 0, cardWide/2, cardHigh/2][p];
-            b = bump[p][c].y + [cardWide/2, cardHigh/2, cardWide/2, 0][p];
-            if (p == bumpedP && c == bumpedC && x > l && x < r && y > t && y < b)
-                return c;
-        }
-    }
-}
-
-// Mouse move event: 
-//      if rendered and (off-hand or off-selected) and any card is selected: unselect card that and ...
-//      if rendered and on-hand and off-selected: select this card
+// If mouse points off a bumped card, unbump all cards, and if mouse points to a normal card, bump it
 function mouse(e) {
     const now = performance.now();
-    const p = xy2p (e.clientX, e.clientY);
-    const c = xy2c (e.clientX, e.clientY);
-    if (rendered && (p == undefined || p != bumpedP || c != bumpedC) && bumpedP != null) {
-        fnsh[bumpedP][bumpedC].x = hand[bumpedP][bumpedC].x;
-        fnsh[bumpedP][bumpedC].y = hand[bumpedP][bumpedC].y;
-        fnsh[bumpedP][bumpedC].t = now;
-        bumpedP = null;
-        bumpedC = null;
-        onDrawn = function() {};
-        window.requestAnimationFrame(draw);
+    const i = xy2i (e.clientX, e.clientY);
+    if (i == undefined || deck[i].g != bumped) {
+        for (let d = 0; d < maxDeck; d++) {
+            if (deck[d].g == bumped) {
+                deck[d].g = normal;
+                deck[d].strt.c = now;
+                deck[d].fnsh.x = deck[d].norm.x;
+                deck[d].fnsh.y = deck[d].norm.y;
+                deck[d].fnsh.c = now + bumpTime;
+                window.requestAnimationFrame(draw);
+            }
+        }
     }
-    if (rendered && p != undefined && (p != bumpedP || c != bumpedC)) {
-        bumpedP = p;
-        bumpedC = c;
-        fnsh[bumpedP][bumpedC].x = bump[bumpedP][bumpedC].x;
-        fnsh[bumpedP][bumpedC].y = bump[bumpedP][bumpedC].y;
-        fnsh[bumpedP][bumpedC].t = now;
-        onDrawn = function() {};
+    if (i != undefined && deck[i].g == normal) {
+        deck[i].g = bumped;
+        deck[i].strt.c = now;
+        deck[i].fnsh.x = deck[i].bump.x;
+        deck[i].fnsh.y = deck[i].bump.y;
+        deck[i].fnsh.c = now + bumpTime;
         window.requestAnimationFrame(draw);
     }
 }
 
-// Mouse press event: 
-//      if rendered and on-hand: transiton card to lay and remove card from hand
+// If mouse pressed normal/bumped card, unbump cards; if normal card, bump it; if it's its turn, play it
 function press(e) {
-    const p = xy2p (e.clientX, e.clientY);
-    const c = xy2c (e.clientX, e.clientY);
-    if (rendered && p != undefined) {
-        play(p,c);
-        bumpedP = null;
-        bumpedC = null;
-    }
-}
-
-// Touch start event:
-//      if rendered and (off-hand or off-selected) and any card is selected: unselect card and ...
-//      if rendered and on-hand and off-selected: select this card and return;
-//      if rendered and on-hand and on-selected: transiton card to lay and remove card from hand
-function touch(e) {
-    felt.onmousedown = "";
-    felt.onmousemove = "";
     const now = performance.now();
-    const p = xy2p (e.touches[0].clientX, e.touches[0].clientY);
-    const c = xy2c (e.touches[0].clientX, e.touches[0].clientY);
-    if (rendered && (p == undefined || p != bumpedP || c != bumpedC) && bumpedP != null) {
-        fnsh[bumpedP][bumpedC].x = hand[bumpedP][bumpedC].x;
-        fnsh[bumpedP][bumpedC].y = hand[bumpedP][bumpedC].y;
-        fnsh[bumpedP][bumpedC].t = now;
-        bumpedP = null;
-        bumpedC = null;
-        onDrawn = function() {};
-        window.requestAnimationFrame(draw);
-    }
-    if (rendered && p != undefined && (p != bumpedP || c != bumpedC)) {
-        bumpedP = p;
-        bumpedC = c;
-        fnsh[bumpedP][bumpedC].x = bump[bumpedP][bumpedC].x;
-        fnsh[bumpedP][bumpedC].y = bump[bumpedP][bumpedC].y;
-        fnsh[bumpedP][bumpedC].t = now;
-        onDrawn = function() {};
-        window.requestAnimationFrame(draw);
-        return;
-    }
-    if (rendered && p != undefined && p == bumpedP && c == bumpedC) {
-        play(p,c);
-        bumpedP = null;
-        bumpedC = null;
+    const i = xy2i (e.clientX, e.clientY);
+    if (i != undefined) {
+        for (let d = 0; d < maxDeck; d++) {
+            if (d != i && deck[d].g == bumped) {
+                deck[d].g = normal;
+                deck[d].strt.c = now;
+                deck[d].fnsh.x = deck[d].norm.x;
+                deck[d].fnsh.y = deck[d].norm.y;
+                deck[d].fnsh.c = now + bumpTime;
+                window.requestAnimationFrame(draw);
+            }
+        }
+        if (deck[i].g == normal) {
+            deck[i].g = bumped;
+            deck[i].strt.c = now;
+            deck[i].fnsh.x = deck[i].bump.x;
+            deck[i].fnsh.y = deck[i].bump.y;
+            deck[i].fnsh.c = now + bumpTime;
+            window.requestAnimationFrame(draw);
+        }
+        if (Math.floor(i / maxHand) == turn)
+            play1(i);
     }
 }
 
-// Touch slide event: 
-//      if rendered and (off-hand or off-selected) and any card is selected: unselect card and ...
-//      if rendered and on-hand and off-selected: select this card
+// If bumped card touched and it's its turn, play it; if touch isn't bumped card, unbump cards; if normal touched, bump it 
+function touch(e) {
+    felt.onmousedown = function() {};
+    felt.onmousemove = function() {};
+    const now = performance.now();
+    const i = xy2i (e.touches[0].clientX, e.touches[0].clientY);
+    if (i != undefined && deck[i].g == bumped && Math.floor(i / maxHand) == turn)
+            play1(i);
+    if (i == undefined || deck[i].g != bumped) {
+        for (let d = 0; d < maxDeck; d++) {
+            if (deck[d].g == bumped) {
+                deck[d].g = normal;
+                deck[d].strt.c = now;
+                deck[d].fnsh.x = deck[d].norm.x;
+                deck[d].fnsh.y = deck[d].norm.y;
+                deck[d].fnsh.c = now + bumpTime;
+                window.requestAnimationFrame(draw);
+            }
+        }
+    }
+    if (i != undefined && deck[i].g == normal) {
+        deck[i].g = bumped;
+        deck[i].strt.c = now;
+        deck[i].fnsh.x = deck[i].bump.x;
+        deck[i].fnsh.y = deck[i].bump.y;
+        deck[i].fnsh.c = now + bumpTime;
+        window.requestAnimationFrame(draw);
+    }
+}
+
+// If touch slides off a bumped card, unbump all cards, and if touch slides on a normal card, bump it
 function slide(e) {
     const now = performance.now();
-    const p = xy2p (e.touches[0].clientX, e.touches[0].clientY);
-    const c = xy2c (e.touches[0].clientX, e.touches[0].clientY);
-    if (rendered && (p == undefined || p != bumpedP || c != bumpedC) && bumpedP != null) {
-        fnsh[bumpedP][bumpedC].x = hand[bumpedP][bumpedC].x;
-        fnsh[bumpedP][bumpedC].y = hand[bumpedP][bumpedC].y;
-        fnsh[bumpedP][bumpedC].t = now;
-        bumpedP = null;
-        bumpedC = null;
-        onDrawn = function() {};
-        window.requestAnimationFrame(draw);
+    const i = xy2i (e.touches[0].clientX, e.touches[0].clientY);
+    if (i == undefined || deck[i].g != bumped) {
+        for (let d = 0; d < maxDeck; d++) {
+            if (deck[d].g == bumped) {
+                deck[d].g = normal;
+                deck[d].strt.c = now;
+                deck[d].fnsh.x = deck[d].norm.x;
+                deck[d].fnsh.y = deck[d].norm.y;
+                deck[d].fnsh.c = now + bumpTime;
+                window.requestAnimationFrame(draw);
+            }
+        }
     }
-    if (rendered && p != undefined && (p != bumpedP || c != bumpedC)) {
-        bumpedP = p;
-        bumpedC = c;
-        fnsh[bumpedP][bumpedC].x = bump[bumpedP][bumpedC].x;
-        fnsh[bumpedP][bumpedC].y = bump[bumpedP][bumpedC].y;
-        fnsh[bumpedP][bumpedC].t = now;
-        onDrawn = function() {};
+    if (i != undefined && deck[i].g == normal) {
+        deck[i].g = bumped;
+        deck[i].strt.c = now;
+        deck[i].fnsh.x = deck[i].bump.x;
+        deck[i].fnsh.y = deck[i].bump.y;
+        deck[i].fnsh.c = now + bumpTime;
         window.requestAnimationFrame(draw);
     }
 }
 
 // Initialize the global variables that rely on the window size
 function resize () {
-    feltWide = Number.parseFloat(getComputedStyle(felt).width);
-    feltHigh = Number.parseFloat(getComputedStyle(felt).height);
-    padding  = Number.parseFloat(getComputedStyle(corner).top);
-    cardWide = Number.parseFloat(getComputedStyle(corner).width);
-    cardHigh = Number.parseFloat(getComputedStyle(corner).height);
-    canvas.width  = feltWide;
-    canvas.height = feltHigh;
+    feltW = Number.parseFloat(getComputedStyle(felt).width);
+    feltH = Number.parseFloat(getComputedStyle(felt).height);
+    pad   = Number.parseFloat(getComputedStyle(corner).top);
+    cardW = Number.parseFloat(getComputedStyle(corner).width);
+    cardH = Number.parseFloat(getComputedStyle(corner).height);
+    canvas.width  = feltW;
+    canvas.height = feltH;
     redraw();
 }
 
