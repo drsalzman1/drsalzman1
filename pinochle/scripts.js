@@ -124,7 +124,7 @@ const closeTime = dealTime / 10;    // milliseconds to close gap in hand
 const pullTime  = dealTime / 10;    // milliseconds to pull a trick
 
 // Other constants
-const version  = "v0.75";           // version number to display
+const version  = "v0.76";           // version number to display
 
 // Global variables
 let dealer  = 0;                    // the player who dealt
