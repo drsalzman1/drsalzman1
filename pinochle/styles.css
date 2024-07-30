@@ -61,7 +61,11 @@ body {
 }
 
 #mid {
-    width: 100%;
+    padding-top: calc(var(--felt-padding)*2);
+    padding-bottom: calc(var(--felt-padding)*2);
+    width: 70%;
+    color: black;
+    background-color: white;
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
@@ -69,7 +73,6 @@ body {
 
 #left, #right {
     text-align: center;
-    color: white;
 }
 
 #bot {
@@ -86,4 +89,6 @@ body {
     width: 50%;
     font-family: sans-serif;
     font-size: var(--body-font-size);
+    color: black;
+    background-color: white;
 }

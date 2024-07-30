@@ -124,7 +124,7 @@ const closeTime = dealTime / 10;    // milliseconds to close gap in hand
 const pullTime  = dealTime / 10;    // milliseconds to pull a trick
 
 // Other constants
-const version  = "v0.72";           // version number to display
+const version  = "v0.73";           // version number to display
 
 // Global variables
 let dealer  = 0;                    // the player who dealt
@@ -356,7 +356,7 @@ function meld(player, trump) {
 function bid() {
     onDrawn = function() {};
     center.style.display = "flex";
-    right.innerHTML = `<u>My Meld</u><br>${meld(south,spades)}<br>${meld(south,hearts)}<br>${meld(south,clubs)}<br>${meld(south,diamonds)}`;
+    right.innerHTML = `My Meld<br>${meld(south,spades)}<br>${meld(south,hearts)}<br>${meld(south,clubs)}<br>${meld(south,diamonds)}`;
 }
 
 // Sort all hands and display south's hand
