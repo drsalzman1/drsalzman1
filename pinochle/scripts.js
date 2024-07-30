@@ -1,17 +1,19 @@
 "use strict";
 
 // Player values
-const w        = 0;
-const n        = 1;
-const e        = 2;
-const s        = 3;
+const west     = 0;
+const north    = 1;
+const east     = 2;
+const south    = 3;
 const players  = 4;
+const player$  = ["West", "North", "East", "South"];
 
 // Suit values
 const diamonds = 0;
 const clubs    = 5;
 const hearts   = 10;
 const spades   = 15;
+const suit$    = ["Diamonds", "?", "?", "?", "?", "Clubs", "?", "?", "?", "?", "Hearts", "?", "?", "?", "?", "Spades"];
 
 // Rank values
 const jack     = 0;
@@ -19,15 +21,13 @@ const queen    = 1;
 const king     = 2;
 const ten      = 3;
 const ace      = 4;
+const ranks    = 5;
+const rank$    = ["Jack", "Queen", "King", "Ten", "Ace"];
 
-// Card values
-const jd = jack + diamonds, qd = queen + diamonds, kd = king + diamonds, td = ten + diamonds, ad = ace + diamonds;
-const jc = jack + clubs,    qc = queen + clubs,    kc = king + clubs,    tc = ten + clubs,    ac = ace + clubs;
-const jh = jack + hearts,   qh = queen + hearts,   kh = king + hearts,   th = ten + hearts,   ah = ace + hearts;
-const js = jack + spades,   qs = queen + spades,   ks = king + spades,   ts = ten + spades,   as = ace + spades;
-const gb = 20
-const maxHand = 20;
-const maxDeck = 80;
+// Card value = rank + suit
+const grayBack = 20;
+const maxHand  = 20;
+const maxDeck  = 80;
 
 // src[v] = source file for card value v
 const src = [
@@ -50,7 +50,7 @@ const img = [
 // hand[p][c] = player p's card c's card value (or -1)
 const hand = [Array(maxHand), Array(maxHand), Array(maxHand), Array(maxHand)];
 
-// held[p] = number of cards remianing in player p's hand
+// held[p] = number of cards remaining in player p's hand
 const held = [20, 20, 20, 20];
 
 // Position class
@@ -108,6 +108,10 @@ const corner   = document.getElementById("corner");
 const reload   = document.getElementById("reload");
 const canvas   = document.getElementById("canvas");
 const ctx      = canvas.getContext("2d");
+const center   = document.getElementById("center");
+const right    = document.getElementById("right");
+const slider   = document.getElementById("slider");
+const button   = document.getElementById("button");
 
 // Animation constants
 const dealTime  = 2000;             // milliseconds to deal all cards
@@ -134,69 +138,6 @@ let pad     = 0;                    // padding width and height
 let cardW   = 0;                    // card width
 let cardH   = 0;                    // card height
 let onDrawn = function() {};        // function to invoke when all cards are drawn
-
-// Returns number of rank arounds in player's hand
-function arounds(player, rank) {
-    let count = Array(maxHand).fill(0);
-    for (let suit of [spades, hearts, clubs, diamonds]) {
-        for (let card = 0; card < maxHand; card++)
-            if (hand[player][card] == suit + rank)
-                count[suit + rank]++;
-    }
-    return Math.min(count[spades + rank], count[hearts + rank], count[clubs + rank], count[diamonds + rank])
-}
-
-// Returns number of suit runs in the player's hand
-function runs(player, suit) {
-    let count = Array(maxHand).fill(0);
-    for (let rank of [jack, queen, king, ten, ace]) {
-        for (let card = 0; card < maxHand; card++)
-            if (hand[player][card] == suit + rank)
-                count[suit + rank]++;
-    }
-    return Math.min(count[suit + ace], count[suit + ten], count[suit + king], count[suit + queen], count[suit + jack])
-}
-
-// Return true if the player's hand has at le min pinochles
-function pinochles(player) {
-    let q = 0, j = 0;
-    for (let card = 0; card < maxHand; card++) {
-        if (hand[player][card] == qs)
-            q++;
-        if (hand[player][card] == jd)
-            j++;
-    }
-    return Math.min(q, j);
-}
-
-// Returns number of suit marriage's in the player's hand
-function marraiges(player, suit) {
-    let k = 0, q = 0;
-    for (let card = 0; card < maxHand; card++) {
-        if (hand[player][card] == suit + king)
-            k++;
-        if (hand[player][card] == suit + queen)
-            q++;
-    }
-    return Math.min(k, q);
-}
-
-// Count player's meld based on trump suit
-function meld(player, trump) {
-    let m = 0;
-    m += [0,   10,   100,    500,    500][arounds  (player, ace  )];
-    m += [0,    8,    80,    500,    500][arounds  (player, king )];
-    m += [0,    6,    60,    500,    500][arounds  (player, queen)];
-    m += [0,    4,    40,    500,    500][arounds  (player, jack )];
-    m += [0, 16-4, 150-8, 500-12, 500-16][runs     (player, trump)];
-    m += [0,    4,    30,     90,    500][pinochles(player       )];
-    for (let suit of [spades, hearts, clubs, diamonds])
-        if (suit == trump)
-            m += marraiges(player, suit) * 4;
-        else
-            m += marraiges(player, suit) * 2;
-    return m;
-}
 
 // Locate all card positions
 function locate() {
@@ -273,7 +214,6 @@ function draw() {
 
 // Redraw all cards after a change in the felt size
 function redraw() {
-    console.log("redraw");
     const now = performance.now();
     locate();
     for (let i = 0; i < maxDeck; i++) {
@@ -285,7 +225,6 @@ function redraw() {
 
 // Pull play cards after all players have played
 function pull() {
-    console.log("pull");
     const now = performance.now();
     for (let i = 0; i < maxDeck; i++) {
         if (deck[i].g == played) {
@@ -302,7 +241,6 @@ function pull() {
 
 // Close hand after card i is played
 function close(i) {
-    console.log("close");
     const now = performance.now();
     const p = Math.floor(i / maxHand);
     const c = i % maxHand;
@@ -322,7 +260,6 @@ function close(i) {
 
 // Play deck card i (part 2)
 function play2(i) {
-    console.log("play2");
     const now = performance.now();
     deck[i].g = played;
     deck[i].z = -1;
@@ -340,8 +277,6 @@ function play2(i) {
 
 // Play deck card i (part 1)
 function play1(i) {
-    console.log("-----");
-    console.log("play1");
     const now = performance.now();
     const p = Math.floor(i / maxHand);
     deck[i].strt.c = now;
@@ -354,9 +289,78 @@ function play1(i) {
     window.requestAnimationFrame(draw);
 }
 
+// Returns number of rank arounds in player's hand
+function arounds(player, rank) {
+    let count = Array(maxHand).fill(0);
+    for (let suit of [spades, hearts, clubs, diamonds]) {
+        for (let card = 0; card < maxHand; card++)
+            if (hand[player][card] == rank + suit)
+                count[rank + suit]++;
+    }
+    return Math.min(count[rank + spades], count[rank + hearts], count[rank + clubs], count[rank + diamonds])
+}
+
+// Returns number of suit runs in the player's hand
+function runs(player, suit) {
+    let count = Array(maxHand).fill(0);
+    for (let rank of [jack, queen, king, ten, ace]) {
+        for (let card = 0; card < maxHand; card++)
+            if (hand[player][card] == rank + suit)
+                count[rank + suit]++;
+    }
+    return Math.min(count[ace + suit], count[ten + suit], count[king + suit], count[queen + suit], count[jack + suit])
+}
+
+// Return true if the player's hand has at le min pinochles
+function pinochles(player) {
+    let q = 0, j = 0;
+    for (let card = 0; card < maxHand; card++) {
+        if (hand[player][card] == queen + spades)
+            q++;
+        if (hand[player][card] == jack + diamonds)
+            j++;
+    }
+    return Math.min(q, j);
+}
+
+// Returns number of suit marriage's in the player's hand
+function marraiges(player, suit) {
+    let k = 0, q = 0;
+    for (let card = 0; card < maxHand; card++) {
+        if (hand[player][card] == king + suit)
+            k++;
+        if (hand[player][card] == queen + suit)
+            q++;
+    }
+    return Math.min(k, q);
+}
+
+// Count player's meld based on trump suit
+function meld(player, trump) {
+    let m = 0;
+    m += [0,   10,   100,    500,    500][arounds  (player, ace  )];
+    m += [0,    8,    80,    500,    500][arounds  (player, king )];
+    m += [0,    6,    60,    500,    500][arounds  (player, queen)];
+    m += [0,    4,    40,    500,    500][arounds  (player, jack )];
+    m += [0, 16-4, 150-8, 500-12, 500-16][runs     (player, trump)];
+    m += [0,    4,    30,     90,    500][pinochles(player       )];
+    for (let suit of [diamonds, clubs, hearts, spades])
+        if (suit == trump)
+            m += marraiges(player, suit) * 4;
+        else
+            m += marraiges(player, suit) * 2;
+    return m;
+}
+
+// Bid 
+function bid() {
+    onDrawn = function() {};
+    center.style.display = "flex";
+    right.innerHTML = `<u>My Meld</u><br>${meld(south,spades)}<br>${meld(south,hearts)}<br>${meld(south,clubs)}<br>${meld(south,diamonds)}`;
+}
+
 // Sort all hands and display south's hand
 function sort() {
-    console.log("sort");
     const now = performance.now();
     for (let d = 0; d < maxDeck; d++) {
         const p = Math.floor(d / maxHand);
@@ -372,23 +376,22 @@ function sort() {
         deck[p*maxHand+j].v = deck[p*maxHand+c].v;
         deck[p*maxHand+c].v = v;
         hand[p][c] = v;
-        if (p == s) {
+        if (p == south) {
             deck[p*maxHand+c].strt.c = now;
             deck[p*maxHand+c].fnsh.v = deck[p*maxHand+c].v;
             deck[p*maxHand+c].fnsh.c = now + sortTime * c;
         }
     }
-    onDrawn = function() {};
+    onDrawn = bid;
     window.requestAnimationFrame(draw);
 }
 
 // Flip south's hand (part 2)
 function flip2() {
-    console.log("flip2");
     const now = performance.now();
     for (let i = 0; i < maxDeck; i++) {
         const p = Math.floor(i / maxHand);
-        if (p == s) {
+        if (p == south) {
             deck[i].z = i % maxHand;
             deck[i].strt.v = deck[i].v;
             deck[i].strt.m = 0;
@@ -404,11 +407,10 @@ function flip2() {
 
 // Flip south's hand (part 1)
 function flip1() {
-    console.log("flip1");
     const now = performance.now();
     for (let i = 0; i < maxDeck; i++) {
         const p = Math.floor(i / maxHand);
-        if (p == s) {
+        if (p == south) {
             deck[i].strt.m = 1;
             deck[i].strt.c = now;
             deck[i].fnsh.m = 0;
@@ -434,7 +436,6 @@ function shuffle(array) {
 
 // Deal shuffled deck starting with the first bidder
 function deal() {
-    console.log("deal");
     const now = performance.now();
     const seq = Array.from(new Array(maxDeck), (v, k) => k % maxHand);
     dealer = Math.floor(Math.random() * players);
@@ -450,12 +451,12 @@ function deal() {
         deck[i].v = seq[s];
         deck[i].g = normal;
         deck[i].z = maxHand - c - 1;
-        deck[i].strt.v = gb;
+        deck[i].strt.v = grayBack;
         deck[i].strt.x = deck[d].stck.x;
         deck[i].strt.y = deck[d].stck.y;
         deck[i].strt.m = 1;
         deck[i].strt.c = now + s * (dealTime - flyTime) / maxDeck;
-        deck[i].fnsh.v = gb;
+        deck[i].fnsh.v = grayBack;
         deck[i].fnsh.x = deck[i].norm.x;
         deck[i].fnsh.y = deck[i].norm.y;
         deck[i].fnsh.m = 1;
@@ -616,6 +617,14 @@ function resize () {
     redraw();
 }
 
+function bidChange() {
+    button.value = "Bid: " + ["Pass", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59", "60", "65"][slider.value];
+}
+
+function bidSubmit() {
+    center.style.display = "none";
+}
+
 // Initialize javascript and start game after window loads
 window.onload = function() {
     for (let v = 0; v < src.length; v++)
@@ -628,5 +637,7 @@ window.onload = function() {
     felt.onmousedown  = press;
     felt.ontouchstart = touch;
     felt.ontouchmove  = slide;
+    slider.oninput    = bidChange;
+    button.onclick    = bidSubmit;
     deal();
 }
