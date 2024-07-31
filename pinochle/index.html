@@ -14,24 +14,33 @@
             <div id="corner"></div>
             <img id="reload" src="reload.svg" alt="reload" onclick="location.reload()">
             <div id="center">
-                <div id="mid">
-                    <div id="left">
-                        Trump<br>
-                        <span style="color:black">&spades;</span><br>
-                        <span style="color:red">&hearts;</span><br>
-                        <span style="color:black">&clubs;</span><br>
-                        <span style="color:red">&diams;</span>
+                <div id="table">
+                    <div id="trump">
+                        <u>Trump</u><br>
+                        <input type="radio" name="trump" value="0"> Spades<br>
+                        <input type="radio" name="trump" value="1"> Hearts<br>
+                        <input type="radio" name="trump" value="2"> Clubs<br>
+                        <input type="radio" name="trump" value="3"> Diamonds
                     </div>
-                    <div id="right">
+                    <div id="meld">
+                        <u>Meld</u><br>
+                        <span></span><br>
+                        <span></span><br>
+                        <span></span><br>
+                        <span></span>
                     </div>
                 </div>
-                <div id="bot">
-                    <input id="slider" type="range" min="0" max="12" step="1" value="0"><br>
-                    <br>
-                    <input id="button" type="button" value="Bid: Pass">
+                <div id="range">
+                    Bid: <input id="slider" name="slider" type="range" min="0" max="12" step="1" value="1"><br>
                 </div>
             </div>
-        </div>
+            <div id="box">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div>Pass</div>
+            </div>
+    </div>
     </body>
     <script src="scripts.js" defer></script>
 </html>
