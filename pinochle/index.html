@@ -11,16 +11,15 @@
     <body>
         <div id="felt">
             <canvas id="canvas"></canvas>
-            <img id="reload" src="icons/reload.svg" alt="reload" onclick="location.reload()">
             <div id="middle">
-                <div id="bidSouth">
-                    <div id="bidTable">
+                <div id="pickBid">
+                    <div id="meldTable">
                         <div id="trumpColumn">
-                            <u>Trump</u><br>
-                            <img src="suits/spade.svg" class="whitePip"><br>
-                            <img src="suits/heart.svg" class="whitePip"><br>
-                            <img src="suits/club.svg" class="whitePip"><br>
-                            <img src="suits/diamond.svg" class="whitePip">
+                            <u>Trump Suit</u><br>
+                            Spades<br>
+                            Hearts<br>
+                            Clubs<br>
+                            Diamonds
                         </div>
                         <div id="meldColumn">
                             <u>Meld</u><br>
@@ -30,7 +29,7 @@
                             <span></span>
                         </div>
                     </div>
-                    <div>
+                    <div id="bidTable">
                         <br>
                         Pick your bid:<br>
                         <div id="bidButtons">
@@ -40,12 +39,12 @@
                         </div>
                     </div>
                 </div>
-                <div id="pickSouth">
+                <div id="pickTrump">
                     Pick trump:<br><br>
-                    <div><img src="suits/spade.svg" class="blackPip"></div><br>
-                    <div><img src="suits/heart.svg" class="blackPip"></div><br>
-                    <div><img src="suits/club.svg" class="blackPip"></div><br>
-                    <div><img src="suits/diamond.svg" class="blackPip"></div>
+                    <input type="button" value="Spades"><br><br>
+                    <input type="button" value="Hearts"><br><br>
+                    <input type="button" value="Clubs"><br><br>
+                    <input type="button" value="Diamonds">
                 </div>
                 <div id="revealBid">
                     <span id="bidWinner"></span> won the bid at <span id="bidValue"></span>
@@ -56,7 +55,7 @@
                     We need to pull <span id="weNeed"></span>; they need to pull <span id="theyNeed"></span>.
                     <div>
                         <br>
-                        Play?
+                        Play hand?
                         <input id="yesButton" type="button" class="button" value="Yes">
                         <input id="noButton" type="button" class="button" value="No">
                     </div>
@@ -68,7 +67,31 @@
                 <div></div>
                 <div></div>
             </div>
-    </div>
+            <img id="menuIcon" src="icons/menu.svg" alt="menu">
+            <div id="menuText">
+                Double Deck Pinochle&nbsp;&nbsp;<img id="closeIcon" src="icons/close.svg" alt="close"><br>
+                <div id="status">
+                    <img src="icons/analytics.svg" alt="status">
+                    Status
+                </div>
+                <div id="options">
+                    <img src="icons/settings.svg" alt="options">
+                    Options
+                </div>
+                <div id="reload">
+                    <img src="icons/refresh.svg" alt="restart">
+                    Restart
+                </div>
+                <div id="tutorial">
+                    <img src="icons/help.svg" alt="tutorial">
+                    Tutorial
+                </div>
+                <div id="about">
+                    <img src="icons/info.svg" alt="about">
+                    About
+                </div>
+            </div>
+        </div>
     </body>
     <script src="scripts.js" defer></script>
 </html>

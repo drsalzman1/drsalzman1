@@ -107,15 +107,14 @@ const deck = [
 
 // Page elements
 const felt       = document.getElementById("felt");
-const reload     = document.getElementById("reload");
 const canvas     = document.getElementById("canvas");
 const context    = canvas.getContext("2d");
-const bidSouth   = document.getElementById("bidSouth");
+const pickBid    = document.getElementById("pickBid");
 const meldSpan   = document.querySelectorAll("#meldColumn span");
 const bidBox     = document.querySelectorAll("#bidBox div");
-const bidButton  = document.querySelectorAll("#bidSouth input");
-const pickSouth  = document.getElementById("pickSouth");
-const pickButton = document.querySelectorAll("#pickSouth div");
+const bidButton  = document.querySelectorAll("#pickBid input");
+const pickTrump  = document.getElementById("pickTrump");
+const pickButton = document.querySelectorAll("#pickTrump input");
 const revealBid  = document.getElementById("revealBid");
 const bidWinner  = document.getElementById("bidWinner");
 const bidValue   = document.getElementById("bidValue");
@@ -126,7 +125,10 @@ const weNeed     = document.getElementById("weNeed");
 const theyNeed   = document.getElementById("theyNeed");
 const yesButton  = document.getElementById("yesButton");
 const noButton   = document.getElementById("noButton");
-
+const menuIcon   = document.getElementById("menuIcon");
+const menuText   = document.getElementById("menuText");
+const closeIcon  = document.getElementById("closeIcon");
+const reload     = document.getElementById("reload");
 
 // Animation constants
 const dealTime   = 2000;            // milliseconds to deal all cards
@@ -464,7 +466,7 @@ function cull() {
 // Reveal bid winner and stack the cards
 function reveal() {
     const now = performance.now();
-    pickSouth.style.display = "none";
+    pickTrump.style.display = "none";
     bidWinner.textContent = ["Your left opponent", "Your partner", "Your right opponent", "You"][bidder];
     bidValue.textContent = offer[bidder];
     trumpName.textContent = ["diamonds",,,,,"clubs",,,,,"hearts",,,,,"spades"][trump];
@@ -493,9 +495,9 @@ function reveal() {
 
 // Pick trump suit
 function pick() {
-    bidSouth.style.display = "none";
+    pickBid.style.display = "none";
     if (bidder == south) {
-        pickSouth.style.display = "flex";
+        pickTrump.style.display = "flex";
         return;
     }
     trump = spades;
@@ -529,7 +531,7 @@ function bid() {
             meldSpan[1].textContent = meld(south, hearts);
             meldSpan[2].textContent = meld(south, clubs);
             meldSpan[3].textContent = meld(south, diamonds);
-            bidSouth.style.display = "flex";
+            pickBid.style.display = "flex";
         }
     }
     if (bidder == south) {
@@ -831,13 +833,28 @@ function touchMoved(e) {
     }
 }
 
+// Open menu
+function menuClicked() {
+    menuText.style.display = "block";
+}
+
+// Close menu
+function closeClicked() {
+    menuText.style.display = "none";
+}
+
+// Reload application
+function reloadClick() {
+     location.reload();
+}
+
 // Initialize javascript and start game after window loads
 window.onload = function() {
     for (let v = 0; v < src.length; v++)
         img[v].src = src[v];
     windowResized();
-    window.onresize    = windowResized;
-    reload.draggable   = false;
+    window.onresize = windowResized;
+    menuIcon.draggable = false;
     for (let i = 0; i < bidButton.length; i++)
         bidButton[i].onclick = bidClicked;
     for (let i = 0; i < pickButton.length; i++)
@@ -848,5 +865,8 @@ window.onload = function() {
     felt.onmousedown   = mousePressed;
     felt.ontouchstart  = touchStarted;
     felt.ontouchmove   = touchMoved;
+    menuIcon.onclick   = menuClicked;
+    closeIcon.onclick  = closeClicked;
+    reload.onclick     = reloadClick;
     deal();
 }

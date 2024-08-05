@@ -11,6 +11,8 @@
         --line-height:      7vw;
         --box-width:        11vw;
         --box-height:       5.1vw;
+        --pick-width:       20vw;
+        --reveal-width:     8vw;
     }
 }
 
@@ -28,20 +30,9 @@
         --radio-size:       3vh;
         --box-width:        11vh;
         --box-height:       5.1vh;
+        --pick-width:       20vh;
+        --reveal-width:     8vh;
     }
-}
-
-.whitePip {
-    filter: invert(100%);
-    margin-left: 1px;
-    width: var(--pip-size);
-    height: var(--pip-size);
-}
-
-.blackPip {
-    margin-left: 1px;
-    width: var(--pip-size);
-    height: var(--pip-size);
 }
 
 input {
@@ -78,15 +69,6 @@ body {
     position: absolute;
 }
 
-#reload {
-    filter: invert(100%);
-    width: var(--icon-size);
-    height: var(--icon-size);
-    position: absolute;
-    top: var(--pad);
-    left: calc(100vw - var(--pad) - var(--icon-size));
-}
-
 #middle {
     width: var(--middle-width);
     height: var(--middle-height);
@@ -99,7 +81,7 @@ body {
     align-items: center;
 }
 
-#bidSouth {
+#pickBid {
     width: 100%;
     height: 100%;
     display: none;
@@ -108,7 +90,7 @@ body {
     text-align: center;
 }
 
-#bidTable {
+#meldTable {
     width: 100%;
     display: flex;
     flex-direction: row;
@@ -154,7 +136,7 @@ body {
     left: calc(100vw/2 - var(--box-width)/2);
 }
 
-#pickSouth {
+#pickTrump {
     width: 100%;
     display: none;
     flex-direction: column;
@@ -163,14 +145,38 @@ body {
     text-align: center;
 }
 
-#pickSouth div {
-    width: var(--box-width);
-    background-color: powderblue;
-    text-align: center;
+#pickTrump input {
+    width: var(--pick-width);
 }
 
 #revealBid {
     width: 80%;
     display: none;
     text-align: left;
+}
+
+#revealBid input {
+    width: var(--reveal-width);
+}
+
+#menuIcon {
+    filter: invert(100%);
+    margin: var(--pad);
+    width: var(--icon-size);
+    height: var(--icon-size);
+    position: absolute;
+}
+
+#menuText {
+    margin: var(--pad);
+    padding: var(--pad);
+    line-height: 200%;
+    color: black;
+    background-color: white;
+    position: absolute;
+    display: none;
+}
+
+#menu img {
+    height: calc(var(--font-size));
 }
