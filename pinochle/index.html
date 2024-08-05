@@ -11,34 +11,62 @@
     <body>
         <div id="felt">
             <canvas id="canvas"></canvas>
-            <div id="corner"></div>
-            <img id="reload" src="reload.svg" alt="reload" onclick="location.reload()">
-            <div id="center">
-                <div id="table">
-                    <div id="trump">
-                        <u>Trump</u><br>
-                        <input type="radio" name="trump" value="0"> Spades<br>
-                        <input type="radio" name="trump" value="1"> Hearts<br>
-                        <input type="radio" name="trump" value="2"> Clubs<br>
-                        <input type="radio" name="trump" value="3"> Diamonds
+            <img id="reload" src="icons/reload.svg" alt="reload" onclick="location.reload()">
+            <div id="middle">
+                <div id="bidSouth">
+                    <div id="bidTable">
+                        <div id="trumpColumn">
+                            <u>Trump</u><br>
+                            <img src="suits/spade.svg" class="whitePip"><br>
+                            <img src="suits/heart.svg" class="whitePip"><br>
+                            <img src="suits/club.svg" class="whitePip"><br>
+                            <img src="suits/diamond.svg" class="whitePip">
+                        </div>
+                        <div id="meldColumn">
+                            <u>Meld</u><br>
+                            <span></span><br>
+                            <span></span><br>
+                            <span></span><br>
+                            <span></span>
+                        </div>
                     </div>
-                    <div id="meld">
-                        <u>Meld</u><br>
-                        <span></span><br>
-                        <span></span><br>
-                        <span></span><br>
-                        <span></span>
+                    <div>
+                        <br>
+                        Pick your bid:<br>
+                        <div id="bidButtons">
+                            <input type="button"><input type="button"><input type="button"><input type="button">
+                            <input type="button"><input type="button"><input type="button"><input type="button">
+                            <input type="button"><input type="button"><input type="button"><input type="button">
+                        </div>
                     </div>
                 </div>
-                <div id="range">
-                    Bid: <input id="slider" name="slider" type="range" min="0" max="12" step="1" value="1"><br>
+                <div id="pickSouth">
+                    Pick trump:<br><br>
+                    <div><img src="suits/spade.svg" class="blackPip"></div><br>
+                    <div><img src="suits/heart.svg" class="blackPip"></div><br>
+                    <div><img src="suits/club.svg" class="blackPip"></div><br>
+                    <div><img src="suits/diamond.svg" class="blackPip"></div>
+                </div>
+                <div id="revealBid">
+                    <span id="bidWinner"></span> won the bid at <span id="bidValue"></span>
+                    and picked <span id="trumpName"></span>.<br>
+                    <br>
+                    Our meld is <span id="ourMeld"></span>; their meld is <span id="theirMeld"></span>.<br>
+                    <br>
+                    We need to pull <span id="weNeed"></span>; they need to pull <span id="theyNeed"></span>.
+                    <div>
+                        <br>
+                        Play?
+                        <input id="yesButton" type="button" class="button" value="Yes">
+                        <input id="noButton" type="button" class="button" value="No">
+                    </div>
                 </div>
             </div>
-            <div id="box">
+            <div id="bidBox">
                 <div></div>
                 <div></div>
                 <div></div>
-                <div>Pass</div>
+                <div></div>
             </div>
     </div>
     </body>

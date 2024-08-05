@@ -14,7 +14,7 @@ const clubs    = 5;
 const hearts   = 10;
 const spades   = 15;
 const suits    = 4;
-const suit$    = ["&diams;", "?", "?", "?", "?", "&clubs;", "?", "?", "?", "?", "&hearts;", "?", "?", "?", "?", "&spades;"];
+const suitSrc  = ["suits/diamond.svg",,,,,"suits/club.svg",,,,,"suits/heart.svg",,,,,"suits/spade.svg"];
 
 // Rank values
 const jack     = 0;
@@ -51,16 +51,10 @@ const img = [
 // hand[p][c] = player p's card c's card value (or -1)
 const hand = [Array(maxHand), Array(maxHand), Array(maxHand), Array(maxHand)];
 
-// held[p] = number of cards remaining in player p's hand
-const held = [20, 20, 20, 20];
-
 // offer[p] = player p's bid (0 = none; -1 = pass)
 const none = 0;
 const pass = -1;
 const offer = [none, none, none, none];
-
-// scale[s] = offer for slider position s
-const scale = [pass, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 65];
 
 // Position class
 class P {
@@ -113,30 +107,41 @@ const deck = [
 
 // Page elements
 const felt       = document.getElementById("felt");
-const corner     = document.getElementById("corner");
 const reload     = document.getElementById("reload");
 const canvas     = document.getElementById("canvas");
 const context    = canvas.getContext("2d");
-const center     = document.getElementById("center");
-const input      = document.querySelectorAll("#trump input");
-const span       = document.querySelectorAll("#meld span");
-const range      = document.getElementById("range");
-const slider     = document.getElementById("slider");
-const box        = document.querySelectorAll("#box div");
+const bidSouth   = document.getElementById("bidSouth");
+const meldSpan   = document.querySelectorAll("#meldColumn span");
+const bidBox     = document.querySelectorAll("#bidBox div");
+const bidButton  = document.querySelectorAll("#bidSouth input");
+const pickSouth  = document.getElementById("pickSouth");
+const pickButton = document.querySelectorAll("#pickSouth div");
+const revealBid  = document.getElementById("revealBid");
+const bidWinner  = document.getElementById("bidWinner");
+const bidValue   = document.getElementById("bidValue");
+const trumpName  = document.getElementById("trumpName");
+const ourMeld    = document.getElementById("ourMeld");
+const theirMeld  = document.getElementById("theirMeld");
+const weNeed     = document.getElementById("weNeed");
+const theyNeed   = document.getElementById("theyNeed");
+const yesButton  = document.getElementById("yesButton");
+const noButton   = document.getElementById("noButton");
+
 
 // Animation constants
-const dealTime   = 2000;             // milliseconds to deal all cards
-const flyTime    = dealTime / 20;    // milliseconds to deal a card
-const flipTime   = dealTime / 10;    // milliseconds to flip a card
-const sortTime   = dealTime / 40;    // milliseconds to sort a card
-const bidTime    = dealTime / 4;     // milliseconds between bids
-const bumpTime   = dealTime / 20;    // milliseconds to bump/umbump a card
-const playTime   = dealTime / 10;    // milliseconds to play a card
-const closeTime  = dealTime / 10;    // milliseconds to close gap in hand
-const pullTime   = dealTime / 10;    // milliseconds to pull a trick
+const dealTime   = 2000;            // milliseconds to deal all cards
+const flyTime    = dealTime / 20;   // milliseconds to deal a card
+const stackTime  = dealTime / 10;   // milliseconds to stack cards
+const sortTime   = dealTime / 4;    // milliseconds to sort cards
+const fanTime    = dealTime / 10;   // milliseconds to stack cards
+const bidTime    = dealTime / 4;    // milliseconds between bids
+const bumpTime   = dealTime / 20;   // milliseconds to bump/umbump a card
+const playTime   = dealTime / 10;   // milliseconds to play a card
+const closeTime  = dealTime / 10;   // milliseconds to close gaps in hand
+const pullTime   = dealTime / 10;   // milliseconds to pull a trick
 
 // Other constants
-const version    = "v0.76";           // version number to display
+const version    = "0.77";          // version number to display
 
 // Function to end draw chain
 function end() {};
@@ -154,6 +159,30 @@ let cardW   = 0;                    // card width
 let cardH   = 0;                    // card height
 let next    = end;                  // next function in draw chain
 
+// Convert deck index i to player p
+function i2p(i) {
+    return Math.floor(i / maxHand);
+}
+
+// Convert deck index i to card c
+function i2c(i) {
+    return i % maxHand;
+}
+
+// Convert player p and card c to deck index i
+function pc2i(p, c) {
+    return p * maxHand + c;
+}
+
+// Count number of time value v occurs in array a
+function count(a, v) {
+    let n = 0;
+    for (let i = 0; i < a.length; i++)
+        if (a[i] == v)
+            n++;
+    return n;
+}
+
 // Draw cards in z order until each card is at its final state then reset its start state for the next operation
 function draw() {
     let drawn = true;
@@ -161,22 +190,20 @@ function draw() {
     deck.sort((a,b)=>a.z-b.z);
     context.clearRect(0, 0, feltW, feltH);
     for (let i = 0; i < maxDeck; i++) {
-        const p = Math.floor(deck[i].i / maxHand);
-        const r = [Math.PI/2, 0, Math.PI/2, 0][p];
+        const r = [Math.PI/2, 0, Math.PI/2, 0][i2p(deck[i].i)];
         if (now < deck[i].fnsh.c)
             drawn = false;
         if (now <= deck[i].strt.c) {
             context.translate(deck[i].strt.x, deck[i].strt.y);
             context.rotate(r);
-            context.drawImage(img[deck[i].strt.v], -cardW/2, -cardH/2*deck[i].strt.m, cardW, cardH*deck[i].strt.m);
+            context.drawImage(img[deck[i].v], -cardW/2, -cardH/2*deck[i].strt.m, cardW, cardH*deck[i].strt.m);
             context.resetTransform();
         }
         if (now >= deck[i].fnsh.c) {
             context.translate(deck[i].fnsh.x, deck[i].fnsh.y);
             context.rotate(r);
-            context.drawImage(img[deck[i].fnsh.v], -cardW/2, -cardH/2*deck[i].fnsh.m, cardW, cardH*deck[i].fnsh.m);
+            context.drawImage(img[deck[i].v], -cardW/2, -cardH/2*deck[i].fnsh.m, cardW, cardH*deck[i].fnsh.m);
             context.resetTransform();
-            deck[i].strt.v = deck[i].fnsh.v;
             deck[i].strt.x = deck[i].fnsh.x;
             deck[i].strt.y = deck[i].fnsh.y;
             deck[i].strt.m = deck[i].fnsh.m;
@@ -189,7 +216,7 @@ function draw() {
             const m = deck[i].strt.m*ps + deck[i].fnsh.m*pf;
             context.translate(x, y);
             context.rotate(r);
-            context.drawImage(img[deck[i].strt.v], -cardW/2, -cardH/2*m, cardW, cardH*m);
+            context.drawImage(img[deck[i].v], -cardW/2, -cardH/2*m, cardW, cardH*m);
             context.resetTransform();
         }
     }
@@ -200,30 +227,28 @@ function draw() {
         window.requestAnimationFrame(draw);
 }
 
-// Locate all card positions
+// Locate all card positions (n = number of semi-exposed cards; v = visble card number)
 function locate() {
-    const p1 = Math.min((feltH - cardH * 2 - cardW - pad * 4) / 19, cardW / 8);
-    const p2 = (feltW - cardW - pad * 2) / 19;
-    let h = 0;
-    for (let i = 0; i < maxDeck; i++) {
-        const p = Math.floor(i / maxHand);
-        const c = i % maxHand;
-        if (c == 0)
-            h = 0;
-        deck[i].stck.x = [-cardH/2, feltW/2, feltW + cardH/2, feltW/2][p];
-        deck[i].stck.y = [feltH/2, -cardH/2, feltH/2, feltH + cardH/2][p];
-        deck[i].norm.x = [cardH/2+pad, feltW/2-p1*(h-(held[p]-1)/2), feltW-cardH/2-pad, feltW/2+p2*(h-(held[p]-1)/2)][p];
-        deck[i].norm.y = [feltH/2+p1*(h-(held[p]-1)/2), cardH/2+pad, feltH/2-p1*(h-(held[p]-1)/2), feltH-cardH/2-pad][p];
-        deck[i].bump.x = deck[i].norm.x + [cardH/2, 0, -cardH/2, 0][p];
-        deck[i].bump.y = deck[i].norm.y + [0, cardH/2, 0, -cardH/2][p];
-        deck[i].play.x = feltW/2 + [-cardH/2-pad/2, cardW/2+pad/2, cardH/2+pad/2, -cardW/2-pad/2][p];
-        deck[i].play.y = feltH/2 + [-cardW/2-pad/2, -cardH/2-pad/2, cardW/2+pad/2, cardH/2+pad/2][p];
-        deck[i].strt.x = [deck[i].stck.x, deck[i].norm.x, deck[i].bump.x, deck[i].play.x][deck[i].g];
-        deck[i].strt.y = [deck[i].stck.y, deck[i].norm.y, deck[i].bump.y, deck[i].play.y][deck[i].g];
-        deck[i].fnsh.x = [deck[i].stck.x, deck[i].norm.x, deck[i].bump.x, deck[i].play.x][deck[i].g];
-        deck[i].fnsh.y = [deck[i].stck.y, deck[i].norm.y, deck[i].bump.y, deck[i].play.y][deck[i].g];
-        if (hand[p][c] != -1)
-            h++;
+    for (let p of [west, north, east, south]) {
+        const n = maxHand - count(hand[p], -1) - 1;
+        let v = 0;
+        for (let c = 0; c < maxHand; c++) {
+            const i = pc2i(p, c);
+            deck[i].stck.x = [-cardH/2, feltW/2, feltW + cardH/2, feltW/2][p];
+            deck[i].stck.y = [feltH/2, -cardH/2, feltH/2, feltH + cardH/2][p];
+            deck[i].norm.x = [cardH/2+pad, feltW/2-cardW/4*(v-n/2), feltW-cardH/2-pad, feltW/2+cardW/4*(v-n/2)][p];
+            deck[i].norm.y = [feltH/2+cardW/4*(v-n/2), cardH/2+pad, feltH/2-cardW/4*(v-n/2), feltH-cardH/2-pad][p];
+            deck[i].bump.x = deck[i].norm.x + [cardH*0.4, 0, -cardH*0.4, 0][p];
+            deck[i].bump.y = deck[i].norm.y + [0, cardH*0.4, 0, -cardH*0.4][p];
+            deck[i].play.x = feltW/2 + [-cardH/2-pad/2, cardW/2+pad/2, cardH/2+pad/2, -cardW/2-pad/2][p];
+            deck[i].play.y = feltH/2 + [-cardW/2-pad/2, -cardH/2-pad/2, cardW/2+pad/2, cardH/2+pad/2][p];
+            deck[i].strt.x = [deck[i].stck.x, deck[i].norm.x, deck[i].bump.x, deck[i].play.x][deck[i].g];
+            deck[i].strt.y = [deck[i].stck.y, deck[i].norm.y, deck[i].bump.y, deck[i].play.y][deck[i].g];
+            deck[i].fnsh.x = [deck[i].stck.x, deck[i].norm.x, deck[i].bump.x, deck[i].play.x][deck[i].g];
+            deck[i].fnsh.y = [deck[i].stck.y, deck[i].norm.y, deck[i].bump.y, deck[i].play.y][deck[i].g];
+            if (hand[p][c] != -1)
+                v++;
+        }
     }
 }
 
@@ -257,31 +282,31 @@ function pull() {
 // Close hand after card i is played
 function close(i) {
     const now = performance.now();
-    const p = Math.floor(i / maxHand);
-    const c = i % maxHand;
-    hand[p][c] = -1;
-    held[p]--;
+    hand[i2p(i)][i2c(i)] = -1;
     locate();
     for (let i = 0; i < maxDeck; i++) {
         deck[i].strt.c = now;
         deck[i].fnsh.c = now + closeTime;
     }
-    if (turn == (taker + players) % players) 
+    if (turn == (bidder + players) % players) 
         next = pull;
     else
         next = end;
     draw();
 }
 
+// Return next player after current player
+function nextPlayer(current) {
+    return (current + 1) % players;
+}
+
 // Play deck card i (part 2)
 function play2(i) {
     const now = performance.now();
-    turn = (turn + 1) % players;
+    turn = nextPlayer(turn);
     deck[i].g = played;
     deck[i].z = -1;
-    deck[i].strt.v = deck[i].v;
     deck[i].strt.c = now;
-    deck[i].fnsh.v = deck[i].v;
     deck[i].fnsh.x = deck[i].play.x;
     deck[i].fnsh.y = deck[i].play.y;
     deck[i].fnsh.m = 1;
@@ -293,24 +318,53 @@ function play2(i) {
 // Play deck card i (part 1)
 function play1(i) {
     const now = performance.now();
-    const p = Math.floor(i / maxHand);
     deck[i].strt.c = now;
     deck[i].fnsh.x = (deck[i].fnsh.x + deck[i].play.x) / 2;
     deck[i].fnsh.y = (deck[i].fnsh.y + deck[i].play.y) / 2;
-    if (p != south) 
+    if (i2p(i) != south) 
         deck[i].fnsh.m = 0;
     deck[i].fnsh.c = now + playTime / 2;
     next = function() {play2(i);};
     draw();
 }
 
-// Count number of time value v occurs in array a
-function count(a, v) {
-    let n = 0;
-    for (let i = 0; i < a.length; i++)
-        if (a[i] == v)
-            n++;
-    return n;
+// Re-fan each player's hand
+function refan() {
+    const now = performance.now();
+    locate();
+    for (let i = 0; i < maxDeck; i++) {
+        const p = i2p(i);
+        const c = i2c(i);
+        if (p == south) {
+            deck[i].v = hand[p][c];
+            deck[i].z = c + maxHand;
+        } else {
+            deck[i].v = grayBack;
+            deck[i].z = maxHand - c - 1;
+        }
+        deck[i].g = normal;
+        deck[i].strt.c = now;
+        deck[i].fnsh.x = deck[i].norm.x;
+        deck[i].fnsh.y = deck[i].norm.y;
+        deck[i].fnsh.c = now + stackTime;
+    }
+    next = end;
+    draw();
+}
+
+// Stack the meld
+function restack() {
+    const now = performance.now();
+    revealBid.style.display = "none";
+    for (let i = 0; i < maxDeck; i++) {
+        deck[i].g = stackd;
+        deck[i].strt.c = now;
+        deck[i].fnsh.x = deck[i].stck.x;
+        deck[i].fnsh.y = deck[i].stck.y;
+        deck[i].fnsh.c = now + stackTime;
+    }
+    next = refan;
+    draw();
 }
 
 // Returns number of rank arounds in player's hand
@@ -335,7 +389,7 @@ function pinochles(player) {
 }
 
 // Returns number of suit marriage's in the player's hand
-function marraiges(player, suit) {
+function marriages(player, suit) {
     return Math.min(count(hand[player], king+suit), count(hand[player], queen+suit));
 }
 
@@ -350,138 +404,201 @@ function meld(player, trump) {
     m += [0,    4,    30,     90,    500][pinochles(player       )];
     for (let suit of [diamonds, clubs, hearts, spades])
         if (suit == trump)
-            m += marraiges(player, suit) * 4;
+            m += marriages(player, suit) * 4;
         else
-            m += marraiges(player, suit) * 2;
+            m += marriages(player, suit) * 2;
     return m;
 }
 
-// Reveal meld cards
-function reveal() {
-    box[south].onclick = "";
-    center.style.display = "none";
-    for (let p = west; p <= south; p++) {
-        const save = [...hand[p]];
-
+// Restore n cards of value v for player p to needed array
+function restore(needed, p, v, n) {
+    for (let i = 0; n > 0 && i < maxDeck; i++) {
+        const c = i2c(i);
+        if (i2p(i) == p && hand[p][c] == v) {
+            needed[c] = v;
+            n--;
+        }
     }
+}
+
+// Cull all cards, restore cards needed for meld, then fan out the meld
+function cull() {
+    const now = performance.now();
+    const save = [Array(maxHand), Array(maxHand), Array(maxHand), Array(maxHand)];
+    const need = Array(maxHand);
+    for (let player of [west, north, east, south]) {
+        save[player] = [...hand[player]];
+        need.fill(-1);
+        for (let rank of [jack, queen, king, ace])
+            for (let suit of [diamonds, clubs, hearts, spades])
+                restore(need, player, rank+suit, arounds(player, rank));
+        for (let rank of [jack, queen, king, ten, ace])
+            restore(need, player, rank+trump, runs(player, trump));
+        restore(need, player, jack+diamonds, pinochles(player));
+        restore(need, player, queen+spades, pinochles(player));
+        for (let rank of [queen, king]) 
+            for (let suit of [diamonds, clubs, hearts, spades])
+                restore(need, player, rank+suit, marriages(player, suit));
+        hand[player] = [...need];
+    }
+    locate();
+    for (let p of [west, north, east, south]) {
+        for (let c = 0; c < maxHand; c++) {
+            const i = pc2i(p, c);
+            if (hand[p][c] != -1) {
+                deck[i].v = hand[p][c];
+                deck[i].g = normal;
+                deck[i].z = c;
+                deck[i].strt.c = now;
+                deck[i].fnsh.x = deck[i].norm.x;
+                deck[i].fnsh.y = deck[i].norm.y;
+                deck[i].fnsh.c = now + fanTime;
+            }
+        }
+        hand[p] = [...save[p]];
+    }
+    next = end;
+    draw();
+}
+
+// Reveal bid winner and stack the cards
+function reveal() {
+    const now = performance.now();
+    pickSouth.style.display = "none";
+    bidWinner.textContent = ["Your left opponent", "Your partner", "Your right opponent", "You"][bidder];
+    bidValue.textContent = offer[bidder];
+    trumpName.textContent = ["diamonds",,,,,"clubs",,,,,"hearts",,,,,"spades"][trump];
+    ourMeld.textContent = meld(north, trump) + meld(south, trump);
+    theirMeld.textContent = meld(west, trump) + meld(east, trump);
+    if (bidder == north || bidder == south) {
+        weNeed.textContent = Math.max(20, offer[bidder] - meld(north, trump) - meld(south, trump));
+        theyNeed.textContent = 20;
+    } else {
+        weNeed.textContent = 20;
+        theyNeed.textContent = Math.max(20, offer[bidder] - meld(west, trump) - meld(east, trump));
+    }
+    revealBid.style.display = "block";
+    turn = bidder;
+    puller = bidder;
+    for (let i = 0; i < maxDeck; i++) {
+        deck[i].strt.c = now;
+        deck[i].g = stackd;
+        deck[i].fnsh.x = deck[i].stck.x;
+        deck[i].fnsh.y = deck[i].stck.y;
+        deck[i].fnsh.c = now + stackTime;
+    }
+    next = cull;
+    draw();
+}
+
+// Pick trump suit
+function pick() {
+    bidSouth.style.display = "none";
+    if (bidder == south) {
+        pickSouth.style.display = "flex";
+        return;
+    }
+    trump = spades;
+    reveal();
+}
+
+// Return next offer after current offer
+function nextOffer(current) {
+    if (current == none)
+        return 50;
+    if (current < 60)
+        return current + 1;
+    return current + 5;
 }
 
 // Bid for the ability to name trump and go first
 function bid() {
     next = end;
     while (offer[bidder] == pass) 
-        bidder = (bidder + 1) % players;
+        bidder = nextPlayer(bidder);
     if (count(offer, pass) == 3) {
         for (let p = 0; p < players; p++)
-            if (p != bidder)
-                box[p].style.display = "none";
+            bidBox[p].style.display = "none";
+        pick();
+        return;
+    }
+    if (offer[bidder] == none) {
+        bidBox[bidder].style.display = "block";
         if (bidder == south) {
-            input[0].style.display = "inline";
-            input[1].style.display = "inline";
-            input[2].style.display = "inline";
-            input[3].style.display = "inline";
-            range.style.display = "none";
-            box[south].onclick = reveal;
-        } else {
-            center.style.display = "none";
-            trump = spades;
-            box[bidder].innerHTML = offer[bidder] + " " + suit$[trump];
-            reveal();
+            meldSpan[0].textContent = meld(south, spades);
+            meldSpan[1].textContent = meld(south, hearts);
+            meldSpan[2].textContent = meld(south, clubs);
+            meldSpan[3].textContent = meld(south, diamonds);
+            bidSouth.style.display = "flex";
         }
+    }
+    if (bidder == south) {
+        offer[south] = nextOffer(Math.max(...offer));
+        bidBox[south].textContent = "";
+        bidButton[0].value = "Pass";
+        bidButton[1].value = offer[south];
+        for (let i = 2; i < bidButton.length; i++)
+            bidButton[i].value = nextOffer(Number(bidButton[i-1].value));
+        for (let i = 0; i < bidButton.length; i++)
+            bidButton[i].disabled = false;
+        return;
     } else {
-        if (offer[bidder] == none) {
-            box[bidder].style.display = "block";
-            if (bidder == south) {
-                center.style.display = "flex";
-                span[0].textContent = meld(south, spades);
-                span[1].textContent = meld(south, hearts);
-                span[2].textContent = meld(south, clubs);
-                span[3].textContent = meld(south, diamonds);
-            }
-        }
-        if (Math.max(...offer) == none)
-            offer[bidder] = 50;
-        else if (Math.max(...offer) < 60)
-            offer[bidder] = Math.max(...offer) + 1;
-        else
-            offer[bidder] = Math.max(...offer) + 5;
-        if (bidder == south) {
-            box[bidder].textContent = offer[bidder];
-            scale[1] = offer[south];
-            slider.value = 1;
-            box[south].onclick = submit;
+        if (nextOffer(Math.max(...offer)) <= 65) {
+            offer[bidder] = nextOffer(Math.max(...offer));
+            bidBox[bidder].textContent = offer[bidder];
         } else {
-            if (offer[bidder] <= 65)
-                box[bidder].textContent = offer[bidder];
-            else {
-                offer[bidder] = pass;
-                box[bidder].textContent = "Pass";
-            }
-            bidder = (bidder + 1) % players;
-            setTimeout(bid, bidTime);
+            offer[bidder] = pass;
+            bidBox[bidder].textContent = "Pass";
         }
+        bidder = nextPlayer(bidder);
+        setTimeout(bid, bidTime);
     }
 }
 
-// Sort all hands and display south's hand
-function sort() {
+// Fan player's cards
+function fan() {
     const now = performance.now();
-    for (let d = 0; d < maxDeck; d++) {
-        const p = Math.floor(d / maxHand);
-        const c = d % maxHand;
-        let v = deck[p*maxHand+c].v;
-        let j = c;
-        for (let i = c + 1; i < maxHand; i++) {
-            if (deck[p*maxHand+i].v > v) {
-                v = deck[p*maxHand+i].v;
-                j = i;
-            }
-        }
-        deck[p*maxHand+j].v = deck[p*maxHand+c].v;
-        deck[p*maxHand+c].v = v;
-        hand[p][c] = v;
-        if (p == south) {
-            deck[p*maxHand+c].strt.c = now;
-            deck[p*maxHand+c].fnsh.v = deck[p*maxHand+c].v;
-            deck[p*maxHand+c].fnsh.c = now + sortTime * c;
-        }
+    for (let i = 0; i < maxDeck; i++) {
+        deck[i].strt.c = now;
+        deck[i].g = normal;
+        deck[i].fnsh.x = deck[i].norm.x;
+        deck[i].fnsh.y = deck[i].norm.y;
+        deck[i].fnsh.c = now + fanTime;
     }
     next = bid;
     draw();
 }
 
-// Flip south's hand (part 2)
-function flip2() {
+// Sort each player's stack
+function sort() {
     const now = performance.now();
+    for (let p = west; p <= south; p++)
+        hand[p].sort((a,b)=>b-a);
     for (let i = 0; i < maxDeck; i++) {
-        const p = Math.floor(i / maxHand);
+        const p = i2p(i);
+        const c = i2c(i);
         if (p == south) {
-            deck[i].z = i % maxHand;
-            deck[i].strt.v = deck[i].v;
-            deck[i].strt.m = 0;
+            deck[i].v = hand[p][c];
+            deck[i].z = maxHand + c;
             deck[i].strt.c = now;
-            deck[i].fnsh.v = deck[i].v;
-            deck[i].fnsh.m = 1;
-            deck[i].fnsh.c = now + flipTime / 2;
+            deck[i].fnsh.c = now + sortTime;
         }
     }
-    next = sort;
+    next = fan;
     draw();
 }
 
-// Flip south's hand (part 1)
-function flip1() {
+// Stack cards in player's stack
+function stack() {
     const now = performance.now();
     for (let i = 0; i < maxDeck; i++) {
-        const p = Math.floor(i / maxHand);
-        if (p == south) {
-            deck[i].strt.m = 1;
-            deck[i].strt.c = now;
-            deck[i].fnsh.m = 0;
-            deck[i].fnsh.c = now + flipTime / 2;
-        }
+        deck[i].g = stackd;
+        deck[i].strt.c = now;
+        deck[i].fnsh.x = deck[i].stck.x;
+        deck[i].fnsh.y = deck[i].stck.y;
+        deck[i].fnsh.c = now + stackTime;
     }
-    next = flip2;
+    next = sort;
     draw();
 }
 
@@ -503,30 +620,28 @@ function deal() {
     const now = performance.now();
     const seq = Array.from(new Array(maxDeck), (v, k) => k % maxHand);
     dealer = Math.floor(Math.random() * players);
-    bidder = turn = puller = (dealer + 1) % players;
+    bidder = turn = puller = nextPlayer(dealer);
     shuffle(seq);
     locate();
     for (let s = 0; s < maxDeck; s++) {
         const p = (bidder + s) % players;
-        const c = Math.floor(s / 4);
-        const i = p * maxHand + c;
-        const d = dealer * maxHand + c;
+        const c = maxHand - Math.floor(s / players) - 1;
+        const i = pc2i(p, c);
+        hand[p][c] = seq[s];
         deck[i].i = i;
-        deck[i].v = seq[s];
+        deck[i].v = grayBack;
         deck[i].g = normal;
-        deck[i].z = maxHand - c - 1;
-        deck[i].strt.v = grayBack;
-        deck[i].strt.x = deck[d].stck.x;
-        deck[i].strt.y = deck[d].stck.y;
+        deck[i].z = maxHand-c-1;
+        deck[i].strt.x = deck[dealer*maxHand].stck.x;
+        deck[i].strt.y = deck[dealer*maxHand].stck.y;
         deck[i].strt.m = 1;
         deck[i].strt.c = now + s * (dealTime - flyTime) / maxDeck;
-        deck[i].fnsh.v = grayBack;
         deck[i].fnsh.x = deck[i].norm.x;
         deck[i].fnsh.y = deck[i].norm.y;
         deck[i].fnsh.m = 1;
         deck[i].fnsh.c = deck[i].strt.c + flyTime;
     }
-    next = flip1;
+    next = stack;
     draw();
 }
 
@@ -536,7 +651,7 @@ function xy2i(x, y) {
     deck.sort((a,b)=>a.z-b.z);
     for (let d = 0; d < maxDeck; d++) {
         const i = deck[d].i;
-        const p = Math.floor(i / maxHand);
+        const p = i2p(i);
         switch(deck[d].g) {
         case normal:
             l = deck[d].norm.x - [cardH/2, cardW/2, cardH/2, cardW/2][p];
@@ -559,8 +674,55 @@ function xy2i(x, y) {
     return topI;
 }
 
-// If mouse points off a bumped card, unbump all cards, and if mouse points to a normal card, bump it
-function mouse(e) {
+// Initialize the global variables that rely on the window size
+function windowResized () {
+    feltW = Number.parseFloat(getComputedStyle(felt).width);
+    feltH = Number.parseFloat(getComputedStyle(felt).height);
+    if (feltW < feltH) {
+        pad = feltW * 0.01;
+        cardW = Math.min(feltW * 0.154, feltH * 0.113);
+    } else {
+        pad = feltW * 0.01;
+        cardW = Math.min(feltH * 0.154, feltW * 0.113);
+    }
+    cardH = cardW / 2.5 * 3.5;
+    canvas.width  = feltW;
+    canvas.height = feltH;
+    redraw();
+}
+
+// When bid button is clicked: blank center if south passed, advance bidder, and disable bid button
+function bidClicked(e) {
+    const value = e.target.value;
+    bidBox[south].style.display = "block";
+    bidBox[south].textContent = value;
+    if (value == "Pass")
+        offer[south] = pass;
+    else
+        offer[south] = Number(value);
+    bidder = nextPlayer(bidder);
+    for (let i = 0; i < bidButton.length; i++)
+        bidButton[i].disabled = true;
+    bid();
+}
+
+// When pick buttion i is clicked: set trump and reveal meld
+function pickClicked(i) {
+    trump = [spades, hearts, clubs, diamonds][i];
+    reveal();
+}
+
+// When play button is clicked: start play of hand
+function yesClicked() {
+    restack();
+}
+
+// When play button is clicked: start play of hand
+function noClicked() {
+}
+
+// If mouse moved off bumped card, unbump cards, and if mouse moved to normal card, bump it
+function mouseMoved(e) {
     const now = performance.now();
     const i = xy2i (e.clientX, e.clientY);
     if (i == undefined || deck[i].g != bumped) {
@@ -585,8 +747,8 @@ function mouse(e) {
     }
 }
 
-// If mouse pressed normal/bumped card, unbump cards; if normal card, bump it; if it's its turn, play it
-function press(e) {
+// If mouse pressed normal/bumped card, unbump cards; if mouse pressed normal card, bump it; if it's its turn, play it
+function mousePressed(e) {
     const now = performance.now();
     const i = xy2i (e.clientX, e.clientY);
     if (i != undefined) {
@@ -608,18 +770,18 @@ function press(e) {
             deck[i].fnsh.c = now + bumpTime;
             window.requestAnimationFrame(draw);
         }
-        if (Math.floor(i / maxHand) == turn)
+        if (i2p(i) == turn)
             play1(i);
     }
 }
 
-// If bumped card touched and it's its turn, play it; if touch isn't bumped card, unbump cards; if normal touched, bump it 
-function touch(e) {
+// If touched bumped card and it's its turn, play it; if touch isn't bumped card, unbump cards; if normal touched, bump it 
+function touchStarted(e) {
     felt.onmousedown = "";
     felt.onmousemove = "";
     const now = performance.now();
     const i = xy2i (e.touches[0].clientX, e.touches[0].clientY);
-    if (i != undefined && deck[i].g == bumped && Math.floor(i / maxHand) == turn)
+    if (i != undefined && deck[i].g == bumped && i2p(i) == turn)
             play1(i);
     if (i == undefined || deck[i].g != bumped) {
         for (let d = 0; d < maxDeck; d++) {
@@ -643,8 +805,8 @@ function touch(e) {
     }
 }
 
-// If touch slides off a bumped card, unbump all cards, and if touch slides on a normal card, bump it
-function slide(e) {
+// If touch moved off bumped card, unbump cards, and if touch moved to normal card, bump it
+function touchMoved(e) {
     const now = performance.now();
     const i = xy2i (e.touches[0].clientX, e.touches[0].clientY);
     if (i == undefined || deck[i].g != bumped) {
@@ -667,64 +829,24 @@ function slide(e) {
         deck[i].fnsh.c = now + bumpTime;
         window.requestAnimationFrame(draw);
     }
-}
-
-// Initialize the global variables that rely on the window size
-function resize () {
-    feltW = Number.parseFloat(getComputedStyle(felt).width);
-    feltH = Number.parseFloat(getComputedStyle(felt).height);
-    pad   = Number.parseFloat(getComputedStyle(corner).top);
-    cardW = Number.parseFloat(getComputedStyle(corner).width);
-    cardH = Number.parseFloat(getComputedStyle(corner).height);
-    canvas.width  = feltW;
-    canvas.height = feltH;
-    redraw();
-}
-
-function change() {
-    for (let s = 2; s < scale.length; s++) {
-        if (scale[s-1] < 60)
-            scale[s] = scale[s-1] + 1;
-        else
-            scale[s] = scale[s-1] + 5;
-    }
-    if (scale[slider.value] == pass)
-        box[south].textContent = "Pass";
-    else
-        box[south].textContent = scale[slider.value];
-    offer[south] = scale[slider.value];
-}
-
-function submit() {
-    if (offer[south] == pass)
-        center.style.display = "none";
-    bidder = (bidder + 1) % players;
-    box[south].onclick = "";
-    setTimeout(bid, bidTime);
-}
-
-function select(e) {
-    trump = [spades, hearts, clubs, diamonds][e.target.value];
-    box[south].innerHTML = offer[south] + " " + suit$[trump];
 }
 
 // Initialize javascript and start game after window loads
 window.onload = function() {
     for (let v = 0; v < src.length; v++)
         img[v].src = src[v];
-    resize();
-    window.onresize    = resize;
-    corner.textContent = version;
+    windowResized();
+    window.onresize    = windowResized;
     reload.draggable   = false;
-    felt.onmousemove   = mouse;
-    felt.onmousedown   = press;
-    felt.ontouchstart  = touch;
-    felt.ontouchmove   = slide;
-    slider.oninput     = change;
-    box[south].onclick = "";
-    input[0].oninput   = select;
-    input[1].oninput   = select;
-    input[2].oninput   = select;
-    input[3].oninput   = select;
+    for (let i = 0; i < bidButton.length; i++)
+        bidButton[i].onclick = bidClicked;
+    for (let i = 0; i < pickButton.length; i++)
+        pickButton[i].onclick = function() {pickClicked(i)};
+    yesButton.onclick = yesClicked;
+    noButton.onclick = noClicked;
+    felt.onmousemove   = mouseMoved;
+    felt.onmousedown   = mousePressed;
+    felt.ontouchstart  = touchStarted;
+    felt.ontouchmove   = touchMoved;
     deal();
 }

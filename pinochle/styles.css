@@ -1,34 +1,75 @@
-:root {
-    --body-width:       100vw;
-    --body-height:      100vh;
-    --body-font-size:   calc(min(4vw, 4vh));
-    --felt-width:       100vw;
-    --felt-height:      100vh;
-    --felt-padding:     calc(min(1vw, 1vh));
-    --card-height:      calc(min(95vw/4, 95vh/4));
-    --card-width:       calc(var(--card-height) / 3.5 * 2.5);
-    --icon-width:       calc(min(4vw, 4vh));
-    --center-width:     calc(min(40vw, 40vh));
-    --center-height:    calc(min(50vw, 50vh));
-    --line-height:      calc(min(7vw, 7vh));
-    --radio-size:       calc(min(3vw, 3vh));
-    --box-width:        calc(min(12vw, 12vh));
-    --box-height:       calc(min(5.1vw, 5.1vh));
+@media (orientation: portrait) {
+    :root {
+        --font-size:        4vw;
+        --pip-size:         3vw;
+        --pad:              1vw;
+        --cardW:            min(15.4vw, 11.3vh);
+        --cardH:            calc(var(--cardW) / 2.5 * 3.5);
+        --icon-size:        4vw;
+        --middle-width:     53vw;
+        --middle-height:    calc(var(--cardW) * 5.75);
+        --line-height:      7vw;
+        --box-width:        11vw;
+        --box-height:       5.1vw;
+    }
+}
+
+@media (orientation: landscape) {
+    :root {
+        --font-size:        4vh;
+        --pip-size:         3vh;
+        --pad:              1vh;
+        --cardW:            min(15.4vh, 11.3vw);
+        --cardH:            calc(var(--cardW) / 2.5 * 3.5);
+        --icon-size:        4vh;
+        --middle-width:     53vw;
+        --middle-height:    min(53vh, calc(var(--cardW) * 5.75));
+        --line-height:      7vh;
+        --radio-size:       3vh;
+        --box-width:        11vh;
+        --box-height:       5.1vh;
+    }
+}
+
+.whitePip {
+    filter: invert(100%);
+    margin-left: 1px;
+    width: var(--pip-size);
+    height: var(--pip-size);
+}
+
+.blackPip {
+    margin-left: 1px;
+    width: var(--pip-size);
+    height: var(--pip-size);
+}
+
+input {
+    width: var(--box-width);
+    height: var(--box-height);
+    padding: 0px;
+    margin: calc(var(--pad));
+    border-style: none;
+    background-color: powderblue;
+    font-family: sans-serif;
+    font-size: var(--font-size);
 }
 
 body {
-    width: var(--body-width);
-    margin: auto;
+    box-sizing: border-box;
+    width: 100vw;
+    height: 100vh;
+    margin: 0px;
     color: white;
     font-family: sans-serif;
-    font-size: var(--body-font-size);
+    font-size: var(--font-size);
     user-select: none;
     touch-action: none;
 }
 
 #felt {
-    width: var(--felt-width);
-    height: var(--felt-height);
+    width: 100%;
+    height: 100%;
     background-color: darkgreen;
     position: relative;
 }
@@ -37,93 +78,99 @@ body {
     position: absolute;
 }
 
-#corner {
-    width: var(--card-width);
-    height: var(--card-height);
-    position: absolute;
-    top: var(--felt-padding);
-    left: var(--felt-padding);
-}
-
 #reload {
     filter: invert(100%);
-    width: var(--icon-width);
+    width: var(--icon-size);
+    height: var(--icon-size);
     position: absolute;
-    top: var(--felt-padding);
-    left: calc(var(--felt-width) - var(--felt-padding) - var(--icon-width));
+    top: var(--pad);
+    left: calc(100vw - var(--pad) - var(--icon-size));
 }
 
-#center {
-    box-sizing: border-box;
-    width: var(--center-width);
-    height: var(--center-height);
+#middle {
+    width: var(--middle-width);
+    height: var(--middle-height);
     position: absolute;
-    top: calc(var(--felt-height)/2 - var(--center-height)/2);
-    left: calc(var(--felt-width)/2 - var(--center-width)/2);
+    top: calc(50vh - var(--middle-height)/2);
+    left: calc(50vw - var(--middle-width)/2);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#bidSouth {
+    width: 100%;
+    height: 100%;
     display: none;
     flex-direction: column;
+    justify-content: center;
+    text-align: center;
 }
 
-#table {
+#bidTable {
     width: 100%;
-    line-height: var(--line-height);
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: space-evenly;
+    text-align: center;
 }
 
-#trump {
-    text-align: left;
+#bidButtons {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
-#trump input {
-    width: var(--radio-size);
-    height: var(--radio-size);
-    display: none;
-}
-
-#meld {
-    text-align: right;
-}
-
-#range {
-    line-height: var(--line-height);
-}
-
-#slider {
-    width: 78%;
-}
-
-#box div {
+#bidBox div {
     width: var(--box-width);
-    height: var(--box-height);
     position: absolute;
-    color: black;
-    font-weight: bold;
-    background-color: white;
-    border-style: solid;
-    box-sizing: border-box;
+    color: white;
+    background-color: black;
     text-align: center;
     display: none;
 }
 
-#box :nth-child(1) {
-    top: calc(var(--felt-height)/2 - var(--box-height)/2);
-    left: calc(var(--felt-padding) + var(--card-height)/2 - var(--box-width)/2);
+#bidBox :nth-child(1) {
+    top: calc(100vh/2 - var(--box-height)/2);
+    left: calc(var(--pad) + var(--cardH)/2 - var(--box-width)/2);
 }
 
-#box :nth-child(2) {
-    top: calc(var(--felt-padding) + var(--card-height)/2 - var(--box-height)/2);
-    left: calc(var(--felt-width)/2 - var(--box-width)/2);
+#bidBox :nth-child(2) {
+    top: calc(var(--pad) + var(--cardH)/2 - var(--box-height)/2);
+    left: calc(100vw/2 - var(--box-width)/2);
 }
 
-#box :nth-child(3) {
-    top: calc(var(--felt-height)/2 - var(--box-height)/2);
-    left: calc(var(--felt-width) - var(--felt-padding) - var(--card-height)/2 - var(--box-width)/2);
+#bidBox :nth-child(3) {
+    top: calc(100vh/2 - var(--box-height)/2);
+    left: calc(100vw - var(--pad) - var(--cardH)/2 - var(--box-width)/2);
 }
 
-#box :nth-child(4) {
+#bidBox :nth-child(4) {
     position: absolute;
-    top: calc(var(--felt-height) - var(--felt-padding)*2 - var(--card-height) - var(--box-height));
-    left: calc(var(--felt-width)/2 - var(--box-width)/2);
+    top: calc(100vh - var(--pad)*6 - var(--box-height));
+    left: calc(100vw/2 - var(--box-width)/2);
+}
+
+#pickSouth {
+    width: 100%;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+#pickSouth div {
+    width: var(--box-width);
+    background-color: powderblue;
+    text-align: center;
+}
+
+#revealBid {
+    width: 80%;
+    display: none;
+    text-align: left;
 }

@@ -12,25 +12,25 @@
   "theme_color": "#ffffff",
   "icons": [
     {
-      "src": "unmaskable.svg",
+      "src": "icons/unmaskable.svg",
       "sizes": "640x640",
       "purpose": "any"
     },
     {
-      "src": "maskable.svg",
+      "src": "icons/maskable.svg",
       "sizes": "640x640",
       "purpose": "maskable"
     }
   ],
   "screenshots" : [
     {
-      "src": "wide.png",
+      "src": "screens/wide.png",
       "sizes": "606x1092",
       "form_factor": "wide",
       "label": "Homescreen"
     },
     {
-      "src": "narrow.png",
+      "src": "screens/narrow.png",
       "sizes": "510x957",
       "form_factor": "narrow",
       "label": "Homescreen"
