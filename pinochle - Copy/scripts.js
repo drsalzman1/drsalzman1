@@ -57,7 +57,7 @@ const hand = [
 ];
 
 // offer[p] = player p's bid (or none or pass)
-const pass = 0;
+const pass = -1;
 const offer = [none, none, none, none];
 
 // Position class
@@ -74,7 +74,7 @@ class A {
         this.x = 0;                 // x at card center
         this.y = 0;                 // y at card center
         this.m = 0;                 // multiplier for card height (0 to 1)
-        this.t = 0;                 // time to start or fininsh
+        this.t = 0;                 // clock value
      }
 }
 
@@ -135,22 +135,36 @@ const closeIcon  = document.getElementById("closeIcon");
 const reload     = document.getElementById("reload");
 
 // Animation constants
-const dealTime   = 2000;            // milliseconds to deal all cards
-const flyTime    = dealTime / 20;   // milliseconds to deal a card
-const stackTime  = dealTime / 10;   // milliseconds to stack cards
-const sortTime   = dealTime / 4;    // milliseconds to sort cards
-const fanTime    = dealTime / 10;   // milliseconds to stack cards
-const bidTime    = dealTime / 4;    // milliseconds between bids
-const bumpTime   = dealTime / 20;   // milliseconds to bump/umbump a card
-const playTime   = dealTime / 10;   // milliseconds to play a card
-const closeTime  = dealTime / 10;   // milliseconds to close gaps in hand
-const pullTime   = dealTime / 10;   // milliseconds to pull a trick
+const dealTime  = 2000;             // milliseconds to deal all cards
+const flyTime   = dealTime / 20;    // milliseconds to deal a card
+const stackTime = dealTime / 10;    // milliseconds to stack cards
+const sortTime  = dealTime / 4;     // milliseconds to sort cards
+const fanTime   = dealTime / 10;    // milliseconds to stack cards
+const bidTime   = dealTime / 4;     // milliseconds between bids
+const bumpTime  = dealTime / 20;    // milliseconds to bump/umbump a card
+const playTime  = dealTime / 10;    // milliseconds to play a card
+const closeTime = dealTime / 10;    // milliseconds to close gaps in hand
+const pullTime  = dealTime / 10;    // milliseconds to pull a trick
 
-// Function to end draw chain
-function end() {};
-let next = end;                     // next function in draw chain
+// State constants
+const starting  = 0;
+const dealing   = starting  + 1;
+const stacking1 = dealing   + 1;
+const fanning1  = stacking1 + 1;
+const bidding   = fanning1  + 1;
+const stacking2 = bidding   + 1;
+const fanning2  = stacking2 + 1;
+const waiting1  = fanning2  + 1;
+const stacking3 = waiting1  + 1;
+const fanning3  = stacking3 + 1;
+const playing   = fanning3  + 1;
+const closing   = playing   + 1;
+const pulling   = closing   + 1;
+const waiting2  = pulling   + 1;
 
 // Global variables
+let state       = starting;         // state tracks the application state
+let drawn       = true;             // true when rendering is complete
 let dealer      = south;            // the player who is dealing or last dealt
 let bidder      = none;             // the player who is bidding or won the bid
 let trump       = none;             // the bidder's trump suit
@@ -160,7 +174,6 @@ let led         = none;             // the card led in this hand
 let plays       = none;             // the number of cards played in this hand (so far)
 let highCard    = none;             // the high card in this hand (so far)
 let highPlayer  = none;             // the player who played the high card
-let openHand    = true;             // true if all hands show
 
 // Dynamic sizes
 let vw          = 0;                // view width
@@ -184,7 +197,7 @@ function pc2i(p, c) {
     return p * cards + c;
 }
 
-// Count number of times value v occurs in array a
+// Count number of time value v occurs in array a
 function count(a, v) {
     let n = 0;
     for (let i = 0; i < a.length; i++)
@@ -197,14 +210,14 @@ function count(a, v) {
 function suit(v) {
     if (v == none)
         return none;
-    return Math.floor(v / ranks) * ranks;
+    return Math.floor (v / cards);
 }
 
 // Return rank of card value v (or none if v is none)
 function rank(v) {
     if (v == none)
         return none;
-    return v % ranks;
+    return v % cards;
 }
 
 // Return next player after current player (or none if current is none)
@@ -238,13 +251,9 @@ function cantTrump(p) {
     return highest(p, trump) == none;
 }
 
-// Return true if deck card index i can be played
-function legal(i) {
-    const p = i2p(i);
-    const c = i2c(i);
+// Return true if player p can play card c
+function legal(p, c) {
     const v = hand[p][c];
-    if (v == none || p != turn)
-        return false;
     if (suit(led) == none)
         return true;
     if (suit(highCard) == trump) {
@@ -271,9 +280,9 @@ function legal(i) {
 
 // Draw cards in z order until each card is at its final state then reset its start state for the next operation
 function draw() {
-    let drawn = true;
     const now = performance.now();
     deck.sort((a,b)=>a.z-b.z);
+    drawn = true;
     context.clearRect(0, 0, vw, vh);
     for (let i = 0; i < indices; i++) {
         const r = [Math.PI/2, 0, Math.PI/2, 0][i2p(deck[i].i)];
@@ -307,10 +316,6 @@ function draw() {
         }
     }
     deck.sort((a,b)=>a.i-b.i);
-    if (drawn)
-        next();
-    else
-        window.requestAnimationFrame(draw);
 }
 
 // Locate all card positions (n = number of semi-exposed cards; v = visble card number)
@@ -338,36 +343,52 @@ function locate() {
     }
 }
 
-// Redraw all cards after a change in the felt size
+// Redraw all cards after a change in the window size
 function redraw() {
     const now = performance.now();
     locate();
     for (let i = 0; i < indices; i++) {
         deck[i].strt.t = now;
         deck[i].fnsh.t = now;
-    }
+}
     draw();
 }
 
 // Pull play cards after all players have played
 function pull() {
     const now = performance.now();
+    const x = deck[highPlayer*cards].stck.x;
+    const y = deck[highPlayer*cards].stck.y;
     for (let i = 0; i < indices; i++) {
         if (deck[i].g == played) {
             deck[i].g = stackd;
             deck[i].strt.t = now;
-            deck[i].fnsh.x = deck[highPlayer*cards].stck.x;
-            deck[i].fnsh.y = deck[highPlayer*cards].stck.y;
+            deck[i].fnsh.x = x;
+            deck[i].fnsh.y = y;
             deck[i].fnsh.t = now + pullTime;
         }
     }
     turn = highPlayer;
-    highPlayer = none;
-    highCard = none;
     led = none;
-    plays = 0;
-    next = play;
+    plays = none;
+    highCard = none;
+    highPlayer = none;
     draw();
+}
+
+
+// Given the previous highPlayer, c
+function analyze() {
+    for (let p = firstPlayer; nextPlayer(p) != firstPlayer; p = nextPlayer(p)) {
+        for (let c = 0; c < cards; c++) {
+            const i = pc2i(p, c);
+            if (deck[i].g = played) {
+                plays++;
+                highCard = deck[i].v;
+                highPlayer = p;
+            }
+        }
+    }
 }
 
 // Close hand after card i is played
@@ -381,7 +402,7 @@ function close(i) {
         deck[i2].strt.t = now;
         deck[i2].fnsh.t = now + closeTime;
     }
-    plays++;
+    plays++
     if (plays < players) {
         turn = nextPlayer(p);
         next = play;
@@ -394,8 +415,6 @@ function close(i) {
 function play2(i) {
     const now = performance.now();
     turn = nextPlayer(turn);
-    deck[i].v = hand[i2p(i)][i2c(i)];
-    deck[i].g = played;
     deck[i].z = -1;
     deck[i].strt.t = now;
     deck[i].fnsh.x = deck[i].play.x;
@@ -409,20 +428,11 @@ function play2(i) {
 // Play deck card i (part 1)
 function play1(i) {
     const now = performance.now();
-    const p = i2p(i);
-    const c = i2c(i);
-    const v = hand[p][c];
-    const h = highCard;
-    if (led == none)
-        led = v;
-    if (h==none || suit(v)==suit(h)&&rank(v)>rank(h) || suit(v)==trump&&suit(h)!=trump) {
-        highCard = v;
-        highPlayer = p;
-    }
+    deck[i].g = played;
     deck[i].strt.t = now;
     deck[i].fnsh.x = (deck[i].fnsh.x + deck[i].play.x) / 2;
     deck[i].fnsh.y = (deck[i].fnsh.y + deck[i].play.y) / 2;
-    if (!openHand && p != south) 
+    if (i2p(i) != south) 
         deck[i].fnsh.m = 0;
     deck[i].fnsh.t = now + playTime / 2;
     next = function() {play2(i);};
@@ -432,7 +442,7 @@ function play1(i) {
 function play() {
     if (turn != south) {
         for (let i = 0; i < indices; i++) {
-            if (legal(i)) {
+            if (legal(i2p(i), i2c(i))) {
                 setTimeout (play1, playTime, i);
                 return;
             }
@@ -447,7 +457,7 @@ function refan() {
     for (let i = 0; i < indices; i++) {
         const p = i2p(i);
         const c = i2c(i);
-        if (openHand || p == south) {
+        if (p == south) {
             deck[i].v = hand[p][c];
             deck[i].z = c + cards;
         } else {
@@ -461,10 +471,7 @@ function refan() {
         deck[i].fnsh.t = now + stackTime;
     }
     firstPlayer = bidder;
-    led = none;
-    turn = bidder;
-    plays = 0;
-    next = end;
+    next = play;
     draw();
 }
 
@@ -594,6 +601,7 @@ function reveal() {
         theyNeed.textContent = Math.max(20, offer[bidder] - meld(west, trump) - meld(east, trump));
     }
     revealBid.style.display = "block";
+    turn = bidder;
     for (let i = 0; i < indices; i++) {
         deck[i].strt.t = now;
         deck[i].g = stackd;
@@ -626,13 +634,11 @@ function nextOffer(current) {
 
 // Bid for the ability to name trump and go first
 function bid() {
-    next = end;
     while (offer[bidder] == pass) 
         bidder = nextPlayer(bidder);
     if (count(offer, pass) == 3) {
         for (let p of [west, north, east, south])
             bidBox[p].style.display = "none";
-        pickBid.style.display = "none";
         pick();
         return;
     }
@@ -675,7 +681,7 @@ function fan() {
     for (let i = 0; i < indices; i++) {
         const p = i2p(i);
         const c = i2c(i);
-        if (openHand || p == south) {
+        if (p == south || state == fanning2) {
             deck[i].v = hand[p][c];
             deck[i].z = i;
         } else {
@@ -688,11 +694,10 @@ function fan() {
         deck[i].fnsh.y = deck[i].norm.y;
         deck[i].fnsh.t = now + fanTime;
     }
-    next = bid;
     draw();
 }
 
-// Sort each player's stack
+// Fan cards from stacks to handst each player's stack
 function sort() {
     const now = performance.now();
     for (let p = west; p <= south; p++)
@@ -721,7 +726,6 @@ function stack() {
         deck[i].fnsh.y = deck[i].stck.y;
         deck[i].fnsh.t = now + stackTime;
     }
-    next = sort;
     draw();
 }
 
@@ -743,7 +747,6 @@ function deal() {
     const now = performance.now();
     const seq = Array.from(new Array(indices), (v, k) => k % cards);
     bidder = nextPlayer(dealer);
-    turn = none;
     shuffle(seq);
     locate();
     for (let i = 0; i < indices; i++) {
@@ -764,8 +767,7 @@ function deal() {
         deck[i2].fnsh.m = 1;
         deck[i2].fnsh.t = deck[i2].strt.t + flyTime;
     }
-    next = stack;
-    draw();
+    drawn = false;
 }
 
 // Initialize the global variables that rely on the window size
@@ -828,14 +830,15 @@ function yesClicked() {
 function noClicked() {
 }
 
-// Convert x,y coordinates to index of top normal/bumped southern card (or undefined) 
+// Convert x,y coordinates to index of top playable southern card (or undefined) 
 function xy2i(x, y) {
     let topI;
     deck.sort((a,b)=>a.z-b.z);
     for (let i = 0; i < indices; i++) {
         const i2 = deck[i].i;
         const p = i2p(i2);
-        if (p == south) {
+        const c = i2c(i2);
+        if (p == south && legal(p, c)) {
             const l = deck[i].norm.x - cw/2;
             const r = deck[i].norm.x + cw/2;
             const t = deck[i].norm.y - ch/2;
@@ -850,7 +853,7 @@ function xy2i(x, y) {
     return topI;
 }
 
-// If mouse moved off bumped card, unbump cards, and if mouse moved to normal legal card, bump it
+// If mouse moved off bumped card, unbump cards, and if mouse moved to normal card, bump it
 function mouseMoved(e) {
     const now = performance.now();
     const i = xy2i (e.clientX, e.clientY);
@@ -866,7 +869,7 @@ function mouseMoved(e) {
             }
         }
     }
-    if (i != undefined && deck[i].g == normal && legal(i)) {
+    if (i != undefined && deck[i].g == normal) {
         deck[i].g = bumped;
         deck[i].strt.t = now;
         deck[i].fnsh.x = deck[i].bump.x;
@@ -876,7 +879,7 @@ function mouseMoved(e) {
     }
 }
 
-// If mouse pressed normal/bumped southern card, unbump cards; if mouse pressed normal legal card, bump it; if it's legal, play it
+// If mouse pressed normal/bumped card, unbump cards; if mouse pressed normal card, bump it; if it's its turn, play it
 function mousePressed(e) {
     const now = performance.now();
     const i = xy2i (e.clientX, e.clientY);
@@ -891,7 +894,7 @@ function mousePressed(e) {
                 window.requestAnimationFrame(draw);
             }
         }
-        if (deck[i].g == normal && legal(i)) {
+        if (deck[i].g == normal) {
             deck[i].g = bumped;
             deck[i].strt.t = now;
             deck[i].fnsh.x = deck[i].bump.x;
@@ -899,18 +902,18 @@ function mousePressed(e) {
             deck[i].fnsh.t = now + bumpTime;
             window.requestAnimationFrame(draw);
         }
-        if (legal(i)) 
+        if (i2p(i) == turn)
             play1(i);
     }
 }
 
-// If touched legal bumped card, play it; if touch isn't bumped card, unbump cards; if normal legal touched, bump it 
+// If touched bumped card and it's its turn, play it; if touch isn't bumped card, unbump cards; if normal touched, bump it 
 function touchStarted(e) {
     body.onmousedown = "";
     body.onmousemove = "";
     const now = performance.now();
     const i = xy2i (e.touches[0].clientX, e.touches[0].clientY);
-    if (i != undefined && deck[i].g == bumped && legal(i))
+    if (i != undefined && deck[i].g == bumped && i2p(i) == turn)
             play1(i);
     if (i == undefined || deck[i].g != bumped) {
         for (let i2 = 0; i2 < indices; i2++) {
@@ -924,7 +927,7 @@ function touchStarted(e) {
             }
         }
     }
-    if (i != undefined && deck[i].g == normal && legal(i)) {
+    if (i != undefined && deck[i].g == normal) {
         deck[i].g = bumped;
         deck[i].strt.t = now;
         deck[i].fnsh.x = deck[i].bump.x;
@@ -934,7 +937,7 @@ function touchStarted(e) {
     }
 }
 
-// If touch moved off bumped card, unbump cards, and if touch moved to normal legal card, bump it
+// If touch moved off bumped card, unbump cards, and if touch moved to normal card, bump it
 function touchMoved(e) {
     const now = performance.now();
     const i = xy2i (e.touches[0].clientX, e.touches[0].clientY);
@@ -950,7 +953,7 @@ function touchMoved(e) {
             }
         }
     }
-    if (i != undefined && deck[i].g == normal && legal(i)) {
+    if (i != undefined && deck[i].g == normal) {
         deck[i].g = bumped;
         deck[i].strt.t = now;
         deck[i].fnsh.x = deck[i].bump.x;
@@ -975,6 +978,78 @@ function reloadClick() {
      location.reload();
 }
 
+// Run the app
+function run() {
+    while (true) {
+        if (!drawn)
+            draw();
+        if (drawn) {
+            switch (state) {
+            case starting:
+                state = dealing;
+                deal();
+                break;
+            case dealing:
+                state = stacking1;
+                stack();
+                break;
+            case stacking1:
+                for (let p of [west, north, east, south])
+                    hand[p].sort((a,b)=>b-a);
+                state = fanning1;
+                fan();
+                break;
+            case fanning1:
+                state = bidding;
+                bid();
+                break;
+            case bidding:
+                turn = bidder;
+                state = stacking2;
+                stack();
+                break;
+            case stacking2:
+                state = fanning2;
+                fan();
+                break;
+            case fanning2:
+                state = waiting1;
+                wait();
+                break;
+            case waiting1:
+                state = stacking3;
+                stack();
+                break;
+            case stacking3:
+                state = fanning3;
+                fan();
+                break;
+            case fanning3:
+                state = playing;
+                play();
+                break;
+            case playing:
+                state = closing;
+                close();
+                break;
+            case closing:
+                state = pulling;
+                pull();
+                break;
+            case pulling:
+                state = playing;
+                play();
+                break;
+            case waiting2:
+                state = dealing;
+                deal();
+            }
+        }
+        if (!drawn)
+            window.requestAnimationFrame(run);
+    }
+}
+
 // Initialize javascript and start game after window loads
 window.onload = function() {
     for (let v = 0; v < src.length; v++)
@@ -985,7 +1060,7 @@ window.onload = function() {
     for (let i = 0; i < bidButton.length; i++)
         bidButton[i].onclick = bidClicked;
     for (let i = 0; i < pickButton.length; i++)
-        pickButton[i].onclick = pickClicked;
+        pickButton[i].onclick = function() {pickClicked(i)};
     yesButton.onclick = yesClicked;
     noButton.onclick = noClicked;
     body.onmousemove   = mouseMoved;
@@ -995,5 +1070,5 @@ window.onload = function() {
     menuIcon.onclick   = menuClicked;
     closeIcon.onclick  = closeClicked;
     reload.onclick     = reloadClick;
-    deal();
+    run();
 }
