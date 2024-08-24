@@ -1,7 +1,6 @@
 @media (orientation: portrait) {
     :root {
         --font-size:        4vw;
-        --pip-size:         3vw;
         --pad:              1vw;
         --cardW:            min(15.4vw, 11.3vh);
         --cardH:            calc(var(--cardW) / 2.5 * 3.5);
@@ -19,7 +18,6 @@
 @media (orientation: landscape) {
     :root {
         --font-size:        4vh;
-        --pip-size:         3vh;
         --pad:              1vh;
         --cardW:            min(15.4vh, 11.3vw);
         --cardH:            calc(var(--cardW) / 2.5 * 3.5);
@@ -64,7 +62,7 @@ input {
     position: absolute;
 }
 
-#middle {
+#textArea {
     width: var(--middle-width);
     height: var(--middle-height);
     position: absolute;
@@ -76,7 +74,7 @@ input {
     align-items: center;
 }
 
-#pickBid {
+#bidText {
     width: 100%;
     height: 100%;
     display: none;
@@ -98,7 +96,45 @@ input {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+#trumpText {
+    width: 100%;
+    display: none;
+    flex-direction: column;
     justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+#trumpText input {
+    width: var(--pick-width);
+}
+
+#playText {
+    width: 80%;
+    display: none;
+    text-align: left;
+}
+
+#handText {
+    width: 80%;
+    display: none;
+    text-align: left;
+}
+
+#handTable {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: center;
+}
+
+#nextDiv, #overDiv, #playBtns {
+    width: 100%;
+    text-align: center;
 }
 
 #bidBox div {
@@ -131,30 +167,7 @@ input {
     left: calc(100vw/2 - var(--box-width)/2);
 }
 
-#pickTrump {
-    width: 100%;
-    display: none;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-}
-
-#pickTrump input {
-    width: var(--pick-width);
-}
-
-#revealBid {
-    width: 80%;
-    display: none;
-    text-align: left;
-}
-
-#revealBid input {
-    width: var(--reveal-width);
-}
-
-#menuIcon {
+#menu {
     filter: invert(100%);
     margin: var(--pad);
     width: var(--icon-size);

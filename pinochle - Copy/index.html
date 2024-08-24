@@ -10,8 +10,8 @@
     </head>
     <body id="body">
         <canvas id="canvas"></canvas>
-        <div id="middle">
-            <div id="pickBid">
+        <div id="textArea">
+            <div id="bidText">
                 <div id="meldTable">
                     <div id="trumpColumn">
                         <u>Trump Suit</u><br>
@@ -32,31 +32,60 @@
                     <br>
                     Pick your bid:<br>
                     <div id="bidButtons">
-                        <input type="button"><input type="button"><input type="button"><input type="button">
-                        <input type="button"><input type="button"><input type="button"><input type="button">
-                        <input type="button"><input type="button"><input type="button"><input type="button">
+                        <input type="button"><input type="button"><input type="button">
                     </div>
                 </div>
             </div>
-            <div id="pickTrump">
+            <div id="trumpText">
                 Pick trump:<br><br>
                 <input type="button" value="Spades"><br><br>
                 <input type="button" value="Hearts"><br><br>
                 <input type="button" value="Clubs"><br><br>
                 <input type="button" value="Diamonds">
             </div>
-            <div id="revealBid">
-                <span id="bidWinner"></span> won the bid at <span id="bidValue"></span>
-                and picked <span id="trumpName"></span>.<br>
-                <br>
-                Our meld is <span id="ourMeld"></span>; their meld is <span id="theirMeld"></span>.<br>
-                <br>
-                We need to pull <span id="weNeed"></span>; they need to pull <span id="theyNeed"></span>.
-                <div>
+            <div id="playText">
+                <div id="play1"></div><br>
+                <div id="play2"></div><br>
+                <div id="play3"></div><br>
+                <div id="playBtns">
+                    <input id="playBtn" type="button" value="Play">
+                    <input id="tossBtn" type="button" value="Toss">
+                </div>
+            </div>
+            <div id="handText">
+                <div id="handTable">
+                    <div>
+                        <br>
+                        Old Score<br>
+                        Hand Meld<br>
+                        Hand Take<br>
+                        New Score
+                    </div>
+                    <div>
+                        <u>Us</u><br>
+                        <span id="usOld"></span><br>
+                        <span id="usMeld"></span><br>
+                        <u><span id="usTake"></span></u><br>
+                        <span id="usNew"></span>
+                    </div>
+                    <div>
+                        <u>Them</u><br>
+                        <span id="themOld"></span><br>
+                        <span id="themMeld"></span><br>
+                        <u><span id="themTake"></span></u><br>
+                        <span id="themNew"></span>
+                    </div>
+                </div>
+                <div id="nextDiv">
                     <br>
-                    Play hand?
-                    <input id="yesButton" type="button" class="button" value="Yes">
-                    <input id="noButton" type="button" class="button" value="No">
+                    <input id="nextBtn" type="button" value="Next">
+                </div>
+                <div id="overDiv">
+                    <br>
+                    <span id="overText">Who won?</span><br>
+                    <br>
+                    <input id="againBtn" type="button" value="Again">
+                    <input id="quitBtn" type="button" value="Quit">
                 </div>
             </div>
         </div>
@@ -66,9 +95,9 @@
             <div></div>
             <div></div>
         </div>
-        <img id="menuIcon" src="icons/menu.svg" alt="menu">
+        <img id="menu" src="icons/menu.svg" alt="menu">
         <div id="menuText">
-            Double Deck Pinochle&nbsp;&nbsp;<img id="closeIcon" src="icons/close.svg" alt="close"><br>
+            Double Deck Pinochle&nbsp;&nbsp;<img id="close" src="icons/close.svg" alt="close"><br>
             <div id="status">
                 <img src="icons/analytics.svg" alt="status">
                 Status
@@ -77,7 +106,7 @@
                 <img src="icons/settings.svg" alt="options">
                 Options
             </div>
-            <div id="reload">
+            <div id="restart">
                 <img src="icons/refresh.svg" alt="restart">
                 Restart
             </div>
