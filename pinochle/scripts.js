@@ -79,7 +79,7 @@ const stackd = 0;                   // stacked off table in front of dealer or p
 const tabled = 1;                   // stacked on table in front of player
 const normal = 2;                   // in player's normal hand position
 const bumped = 3;                   // in player's bumped hand position
-const played = 4;                   // in player's played position 
+const center = 4;                   // in player's center position 
 
 // Card class
 class C {
@@ -92,7 +92,7 @@ class C {
         this.norm = new P;          // normal position
         this.tabl = new P;          // tabled position
         this.bump = new P;          // bumped position
-        this.play = new P;          // played position
+        this.cntr = new P;          // center position
         this.strt = new A;          // start animation
         this.fnsh = new A;          // finish animation
     }
@@ -107,6 +107,17 @@ const deck = [
     new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C
 ];
 
+// prob[p1][p2][v] = from p1's view, probability that p2 holds card value v (max 4.0) 
+const prob = [
+    [Array(cards), Array(cards), Array(cards), Array(cards)],
+    [Array(cards), Array(cards), Array(cards), Array(cards)],
+    [Array(cards), Array(cards), Array(cards), Array(cards)],
+    [Array(cards), Array(cards), Array(cards), Array(cards)]
+];
+
+// played[v] = number of cards of value v played so far
+const played = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+
 // Page elements
 const body      = document.getElementById("body");
 const canvas    = document.getElementById("canvas");
@@ -118,9 +129,7 @@ const bidBtn    = document.querySelectorAll("#bidText input");
 const trumpText = document.getElementById("trumpText");
 const trumpBtn  = document.querySelectorAll("#trumpText input");
 const playText  = document.getElementById("playText");
-const play1     = document.getElementById("play1");
-const play2     = document.getElementById("play2");
-const play3     = document.getElementById("play3");
+const playPara  = document.querySelectorAll("#playText div");
 const playBtn   = document.getElementById("playBtn");
 const tossBtn   = document.getElementById("tossBtn");
 const handText  = document.getElementById("handText");
@@ -141,7 +150,10 @@ const quitBtn   = document.getElementById("quitBtn");
 const menu      = document.getElementById("menu");
 const menuText  = document.getElementById("menuText");
 const close     = document.getElementById("close");
+const stats     = document.getElementById("stats");
 const restart   = document.getElementById("restart");
+const statsText = document.getElementById("statsText");
+const closeBtn  = document.getElementById("closeBtn");
 
 // Animation constants
 const dealTime  = 2000;             // milliseconds to deal all cards
@@ -162,10 +174,10 @@ let bidder      = none;             // the player who is bidding or won the bid
 let trump       = none;             // the bidder's trump suit
 let firstPlayer = none;             // the player who plays first
 let thisPlayer  = none;             // the player who is playing a card
-let thisCard    = none;             // the card that is being played
+let thisCard    = none;             // the card that is being center
 let firstCard   = none;             // the card led in this hand
 let highCard    = none;             // the high card in this hand (so far)
-let highPlayer  = none;             // the player who played the high card
+let highPlayer  = none;             // the player who center the high card
 let ourBid      = none;             // our bid if we win the bid (or none)
 let theirBid    = none;             // their bid if they win the bid (or none)
 let ourMeld     = 0;                // total of north and south meld for this hand
@@ -498,7 +510,7 @@ function autoToss() {
     return bid[bidder] > [theirMeld, ourMeld, theirMeld][bidder] + 40;
 }
 
-// Return true if deck card index i can be played
+// Return true if deck card index i can be center
 function legal(i) {
     const p = i2p(i);
     const c = i2c(i);
@@ -586,14 +598,14 @@ function locateCards() {
             deck[i].bump.x = deck[i].norm.x + [cardh*0.4, 0, -cardh*0.4, 0][p];
             deck[i].bump.y = deck[i].norm.y + [0, cardh*0.4, 0, -cardh*0.4][p];
             deck[i].bump.r = [Math.PI/2, 0, Math.PI/2, 0][p];
-            deck[i].play.x = vw/2 + [-cardh/2-pad/2, cardw/2+pad/2, cardh/2+pad/2, -cardw/2-pad/2][p];
-            deck[i].play.y = vh/2 + [-cardw/2-pad/2, -cardh/2-pad/2, cardw/2+pad/2, cardh/2+pad/2][p];
-            deck[i].play.r = [Math.PI/2, 0, Math.PI/2, 0][p];
-            deck[i].strt.x = [deck[i].stck.x, deck[i].tabl.x, deck[i].norm.x, deck[i].bump.x, deck[i].play.x][deck[i].g];
-            deck[i].strt.y = [deck[i].stck.y, deck[i].tabl.y, deck[i].norm.y, deck[i].bump.y, deck[i].play.y][deck[i].g];
+            deck[i].cntr.x = vw/2 + [-cardh/2-pad/2, cardw/2+pad/2, cardh/2+pad/2, -cardw/2-pad/2][p];
+            deck[i].cntr.y = vh/2 + [-cardw/2-pad/2, -cardh/2-pad/2, cardw/2+pad/2, cardh/2+pad/2][p];
+            deck[i].cntr.r = [Math.PI/2, 0, Math.PI/2, 0][p];
+            deck[i].strt.x = [deck[i].stck.x, deck[i].tabl.x, deck[i].norm.x, deck[i].bump.x, deck[i].cntr.x][deck[i].g];
+            deck[i].strt.y = [deck[i].stck.y, deck[i].tabl.y, deck[i].norm.y, deck[i].bump.y, deck[i].cntr.y][deck[i].g];
             deck[i].strt.r = [Math.PI/2, 0, Math.PI/2, 0][p];
-            deck[i].fnsh.x = [deck[i].stck.x, deck[i].tabl.x, deck[i].norm.x, deck[i].bump.x, deck[i].play.x][deck[i].g];
-            deck[i].fnsh.y = [deck[i].stck.y, deck[i].tabl.y, deck[i].norm.y, deck[i].bump.y, deck[i].play.y][deck[i].g];
+            deck[i].fnsh.x = [deck[i].stck.x, deck[i].tabl.x, deck[i].norm.x, deck[i].bump.x, deck[i].cntr.x][deck[i].g];
+            deck[i].fnsh.y = [deck[i].stck.y, deck[i].tabl.y, deck[i].norm.y, deck[i].bump.y, deck[i].cntr.y][deck[i].g];
             deck[i].fnsh.r = [Math.PI/2, 0, Math.PI/2, 0][p];
             if (hand[p][c] != none)
                 v++;
@@ -604,10 +616,21 @@ function locateCards() {
 // Deal shuffled deck array starting with the player next to the dealer
 function prepareDeal() {
     const array = Array.from(new Array(indices), (v, k) => k % cards);
+    const set = Array(cards).fill(0);
     let t = performance.now();
+    for (let p1 of [west, north, east, west])
+        for (let p2 of [west, north, east, west])
+            for (let v = 0; v < indices; v++)
+                prob[p1][p2][v] = 0.25;
     shuffleArray(array);
     for (let i = 0; i < indices; i++)
         hand[i2p(i)][i2c(i)] = array[i];
+    for (let c = 0; c < cards; c++) {
+        const v = hand[south][c] + set[c];
+        prob[south][south][v] = 1.00;
+        prob[south][west][v] = prob[south][north][v] = prob[south][east][v] = 0.00;
+        set[c]++;
+    }
     locateCards();
     for (let c = cards-1; c >= 0; c--) {
         for (let p of [(dealer+1)%players, (dealer+2)%players, (dealer+3)%players, dealer]) {
@@ -639,20 +662,19 @@ function prepareDeal() {
 
 // Initialize the global variables based on the size of body
 function setSizes() {
-    const icon = Number.parseFloat(getComputedStyle(menu).width);
     vw = Number.parseFloat(getComputedStyle(body).width);
     vh = Number.parseFloat(getComputedStyle(body).height);
-    pad = Number.parseFloat(getComputedStyle(menu).marginLeft);
     if (vw < vh) {
-        hpad = pad;
-        vpad = icon + pad*2;
-        cardw = Math.min((vw-pad*2)/(1+19/4), (vh-icon*2-pad*6)/(1+19/4+2*3.5/2.5));
+        cardw = Math.min(vw/(1+19/4+2/10), vh/(1+19/4+2*3.5/2.5+2/3+6/10));
+        hpad = vw/2 - cardw*(1+19/4)/2;
+        vpad = cardw/3 + 2*cardw/10;
     } else {
-        hpad = icon + pad*2;
-        vpad = pad;
-        cardw = Math.min((vh-pad*2)/(1+19/4), (vw-icon*2-pad*6)/(1+19/4+2*3.5/2.5));
+        cardw = Math.min(vh/(1+19/4+2/10), vw/(1+19/4+2*3.5/2.5+2/3+6/10));
+        hpad = cardw/3 + 2*cardw/10;
+        vpad = vh/2 - cardw*(1+19/4)/2;
     }
     cardh = cardw / 2.5 * 3.5;
+    pad = cardw/10;
     canvas.width  = vw;
     canvas.height = vh;
 }
@@ -789,11 +811,11 @@ function handEnded() {
     }
 }
 
-// Trick played: pull trick, then retrigger handsRefanned or trigger handEnded
+// Trick center: pull trick, then retrigger handsRefanned or trigger handEnded
 function trickPlayed() {
     const now = performance.now();
     for (let i = 0; i < indices; i++)
-        if (deck[i].g == played) {
+        if (deck[i].g == center) {
             deck[i].g = stackd;
             deck[i].z = 100;
             deck[i].strt.t = now;
@@ -822,7 +844,7 @@ function trickPlayed() {
     }
 }
 
-// Card fully played: close hand, then trigger trickPlayed or handsRefanned  
+// Card fully center: close hand, then trigger trickPlayed or handsRefanned  
 function cardPlayed() {
     const now = performance.now();
     for (let i = 0; i < indices; i++)
@@ -849,11 +871,11 @@ function cardPulled() {
     const c = thisCard;
     const i = pc2i(p, c);
     deck[i].v = hand[p][c];
-    deck[i].g = played;
+    deck[i].g = center;
     deck[i].z = 40;
     deck[i].strt.t = now;
-    deck[i].fnsh.x = deck[i].play.x;
-    deck[i].fnsh.y = deck[i].play.y;
+    deck[i].fnsh.x = deck[i].cntr.x;
+    deck[i].fnsh.y = deck[i].cntr.y;
     deck[i].fnsh.t = now + playTime;
     animate(cardPlayed);
 }
@@ -882,9 +904,9 @@ function cardSelected() {
         deck[i].fnsh.t = now + stackTime;
         animate(cardPulled);
     } else {
-        deck[i].g = played;
-        deck[i].fnsh.x = deck[i].play.x;
-        deck[i].fnsh.y = deck[i].play.y;
+        deck[i].g = center;
+        deck[i].fnsh.x = deck[i].cntr.x;
+        deck[i].fnsh.y = deck[i].cntr.y;
         deck[i].fnsh.t = now + playTime;
         animate(cardPlayed);
     }
@@ -1105,28 +1127,28 @@ function meldFanned() {
             theyNeed = bid[bidder];
         else
             theyNeed = Math.max(20, bid[bidder] - theirMeld);
-    play1.textContent = ["Your left opponent", "Your partner", "Your right opponent", "You"][bidder] +
-                        " won the bid at " + bid[bidder] + " and picked " +
-                        ["diamonds",,,,,"clubs",,,,,"hearts",,,,,"spades"][trump] + ".";
-    play2.textContent = "Our meld is " + ourMeld + "; their meld is " + theirMeld + ".";
+    playPara[0].textContent = ["Your left opponent", "Your partner", "Your right opponent", "You"][bidder] +
+        " won the bid at " + bid[bidder] + " and picked " +
+        ["diamonds",,,,,"clubs",,,,,"hearts",,,,,"spades"][trump] + ".";
+    playPara[1].textContent = "Our meld is " + ourMeld + "; their meld is " + theirMeld + ".";
     if (marriages(bidder, trump) == 0) {
-        play3.textContent = ["Your left opponent", "Your partner", "Your right opponent", "You"][bidder] +
-                            " must toss this hand due to no marriage in trump.";
+        playPara[2].textContent = ["Your left opponent", "Your partner", "Your right opponent", "You"][bidder] +
+            " must toss this hand due to no marriage in trump.";
         playBtn.style.display = "none";
         tossBtn.style.display = "inline";
     } else if (bidder!= south && autoToss()) {
-        play3.textContent = ["Your left opponent", "Your partner", "Your right opponent", "You"][bidder] +
-                            " decided to toss this hand.";
+        playPara[2].textContent = ["Your left opponent", "Your partner", "Your right opponent", "You"][bidder] +
+            " decided to toss this hand.";
         playBtn.style.display = "none";
         tossBtn.style.display = "inline";
     } else {
-        play3.textContent = "We need to pull " + weNeed + "; they need to pull " + theyNeed + ".";
+        playPara[2].textContent = "We need to pull " + weNeed + "; they need to pull " + theyNeed + ".";
         playBtn.style.display = "inline";
         tossBtn.style.display = ["none", "none", "none", "inline"][bidder];
     }
     playBtn.onclick = playClicked;
     tossBtn.onclick = tossClicked;
-    playText.style.display = "block";
+    playText.style.display = "flex";
 }
 
 // Hands regathered: fan out meld, then trigger meldFanned
@@ -1360,14 +1382,29 @@ function resized () {
     requestAnimationFrame(frameEvent);
 }
 
+// Menu close icon clicked: close the menu, then await nothing
+function closeClicked() {
+    menuText.style.display = "none";
+    close.onclick = "";
+}
+
 // Menu icon clicked: display the menu
 function menuClicked() {
     menuText.style.display = "block";
+    close.onclick = closeClicked;
 }
 
-// Close icon clicked: close the menu
-function closeClicked() {
+// Stats close button clicked: close the stats and menu displays, then await nothing
+function statsCloseClicked() {
+    statsText.style.display = "none";
+    closeBtn.onclick = "";
+}
+
+// Stats menu item clicked: close menu and display stats, then await statsCloseClicked
+function statsClicked() {
     menuText.style.display = "none";
+    statsText.style.display = "block";
+    closeBtn.onclick = statsCloseClicked;
 }
 
 // Restart menu item clicked: restart the app
@@ -1376,7 +1413,7 @@ function restartClicked() {
 }
 
 // Calculate average short suit and average long suit by simulation
-function stats() {
+function test() {
     const array = Array.from(new Array(indices), (v, k) => k % cards);
     const start = performance.now();
     let n = 0, s = 0, l = 0, m = 0;
@@ -1402,7 +1439,7 @@ function loaded() {
     onresize = resized;
     menu.draggable = false;
     menu.onclick = menuClicked;
-    close.onclick = closeClicked;
+    stats.onclick = statsClicked;
     restart.onclick = restartClicked;
     setSizes();
     prepareDeal();
