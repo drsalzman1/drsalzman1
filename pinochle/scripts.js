@@ -153,6 +153,7 @@ const close     = document.getElementById("close");
 const stats     = document.getElementById("stats");
 const restart   = document.getElementById("restart");
 const statsText = document.getElementById("statsText");
+const diamondsT = document.getElementById("diamondsT");
 const closeBtn  = document.getElementById("closeBtn");
 
 // Animation constants
