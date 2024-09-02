@@ -1,51 +1,47 @@
 @media (orientation: portrait) {
     :root {
-        --font-size:        4vw;
-        --pad:              1vw;
-        --cardW:            min(15.4vw, 11.3vh);
-        --cardH:            calc(var(--cardW) / 2.5 * 3.5);
-        --icon-size:        4vw;
-        --middle-width:     53vw;
-        --middle-height:    calc(var(--cardW) * 5.75);
-        --line-height:      7vw;
-        --box-width:        11vw;
-        --box-height:       5.1vw;
-        --pick-width:       20vw;
-        --reveal-width:     8vw;
+        --cardw:        min(16.807vw, 10.187vh);
+        --west-left:    calc(050vw - var(--cardw)*2.70);
+        --north-top:    calc(000vh + var(--cardw)*0.75);
+        --east-left:    calc(050vw + var(--cardw)*2.00);
+        --south-top:    calc(100vh - var(--cardw)*1.00);
     }
 }
 
 @media (orientation: landscape) {
     :root {
-        --font-size:        4vh;
-        --pad:              1vh;
-        --cardW:            min(15.4vh, 11.3vw);
-        --cardH:            calc(var(--cardW) / 2.5 * 3.5);
-        --icon-size:        4vh;
-        --middle-width:     53vw;
-        --middle-height:    min(53vh, calc(var(--cardW) * 5.75));
-        --line-height:      7vh;
-        --radio-size:       3vh;
-        --box-width:        11vh;
-        --box-height:       5.1vh;
-        --pick-width:       20vh;
-        --reveal-width:     8vh;
+        --cardw:        min(16.807vh, 10.187vw);
+        --west-left:    calc(000vw + var(--cardw)*0.70);
+        --north-top:    calc(050vh - var(--cardw)*2.70);
+        --east-left:    calc(100vw - var(--cardw)*1.40);
+        --south-top:    calc(050vh + var(--cardw)*2.40);
     }
+}
+
+:root {
+    --west-east-top:    calc(050vh - var(--cardw)*0.15);
+    --north-south-left: calc(050vw - var(--cardw)*0.35);
+    --pad:              calc(var(--cardw) * 0.10);
+    --icon:             calc(var(--cardw) * 0.33);
+    --font-size:        calc(var(--cardw) * 0.25);
+    --text-area:        calc(var(--cardw) * 2.75);
+    --box-width:        calc(var(--cardw) * 0.75);
+    --box-height:       calc(var(--cardw) * 0.31);
+    --pick-width:       calc(var(--cardw) * 1.30);
 }
 
 input {
     width: var(--box-width);
     height: var(--box-height);
     padding: 0px;
-    margin: calc(var(--pad));
-    border-style: none;
+    margin: 0px;
+    border-style: solid;
     background-color: powderblue;
     font-family: sans-serif;
     font-size: var(--font-size);
 }
 
-#body {
-    box-sizing: border-box;
+#docBody {
     width: 100vw;
     height: 100vh;
     margin: 0px;
@@ -58,16 +54,16 @@ input {
     position: relative;
 }
 
-#canvas {
+#docCanvas {
     position: absolute;
 }
 
 #textArea {
-    width: var(--middle-width);
-    height: var(--middle-height);
+    width: var(--text-area);
+    height: var(--text-area);
     position: absolute;
-    top: calc(50vh - var(--middle-height)/2);
-    left: calc(50vw - var(--middle-width)/2);
+    top: calc(50vh - var(--text-area)/2);
+    left: calc(50vw - var(--text-area)/2);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -79,7 +75,7 @@ input {
     height: 100%;
     display: none;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-evenly;
     text-align: center;
 }
 
@@ -101,9 +97,10 @@ input {
 
 #trumpText {
     width: 100%;
+    height: 100%;
     display: none;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     text-align: center;
 }
@@ -113,13 +110,16 @@ input {
 }
 
 #playText {
-    width: 80%;
+    width: 100%;
+    height: 100%;
     display: none;
+    flex-direction: column;
+    justify-content: space-between;
     text-align: left;
 }
 
 #handText {
-    width: 80%;
+    width: 100%;
     display: none;
     text-align: left;
 }
@@ -146,32 +146,16 @@ input {
     display: none;
 }
 
-#bidBox :nth-child(1) {
-    top: calc(100vh/2 - var(--box-height)/2);
-    left: calc(var(--pad) + var(--cardH)/2 - var(--box-width)/2);
-}
+#bidBox :nth-child(1) {top: var(--west-east-top); left: var(--west-left);       }
+#bidBox :nth-child(2) {top: var(--north-top);     left: var(--north-south-left);}
+#bidBox :nth-child(3) {top: var(--west-east-top); left: var(--east-left);       }
+#bidBox :nth-child(4) {top: var(--south-top);     left: var(--north-south-left);}
 
-#bidBox :nth-child(2) {
-    top: calc(var(--pad) + var(--cardH)/2 - var(--box-height)/2);
-    left: calc(100vw/2 - var(--box-width)/2);
-}
-
-#bidBox :nth-child(3) {
-    top: calc(100vh/2 - var(--box-height)/2);
-    left: calc(100vw - var(--pad) - var(--cardH)/2 - var(--box-width)/2);
-}
-
-#bidBox :nth-child(4) {
-    position: absolute;
-    top: calc(100vh - var(--pad)*6 - var(--box-height));
-    left: calc(100vw/2 - var(--box-width)/2);
-}
-
-#menu {
+#menuIcon {
     filter: invert(100%);
     margin: var(--pad);
-    width: var(--icon-size);
-    height: var(--icon-size);
+    width: var(--icon);
+    height: var(--icon);
     position: absolute;
 }
 
@@ -181,10 +165,51 @@ input {
     line-height: 200%;
     color: black;
     background-color: white;
+    border: solid;
     position: absolute;
     display: none;
 }
 
-#menu img {
+#menuText img {
     height: calc(var(--font-size));
+    position: relative;
+    top: calc(var(--font-size) * 0.15);
+}
+
+#statsText {
+    margin: var(--pad);
+    padding: var(--pad);
+    line-height: calc(var(--font-size) * 1.1);
+    width: calc(100vw - var(--pad)*4);
+    color: black;
+    background-color: white;
+    border: solid;
+    position: absolute;
+    display: none;
+}
+
+#statsRow1, #statsRow2 {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+#spadesT, #heartsT, #clubsT, #diamondsT {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: var(--font-size);
+    text-align: center;
+}
+
+#heartsT, #diamondsT {
+    margin-left: calc(var(--font-size) * 2);
+}
+
+.statColumn {
+    margin-left: calc(var(--pad) * 1.8);
+}
+
+#closeDiv {
+    width: 100%;
+    text-align: center;
 }

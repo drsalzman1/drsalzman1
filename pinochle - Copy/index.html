@@ -8,8 +8,8 @@
         <link rel="icon" href="unmaskable.svg">
         <link rel="stylesheet" href="styles.css">
     </head>
-    <body id="body">
-        <canvas id="canvas"></canvas>
+    <body id="docBody">
+        <canvas id="docCanvas"></canvas>
         <div id="textArea">
             <div id="bidText">
                 <div id="meldTable">
@@ -28,25 +28,24 @@
                         <span></span>
                     </div>
                 </div>
-                <div id="bidTable">
-                    <br>
-                    Pick your bid:<br>
-                    <div id="bidButtons">
-                        <input type="button"><input type="button"><input type="button">
-                    </div>
+                <div>
+                    Pick your bid:
+                </div>
+                <div id="bidButtons">
+                    <input type="button"><input type="button"><input type="button">
                 </div>
             </div>
             <div id="trumpText">
-                Pick trump:<br><br>
-                <input type="button" value="Spades"><br><br>
-                <input type="button" value="Hearts"><br><br>
-                <input type="button" value="Clubs"><br><br>
-                <input type="button" value="Diamonds">
+                <div>Pick trump:</div>
+                <div><input type="button" value="Spades"></div>
+                <div><input type="button" value="Hearts"></div>
+                <div><input type="button" value="Clubs"></div>
+                <div><input type="button" value="Diamonds"></div>
             </div>
             <div id="playText">
-                <div id="play1"></div><br>
-                <div id="play2"></div><br>
-                <div id="play3"></div><br>
+                <div></div>
+                <div></div>
+                <div></div>
                 <div id="playBtns">
                     <input id="playBtn" type="button" value="Play">
                     <input id="tossBtn" type="button" value="Toss">
@@ -82,7 +81,7 @@
                 </div>
                 <div id="overDiv">
                     <br>
-                    <span id="overText">Who won?</span><br>
+                    <span id="overText"></span><br>
                     <br>
                     <input id="againBtn" type="button" value="Again">
                     <input id="quitBtn" type="button" value="Quit">
@@ -95,28 +94,121 @@
             <div></div>
             <div></div>
         </div>
-        <img id="menu" src="icons/menu.svg" alt="menu">
+        <img id="menuIcon" src="icons/menu.svg" alt="menu">
         <div id="menuText">
-            Double Deck Pinochle&nbsp;&nbsp;<img id="close" src="icons/close.svg" alt="close"><br>
-            <div id="status">
-                <img src="icons/analytics.svg" alt="status">
-                Status
+            Double Deck Pinochle&nbsp;&nbsp;<img id="closeIcon" src="icons/close.svg" alt="close"><br>
+            <div id="statsItem">
+                <img src="icons/analytics.svg" alt="stats"> Statistics
             </div>
-            <div id="options">
-                <img src="icons/settings.svg" alt="options">
-                Options
+            <div id="optnsItem">
+                <img src="icons/settings.svg" alt="options"> Options
             </div>
-            <div id="restart">
-                <img src="icons/refresh.svg" alt="restart">
-                Restart
+            <div id="rstrtItem">
+                <img src="icons/refresh.svg" alt="restart"> Restart
             </div>
-            <div id="tutorial">
-                <img src="icons/help.svg" alt="tutorial">
-                Tutorial
+            <div id="tutorItem">
+                <img src="icons/help.svg" alt="tutorial"> Tutorial
             </div>
-            <div id="about">
-                <img src="icons/info.svg" alt="about">
-                About
+            <div id="aboutItem">
+                <img src="icons/info.svg" alt="about"> About
+            </div>
+            <div id="exitItem">
+                <img src="icons/exit.svg" alt="exit"> Exit
+            </div>
+        </div>
+        <div id="statsText">
+            Card probabilities for the other players:<br>
+            <br>
+            <div id="statsRow1">
+                <div id="spadesT">
+                    <div>
+                        &spades;<br>A<br>10<br>K<br>Q<br>J<br>&spades;
+                    </div>
+                    <div class="statColumn">
+                        &lArr;<br>
+                        <div>9.9</div><div>9.9</div><div>9.9</div><div>9.9</div><u><div>9.9</div></u><div>9.9</div>
+                    </div>
+                    <div class="statColumn">
+                        &uArr;<br>
+                        <div>9.9</div><div>9.9</div><div>9.9</div><div>9.9</div><u><div>9.9</div></u><div>9.9</div>
+                    </div>
+                    <div class="statColumn">
+                        &rArr;<br>
+                        <div>9.9</div><div>9.9</div><div>9.9</div><div>9.9</div><u><div>9.9</div></u><div>9.9</div>
+                    </div>
+                    <div class="statColumn">
+                        +<br>
+                        <div>9.9</div><div>9.9</div><div>9.9</div><div>9.9</div><u><div>9.9</div></u><div>9.9</div>
+                    </div>
+                </div>
+                <div id="heartsT">
+                    <div style="color:red">
+                        &hearts;<br>A<br>10<br>K<br>Q<br>J<br>&hearts;
+                    </div>
+                    <div class="statColumn">
+                        &lArr;<br>
+                        <div>9.9</div><div>9.9</div><div>9.9</div><div>9.9</div><u><div>9.9</div></u><div>9.9</div>
+                    </div>
+                    <div class="statColumn">
+                        &uArr;<br>
+                        <div>9.9</div><div>9.9</div><div>9.9</div><div>9.9</div><u><div>9.9</div></u><div>9.9</div>
+                    </div>
+                    <div class="statColumn">
+                        &rArr;<br>
+                        <div>9.9</div><div>9.9</div><div>9.9</div><div>9.9</div><u><div>9.9</div></u><div>9.9</div>
+                    </div>
+                    <div class="statColumn">
+                        +<br>
+                        <div>9.9</div><div>9.9</div><div>9.9</div><div>9.9</div><u><div>9.9</div></u><div>9.9</div>
+                    </div>
+                </div>
+            </div>
+            <div id="statsRow2">
+                <div id="clubsT">
+                    <div>
+                        &clubs;<br>A<br>10<br>K<br>Q<br>J<br>&clubs;
+                    </div>
+                    <div class="statColumn">
+                        &lArr;<br>
+                        <div>9.9</div><div>9.9</div><div>9.9</div><div>9.9</div><u><div>9.9</div></u><div>9.9</div>
+                    </div>
+                    <div class="statColumn">
+                        &uArr;<br>
+                        <div>9.9</div><div>9.9</div><div>9.9</div><div>9.9</div><u><div>9.9</div></u><div>9.9</div>
+                    </div>
+                    <div class="statColumn">
+                        &rArr;<br>
+                        <div>9.9</div><div>9.9</div><div>9.9</div><div>9.9</div><u><div>9.9</div></u><div>9.9</div>
+                    </div>
+                    <div class="statColumn">
+                        +<br>
+                        <div>9.9</div><div>9.9</div><div>9.9</div><div>9.9</div><u><div>9.9</div></u><div>9.9</div>
+                    </div>
+                </div>
+                <div id="diamondsT">
+                    <div style="color:red">
+                        &diams;<br>A<br>10<br>K<br>Q<br>J<br>&diams;
+                    </div>
+                    <div class="statColumn">
+                        &lArr;<br>
+                        <div>9.9</div><div>9.9</div><div>9.9</div><div>9.9</div><u><div>9.9</div></u><div>9.9</div>
+                    </div>
+                    <div class="statColumn">
+                        &uArr;<br>
+                        <div>9.9</div><div>9.9</div><div>9.9</div><div>9.9</div><u><div>9.9</div></u><div>9.9</div>
+                    </div>
+                    <div class="statColumn">
+                        &rArr;<br>
+                        <div>9.9</div><div>9.9</div><div>9.9</div><div>9.9</div><u><div>9.9</div></u><div>9.9</div>
+                    </div>
+                    <div class="statColumn">
+                        +<br>
+                        <div>9.9</div><div>9.9</div><div>9.9</div><div>9.9</div><u><div>9.9</div></u><div>9.9</div>
+                    </div>
+                </div>
+            </div>
+            <div id="closeDiv">
+                <input id="closeBtn" type="button" value="Close">
             </div>
         </div>
     </body>

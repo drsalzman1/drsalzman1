@@ -8,8 +8,8 @@
         <link rel="icon" href="unmaskable.svg">
         <link rel="stylesheet" href="styles.css">
     </head>
-    <body id="body">
-        <canvas id="canvas"></canvas>
+    <body id="docBody">
+        <canvas id="docCanvas"></canvas>
         <div id="textArea">
             <div id="bidText">
                 <div id="meldTable">
@@ -94,28 +94,26 @@
             <div></div>
             <div></div>
         </div>
-        <img id="menu" src="icons/menu.svg" alt="menu">
+        <img id="menuIcon" src="icons/menu.svg" alt="menu">
         <div id="menuText">
-            Double Deck Pinochle&nbsp;&nbsp;<img id="close" src="icons/close.svg" alt="close"><br>
-            <div id="stats">
-                <img src="icons/analytics.svg" alt="stats">
-                <span>Statistics</span>
+            Double Deck Pinochle&nbsp;&nbsp;<img id="closeIcon" src="icons/close.svg" alt="close"><br>
+            <div id="statsItem">
+                <img src="icons/analytics.svg" alt="stats"> Statistics
             </div>
-            <div id="options">
-                <img src="icons/settings.svg" alt="options">
-                Options
+            <div id="optnsItem">
+                <img src="icons/settings.svg" alt="options"> Options
             </div>
-            <div id="restart">
-                <img src="icons/refresh.svg" alt="restart">
-                Restart
+            <div id="rstrtItem">
+                <img src="icons/refresh.svg" alt="restart"> Restart
             </div>
-            <div id="tutorial">
-                <img src="icons/help.svg" alt="tutorial">
-                Tutorial
+            <div id="tutorItem">
+                <img src="icons/help.svg" alt="tutorial"> Tutorial
             </div>
-            <div id="about">
-                <img src="icons/info.svg" alt="about">
-                About
+            <div id="aboutItem">
+                <img src="icons/info.svg" alt="about"> About
+            </div>
+            <div id="exitItem">
+                <img src="icons/exit.svg" alt="exit"> Exit
             </div>
         </div>
         <div id="statsText">
@@ -123,45 +121,43 @@
             <br>
             <div id="statsRow1">
                 <div id="spadesT">
-                    <div class="card">
-                        <br>
-                        <div>A &spades;<br>10 &spades;<br>K &spades;<br>Q &spades;<br>J &spades;</div>
+                    <div>
+                        &spades;<br>A<br>10<br>K<br>Q<br>J<br>&spades;
                     </div>
-                    <div class="stat">
+                    <div class="statColumn">
                         &lArr;<br>
                         <div>9.9</div><div>9.9</div><div>9.9</div><div>9.9</div><u><div>9.9</div></u><div>9.9</div>
                     </div>
-                    <div class="stat">
+                    <div class="statColumn">
                         &uArr;<br>
                         <div>9.9</div><div>9.9</div><div>9.9</div><div>9.9</div><u><div>9.9</div></u><div>9.9</div>
                     </div>
-                    <div class="stat">
+                    <div class="statColumn">
                         &rArr;<br>
                         <div>9.9</div><div>9.9</div><div>9.9</div><div>9.9</div><u><div>9.9</div></u><div>9.9</div>
                     </div>
-                    <div class="stat">
+                    <div class="statColumn">
                         +<br>
                         <div>9.9</div><div>9.9</div><div>9.9</div><div>9.9</div><u><div>9.9</div></u><div>9.9</div>
                     </div>
                 </div>
                 <div id="heartsT">
-                    <div class="card" style="color:red">
-                        <br>
-                        <div>A &hearts;<br>10 &hearts;<br>K &hearts;<br>Q &hearts;<br>J &hearts;</div>
+                    <div style="color:red">
+                        &hearts;<br>A<br>10<br>K<br>Q<br>J<br>&hearts;
                     </div>
-                    <div class="stat">
+                    <div class="statColumn">
                         &lArr;<br>
                         <div>9.9</div><div>9.9</div><div>9.9</div><div>9.9</div><u><div>9.9</div></u><div>9.9</div>
                     </div>
-                    <div class="stat">
+                    <div class="statColumn">
                         &uArr;<br>
                         <div>9.9</div><div>9.9</div><div>9.9</div><div>9.9</div><u><div>9.9</div></u><div>9.9</div>
                     </div>
-                    <div class="stat">
+                    <div class="statColumn">
                         &rArr;<br>
                         <div>9.9</div><div>9.9</div><div>9.9</div><div>9.9</div><u><div>9.9</div></u><div>9.9</div>
                     </div>
-                    <div class="stat">
+                    <div class="statColumn">
                         +<br>
                         <div>9.9</div><div>9.9</div><div>9.9</div><div>9.9</div><u><div>9.9</div></u><div>9.9</div>
                     </div>
@@ -169,45 +165,43 @@
             </div>
             <div id="statsRow2">
                 <div id="clubsT">
-                    <div class="card">
-                        <br>
-                        <div>A &clubs;<br>10 &clubs;<br>K &clubs;<br>Q &clubs;<br>J &clubs;</div>
+                    <div>
+                        &clubs;<br>A<br>10<br>K<br>Q<br>J<br>&clubs;
                     </div>
-                    <div class="stat">
+                    <div class="statColumn">
                         &lArr;<br>
                         <div>9.9</div><div>9.9</div><div>9.9</div><div>9.9</div><u><div>9.9</div></u><div>9.9</div>
                     </div>
-                    <div class="stat">
+                    <div class="statColumn">
                         &uArr;<br>
                         <div>9.9</div><div>9.9</div><div>9.9</div><div>9.9</div><u><div>9.9</div></u><div>9.9</div>
                     </div>
-                    <div class="stat">
+                    <div class="statColumn">
                         &rArr;<br>
                         <div>9.9</div><div>9.9</div><div>9.9</div><div>9.9</div><u><div>9.9</div></u><div>9.9</div>
                     </div>
-                    <div class="stat">
+                    <div class="statColumn">
                         +<br>
                         <div>9.9</div><div>9.9</div><div>9.9</div><div>9.9</div><u><div>9.9</div></u><div>9.9</div>
                     </div>
                 </div>
                 <div id="diamondsT">
-                    <div class="card" style="color:red">
-                        <br>
-                        <div>A &diams;<br>10 &diams;<br>K &diams;<br>Q &diams;<br>J &diams;</div>
+                    <div style="color:red">
+                        &diams;<br>A<br>10<br>K<br>Q<br>J<br>&diams;
                     </div>
-                    <div class="stat">
+                    <div class="statColumn">
                         &lArr;<br>
                         <div>9.9</div><div>9.9</div><div>9.9</div><div>9.9</div><u><div>9.9</div></u><div>9.9</div>
                     </div>
-                    <div class="stat">
+                    <div class="statColumn">
                         &uArr;<br>
                         <div>9.9</div><div>9.9</div><div>9.9</div><div>9.9</div><u><div>9.9</div></u><div>9.9</div>
                     </div>
-                    <div class="stat">
+                    <div class="statColumn">
                         &rArr;<br>
                         <div>9.9</div><div>9.9</div><div>9.9</div><div>9.9</div><u><div>9.9</div></u><div>9.9</div>
                     </div>
-                    <div class="stat">
+                    <div class="statColumn">
                         +<br>
                         <div>9.9</div><div>9.9</div><div>9.9</div><div>9.9</div><u><div>9.9</div></u><div>9.9</div>
                     </div>
