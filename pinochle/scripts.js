@@ -155,7 +155,7 @@ const againBtn  = document.getElementById("againBtn");
 const quitBtn   = document.getElementById("quitBtn");
 const menuIcon  = document.getElementById("menuIcon");
 const menuText  = document.getElementById("menuText");
-const closeIcon = document.getElementById("closeIcon");
+const menuX     = document.getElementById("menuX");
 const statsItem = document.getElementById("statsItem");
 const optnsItem = document.getElementById("optnsItem");
 const rstrtItem = document.getElementById("rstrtItem");
@@ -163,24 +163,21 @@ const tutorItem = document.getElementById("tutorItem");
 const aboutItem = document.getElementById("aboutItem");
 const exitItem  = document.getElementById("exitItem");
 const statsText = document.getElementById("statsText");
+const statsX    = document.getElementById("statsX");
 const spadesT   = document.getElementById("spadesT");
 const heartsT   = document.getElementById("heartsT");
 const clubsT    = document.getElementById("clubsT");
 const diamondsT = document.getElementById("diamondsT");
 const statField = document.querySelectorAll(".statColumn div");
-const closeBtn  = document.getElementById("closeBtn");
+const optnsText = document.getElementById("optnsText");
+const optnsX    = document.getElementById("optnsX");
+const openChk   = document.getElementById("openChk");
+const slowChk   = document.getElementById("slowChk");
 
 // Animation constants
-const dealTime  = 2000;             // milliseconds to deal all cards
-const flyTime   = dealTime / 20;    // milliseconds to deal a card
-const stackTime = dealTime / 10;    // milliseconds to stack cards
-const sortTime  = dealTime / 4;     // milliseconds to sort cards
-const fanTime   = dealTime / 10;    // milliseconds to stack cards
-const bidTime   = dealTime / 4;     // milliseconds between bids
-const bumpTime  = dealTime / 20;    // milliseconds to bump/umbump a card
-const playTime  = dealTime / 10;    // milliseconds to play a card
-const closeTime = dealTime / 10;    // milliseconds to close gaps in hand
-const pullTime  = dealTime / 10;    // milliseconds to pull a trick
+const fastDeal  = 2000;             // fast (2 second) deal
+const slowDeal  = 10000;            // slow (10 second) deal
+let dealTime    = fastDeal;         // milliseconds to deal all cards
 
 // Global variables
 let ondone      = function () {};   // event to invoke after animation completes
@@ -788,7 +785,7 @@ function trickPlayed() {
             deck[i].strt.t = now;
             deck[i].fnsh.x = deck[highPlayer*cards].stck.x;
             deck[i].fnsh.y = deck[highPlayer*cards].stck.y;
-            deck[i].fnsh.t = now + pullTime;
+            deck[i].fnsh.t = now + dealTime / 10;
             if (rank(deck[i].v)==ace || rank(deck[i].v)==ten || rank(deck[i].v)==king)
                 if (highPlayer == north || highPlayer == south)
                     ourTake += 1;
@@ -811,7 +808,7 @@ function trickPlayed() {
     }
 }
 
-// Card fully center: close hand, then trigger trickPlayed or handsRefanned  
+// Card played: close hand, then trigger trickPlayed or handsRefanned  
 function cardPlayed() {
     const now = performance.now();
     for (let i = 0; i < indices; i++)
@@ -822,7 +819,7 @@ function cardPlayed() {
     locateCards();
     for (let i = 0; i < indices; i++) {
         deck[i].strt.t = now;
-        deck[i].fnsh.t = now + closeTime;
+        deck[i].fnsh.t = now + dealTime / 10;
     }
     thisPlayer = nextPlayer(thisPlayer);
     if (thisPlayer == firstPlayer)
@@ -831,23 +828,7 @@ function cardPlayed() {
         animate(handsRefanned);
 }
 
-// Card pulled: play the card face up, then trigger cardPlayed
-function cardPulled() {
-    const now = performance.now();
-    const p = thisPlayer;
-    const c = thisCard;
-    const i = pc2i(p, c);
-    deck[i].v = hand[p][c];
-    deck[i].g = center;
-    deck[i].z = 40;
-    deck[i].strt.t = now;
-    deck[i].fnsh.x = deck[i].cntr.x;
-    deck[i].fnsh.y = deck[i].cntr.y;
-    deck[i].fnsh.t = now + playTime;
-    animate(cardPlayed);
-}
-
-// Card selected: pull back, then trigger cardPulled -or- play face, then trigger cardPlayed
+// Card selected: play face, then trigger cardPlayed
 function cardSelected() {
     const now = performance.now();
     const p = thisPlayer;
@@ -869,19 +850,12 @@ function cardSelected() {
     minCards[p][v] = Math.max(minCards[p][v] - 1, 0);
     // Animate cards
     deck[i].strt.t = now;
-    if (deck[i].v == grayBack) {
-        deck[i].g = stackd;
-        deck[i].fnsh.x = deck[i].stck.x;
-        deck[i].fnsh.y = deck[i].stck.y;
-        deck[i].fnsh.t = now + stackTime;
-        animate(cardPulled);
-    } else {
-        deck[i].g = center;
-        deck[i].fnsh.x = deck[i].cntr.x;
-        deck[i].fnsh.y = deck[i].cntr.y;
-        deck[i].fnsh.t = now + playTime;
-        animate(cardPlayed);
-    }
+    deck[i].v = hand[p][c];
+    deck[i].g = center;
+    deck[i].fnsh.x = deck[i].cntr.x;
+    deck[i].fnsh.y = deck[i].cntr.y;
+    deck[i].fnsh.t = now + dealTime / 10;
+    animate(cardPlayed);
 }
 
 // Mouse moved: if off bumped card, unbump cards; if moved to normal legal card, bump it
@@ -895,7 +869,7 @@ function mouseMoved(e) {
                 deck[i2].strt.t = now;
                 deck[i2].fnsh.x = deck[i2].norm.x;
                 deck[i2].fnsh.y = deck[i2].norm.y;
-                deck[i2].fnsh.t = now + bumpTime;
+                deck[i2].fnsh.t = now + dealTime / 20;
                 requestAnimationFrame(frameEvent);
             }
         }
@@ -905,7 +879,7 @@ function mouseMoved(e) {
         deck[i].strt.t = now;
         deck[i].fnsh.x = deck[i].bump.x;
         deck[i].fnsh.y = deck[i].bump.y;
-        deck[i].fnsh.t = now + bumpTime;
+        deck[i].fnsh.t = now + dealTime / 20;
         requestAnimationFrame(frameEvent);
     }
 }
@@ -921,7 +895,7 @@ function mousePressed(e) {
                 deck[i2].strt.t = now;
                 deck[i2].fnsh.x = deck[i2].norm.x;
                 deck[i2].fnsh.y = deck[i2].norm.y;
-                deck[i2].fnsh.t = now + bumpTime;
+                deck[i2].fnsh.t = now + dealTime / 20;
                 requestAnimationFrame(frameEvent);
             }
         }
@@ -930,7 +904,7 @@ function mousePressed(e) {
             deck[i].strt.t = now;
             deck[i].fnsh.x = deck[i].bump.x;
             deck[i].fnsh.y = deck[i].bump.y;
-            deck[i].fnsh.t = now + bumpTime;
+            deck[i].fnsh.t = now + dealTime / 20;
             requestAnimationFrame(frameEvent);
         }
         if (legal(i)) {
@@ -964,7 +938,7 @@ function touchStarted(e) {
                 deck[i2].strt.t = now;
                 deck[i2].fnsh.x = deck[i2].norm.x;
                 deck[i2].fnsh.y = deck[i2].norm.y;
-                deck[i2].fnsh.t = now + bumpTime;
+                deck[i2].fnsh.t = now + dealTime / 20;
                 requestAnimationFrame(frameEvent);
             }
         }
@@ -974,7 +948,7 @@ function touchStarted(e) {
         deck[i].strt.t = now;
         deck[i].fnsh.x = deck[i].bump.x;
         deck[i].fnsh.y = deck[i].bump.y;
-        deck[i].fnsh.t = now + bumpTime;
+        deck[i].fnsh.t = now + dealTime / 20;
         requestAnimationFrame(frameEvent);
     }
 }
@@ -990,7 +964,7 @@ function touchMoved(e) {
                 deck[i2].strt.t = now;
                 deck[i2].fnsh.x = deck[i2].norm.x;
                 deck[i2].fnsh.y = deck[i2].norm.y;
-                deck[i2].fnsh.t = now + bumpTime;
+                deck[i2].fnsh.t = now + dealTime / 20;
                 requestAnimationFrame(frameEvent);
             }
         }
@@ -1000,7 +974,7 @@ function touchMoved(e) {
         deck[i].strt.t = now;
         deck[i].fnsh.x = deck[i].bump.x;
         deck[i].fnsh.y = deck[i].bump.y;
-        deck[i].fnsh.t = now + bumpTime;
+        deck[i].fnsh.t = now + dealTime / 20;
         requestAnimationFrame(frameEvent);
     }
 }
@@ -1017,7 +991,7 @@ function handsRefanned() {
         docBody.ontouchmove = touchMoved;
     } else {
         thisCard = autoSelect(thisPlayer);
-        setTimeout (cardSelected, playTime);
+        setTimeout (cardSelected, dealTime / 10);
     }
 }
 
@@ -1041,7 +1015,7 @@ function meldGathered() {
         deck[i].strt.t = now;
         deck[i].fnsh.x = deck[i].norm.x;
         deck[i].fnsh.y = deck[i].norm.y;
-        deck[i].fnsh.t = now + stackTime;
+        deck[i].fnsh.t = now + dealTime / 10;
     }
     firstPlayer = bidder;
     firstCard = none;
@@ -1063,7 +1037,7 @@ function playClicked() {
         deck[i].strt.t = now;
         deck[i].fnsh.x = deck[i].stck.x;
         deck[i].fnsh.y = deck[i].stck.y;
-        deck[i].fnsh.t = now + stackTime;
+        deck[i].fnsh.t = now + dealTime / 10;
     }
     animate(meldGathered);
 }
@@ -1079,7 +1053,7 @@ function tossClicked() {
         deck[i].strt.t = now;
         deck[i].fnsh.x = deck[i].stck.x;
         deck[i].fnsh.y = deck[i].stck.y;
-        deck[i].fnsh.t = now + stackTime;
+        deck[i].fnsh.t = now + dealTime / 10;
     }
     animate(handEnded);
 }
@@ -1196,7 +1170,7 @@ function handsRegathered() {
                 deck[i].strt.t = now;
                 deck[i].fnsh.x = deck[i].norm.x;
                 deck[i].fnsh.y = deck[i].norm.y;
-                deck[i].fnsh.t = now + fanTime;
+                deck[i].fnsh.t = now + dealTime / 10;
             }
         }
     }
@@ -1211,7 +1185,7 @@ function trumpPicked() {
         deck[i].g = stackd;
         deck[i].fnsh.x = deck[i].stck.x;
         deck[i].fnsh.y = deck[i].stck.y;
-        deck[i].fnsh.t = now + stackTime;
+        deck[i].fnsh.t = now + dealTime / 10;
     }
     animate(handsRegathered);
 }
@@ -1295,12 +1269,12 @@ function bidClicked(e) {
     }
     bidder = nextPlayer(bidder);
     if (count(bid, pass) < 3) 
-        setTimeout(handsFanned, bidTime);
+        setTimeout(handsFanned, dealTime / 4);
     else {
         for (let p of [west, north, east, south])
             bidBox[p].style.display = "none";
         bidText.style.display = "none";
-        setTimeout(biddingDone, bidTime);
+        setTimeout(biddingDone, dealTime / 4);
     }
 }
 
@@ -1335,12 +1309,12 @@ function handsFanned() {
             bidBox[bidder].textContent = bid[bidder];
         bidder = nextPlayer(bidder);
         if (count(bid, pass) < 3) 
-            setTimeout(handsFanned, bidTime);
+            setTimeout(handsFanned, dealTime / 4);
         else {
             for (let p of [west, north, east, south])
                 bidBox[p].style.display = "none";
             bidText.style.display = "none";
-            setTimeout(biddingDone, bidTime);
+            setTimeout(biddingDone, dealTime / 4);
         }
     }
 }
@@ -1361,7 +1335,7 @@ function handsGathered() {
         deck[i].strt.t = now;
         deck[i].fnsh.x = deck[i].norm.x;
         deck[i].fnsh.y = deck[i].norm.y;
-        deck[i].fnsh.t = now + fanTime;
+        deck[i].fnsh.t = now + dealTime / 10;
     }
     bidder = nextPlayer(dealer);
     bid[west] = bid[north] = bid[east] = bid[south] = none;
@@ -1378,7 +1352,7 @@ function deckDealt() {
         deck[i].fnsh.x = deck[i].stck.x;
         deck[i].fnsh.y = deck[i].stck.y;
         deck[i].fnsh.r = deck[i].stck.r;
-        deck[i].fnsh.t = now + stackTime;
+        deck[i].fnsh.t = now + dealTime / 10;
     }
     animate(handsGathered);
 }
@@ -1396,16 +1370,16 @@ function resized () {
 }
 
 // Menu close icon clicked: close the menu, then await menuClicked
-function closeClicked() {
+function menuXClicked() {
     menuText.style.display = "none";
-    closeIcon.onclick = "";
+    menuX.onclick = "";
     menuIcon.onclick = menuClicked;
 }
 
 // Stats close button clicked: close the stats and menu displays, then await menuClicked
-function statsCloseClicked() {
+function statsXClicked() {
     statsText.style.display = "none";
-    closeBtn.onclick = "";
+    statsX.onclick = "";
     menuIcon.onclick = menuClicked;
 }
 
@@ -1425,7 +1399,7 @@ function numCards(p1, p2, v) {
         return minCards[p2][v];
 }
 
-// Stats menu item clicked: close menu and display stats, then await statsCloseClicked
+// Statistics menu item clicked: close menu and display stats, then await statsCloseClicked
 function statsClicked() {
     let sumCol = 0;
     const sumRow = [0,0,0,0,0]; 
@@ -1458,8 +1432,48 @@ function statsClicked() {
     menuText.style.display = "none";
     statsText.style.display = "block";
     statsItem.onclick = "";
+    optnsItem.onclick = "";
     rstrtItem.onclick = "";
-    closeBtn.onclick = statsCloseClicked;
+    statsX.onclick = statsXClicked;
+}
+
+// Options done button clicked: close the options display, then await menuClicked
+function optnsXClicked() {
+    const now = performance.now();
+    optnsText.style.display = "none";
+    optnsXClicked.onclick = "";
+    menuIcon.onclick = menuClicked;
+    if (slowChk.checked)
+        dealTime = slowDeal;
+    else
+        dealTime = fastDeal;
+    openHand = openChk.checked;
+    for (let i = 0; i < indices; i++) {
+        const p = i2p(i);
+        const c = i2c(i);
+        if (p != south && deck[i].g == normal) {
+            if (openHand) {
+                deck[i].v = hand[p][c];
+                deck[i].z = c;
+            } else {
+                deck[i].v = grayBack;
+                deck[i].z = cards - c - 1;
+            }
+            deck[i].strt.t = now;
+            deck[i].fnsh.t = now;
+        }
+    }
+    requestAnimationFrame(frameEvent);
+}
+
+// Options menu item clicked: close menu and display options, then await doneClicked
+function optionsClicked() {
+    menuText.style.display = "none";
+    optnsText.style.display = "block";
+    statsItem.onclick = "";
+    optnsItem.onclick = "";
+    rstrtItem.onclick = "";
+    optnsX.onclick = optnsXClicked;
 }
 
 // Restart menu item clicked: restart the app
@@ -1472,12 +1486,13 @@ function exitClicked() {
     window.close();
 }
 
-// Menu icon clicked: display the menu, then await closeClicked, statsClicked, restartClicked
+// Menu icon clicked: display the menu, then await menuXClicked, statsClicked, restartClicked
 function menuClicked() {
     menuText.style.display = "block";
     menuIcon.onclick = "";
-    closeIcon.onclick = closeClicked;
+    menuX.onclick = menuXClicked;
     statsItem.onclick = statsClicked;
+    optnsItem.onclick = optionsClicked;
     rstrtItem.onclick = restartClicked;
     exitItem.onclick = exitClicked;
 }
@@ -1544,8 +1559,8 @@ function loaded() {
             else
                 deck[i].stck.r = deck[i].strt.r;
             deck[i].fnsh.r = deck[i].stck.r + (Math.random()-0.5)*Math.PI/4;
-            deck[i].fnsh.t = t + flyTime;
-            t = t + (dealTime - flyTime) / indices;
+            deck[i].fnsh.t = t + dealTime / 20;
+            t = t + (dealTime - dealTime / 20) / indices;
         }
     }
     animate(deckDealt);
