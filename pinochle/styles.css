@@ -1,26 +1,41 @@
 @media (orientation: portrait) {
     :root {
         --cardw:        min(16.807vw, 10.187vh);
-        --west-left:    calc(050vw - var(--cardw)*2.80);
-        --north-top:    calc(000vh + var(--cardw)*0.75);
-        --east-left:    calc(050vw + var(--cardw)*2.10);
-        --south-top:    calc(100vh - var(--cardw)*1.00);
-    }
+        --west-top:     calc(050vh - var(--cardw)*2.90);
+        --west-left:    calc(050vw - var(--cardw)*1.40);
+        --west-align:   left;
+        --north-top:    calc(000vh + var(--cardw)*0.20);
+        --north-left:   calc(050vw - var(--cardw)*0.35);
+        --east-top:     calc(050vh - var(--cardw)*2.90);
+        --east-left:    calc(050vw + var(--cardw)*0.68);
+        --east-align:   right;
+        }
+}
+
+@media (max-aspect-ratio: 0.55) {
+    :root {
+        --west-top:     calc(050vh - var(--cardw)*3.20);
+        --west-left:    calc(050vw - var(--cardw)*2.55);
+        --west-align:   center;
+        --east-top:     calc(050vh - var(--cardw)*3.20);
+        --east-left:    calc(050vw + var(--cardw)*1.85);
+        --east-align:   center;
+        }
 }
 
 @media (orientation: landscape) {
     :root {
         --cardw:        min(16.807vh, 10.187vw);
-        --west-left:    calc(000vw + var(--cardw)*0.70);
-        --north-top:    calc(050vh - var(--cardw)*2.70);
-        --east-left:    calc(100vw - var(--cardw)*1.40);
-        --south-top:    calc(050vh + var(--cardw)*2.40);
-    }
+        --west-top:     calc(050vh - var(--cardw)*0.155);
+        --west-left:    calc(000vw + var(--cardw)*2.02);
+        --north-top:    calc(050vh - var(--cardw)*1.45);
+        --north-left:   calc(050vw - var(--cardw)*0.35);
+        --east-top:     calc(050vh - var(--cardw)*0.155);
+        --east-left:    calc(100vw - var(--cardw)*2.73);
+        }
 }
 
 :root {
-    --west-east-top:    calc(050vh - var(--cardw)*0.15);
-    --north-south-left: calc(050vw - var(--cardw)*0.35);
     --pad:              calc(var(--cardw) * 0.10);
     --icon:             calc(var(--cardw) * 0.33);
     --font-size:        calc(var(--cardw) * 0.25);
@@ -36,7 +51,7 @@ input {
     height: var(--box-height);
     padding: 0px;
     margin: 0px;
-    border-style: solid;
+    border-style: none;
     background-color: powderblue;
     font-family: sans-serif;
     font-size: var(--font-size);
@@ -77,7 +92,7 @@ input {
     height: 100%;
     display: none;
     flex-direction: column;
-    justify-content: space-evenly;
+    justify-content: end;
     text-align: center;
 }
 
@@ -91,6 +106,8 @@ input {
 
 #bidButtons {
     width: 100%;
+    margin-top: calc(var(--pad) * 2);
+    margin-bottom: var(--pad);
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -142,16 +159,11 @@ input {
 #bidBox div {
     width: var(--box-width);
     position: absolute;
-    color: white;
-    background-color: black;
-    text-align: center;
-    display: none;
 }
 
-#bidBox :nth-child(1) {top: var(--west-east-top); left: var(--west-left);       }
-#bidBox :nth-child(2) {top: var(--north-top);     left: var(--north-south-left);}
-#bidBox :nth-child(3) {top: var(--west-east-top); left: var(--east-left);       }
-#bidBox :nth-child(4) {top: var(--south-top);     left: var(--north-south-left);}
+#bidBox :nth-child(1) {top: var(--west-top);  left: var(--west-left);  text-align: var(--west-align);}
+#bidBox :nth-child(2) {top: var(--north-top); left: var(--north-left); text-align: center;           }
+#bidBox :nth-child(3) {top: var(--east-top);  left: var(--east-left);  text-align: var(--east-align);}
 
 #menuIcon {
     filter: invert(100%);

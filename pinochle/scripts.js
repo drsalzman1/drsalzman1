@@ -6,6 +6,7 @@ const north    = 1;
 const east     = 2;
 const south    = 3;
 const players  = 4;
+const player$  = ["Left", "Your partner", "Right", "You"];
 
 // Suit values
 const diamonds = 0;
@@ -13,6 +14,7 @@ const clubs    = 5;
 const hearts   = 10;
 const spades   = 15;
 const suits    = 4;
+const suit$    = ["diamonds",,,,,"clubs",,,,,"hearts",,,,,"spades"];
 
 // Rank values
 const jack     = 0;
@@ -1075,18 +1077,14 @@ function meldFanned() {
             theyNeed = bid[bidder];
         else
             theyNeed = Math.max(20, bid[bidder] - theirMeld);
-    playPara[0].textContent = ["Your left opponent", "Your partner", "Your right opponent", "You"][bidder] +
-        " won the bid at " + bid[bidder] + " and picked " +
-        ["diamonds",,,,,"clubs",,,,,"hearts",,,,,"spades"][trump] + ".";
+    playPara[0].textContent = player$[bidder] + " won the bid at " + bid[bidder] + " and picked " + suit$[trump] + ".";
     playPara[1].textContent = "Our meld is " + ourMeld + "; their meld is " + theirMeld + ".";
     if (marriages(bidder, trump) == 0) {
-        playPara[2].textContent = ["Your left opponent", "Your partner", "Your right opponent", "You"][bidder] +
-            " must toss this hand due to no marriage in trump.";
+        playPara[2].textContent = player$[bidder] + " must toss this hand due to no marriage in trump.";
         playBtn.style.display = "none";
         tossBtn.style.display = "inline";
     } else if (bidder!= south && autoToss()) {
-        playPara[2].textContent = ["Your left opponent", "Your partner", "Your right opponent", "You"][bidder] +
-            " decided to toss this hand.";
+        playPara[2].textContent = player$[bidder] + " decided to toss this hand.";
         playBtn.style.display = "none";
         tossBtn.style.display = "inline";
     } else {
@@ -1254,8 +1252,6 @@ function bidClicked(e) {
             bidBtn[0].value = "Pass";
         return;
     }
-    bidBox[south].style.display = "block";
-    bidBox[south].textContent = value;
     if (value == "Pass")
         bid[south] = pass;
     else {
@@ -1271,8 +1267,6 @@ function bidClicked(e) {
     if (count(bid, pass) < 3) 
         setTimeout(handsFanned, dealTime / 4);
     else {
-        for (let p of [west, north, east, south])
-            bidBox[p].style.display = "none";
         bidText.style.display = "none";
         setTimeout(biddingDone, dealTime / 4);
     }
@@ -1282,18 +1276,14 @@ function bidClicked(e) {
 function handsFanned() {
     while (bid[bidder] == pass) 
         bidder = nextPlayer(bidder);
-    if (bid[bidder] == none) {
-        bidBox[bidder].style.display = "block";
-        if (bidder == south) {
-            meldSpan[0].textContent = countMeld(south, spades);
-            meldSpan[1].textContent = countMeld(south, hearts);
-            meldSpan[2].textContent = countMeld(south, clubs);
-            meldSpan[3].textContent = countMeld(south, diamonds);
-            bidText.style.display = "flex";
-        }
+    if (bidder == south && bid[bidder] == none) {
+        meldSpan[0].textContent = countMeld(south, spades);
+        meldSpan[1].textContent = countMeld(south, hearts);
+        meldSpan[2].textContent = countMeld(south, clubs);
+        meldSpan[3].textContent = countMeld(south, diamonds);
+        bidText.style.display = "flex";
     }
     if (bidder == south) {
-        bidBox[south].textContent = "";
         bidBtn[0].value = "Pass";
         bidBtn[1].value = nextBid(Math.max(...bid));
         bidBtn[2].value = ">";
@@ -1311,8 +1301,8 @@ function handsFanned() {
         if (count(bid, pass) < 3) 
             setTimeout(handsFanned, dealTime / 4);
         else {
-            for (let p of [west, north, east, south])
-                bidBox[p].style.display = "none";
+            if (bid[bidder] == none)
+                bid[bidder] = 50;
             bidText.style.display = "none";
             setTimeout(biddingDone, dealTime / 4);
         }
