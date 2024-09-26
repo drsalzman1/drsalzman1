@@ -6,7 +6,7 @@ const north    = 1;
 const east     = 2;
 const south    = 3;
 const players  = 4;
-const player$  = ["Left", "Your partner", "Right", "You"];
+const player$  = ["Left", "Partner", "Right", "You"];
 
 // Suit values
 const diamonds = 0;
@@ -23,12 +23,14 @@ const king     = 2;
 const ten      = 3;
 const ace      = 4;
 const ranks    = 5;
+const rank$    = ["jack", "queen", "king", "ten", "ace"];
 
 // Card value = rank + suit (or none or grayBack)
 const none     = -1;
 const grayBack = 20;
 const cards    = 20;
 const values   = 20;
+const value$   = ["JD","QD","KD","TD","AD","JC","QC","KC","TC","AC","JH","QH","KH","TH","AH","JS","QS","KS","TS","AS"];
 
 // src[v] = source file for card value v
 const src = [
@@ -142,10 +144,12 @@ const playBtn   = document.getElementById("playBtn");
 const tossBtn   = document.getElementById("tossBtn");
 const handText  = document.getElementById("handText");
 const usOld     = document.getElementById("usOld");
+const usBid     = document.getElementById("usBid");
 const usMeld    = document.getElementById("usMeld");
 const usTake    = document.getElementById("usTake");
 const usNew     = document.getElementById("usNew");
 const themOld   = document.getElementById("themOld");
+const themBid   = document.getElementById("themBid");
 const themMeld  = document.getElementById("themMeld");
 const themTake  = document.getElementById("themTake");
 const themNew   = document.getElementById("themNew");
@@ -191,6 +195,7 @@ let thisPlayer  = none;             // the player who is playing a card
 let thisCard    = none;             // the card that is being center
 let firstCard   = none;             // the card led in this hand
 let highCard    = none;             // the high card in this hand (so far)
+let highSuit    = none;             // the suit of the high card in this hand (so far)
 let highPlayer  = none;             // the player who center the high card
 let ourBid      = none;             // our bid if we win the bid (or none)
 let theirBid    = none;             // their bid if they win the bid (or none)
@@ -201,7 +206,7 @@ let theirTake   = 0;                // total of west and east points so far in h
 let ourScore    = 0;                // total of north and south points so far in game
 let theirScore  = 0;                // total of west and east points so far in game
 let openHand    = false;            // true if all hands show
-let throwHand   = false;            // true if bidder decides to throw in the hand
+let tossHand    = false;            // true if bidder decides to toss in the hand
 
 // Dynamic sizes
 let vw          = 0;                // view width
@@ -426,6 +431,22 @@ function noMarriages() {
         marriages(bidder, clubs) == 0 && marriages(bidder, diamonds) == 0;
 }
 
+// Log bid
+function logBid(n, reason) {
+    const partner = (bidder + 2) % players;
+    if (count(bid, none) == 4) {
+        console.log("        Bid   Reason       Quality  MinMeld  MaxMeld  Partner");
+        console.log("        ====  ===========  =======  =======  =======  =======");
+    }
+    let t = ["West:   ", "North:  ", "East:   ", "South:  "][bidder] + n;
+    t = t.padEnd(14) + reason;
+    t = t.padEnd(27) + quality();
+    t = t.padEnd(36) + minMeld();
+    t = t.padEnd(45) + maxMeld();
+    t = t.padEnd(54) + est[partner];
+    console.log(t);
+}
+
 // Return computer bidder's bid
 function autoBid() {
     const left = (bidder + 1) % players;
@@ -433,17 +454,16 @@ function autoBid() {
     const partner = (bidder + 2) % players;
     const highBid = Math.max(...bid);
     const maxBid = maxMeld() + est[partner] + 20 + quality();
-    let t = "Autobid:" + bidder + ", minMeld:" + minMeld() + ", maxBid:" + maxBid + " (" + maxMeld() + "+" + est[partner] + "+20+" + quality() + "), ";
     if (count(bid, pass) == 3) {
-        console.log(t + "last bidder");
+        logBid(Math.max(bid[bidder], 50), "Last bid");
         return Math.max(bid[bidder], 50);
     }
     if (noMarriages()) {
-        console.log(t + "no marriages");
+        logBid("Pass", "No marriage");
         return pass;
     }
     if (bid[left]==none && bid[right]!=pass && highBid<60 && quality()>0 && maxBid>=60) {
-        console.log(t + "block jump");
+        logBid(60, "Block bid");
         return 60;
     }
     if (bid[bidder]==none && bid[partner]!=pass && highBid<58 && minMeld()>15) {
@@ -451,22 +471,25 @@ function autoBid() {
         const bump = Math.round(minMeld() / 10);
         const jump = Math.min(high + bump, 59);
         est[bidder] = (jump - high) * 10;
-        console.log(t + "jumpable");
+        logBid(jump, "Jump bid");
         return jump;
     }
-    if (highBid<60 && quality()>0 && maxBid>=60 && maxBid<70) {
-        console.log(t + "worried");
+    if (highBid<60 && quality()>=0 && maxBid>=60 && maxBid<70) {
+        logBid(60, "Worried");
         return 60;
     }
-    if (quality()>0 && nextBid() <= maxBid) {
-        console.log(t + "want bid");
+    if (quality()>=0 && nextBid() <= maxBid) {
+        logBid(nextBid(), "Want bid");
         return nextBid();
     }
     if (highBid<50 && partner==dealer) {
-        console.log(t + "save partner");
-        return nextBid();
+        logBid(50, "Save");
+        return 50;
     }
-    console.log(t + "meh");
+    if (quality() < 0)
+        logBid("Pass", "Bad quality");
+    else
+        logBid("Pass", "Too high");
     return pass;
 }
 
@@ -517,13 +540,6 @@ function autoPick() {
     return t;
 }
 
-// Return true is computer bidder tosses hand
-function autoToss() {
-    if (noMarriages())
-        return true;
-    return bid[bidder] > [theirMeld, ourMeld, theirMeld][bidder] + 40;
-}
-
 // Return true if deck card index i can be center
 function legal(i) {
     const p = i2p(i);
@@ -533,7 +549,7 @@ function legal(i) {
         return false;
     if (suit(firstCard) == none)
         return true;
-    if (suit(firstCard)!=trump && suit(highCard)==trump) {
+    if (suit(firstCard)!=trump && highSuit==trump) {
         if (follow(v))
             return true;
         if (cantFollow(p) && suit(v)==trump && v>highCard)
@@ -726,15 +742,13 @@ function quitClicked() {
 function handEnded() {
     usOld.textContent = ourScore;
     themOld.textContent = theirScore;
-    usMeld.textContent = ourMeld;
-    themMeld.textContent = theirMeld;
-    usTake.textContent = ourTake;
-    themTake.textContent = theirTake;
-    if (ourMeld < 20)
-        ourMeld = 0;
-    if (theirMeld < 20)
-        theirMeld = 0;
-    if (throwHand)
+    usBid.textContent = ourBid;
+    themBid.textContent = theirBid;
+    usMeld.textContent = ourMeld = ourMeld < 20 ? 0 : ourMeld;
+    themMeld.textContent = theirMeld = theirMeld < 20 ? 0 : theirMeld;
+    usTake.textContent = ourTake = ourTake < 20 ? 0 : ourTake;
+    themTake.textContent = theirTake = theirTake < 20 ? 0 : theirTake;
+    if (tossHand)
         if (bidder==north || bidder==south) {
             ourScore -= ourBid;
             theirScore += theirMeld;
@@ -743,18 +757,8 @@ function handEnded() {
             ourScore += ourMeld;
         }
     else {
-        if (ourTake < 20)
-            ourMeld = ourTake = 0;
-        if (theirTake < 20)
-            theirMeld = theirTake = 0;
-        if (ourMeld + ourTake >= ourBid)
-            ourScore += ourMeld + ourTake;
-        else
-            ourScore -= ourBid;        
-        if (theirMeld + theirTake >= theirBid)
-            theirScore += theirMeld + theirTake;
-        else
-            theirScore -= theirBid;
+        ourScore = ourMeld + ourTake < ourBid ? ourScore - ourBid : ourScore + ourMeld + ourTake;
+        theirScore = theirMeld + theirTake < theirBid ? theirScore - theirBid : theirScore + theirMeld + theirTake;
     }
     usNew.textContent = ourScore;
     themNew.textContent = theirScore;
@@ -799,6 +803,7 @@ function trickPlayed() {
         thisCard = none;
         highPlayer = none;
         highCard = none;
+        highSuit = none;
         firstCard = none;
         animate(handsRefanned);
     } else {
@@ -837,20 +842,24 @@ function cardSelected() {
     const c = thisCard;
     const i = pc2i(p, c);
     const v = hand[p][c];
-    const h = highCard;
+    if (suit(v)==highSuit && v<=highCard)
+        for (let v2=highCard+1; v2<=ace+highSuit; v2++) {
+            maxCards[p][v2] = 0;
+            console.log(`${player$[p]} has no ${value$[v2]}.`);
+        }
     if (firstCard == none) {
         firstCard = v;
         firstPlayer = p;
     }
-    if (h==none || suit(v)==suit(h)&&rank(v)>rank(h) || suit(v)==trump&&suit(h)!=trump) {
+    if (highCard==none || suit(v)==highSuit&&v>highCard || suit(v)==trump&&highSuit!=trump) {
         highCard = v;
+        highSuit = suit(v);
         highPlayer = p;
     }
-    // Adjust stats based on card played
     remCards[v]--;
     maxCards[p][v]--;
     minCards[p][v] = Math.max(minCards[p][v] - 1, 0);
-    // Animate cards
+    console.log(`${value$[v]}=${remCards[v]} (${minCards[p][v]}<=${player$[p]}<=${maxCards[p][v]})`)
     deck[i].strt.t = now;
     deck[i].v = hand[p][c];
     deck[i].g = center;
@@ -1025,6 +1034,7 @@ function meldGathered() {
     thisCard = none;
     ourTake = 0;
     theirTake = 0;
+    tossHand = false;
     animate(handsRefanned);
 }
 
@@ -1050,6 +1060,7 @@ function tossClicked() {
     playBtn.onclick = "";
     tossBtn.onclick = "";
     playText.style.display = "none";
+    tossHand = true;
     for (let i = 0; i < indices; i++) {
         deck[i].g = stackd;
         deck[i].strt.t = now;
@@ -1063,10 +1074,6 @@ function tossClicked() {
 // Meld fanned: display situation, then await playClicked or tossClicked 
 function meldFanned() {
     let weNeed = 20, theyNeed = 20;
-    ourBid = [none, bid[north], none, bid[south]][bidder];
-    theirBid = [bid[west], none, bid[east], none][bidder];
-    ourMeld = countMeld(north, trump) + countMeld(south, trump);
-    theirMeld = countMeld(west, trump) + countMeld(east, trump);
     if (bidder == north || bidder == south)
         if (ourMeld < 20)
             weNeed = bid[bidder];
@@ -1077,18 +1084,21 @@ function meldFanned() {
             theyNeed = bid[bidder];
         else
             theyNeed = Math.max(20, bid[bidder] - theirMeld);
-    playPara[0].textContent = player$[bidder] + " won the bid at " + bid[bidder] + " and picked " + suit$[trump] + ".";
-    playPara[1].textContent = "Our meld is " + ourMeld + "; their meld is " + theirMeld + ".";
-    if (marriages(bidder, trump) == 0) {
-        playPara[2].textContent = player$[bidder] + " must toss this hand due to no marriage in trump.";
+    ourBid = [pass, bid[north], pass, bid[south]][bidder];
+    theirBid = [bid[west], pass, bid[east], pass][bidder];
+    playPara[0].textContent = `${player$[bidder]} won the bid at ${bid[bidder]} with ${suit$[trump]}.`;
+    playPara[1].textContent = `Our meld is ${ourMeld < 20 ? "< 20" : ourMeld} and their meld is ${theirMeld < 20 ? "< 20" : theirMeld}.`;
+    if (count(save[bidder],king+trump)==0 || count(save[bidder],queen+trump)==0) {
+        playPara[2].textContent = `${player$[bidder]} must toss this hand.`;
         playBtn.style.display = "none";
         tossBtn.style.display = "inline";
-    } else if (bidder!= south && autoToss()) {
-        playPara[2].textContent = player$[bidder] + " decided to toss this hand.";
+    } else if (bidder==west&&theyNeed>30 || bidder==north&&weNeed>30 || bidder==east&&theyNeed>30) {
+        tossHand = true;
+        playPara[2].textContent = `${player$[bidder]} decided to toss this hand.`;
         playBtn.style.display = "none";
         tossBtn.style.display = "inline";
     } else {
-        playPara[2].textContent = "We need to pull " + weNeed + "; they need to pull " + theyNeed + ".";
+        playPara[2].textContent = `We need to pull ${weNeed} and they need to pull ${theyNeed}.`;
         playBtn.style.display = "inline";
         tossBtn.style.display = ["none", "none", "none", "inline"][bidder];
     }
@@ -1101,20 +1111,28 @@ function meldFanned() {
 function handsRegathered() {
     const now = performance.now();
     const need = Array(cards);
+    ourMeld = countMeld(north, trump) + countMeld(south, trump);
+    theirMeld = countMeld(west, trump) + countMeld(east, trump);
+
     // Empty hands then restore cards needed to reveal meld
     for (let p of [west, north, east, south]) {
         save[p] = [...hand[p]];
         need.fill(none);
-        for (let rank of [jack, queen, king, ace])
+        if (((p==north || p==south) && ourMeld<20) || ((p==west || p==east) && theirMeld<20))
             for (let suit of [diamonds, clubs, hearts, spades])
-                restore(need, p, rank+suit, arounds(p, rank));
-        for (let rank of [jack, queen, king, ten, ace])
-            restore(need, p, rank+trump, runs(p, trump));
-        restore(need, p, jack+diamonds, pinochles(p));
-        restore(need, p, queen+spades, pinochles(p));
-        for (let rank of [queen, king]) 
-            for (let suit of [diamonds, clubs, hearts, spades])
-                restore(need, p, rank+suit, marriages(p, suit));
+                restore(need, p, ace+suit, arounds(p, ace));
+        else {
+            for (let rank of [jack, queen, king, ace])
+                for (let suit of [diamonds, clubs, hearts, spades])
+                    restore(need, p, rank+suit, arounds(p, rank));
+            for (let rank of [jack, queen, king, ten, ace])
+                restore(need, p, rank+trump, runs(p, trump));
+            restore(need, p, jack+diamonds, pinochles(p));
+            restore(need, p, queen+spades, pinochles(p));
+            for (let rank of [queen, king]) 
+                for (let suit of [diamonds, clubs, hearts, spades])
+                    restore(need, p, rank+suit, marriages(p, suit));
+        }
         hand[p] = [...need];
     }
     // Adjust minCards and maxCards based on revealed cards
@@ -1157,6 +1175,16 @@ function handsRegathered() {
         if (count(hand[p],ten+trump) < minOther)
             maxCards[p][ten+trump] = count(hand[p],ten+trump); 
     }
+    // log stats
+    let t = "";
+    console.log("");
+    console.log("       JD QD KD TD AD JC QC KC TC AC JH QH KH TH AH JS QS KS TS AS");
+    for (let p of [west, north, east, south]) {
+        t = ["West: ", "North:", "East: ", "South:"][p];
+        for (let v = 0; v < values; v++)
+            t += ` ${minCards[p][v]}${maxCards[p][v]}`;
+        console.log(t);
+    }
     locateCards();
     for (let p of [west, north, east, south]) {
         for (let c = 0; c < cards; c++) {
@@ -1178,6 +1206,7 @@ function handsRegathered() {
 // Trunp picked: regather hands, then trigger handsRegathered
 function trumpPicked() {
     const now = performance.now();
+    console.log(`Trump is ${suit$[suit(trump)]}.`)
     for (let i = 0; i < indices; i++) {
         deck[i].strt.t = now;
         deck[i].g = stackd;
@@ -1211,6 +1240,7 @@ function trumpClicked(e) {
 
 // Bid won: await trumpClicked or pick trump and trigger trumpPicked
 function biddingDone() {
+    bidBox[west].textContent = bidBox[north].textContent = bidBox[east].textContent ="";
     for (bidder of [west, north, east, south])
         if (bid[bidder] > pass)
             break;
@@ -1252,6 +1282,7 @@ function bidClicked(e) {
             bidBtn[0].value = "Pass";
         return;
     }
+    logBid(value, "No reason");
     if (value == "Pass")
         bid[south] = pass;
     else {
@@ -1301,19 +1332,19 @@ function handsFanned() {
         if (count(bid, pass) < 3) 
             setTimeout(handsFanned, dealTime / 4);
         else {
-            if (bid[bidder] == none)
+            if (bid[bidder] == none) {
+                logBid(50, "Dropped");
                 bid[bidder] = 50;
+            }
             bidText.style.display = "none";
             setTimeout(biddingDone, dealTime / 4);
         }
     }
 }
 
-// Hands gathered: sort and fan hands, then trigger handsFanned
+// Hands gathered: fan hands, then trigger handsFanned
 function handsGathered() {
     const now = performance.now();
-    for (let p of [west, north, east, south])
-        hand[p].sort((a,b)=>b-a);
     for (let i = 0; i < indices; i++) {
         const p = i2p(i);
         const c = i2c(i);
@@ -1506,12 +1537,11 @@ function test() {
     console.log("n:" + n + "\naverage short suit:" + s/n + "\naverage long suit" + l/n + "\naverage minMeld:" + m/n);
 }
 
-// Load event: initialize app and deal cards, then trigger deckDealt
+// Load event: initialize app, deal cards, sort cards, then trigger deckDealt
 function loaded() {
     const array = Array.from(new Array(indices), (v, k) => k % cards);
     const set = Array(cards).fill(0);
     let t = performance.now();
-    console.clear();
     for (let i = 0; i < src.length; i++)
         img[i].src = src[i];
     onresize = resized;
@@ -1520,11 +1550,20 @@ function loaded() {
     shuffleArray(array);
     for (let p of [west, north, east, south]) {
         hand[p] = array.slice([0,20,40,60][p], [20,40,60,80][p]);
+        hand[p].sort((a,b)=>b-a);
         minCards[p].fill(0);
         maxCards[p].fill(4);
     }
     remCards.fill(4);
     trump = none;
+    console.clear();
+    for (let p of [west, north, east, south]) {
+        let t = ["West: ", "North:", "East: ", "South:"][p];
+        for (let c = 0; c < cards; c++)
+            t += ` ${value$[hand[p][c]]} `;
+        console.log(t);
+    }
+    console.log("");
     setSizes();
     locateCards();
     for (let c = cards-1; c >= 0; c--) {
