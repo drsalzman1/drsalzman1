@@ -147,6 +147,15 @@ input {
     text-align: left;
 }
 
+#playBtns {
+    width: 100%;
+    margin-top: var(--pad);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
 #handText {
     width: 100%;
     display: none;
@@ -210,10 +219,15 @@ input {
     margin: var(--pad);
     padding: var(--pad);
     width: calc(100vw - var(--pad)*4);
+    line-height: var(--font-size);
     color: black;
     background-color: white;
     position: absolute;
     display: none;
+}
+
+#statsRow0 {
+    margin-bottom: var(--pad);
 }
 
 #statsRow1, #statsRow2 {
@@ -223,9 +237,9 @@ input {
 }
 
 #spadesT, #heartsT, #clubsT, #diamondsT {
+    margin-bottom: var(--pad);
     display: flex;
     flex-direction: row;
-    margin-bottom: var(--font-size);
     text-align: center;
 }
 

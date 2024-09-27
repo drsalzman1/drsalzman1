@@ -43,6 +43,7 @@
                 <div></div>
                 <div></div>
                 <div id="playBtns">
+                    <input id="showBtn" type="button" value="Show">
                     <input id="playBtn" type="button" value="Play">
                     <input id="tossBtn" type="button" value="Toss">
                 </div>
@@ -97,7 +98,7 @@
         <div id="menuText">
             <b>Double Deck Pinochle</b><img id="menuX" src="icons/close.svg" alt="close"><br><br>
             <div id="statsItem">
-                <img class="menuItem" src="icons/analytics.svg" alt="stats"> Statistics
+                <img class="menuItem" src="icons/analytics.svg" alt="stats"> Card Counts
             </div><br>
             <div id="optnsItem">
                 <img class="menuItem" src="icons/settings.svg" alt="options"> Options
@@ -116,77 +117,78 @@
             </div><br>
         </div>
         <div id="statsText">
-            <b>Card probabilities for the other players</b><img id="statsX" src="icons/close.svg" alt="close"><br>
-            <br>
+            <div id="statsRow0">
+                <b>Card Counts (min-max)</b><img id="statsX" src="icons/close.svg" alt="close">
+            </div>
             <div id="statsRow1">
                 <div id="spadesT">
                     <div>
-                        &spades;<br>A<br>10<br>K<br>Q<br>J<br>&spades;
+                        &spades;<br>A<br>10<br>K<br>Q<br>J
                     </div>
                     <div class="statColumn">
-                        &lArr;<br><div></div><div></div><div></div><div></div><u><div></div></u><div></div>
+                        &lArr;<br><div></div><div></div><div></div><div></div><div></div>
                     </div>
                     <div class="statColumn">
-                        &uArr;<br><div></div><div></div><div></div><div></div><u><div></div></u><div></div>
+                        &uArr;<br><div></div><div></div><div></div><div></div><div></div>
                     </div>
                     <div class="statColumn">
-                        &rArr;<br><div></div><div></div><div></div><div></div><u><div></div></u><div></div>
+                        &rArr;<br><div></div><div></div><div></div><div></div><div></div>
                     </div>
                     <div class="statColumn">
-                        +<br><div></div><div></div><div></div><div></div><u><div></div></u><div></div>
+                        ?<br><div></div><div></div><div></div><div></div><div></div>
                     </div>
                 </div>
                 <div id="heartsT">
                     <div style="color:red">
-                        &hearts;<br>A<br>10<br>K<br>Q<br>J<br>&hearts;
+                        &hearts;<br>A<br>10<br>K<br>Q<br>J
                     </div>
                     <div class="statColumn">
-                        &lArr;<br><div></div><div></div><div></div><div></div><u><div></div></u><div></div>
+                        &lArr;<br><div></div><div></div><div></div><div></div><div></div>
                     </div>
                     <div class="statColumn">
-                        &uArr;<br><div></div><div></div><div></div><div></div><u><div></div></u><div></div>
+                        &uArr;<br><div></div><div></div><div></div><div></div><div></div>
                     </div>
                     <div class="statColumn">
-                        &rArr;<br><div></div><div></div><div></div><div></div><u><div></div></u><div></div>
+                        &rArr;<br><div></div><div></div><div></div><div></div><div></div>
                     </div>
                     <div class="statColumn">
-                        +<br><div></div><div></div><div></div><div></div><u><div></div></u><div></div>
+                        ?<br><div></div><div></div><div></div><div></div><div></div>
                     </div>
                 </div>
             </div>
             <div id="statsRow2">
                 <div id="clubsT">
                     <div>
-                        &clubs;<br>A<br>10<br>K<br>Q<br>J<br>&clubs;
+                        &clubs;<br>A<br>10<br>K<br>Q<br>J
                     </div>
                     <div class="statColumn">
-                        &lArr;<br><div></div><div></div><div></div><div></div><u><div></div></u><div></div>
+                        &lArr;<br><div></div><div></div><div></div><div></div><div></div>
                     </div>
                     <div class="statColumn">
-                        &uArr;<br><div></div><div></div><div></div><div></div><u><div></div></u><div></div>
+                        &uArr;<br><div></div><div></div><div></div><div></div><div></div>
                     </div>
                     <div class="statColumn">
-                        &rArr;<br><div></div><div></div><div></div><div></div><u><div></div></u><div></div>
+                        &rArr;<br><div></div><div></div><div></div><div></div><div></div>
                     </div>
                     <div class="statColumn">
-                        +<br><div></div><div></div><div></div><div></div><u><div></div></u><div></div>
+                        ?<br><div></div><div></div><div></div><div></div><div></div>
                     </div>
                 </div>
                 <div id="diamondsT">
                     <div style="color:red">
-                        &diams;<br>A<br>10<br>K<br>Q<br>J<br>&diams;
+                        &diams;<br>A<br>10<br>K<br>Q<br>J
                     </div>
                     <div class="statColumn">
-                        &lArr;<br><div></div><div></div><div></div><div></div><u><div></div></u><div></div>
+                        &lArr;<br><div></div><div></div><div></div><div></div><div></div>
                     </div>
                     <div class="statColumn">
-                        &uArr;<br><div></div><div></div><div></div><div></div><u><div></div></u><div></div>
+                        &uArr;<br><div></div><div></div><div></div><div></div><div></div>
                     </div>
                     <div class="statColumn">
-                        &rArr;<br><div></div><div></div><div></div><div></div><u><div></div></u><div></div>
+                        &rArr;<br><div></div><div></div><div></div><div></div><div></div>
                     </div>
                     <div class="statColumn">
-                        +<br><div></div><div></div><div></div><div></div><u><div></div></u><div></div>
+                        ?<br><div></div><div></div><div></div><div></div><div></div>
                     </div>
                 </div>
             </div>
