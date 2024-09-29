@@ -46,6 +46,7 @@
     --box-width:        calc(var(--cardw) * 0.70);
     --box-height:       calc(var(--cardw) * 0.31);
     --pick-width:       calc(var(--cardw) * 1.30);
+    --stats-width:      calc(var(--cardw) * 5.55);
 }
 
 input {
@@ -216,18 +217,19 @@ input {
 }
 
 #statsText {
-    margin: var(--pad);
     padding: var(--pad);
-    width: calc(100vw - var(--pad)*4);
+    width: var(--stats-width);
     line-height: var(--font-size);
     color: black;
     background-color: white;
     position: absolute;
+    top: var(--pad);
+    left: calc(50vw - var(--stats-width)/2 - var(--pad));
     display: none;
 }
 
 #statsRow0 {
-    margin-bottom: var(--pad);
+    margin-bottom: var(--font-size);
 }
 
 #statsRow1, #statsRow2 {
@@ -237,18 +239,18 @@ input {
 }
 
 #spadesT, #heartsT, #clubsT, #diamondsT {
-    margin-bottom: var(--pad);
+    margin-bottom: var(--font-size);
     display: flex;
     flex-direction: row;
     text-align: center;
 }
 
 #heartsT, #diamondsT {
-    margin-left: calc(var(--font-size) * 2);
+    margin-left: calc(var(--font-size) * 1.1);
 }
 
 .statColumn {
-    margin-left: calc(var(--pad) * 1.8);
+    margin-left: calc(var(--pad) * 1.55);
 }
 
 #closeDiv {

@@ -1,31 +1,49 @@
 @media (orientation: portrait) {
     :root {
         --cardw:        min(16.807vw, 10.187vh);
-        --west-left:    calc(050vw - var(--cardw)*2.70);
-        --north-top:    calc(000vh + var(--cardw)*0.75);
-        --east-left:    calc(050vw + var(--cardw)*2.00);
-        --south-top:    calc(100vh - var(--cardw)*1.00);
-    }
+        --west-top:     calc(050vh - var(--cardw)*2.50);
+        --west-left:    calc(050vw - var(--cardw)*1.40);
+        --west-align:   left;
+        --north-top:    calc(000vh + var(--cardw)*0.20);
+        --north-left:   calc(050vw - var(--cardw)*0.35);
+        --east-top:     calc(050vh - var(--cardw)*2.50);
+        --east-left:    calc(050vw + var(--cardw)*0.68);
+        --east-align:   right;
+        }
+}
+
+@media (max-aspect-ratio: 0.55) {
+    :root {
+        --west-top:     calc(050vh - var(--cardw)*3.20);
+        --west-left:    calc(050vw - var(--cardw)*2.55);
+        --west-align:   center;
+        --east-top:     calc(050vh - var(--cardw)*3.20);
+        --east-left:    calc(050vw + var(--cardw)*1.85);
+        --east-align:   center;
+        }
 }
 
 @media (orientation: landscape) {
     :root {
         --cardw:        min(16.807vh, 10.187vw);
-        --west-left:    calc(000vw + var(--cardw)*0.70);
-        --north-top:    calc(050vh - var(--cardw)*2.70);
-        --east-left:    calc(100vw - var(--cardw)*1.40);
-        --south-top:    calc(050vh + var(--cardw)*2.40);
-    }
+        --west-top:     calc(050vh - var(--cardw)*0.155);
+        --west-left:    calc(000vw + var(--cardw)*2.02);
+        --west-align:   left;
+        --north-top:    calc(050vh - var(--cardw)*1.45);
+        --north-left:   calc(050vw - var(--cardw)*0.35);
+        --east-top:     calc(050vh - var(--cardw)*0.155);
+        --east-left:    calc(100vw - var(--cardw)*2.73);
+        --east-align:   right;
+        }
 }
 
 :root {
-    --west-east-top:    calc(050vh - var(--cardw)*0.15);
-    --north-south-left: calc(050vw - var(--cardw)*0.35);
     --pad:              calc(var(--cardw) * 0.10);
     --icon:             calc(var(--cardw) * 0.33);
     --font-size:        calc(var(--cardw) * 0.25);
-    --text-area:        calc(var(--cardw) * 2.75);
-    --box-width:        calc(var(--cardw) * 0.75);
+    --menu-width:       calc(var(--cardw) * 4.00);
+    --text-area:        calc(var(--cardw) * 2.60);
+    --box-width:        calc(var(--cardw) * 0.70);
     --box-height:       calc(var(--cardw) * 0.31);
     --pick-width:       calc(var(--cardw) * 1.30);
 }
@@ -35,13 +53,14 @@ input {
     height: var(--box-height);
     padding: 0px;
     margin: 0px;
-    border-style: solid;
+    border: none;
     background-color: powderblue;
     font-family: sans-serif;
     font-size: var(--font-size);
 }
 
 #docBody {
+    box-sizing: border-box;
     width: 100vw;
     height: 100vh;
     margin: 0px;
@@ -75,7 +94,7 @@ input {
     height: 100%;
     display: none;
     flex-direction: column;
-    justify-content: space-evenly;
+    justify-content: center;
     text-align: center;
 }
 
@@ -83,12 +102,22 @@ input {
     width: 100%;
     display: flex;
     flex-direction: row;
-    justify-content: space-evenly;
+    justify-content: center;
     text-align: center;
+}
+
+#trumpColumn {
+    margin-right: var(--pad);
+}
+
+#trumpColumn img {
+    filter: invert(100%);
+    height: calc(var(--font-size) * 0.75);
 }
 
 #bidButtons {
     width: 100%;
+    margin-top: var(--pad);
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -100,7 +129,7 @@ input {
     height: 100%;
     display: none;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
     text-align: center;
 }
@@ -114,8 +143,17 @@ input {
     height: 100%;
     display: none;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: space-around;
     text-align: left;
+}
+
+#playBtns {
+    width: 100%;
+    margin-top: var(--pad);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
 }
 
 #handText {
@@ -140,16 +178,11 @@ input {
 #bidBox div {
     width: var(--box-width);
     position: absolute;
-    color: white;
-    background-color: black;
-    text-align: center;
-    display: none;
 }
 
-#bidBox :nth-child(1) {top: var(--west-east-top); left: var(--west-left);       }
-#bidBox :nth-child(2) {top: var(--north-top);     left: var(--north-south-left);}
-#bidBox :nth-child(3) {top: var(--west-east-top); left: var(--east-left);       }
-#bidBox :nth-child(4) {top: var(--south-top);     left: var(--north-south-left);}
+#bidBox :nth-child(1) {top: var(--west-top);  left: var(--west-left);  text-align: var(--west-align);}
+#bidBox :nth-child(2) {top: var(--north-top); left: var(--north-left); text-align: center;           }
+#bidBox :nth-child(3) {top: var(--east-top);  left: var(--east-left);  text-align: var(--east-align);}
 
 #menuIcon {
     filter: invert(100%);
@@ -162,16 +195,22 @@ input {
 #menuText {
     margin: var(--pad);
     padding: var(--pad);
-    line-height: 200%;
+    width: var(--menu-width);
     color: black;
     background-color: white;
-    border: solid;
     position: absolute;
     display: none;
 }
 
-#menuText img {
-    height: calc(var(--font-size));
+#menuX, #statsX, #optnsX {
+    height: calc(var(--font-size) * 1.2);
+    position: relative;
+    top: calc(var(--font-size) * -0.05);
+    float: right;
+}
+
+.menuItem {
+    height: var(--font-size);
     position: relative;
     top: calc(var(--font-size) * 0.15);
 }
@@ -179,13 +218,16 @@ input {
 #statsText {
     margin: var(--pad);
     padding: var(--pad);
-    line-height: calc(var(--font-size) * 1.1);
     width: calc(100vw - var(--pad)*4);
+    line-height: var(--font-size);
     color: black;
     background-color: white;
-    border: solid;
     position: absolute;
     display: none;
+}
+
+#statsRow0 {
+    margin-bottom: var(--pad);
 }
 
 #statsRow1, #statsRow2 {
@@ -195,9 +237,9 @@ input {
 }
 
 #spadesT, #heartsT, #clubsT, #diamondsT {
+    margin-bottom: var(--pad);
     display: flex;
     flex-direction: row;
-    margin-bottom: var(--font-size);
     text-align: center;
 }
 
@@ -212,4 +254,21 @@ input {
 #closeDiv {
     width: 100%;
     text-align: center;
+}
+
+#optnsText {
+    width: var(--menu-width);
+    margin: var(--pad);
+    padding: var(--pad);
+    color: black;
+    background-color: white;
+    position: absolute;
+    display: none;
+}
+
+#openChk, #slowChk {
+    width: calc(var(--font-size) * 0.8);
+    height: calc(var(--font-size) * 0.8);
+    position: relative;
+    top: calc(var(--font-size) * 0.02);
 }
