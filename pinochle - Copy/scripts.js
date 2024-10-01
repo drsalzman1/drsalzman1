@@ -25,41 +25,35 @@ const ace      = 4;
 const ranks    = 5;
 const rank$    = ["jack", "queen", "king", "ten", "ace"];
 
-// Card value = rank + suit (or none or grayBack)
-const none     = -1;
-const grayBack = 20;
+// Card value = rank + suit
 const cards    = 20;
 const values   = 20;
 const value$   = ["J♦","Q♦","K♦","T♦","A♦","J♣","Q♣","K♣","T♣","A♣","J♥","Q♥","K♥","T♥","A♥","J♠","Q♠","K♠","T♠","A♠"];
 
-// src[v] = source file for card value v
-const src = [
+// faceSrc[v] = face source file for card value v
+const faceSrc = [
     "cards/jd.svg", "cards/qd.svg", "cards/kd.svg", "cards/td.svg", "cards/ad.svg", 
     "cards/jc.svg", "cards/qc.svg", "cards/kc.svg", "cards/tc.svg", "cards/ac.svg", 
     "cards/jh.svg", "cards/qh.svg", "cards/kh.svg", "cards/th.svg", "cards/ah.svg", 
-    "cards/js.svg", "cards/qs.svg", "cards/ks.svg", "cards/ts.svg", "cards/as.svg",
-    "cards/gb.svg" 
+    "cards/js.svg", "cards/qs.svg", "cards/ks.svg", "cards/ts.svg", "cards/as.svg"
 ];
 
-// img[v] = image file for card value v
-const img = [
+// backSrc = back source file
+const backSrc = "cards/gb.svg";
+
+// faceImg[v] = face image structure for card value v
+const faceImg = [
     new Image(), new Image(), new Image(), new Image(), new Image(), 
     new Image(), new Image(), new Image(), new Image(), new Image(), 
     new Image(), new Image(), new Image(), new Image(), new Image(), 
-    new Image(), new Image(), new Image(), new Image(), new Image(), 
-    new Image()
+    new Image(), new Image(), new Image(), new Image(), new Image()
 ];
 
-// hand[p][c] = player p's card c's card value
-const hand = [Array(cards), Array(cards), Array(cards), Array(cards)];
-
-// save[p][c] = player p's card c's saved card value
-const save = [Array(cards), Array(cards), Array(cards), Array(cards)];
-
-// meld[p][c] = player p's card c's meld card value
-const meld = [Array(cards), Array(cards), Array(cards), Array(cards)];
+// backImg = back image structure
+const backImg = new Image();
 
 // bid[p] = player p's bid (or none or pass)
+const none = -1;
 const pass = 0;
 const bid = [none, none, none, none];
 
@@ -96,7 +90,6 @@ const center = 4;                   // in player's center position
 // Display modes
 const faceUp = 0;                   // face exposed
 const backUp = 1;                   // back exposed
-const hidden = 2;                   // card hidden from view
 
 // Card class
 class C {
@@ -133,9 +126,6 @@ const maxCards = [Array(values), Array(values), Array(values), Array(values)];
 
 // minCards[p][v] = least cards player p can hold of value v (revealed by meld and play)
 const minCards = [Array(values), Array(values), Array(values), Array(values)];
-
-// indicate[p][s] = true when player p indicates "come back to me" in suit s
-const indicate = [Array(suits), Array(suits), Array(suits), Array(suits)];
 
 // Page elements
 const docBody   = document.getElementById("docBody");
@@ -196,7 +186,7 @@ const slowDeal  = 10000;            // slow (10 second) deal
 let dealTime    = fastDeal;         // milliseconds to deal all cards
 
 // Global variables
-let ondone      = function () {};   // event to invoke after animation completes
+let ondone      = function(){};     // event to invoke after animation completes
 let dealer      = south;            // the player who is dealing or last deckDealt
 let bidder      = none;             // the player who is bidding or won the bid
 let trump       = none;             // the bidder's trump suit
@@ -228,17 +218,13 @@ let vpad        = 0;                // vertical padding for north and south hand
 let cardw       = 0;                // card width
 let cardh       = 0;                // card height
 
-// Return suit of card value v (or none if v is none)
+// Return suit of card value v
 function suit(v) {
-    if (v == none)
-        return none;
     return Math.floor(v / ranks) * ranks;
 }
 
-// Return rank of card value v (or none if v is none)
+// Return rank of card value v
 function rank(v) {
-    if (v == none)
-        return none;
     return v % ranks;
 }
 
@@ -246,8 +232,8 @@ function rank(v) {
 function highest(p, s) {
     let h = none;
     for (let c = 0; c < cards; c++)
-        if (suit(hand[p][c]) == s && hand[p][c] > h)
-            h = hand[p][c];
+        if (suit(value(p,c)) == s && value(p,c) > h)
+            h = value(p,c);
     return h;
 }
 
@@ -312,30 +298,64 @@ function count(a, v) {
     return n;
 }
 
-// Returns number of rank arounds in player's hand
+// Return card value of player p's card c
+function value(p, c) {
+    const i = p * cards + c;
+    return deck[i].v;
+}
+
+// Return display mode of player p's card c
+function display(p, c) {
+    const i = p * cards + c;
+    return deck[i].d;
+}
+
+// Return number of player p's cards with card value v
+function nValue(p, v) {
+    let n = 0;
+    for (let c = 0; c < cards; c++) {
+        let i = p * cards + c;
+        if (deck[i].v == v)
+            n++;
+    }
+    return n;
+}
+
+// Return number of player p's face up cards with card value v
+function nValueUp(p, v) {
+    let n = 0;
+    for (let c = 0; c < cards; c++) {
+        let i = p * cards + c;
+        if (deck[i].d==faceUp && deck[i].v==v)
+            n++;
+    }
+    return n;
+}
+
+// Return number of rank arounds in player's hand
 function arounds(player, rank) {
     let n = 4;
     for (let suit of [spades, hearts, clubs, diamonds])
-        n = Math.min(n, count(hand[player], rank+suit));
+        n = Math.min(n, nValue(player, rank+suit));
     return n;
 }
 
-// Returns number of suit runs in the player's hand
+// Return number of suit runs in the player's hand
 function runs(player, suit) {
     let n = 4;
     for (let rank of [jack, queen, king, ten, ace])
-        n = Math.min(n, count(hand[player], rank+suit));
+        n = Math.min(n, nValue(player, rank+suit));
     return n;
 }
 
-// Return true if the player's hand has at le min pinochles
+// Return number of pinochles in player's hand
 function pinochles(player) {
-    return Math.min(count(hand[player], queen+spades), count(hand[player], jack+diamonds));
+    return Math.min(nValue(player, queen+spades), nValue(player, jack+diamonds));
 }
 
-// Returns number of suit marriage's in the player's hand
+// Return number of suit marriage's in the player's hand
 function marriages(player, suit) {
-    return Math.min(count(hand[player], king+suit), count(hand[player], queen+suit));
+    return Math.min(nValue(player, king+suit), nValue(player, queen+suit));
 }
 
 // Count player's meld based on trump suit
@@ -357,20 +377,18 @@ function countMeld(player, trump) {
 
 // Return minimum meld in bidder's hand
 function minMeld() {
-    let mm = 999;
+    let min = 999;
     for (let suit of [spades, hearts, clubs, diamonds])
-        if (countMeld(bidder, suit) < mm)
-            mm = countMeld(bidder, suit);
-    return mm;
+        min = Math.min(countMeld(bidder, suit), min);
+    return min;
 }
 
 // Return maximum meld in bidder's hand
 function maxMeld() {
-    let mm = 0;
+    let max = 0;
     for (let suit of [spades, hearts, clubs, diamonds])
-        if (countMeld(bidder, suit) > mm)
-            mm = countMeld(bidder, suit);
-    return mm;
+        max = Math.max(countMeld(bidder, suit), max);
+    return max;
 }
 
 // Return suit with maximum meld 
@@ -380,15 +398,39 @@ function maxSuit() {
             return suit;
 }
 
-// Restore n cards of value v for player p to needed array
-function restore(needed, p, v, n) {
+// Recall n cards of value v for into player p's hand 
+function recall(p, v, n) {
     for (let i = 0; n > 0 && i < indices; i++) {
         const c = i2c(i);
-        if (i2p(i) == p && hand[p][c] == v) {
-            needed[c] = v;
+        if (i2p(i) == p && value(p,c) == v) {
+            deck[i].g = normal;
+            deck[i].d = faceUp;
             n--;
         }
     }
+}
+
+// Recall meld into player's hands
+function recallMeld() {
+    for (let p of [west, north, east, south])
+        if (((p==north || p==south) && ourMeld<20) || ((p==west || p==east) && theirMeld<20)) {
+            if (p == bidder)
+                for (let rank of [queen, king]) 
+                    recall(p, rank+trump, Math.min(marriages(p, trump)), 1);
+            for (let suit of [diamonds, clubs, hearts, spades])
+                recall(p, ace+suit, arounds(p, ace));
+        } else {
+            for (let rank of [jack, queen, king, ace])
+                for (let suit of [diamonds, clubs, hearts, spades])
+                    recall(p, rank+suit, arounds(p, rank));
+            for (let rank of [jack, queen, king, ten, ace])
+                recall(p, rank+trump, runs(p, trump));
+            recall(p, jack+diamonds, pinochles(p));
+            recall(p, queen+spades, pinochles(p));
+            for (let rank of [queen, king]) 
+                for (let suit of [diamonds, clubs, hearts, spades])
+                    recall(p, rank+suit, marriages(p, suit));
+        }
 }
 
 // Return next player after current player (or none if current is none)
@@ -416,14 +458,12 @@ function jumpBid() {
 
 // Return number of cards of suit s in the bidder's hand
 function nSuit(s) {
-    return count(hand[bidder],ace+s) + count(hand[bidder],ten+s) + count(hand[bidder],king+s) +
-        count(hand[bidder],queen+s) + count(hand[bidder],jack+s);
+    return nValue(bidder,ace+s) + nValue(bidder,ten+s) + nValue(bidder,king+s) + nValue(bidder,queen+s) + nValue(bidder,jack+s);
 }
 
 // Return number of cards of rank r in the bidder's hand
 function nRank(r) {
-    return count(hand[bidder],r+spades) + count(hand[bidder],r+hearts) +
-        count(hand[bidder],r+clubs) + count(hand[bidder],r+diamonds);
+    return nValue(bidder,r+spades) + nValue(bidder,r+hearts) + nValue(bidder,r+clubs) + nValue(bidder,r+diamonds);
 }
 
 // Return number of cards in bidder's short suit
@@ -509,27 +549,27 @@ function autoPick() {
     let n = 0, t;
     if (nRank(king) + nRank(queen) == 0)                        // no kings or queens
         for (let s of [spades, hearts, clubs, diamonds]) {
-            if (count(hand[bidder], ace+s) > n) {
-                n = count(hand[bidder], ace+s);
+            if (nValue(bidder, ace+s) > n) {
+                n = nValue(bidder, ace+s);
                 t = s;
             }
-            if (count(hand[bidder], ten+s) > n) {
-                n = count(hand[bidder], ten+s);
+            if (nValue(bidder, ten+s) > n) {
+                n = nValue(bidder, ten+s);
                 t = s;
             }
-            if (count(hand[bidder], jack+s) > n) {
-                n = count(hand[bidder], jack+s);
+            if (nValue(bidder, jack+s) > n) {
+                n = nValue(bidder, jack+s);
                 t = s;
             }
         }
     else if (noMarriages())                                     // no marriages
         for (let s of [spades, hearts, clubs, diamonds]) {
-            if (count(hand[bidder], king+s) > n) {
-                n = count(hand[bidder], king+s);
+            if (nValue(bidder, king+s) > n) {
+                n = nValue(bidder, king+s);
                 t = s;
             }
-            if (count(hand[bidder], queen+s) > n) {
-                n = count(hand[bidder], queen+s);
+            if (nValue(bidder, queen+s) > n) {
+                n = nValue(bidder, queen+s);
                 t = s;
             }
         }
@@ -537,8 +577,8 @@ function autoPick() {
         t = maxSuit();
     else                                                        // all other cases
         for (let s of [spades, hearts, clubs, diamonds]) {
-            if (marriages(bidder,s)>0 && nSuit(s)+count(bidder,ace+s)>n) {
-                n = nSuit(s) + count(bidder, ace+s);
+            if (marriages(bidder,s)>0 && nSuit(s)+nValue(bidder,ace+s)>n) {
+                n = nSuit(s) + nValue(bidder, ace+s);
                 t = s;
             }
         }
@@ -549,7 +589,7 @@ function autoPick() {
 function legal(i) {
     const p = i2p(i);
     const c = i2c(i);
-    const v = hand[p][c];
+    const v = value(p,c);
     if (v == none || p != thisPlayer)
         return false;
     if (firstSuit == none)
@@ -614,11 +654,16 @@ function shuffleArray(array) {
     return;
 }
 
-// Locate all card positions (n = number of semi-exposed cards; v = visible card number)
-function locateCards() {
+// Locate all card positions (full if full hands, n = number of semi-exposed cards; v = visible card number)
+function locateCards(full = false) {
     for (let p of [west, north, east, south]) {
-        const n = cards - count(hand[p], none) - 1;
-        let v = 0;
+        let n = -1, v = 0;
+        if (full)
+            n = 19;
+        else
+            for (let c = 0; c < cards; c++)
+                if (deck[pc2i(p,c)].g == normal)
+                    n++;
         for (let c = 0; c < cards; c++) {
             const i = pc2i(p, c);
             deck[i].stck.x = [-cardh/2, vw/2, vw+cardh/2, vw/2][p];
@@ -633,8 +678,8 @@ function locateCards() {
             deck[i].bump.x = deck[i].norm.x + [cardh*0.4, 0, -cardh*0.4, 0][p];
             deck[i].bump.y = deck[i].norm.y + [0, cardh*0.4, 0, -cardh*0.4][p];
             deck[i].bump.r = [Math.PI/2, 0, Math.PI/2, 0][p];
-            deck[i].cntr.x = vw/2 + [-cardh/2-pad/2, cardw/2+pad/2, cardh/2+pad/2, -cardw/2-pad/2][p];
-            deck[i].cntr.y = vh/2 + [-cardw/2-pad/2, -cardh/2-pad/2, cardw/2+pad/2, cardh/2+pad/2][p];
+            deck[i].cntr.x = vw/2 + [-cardh/2-pad/4, cardw/2+pad/4, cardh/2+pad/4, -cardw/2-pad/4][p];
+            deck[i].cntr.y = vh/2 + [-cardw/2-pad/4, -cardh/2-pad/4, cardw/2+pad/4, cardh/2+pad/4][p];
             deck[i].cntr.r = [Math.PI/2, 0, Math.PI/2, 0][p];
             deck[i].strt.x = [deck[i].stck.x, deck[i].tabl.x, deck[i].norm.x, deck[i].bump.x, deck[i].cntr.x][deck[i].g];
             deck[i].strt.y = [deck[i].stck.y, deck[i].tabl.y, deck[i].norm.y, deck[i].bump.y, deck[i].cntr.y][deck[i].g];
@@ -642,7 +687,7 @@ function locateCards() {
             deck[i].fnsh.x = [deck[i].stck.x, deck[i].tabl.x, deck[i].norm.x, deck[i].bump.x, deck[i].cntr.x][deck[i].g];
             deck[i].fnsh.y = [deck[i].stck.y, deck[i].tabl.y, deck[i].norm.y, deck[i].bump.y, deck[i].cntr.y][deck[i].g];
             deck[i].fnsh.r = [Math.PI/2, 0, Math.PI/2, 0][p];
-            if (hand[p][c] != none)
+            if (full || deck[i].g==normal)
                 v++;
         }
     }
@@ -689,13 +734,19 @@ function frameEvent() {
         if (now <= deck[i].strt.t) {
             context.translate(deck[i].strt.x, deck[i].strt.y);
             context.rotate(deck[i].strt.r);
-            context.drawImage(img[deck[i].v], -cardw/2, -cardh/2, cardw, cardh);
+            if (deck[i].d == faceUp && deck[i].v != none)
+                context.drawImage(faceImg[deck[i].v], -cardw/2, -cardh/2, cardw, cardh);
+            else
+                context.drawImage(backImg, -cardw/2, -cardh/2, cardw, cardh);
             context.resetTransform();
         }
         if (now >= deck[i].fnsh.t) {
             context.translate(deck[i].fnsh.x, deck[i].fnsh.y);
             context.rotate(deck[i].fnsh.r);
-            context.drawImage(img[deck[i].v], -cardw/2, -cardh/2, cardw, cardh);
+            if (deck[i].d == faceUp && deck[i].v != none)
+                context.drawImage(faceImg[deck[i].v], -cardw/2, -cardh/2, cardw, cardh);
+            else
+                context.drawImage(backImg, -cardw/2, -cardh/2, cardw, cardh);
             context.resetTransform();
             deck[i].strt.x = deck[i].fnsh.x;
             deck[i].strt.y = deck[i].fnsh.y;
@@ -709,7 +760,10 @@ function frameEvent() {
             const r = deck[i].strt.r*ps + deck[i].fnsh.r*pf;
             context.translate(x, y);
             context.rotate(r);
-            context.drawImage(img[deck[i].v], -cardw/2, -cardh/2, cardw, cardh);
+            if (deck[i].d == faceUp && deck[i].v != none)
+                context.drawImage(faceImg[deck[i].v], -cardw/2, -cardh/2, cardw, cardh);
+            else
+                context.drawImage(backImg, -cardw/2, -cardh/2, cardw, cardh);
             context.resetTransform();
         }
     }
@@ -718,7 +772,7 @@ function frameEvent() {
         requestAnimationFrame(frameEvent);
     else {
         setTimeout(ondone);
-        ondone = function () {};
+        ondone = function(){};
     }
 }
 
@@ -786,24 +840,20 @@ function handEnded() {
     }
 }
 
-// Trick center: pull trick, then retrigger handsRefanned or trigger handEnded
-function trickPlayed() {
+// Trick viewed: pull trick, then retrigger handsRefanned or trigger handEnded
+function trickViewed() {
     const now = performance.now();
     for (let i = 0; i < indices; i++)
         if (deck[i].g == center) {
             deck[i].g = stackd;
+            deck[i].v = none;
             deck[i].z = 100;
             deck[i].strt.t = now;
             deck[i].fnsh.x = deck[highPlayer*cards].stck.x;
             deck[i].fnsh.y = deck[highPlayer*cards].stck.y;
             deck[i].fnsh.t = now + dealTime / 10;
-            if (rank(deck[i].v)==ace || rank(deck[i].v)==ten || rank(deck[i].v)==king)
-                if (highPlayer == north || highPlayer == south)
-                    ourTake += 1;
-                else
-                    theirTake += 1;
         }
-    if (count(hand[west], none) < cards) {
+    if (nValue(west, none) < cards) {
         thisPlayer = highPlayer;
         thisCard = none;
         highCard = highSuit = highPlayer = none;
@@ -818,14 +868,30 @@ function trickPlayed() {
     }
 }
 
+// Trick played: pause a moment to view trick, then trigger trickViewed
+function trickPlayed() {
+    const now = performance.now();
+    for (let i = 0; i < indices; i++)
+        if (deck[i].g == center) {
+            if (rank(deck[i].v)==ace || rank(deck[i].v)==ten || rank(deck[i].v)==king)
+                if (highPlayer == north || highPlayer == south)
+                    ourTake += 1;
+                else
+                    theirTake += 1;
+            deck[i].strt.t = now;
+            deck[i].fnsh.t = now + dealTime / 4;
+        }
+    animate(trickViewed);
+}
+
 // Card played: close hand, then trigger trickPlayed or handsRefanned  
 function cardPlayed() {
     const now = performance.now();
     for (let i = 0; i < indices; i++)
         if (i2p(i) == thisPlayer)
             deck[i].z -= 20;
-    deck[pc2i(thisPlayer, thisCard)].z = 0;
-    hand[thisPlayer][thisCard] = none;
+    const i = pc2i(thisPlayer, thisCard);
+    deck[i].z = 0;
     locateCards();
     for (let i = 0; i < indices; i++) {
         deck[i].strt.t = now;
@@ -844,7 +910,7 @@ function cardSelected() {
     const p = thisPlayer;
     const c = thisCard;
     const i = pc2i(p, c);
-    const v = hand[p][c];
+    const v = value(p,c);
     let msg = "";
 
     // if card is in high suit and doesn't beat non-ace high card, player must not have any cards that can beat the high card 
@@ -894,8 +960,8 @@ function cardSelected() {
 
     // animate card play
     deck[i].strt.t = now;
-    deck[i].v = hand[p][c];
     deck[i].g = center;
+    deck[i].d = faceUp;
     deck[i].fnsh.x = deck[i].cntr.x;
     deck[i].fnsh.y = deck[i].cntr.y;
     deck[i].fnsh.t = now + dealTime / 10;
@@ -1042,19 +1108,16 @@ function handsRefanned() {
 // Meld gathered: restore and re-fan hands, then trigger handsRefanned
 function meldGathered() {
     const now = performance.now();
-    for (let p of [west, north, east, south])
-        hand[p] = [...save[p]];
-    locateCards();
+    for (let i = 0; i < indices; i++)
+        deck[i].d = i2p(i)==south? faceUp : backUp;
+    locateCards(true);
     for (let i = 0; i < indices; i++) {
         const p = i2p(i);
         const c = i2c(i);
-        if (openHand || p == south) {
-            deck[i].v = hand[p][c];
+        if (openHand || p == south)
             deck[i].z = c;
-        } else {
-            deck[i].v = grayBack;
+        else
             deck[i].z = cards - c - 1;
-        }
         deck[i].g = normal;
         deck[i].strt.t = now;
         deck[i].fnsh.x = deck[i].norm.x;
@@ -1072,22 +1135,25 @@ function meldGathered() {
 function showClicked() {
     const now = performance.now();
     if (showBtn.value == "Show") {
+        for (let c = 0; c < cards; c++)
+            deck[pc2i(south,c)].g = normal;
         showBtn.value = "Hide";
-        hand[south] = [...save[south]];
     } else {
+        for (let c = 0; c < cards; c++)
+            deck[pc2i(south,c)].g = stackd;
+        recallMeld();
         showBtn.value = "Show";
-        hand[south] = [...meld[south]];
     }
     locateCards();
     for (let c = 0; c < cards; c++) {
         const i = pc2i(south, c);
-        if (hand[south][c] != none) {
-            deck[i].v = hand[south][c];
-            deck[i].g = normal;
-            deck[i].z = c;
+        if (deck[i].g == normal) {
+            deck[i].strt.x = deck[i].stck.x;
+            deck[i].strt.y = deck[i].stck.y;
+            deck[i].strt.t = now;
             deck[i].fnsh.x = deck[i].norm.x;
             deck[i].fnsh.y = deck[i].norm.y;
-            deck[i].fnsh.t = now;
+            deck[i].fnsh.t = now + dealTime / 10;
         }
     }
     animate(meldFanned);
@@ -1147,7 +1213,7 @@ function meldFanned() {
     theirBid = [bid[west], pass, bid[east], pass][bidder];
     playPara[0].textContent = `${player$[bidder]} won the bid at ${bid[bidder]} with ${suit$[trump]}.`;
     playPara[1].textContent = `Our meld is ${ourMeld < 20 ? "< 20" : ourMeld} and their meld is ${theirMeld < 20 ? "< 20" : theirMeld}.`;
-    if (count(save[bidder],king+trump)==0 || count(save[bidder],queen+trump)==0) {
+    if (marriages(bidder,trump) == 0) {
         playPara[2].textContent = `${player$[bidder]} must toss this hand.`;
         showBtn.style.display = "none";
         playBtn.style.display = "none";
@@ -1170,75 +1236,53 @@ function meldFanned() {
     playText.style.display = "flex";
 }
 
-// Hands regathered: save hands and fan out meld, then trigger meldFanned
+// Hands regathered: fan out meld, then trigger meldFanned
 function handsRegathered() {
     const now = performance.now();
     ourMeld = countMeld(north, trump) + countMeld(south, trump);
     theirMeld = countMeld(west, trump) + countMeld(east, trump);
 
-    // Empty hands then restore meld cards
-    for (let p of [west, north, east, south]) {
-        save[p] = [...hand[p]];
-        meld[p].fill(none);
-        if (((p==north || p==south) && ourMeld<20) || ((p==west || p==east) && theirMeld<20)) {
-            if (p == bidder)
-                for (let rank of [queen, king]) 
-                    restore(meld[p], p, rank+trump, Math.min(marriages(p, trump)),1);
-            for (let suit of [diamonds, clubs, hearts, spades])
-                restore(meld[p], p, ace+suit, arounds(p, ace));
-        } else {
-            for (let rank of [jack, queen, king, ace])
-                for (let suit of [diamonds, clubs, hearts, spades])
-                    restore(meld[p], p, rank+suit, arounds(p, rank));
-            for (let rank of [jack, queen, king, ten, ace])
-                restore(meld[p], p, rank+trump, runs(p, trump));
-            restore(meld[p], p, jack+diamonds, pinochles(p));
-            restore(meld[p], p, queen+spades, pinochles(p));
-            for (let rank of [queen, king]) 
-                for (let suit of [diamonds, clubs, hearts, spades])
-                    restore(meld[p], p, rank+suit, marriages(p, suit));
-        }
-        hand[p] = [...meld[p]];
-    }
-    // Adjust minCards and maxCards based on revealed cards
+    // show meld cards
+    recallMeld();
+
+    // Adjust minCards and maxCards based on face up meld cards
     for (let p of [west, north, east, south]) {
         // Adjust minCards based on revealed cards
-        for (let c = 0; c < cards; c++)
-            if (hand[p][c] != none)
-                minCards[p][hand[p][c]]++;
+        for (let v = 0; v < values; v++)
+            minCards[p][v] = nValueUp(p, v);
         // if #A/K/Q/J in other suits > #A/K/Q/J in this suit, max = #A/K/Q/J in this suit
         for (let rank of [ace, king, queen, jack]) {
             let minCount = 5;
             let minSuit = none;
             let minHits = 0;
             for (let suit of [diamonds, clubs, hearts, spades])
-                if (count(hand[p],rank+suit) < minCount) {
-                    minCount = count(hand[p],rank+suit);
+                if (nValueUp(p,rank+suit) < minCount) {
+                    minCount = nValueUp(p,rank+suit);
                     minSuit = suit;
                     minHits = 1;
-                } else if (count(hand[p],rank+suit) == minCount)
+                } else if (nValueUp(p,rank+suit) == minCount)
                     minHits++;
             if (minHits == 1)
                 maxCards[p][rank+minSuit] = minCount;
         }
         // if #Q/K < #K/Q in suit, max = #Q/K in suit
         for (let suit of [diamonds, clubs, hearts, spades])
-            if (count(hand[p],queen+suit) < count(hand[p],king+suit))
-                maxCards[p][queen+suit] = count(hand[p],queen+suit);
-            else if (count(hand[p],king+suit) < count(hand[p],queen+suit))
-                maxCards[p][king+suit] = count(hand[p],king+suit);
+            if (nValueUp(p,queen+suit) < nValueUp(p,king+suit))
+                maxCards[p][queen+suit] = nValueUp(p,queen+suit);
+            else if (nValueUp(p,king+suit) < nValueUp(p,queen+suit))
+                maxCards[p][king+suit] = nValueUp(p,king+suit);
         // if #JD/QS < #QS/JD, max = #JD/QS
-        if (count(hand[p],jack+diamonds) < count(hand[p],queen+spades))
-            maxCards[p][jack+diamonds] = count(hand[p],jack+diamonds);
-        else if (count(hand[p],queen+spades) < count(hand[p],jack+diamonds))
-            maxCards[p][queen+spades] = count(hand[p],queen+spades);
+        if (nValueUp(p,jack+diamonds) < nValueUp(p,queen+spades))
+            maxCards[p][jack+diamonds] = nValueUp(p,jack+diamonds);
+        else if (nValueUp(p,queen+spades) < nValueUp(p,jack+diamonds))
+            maxCards[p][queen+spades] = nValueUp(p,queen+spades);
         // if #T < min(#A,#K,#Q,#J) in trump, max = #T
         let minOther = 5;
         for (let rank of [ace, king, queen, jack])
-            if (count(hand[p],rank+trump) < minOther)
-                minOther = count(hand[p],rank+trump);
-        if (count(hand[p],ten+trump) < minOther)
-            maxCards[p][ten+trump] = count(hand[p],ten+trump);
+            if (nValueUp(p,rank+trump) < minOther)
+                minOther = nValueUp(p,rank+trump);
+        if (nValueUp(p,ten+trump) < minOther)
+            maxCards[p][ten+trump] = nValueUp(p,ten+trump);
     }
     // reduce maxCards based on minCards
     for (let p of [west, north, east, south])
@@ -1261,11 +1305,11 @@ function handsRegathered() {
     for (let p of [west, north, east, south]) {
         for (let c = 0; c < cards; c++) {
             const i = pc2i(p, c);
-            if (hand[p][c] != none) {
-                deck[i].v = hand[p][c];
-                deck[i].g = normal;
-                deck[i].z = c;
+            deck[i].z = c;
+            if (deck[i].g == normal) {
                 deck[i].strt.t = now;
+                deck[i].strt.x = deck[i].stck.x;
+                deck[i].strt.y = deck[i].stck.y;
                 deck[i].fnsh.x = deck[i].norm.x;
                 deck[i].fnsh.y = deck[i].norm.y;
                 deck[i].fnsh.t = now + dealTime / 10;
@@ -1417,11 +1461,12 @@ function handsFanned() {
 // Hands gathered: fan hands, then trigger handsFanned
 function handsGathered() {
     const now = performance.now();
+    locateCards(true);
     for (let i = 0; i < indices; i++) {
         const p = i2p(i);
         const c = i2c(i);
         if (openHand || p == south) {
-            deck[i].v = hand[p][c];
+            deck[i].d = faceUp;
             deck[i].z = i;
         }
         deck[i].g = normal;
@@ -1476,34 +1521,21 @@ function statsXClicked() {
     menuIcon.onclick = menuClicked;
 }
 
-// Return, from player p1's view, the probable number of cards that player p2 has of value v
-function numCards(p1, p2, v) {
-    let missing = remCards[v] - count(hand[p1], v);
-    let hasRoom = 0;
-    for (let p of [west, north, east, south])
-        if (p != p1) {
-            missing -= minCards[p][v];
-            if (maxCards[p][v] > minCards[p][v])
-                hasRoom++;
-        }
-    if (maxCards[p2][v] > minCards[p2][v])
-        return minCards[p2][v] + missing / hasRoom;
-    else
-        return minCards[p2][v];
-}
-
 // Statistics menu item clicked: close menu and display stats, then await statsCloseClicked
 function statsClicked() {
     for (let s = 0; s < statField.length; s++) {
         const row = s % 5;
-        const col = Math.floor((s % 20) / 5);
-        const grp = Math.floor(s / 20);
+        const col = Math.floor((s % 25) / 5);
+        const grp = Math.floor(s / 25);
         const v = (4 - row) + [spades, hearts, clubs, diamonds][grp];
         const p = col;
+        const unknown = remCards[v] - nValue(south,v) - minCards[west][v] - minCards[north][v] - minCards[east][v];
         if (col == 3)
-            statField[s].textContent = remCards[v] - count(hand[south],v) - minCards[west][v] - minCards[north][v] - minCards[east][v];
+            statField[s].textContent = nValue(south,v) + "-" + nValue(south,v);
+        else if (col == 4)
+            statField[s].textContent = unknown;
         else
-            statField[s].textContent = minCards[p][v] + "-" + maxCards[p][v]; // - count(hand[south],v));
+            statField[s].textContent = minCards[p][v] + "-" + Math.min(maxCards[p][v], minCards[p][v] + unknown);
     }
     for (let s of [spades, hearts, clubs, diamonds]) {
         const element = [diamondsT,,,,,clubsT,,,,,heartsT,,,,,spadesT][s];
@@ -1536,10 +1568,10 @@ function optnsXClicked() {
         const c = i2c(i);
         if (p != south && deck[i].g == normal) {
             if (openHand) {
-                deck[i].v = hand[p][c];
+                deck[i].d = faceUp;
                 deck[i].z = c;
             } else {
-                deck[i].v = grayBack;
+                deck[i].d = backUp;
                 deck[i].z = cards - c - 1;
             }
             deck[i].strt.t = now;
@@ -1601,18 +1633,18 @@ function test() {
 
 // Load event: initialize app, deal cards, sort cards, then trigger deckDealt
 function loaded() {
-    const array = Array.from(new Array(indices), (v, k) => k % cards);
-    const set = Array(cards).fill(0);
-    let t = performance.now();
-    for (let i = 0; i < src.length; i++)
-        img[i].src = src[i];
+    const all = Array.from(new Array(indices), (v, k) => k % cards);
+    let t0 = performance.now();
+    for (let v = 0; v < values; v++)
+        faceImg[v].src = faceSrc[v];
+    backImg.src = backSrc;
     onresize = resized;
     menuIcon.draggable = false;
     menuIcon.onclick = menuClicked;
-    shuffleArray(array);
+    shuffleArray(all);
     for (let p of [west, north, east, south]) {
-        hand[p] = array.slice([0,20,40,60][p], [20,40,60,80][p]);
-        hand[p].sort((a,b)=>b-a);
+        for (let c = 0; c < cards; c++)
+            deck[pc2i(p,c)].v = all.slice(p*20, p*20+20).sort((a,b)=>b-a)[c];
         minCards[p].fill(0);
         maxCards[p].fill(4);
     }
@@ -1624,7 +1656,7 @@ function loaded() {
     for (let p of [west, north, east, south]) {
         let t = `${player$[p]}:`.padEnd(6);
         for (let c = 0; c < cards; c++)
-            t += ` ${value$[hand[p][c]]}`;
+            t += ` ${value$[value(p,c)]}`;
         console.log(t);
     }
     setSizes();
@@ -1633,13 +1665,13 @@ function loaded() {
         for (let p of [(dealer+1)%players, (dealer+2)%players, (dealer+3)%players, dealer]) {
             const i = pc2i(p, c);            
             deck[i].i = i;
-            deck[i].v = grayBack;
             deck[i].g = tabled;
             deck[i].z = cards - c - 1;
+            deck[i].d = backUp;
             deck[i].strt.x = deck[dealer*cards].stck.x;
             deck[i].strt.y = deck[dealer*cards].stck.y;
             deck[i].strt.r = deck[dealer*cards].stck.r;
-            deck[i].strt.t = t;
+            deck[i].strt.t = t0;
             deck[i].fnsh.x = deck[i].tabl.x + (Math.random()-0.5)*cardw/2;
             deck[i].fnsh.y = deck[i].tabl.y + (Math.random()-0.5)*cardw/2;
             if (p == (dealer+1)%players)
@@ -1651,8 +1683,8 @@ function loaded() {
             else
                 deck[i].stck.r = deck[i].strt.r;
             deck[i].fnsh.r = deck[i].stck.r + (Math.random()-0.5)*Math.PI/4;
-            deck[i].fnsh.t = t + dealTime / 20;
-            t = t + (dealTime - dealTime / 20) / indices;
+            deck[i].fnsh.t = t0 + dealTime / 20;
+            t0 = t0 + (dealTime - dealTime / 20) / indices;
         }
     }
     animate(deckDealt);
