@@ -953,7 +953,7 @@ function mouseMoved(e) {
     if (i == undefined || deck[i].g != bump)
         for (let i2 = 0; i2 < indices; i2++)
             if (deck[i2].g == bump) {
-                moveCard(i2, bump, now, hand, i2+1, true, dealTime/20);
+                moveCard(i2, bump, now, hand, i2, true, dealTime/20);
                 requestAnimationFrame(frameEvent);
             }
     if (i != undefined && deck[i].g == hand && legal(i)) {
@@ -969,7 +969,7 @@ function mousePressed(e) {
     if (i != undefined) {
         for (let i2 = 0; i2 < indices; i2++) {
             if (i2 != i && deck[i2].g == bump) {
-                moveCard(i2, bump, now, hand, i2+1, true, dealTime/20);
+                moveCard(i2, bump, now, hand, i2, true, dealTime/20);
                 requestAnimationFrame(frameEvent);
             }
         }
@@ -1004,7 +1004,7 @@ function touchStarted(e) {
     if (i == undefined || deck[i].g != bump) {
         for (let i2 = 0; i2 < indices; i2++) {
             if (deck[i2].g == bump) {
-                moveCard(i2, bump, now, hand, i2+1, true, dealTime/20);
+                moveCard(i2, bump, now, hand, i2, true, dealTime/20);
                 requestAnimationFrame(frameEvent);
             }
         }
@@ -1022,13 +1022,13 @@ function touchMoved(e) {
     if (i == undefined || deck[i].g != bump) {
         for (let i2 = 0; i2 < indices; i2++) {
             if (deck[i2].g == bump) {
-                moveCard(i2, bump, now, hand, i2+1, true, dealTime/20);
+                moveCard(i2, bump, now, hand, i2, true, dealTime/20);
                 requestAnimationFrame(frameEvent);
             }
         }
     }
     if (i != undefined && deck[i].g == hand && legal(i)) {
-        moveCard(i, hand, now, i, bump, i, true, dealTime/20);
+        moveCard(i, hand, now, bump, i, true, dealTime/20);
         requestAnimationFrame(frameEvent);
     }
 }
