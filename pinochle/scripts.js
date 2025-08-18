@@ -1690,7 +1690,15 @@ function optionsClicked() {
 
 // Restart menu item clicked: restart the app
 function restartClicked() {
-     location.reload();
+    menuText.style.display = "none";
+    menuX.onclick = "";
+    menuIcon.onclick = menuClicked;
+    handText.style.display = "none";
+    playText.style.display = "none";
+    trumpText.style.display = "none";
+    bidText.style.display = "none";
+    bidBox[west].textContent = bidBox[north].textContent = bidBox[east].textContent ="";
+    loaded(); //location.reload();
 }
 
 // Exit menu item clicked: close the app
