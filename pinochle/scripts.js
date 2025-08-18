@@ -857,7 +857,7 @@ function moveCard(c, g0, t0, g1, z1, f1, t1, c0, c1) {
 function setSizes() {
     vw = Number.parseFloat(getComputedStyle(docBody).width);
     vh = Number.parseFloat(getComputedStyle(docBody).height);
-    diagText.innerText = `vh:${vh}, vw:${vw}, vh0:${vh0}, vw0:${vw0}`;
+    diagText.innerText = `vh:${vh}, vw:${vw}, vh0:${vh0}, vw0:${vw0}+`;
     cardw = Number.parseFloat(getComputedStyle(cardSize).width);
     cardh = Number.parseFloat(getComputedStyle(cardSize).height);
     iconw = Number.parseFloat(getComputedStyle(menuIcon).width);
@@ -1751,7 +1751,7 @@ function loaded() {
     setSizes();
     vh0 = vh;
     vw0 = vw;
-    diagText.innerText = `vh:${vh}, vw:${vw}, vh0:${vh0}, vw0:${vw0}`;
+    diagText.innerText = `vh:${vh}, vw:${vw}, vh0:${vh0}, vw0:${vw0}*`;
     locateCards(true);
     dealer = Math.floor(Math.random() * players);
     let t0 = performance.now();
