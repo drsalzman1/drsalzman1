@@ -220,6 +220,7 @@ const againBtn  = document.getElementById("againBtn");
 const quitBtn   = document.getElementById("quitBtn");
 const menuIcon  = document.getElementById("menuIcon");
 const menuText  = document.getElementById("menuText");
+const diagText  = document.getElementById("diagText");
 const menuX     = document.getElementById("menuX");
 const statsItem = document.getElementById("statsItem");
 const optnsItem = document.getElementById("optnsItem");
@@ -238,6 +239,7 @@ const optnsText = document.getElementById("optnsText");
 const optnsX    = document.getElementById("optnsX");
 const openChk   = document.getElementById("openChk");
 const slowChk   = document.getElementById("slowChk");
+const cardSize  = document.getElementById("cardSize");
 
 // Animation constants
 const fastDeal  = 2000;             // fast (2 second) deal
@@ -268,11 +270,13 @@ let tossHand    = false;            // true if bidder decides to toss in the han
 // Dynamic sizes
 let vw          = 0;                // view width
 let vh          = 0;                // view height
+let cardw       = 0;                // card width
+let cardh       = 0;                // card height
+let iconw       = 0;                // icon width
+let iconh       = 0;                // icon height
 let pad         = 0;                // padding around display elements
 let hpad        = 0;                // horizontal padding for east and west hands
 let vpad        = 0;                // vertical padding for north and south hands 
-let cardw       = 0;                // card width
-let cardh       = 0;                // card height
 
 // Return number of cards of value v in player p's hand
 function nValue(p, v) {
@@ -851,17 +855,19 @@ function moveCard(c, g0, t0, g1, z1, f1, t1, c0, c1) {
 function setSizes() {
     vw = Number.parseFloat(getComputedStyle(docBody).width);
     vh = Number.parseFloat(getComputedStyle(docBody).height);
+    diagText.innerText = `vh:${vh}, sh:${screen.height}, ah:${screen.availHeight}`;
+    cardw = Number.parseFloat(getComputedStyle(cardSize).width);
+    cardh = Number.parseFloat(getComputedStyle(cardSize).height);
+    iconw = Number.parseFloat(getComputedStyle(menuIcon).width);
+    iconh = Number.parseFloat(getComputedStyle(menuIcon).height);
+    pad   = Number.parseFloat(getComputedStyle(menuIcon).marginLeft);
     if (vw < vh) {
-        cardw = Math.min(vw/(1+19/4+2/10), vh/(1+19/4+2*3.5/2.5+2/3+6/10));
         hpad = vw/2 - cardw*(1+19/4)/2;
-        vpad = cardw/3 + 2*cardw/10;
+        vpad = iconh + 2*pad;
     } else {
-        cardw = Math.min(vh/(1+19/4+2/10), vw/(1+19/4+2*3.5/2.5+2/3+6/10));
-        hpad = cardw/3 + 2*cardw/10;
+        hpad = iconw + 2*pad;
         vpad = vh/2 - cardw*(1+19/4)/2;
     }
-    cardh = cardw / 2.5 * 3.5;
-    pad = cardw/10;
     docCanvas.width  = vw;
     docCanvas.height = vh;
 }

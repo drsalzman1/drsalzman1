@@ -14,16 +14,16 @@
         }
 }
 
-@media (max-aspect-ratio: 0.55) {
+/*@media (max-aspect-ratio: 0.55) {
     :root {
         --west-top:     calc(050vh - var(--cardw)*3.20);
-        --west-left:    calc(050vw - var(--cardw)*3.65); /* 2.55 */
+        --west-left:    calc(050vw - var(--cardw)*3.65);
         --west-align:   center;
         --east-top:     calc(050vh - var(--cardw)*3.20);
-        --east-left:    calc(050vw + var(--cardw)*0.70); /* +1.85 */
+        --east-left:    calc(050vw + var(--cardw)*0.70);
         --east-align:   center;
         }
-}
+}*/
 
 @media (orientation: landscape) {
     :root {
@@ -42,6 +42,7 @@
 }
 
 :root {
+    --cardh:            calc(var(--cardw) * 1.40);
     --pad:              calc(var(--cardw) * 0.10);
     --icon:             calc(var(--cardw) * 0.33);
     --font-size:        calc(var(--cardw) * 0.25);
@@ -278,13 +279,10 @@ input {
     top: calc(var(--font-size) * 0.02);
 }
 
-#trumpIcon {
-    filter: invert(100%);
-    margin: var(--pad);
-    width: var(--icon);
-    height: var(--icon);
+#cardSize {
+    width: var(--cardw);
+    height: var(--cardh);
+    margin-left: var(--);
     position: absolute;
-    bottom: 0;
-    right: 0;
     display: none;
 }
