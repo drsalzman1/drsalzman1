@@ -5,20 +5,22 @@
         --west-left:    calc(050vw - var(--cardw)*1.40);
         --west-align:   left;
         --north-top:    calc(000vh + var(--cardw)*0.20);
-        --north-left:   calc(050vw - var(--cardw)*0.35);
+        --north-left:   calc(050vw - var(--cardw)*1.50);
         --east-top:     calc(050vh - var(--cardw)*2.50);
-        --east-left:    calc(050vw + var(--cardw)*0.68);
+        --east-left:    calc(050vw - var(--cardw)*1.62);
         --east-align:   right;
+        --south-top:    calc(100vh - var(--cardw)*2.30);
+        --south-left:   calc(050vw - var(--cardw)*1.50);
         }
 }
 
 @media (max-aspect-ratio: 0.55) {
     :root {
         --west-top:     calc(050vh - var(--cardw)*3.20);
-        --west-left:    calc(050vw - var(--cardw)*2.55);
+        --west-left:    calc(050vw - var(--cardw)*3.65); /* 2.55 */
         --west-align:   center;
         --east-top:     calc(050vh - var(--cardw)*3.20);
-        --east-left:    calc(050vw + var(--cardw)*1.85);
+        --east-left:    calc(050vw + var(--cardw)*0.70); /* +1.85 */
         --east-align:   center;
         }
 }
@@ -30,10 +32,12 @@
         --west-left:    calc(000vw + var(--cardw)*2.02);
         --west-align:   left;
         --north-top:    calc(050vh - var(--cardw)*1.45);
-        --north-left:   calc(050vw - var(--cardw)*0.35);
+        --north-left:   calc(050vw - var(--cardw)*1.50);
         --east-top:     calc(050vh - var(--cardw)*0.155);
-        --east-left:    calc(100vw - var(--cardw)*2.73);
+        --east-left:    calc(100vw - var(--cardw)*5.03);
         --east-align:   right;
+        --south-top:    calc(050vh + var(--cardw)*1.20);
+        --south-left:   calc(050vw - var(--cardw)*1.50);
         }
 }
 
@@ -44,6 +48,7 @@
     --menu-width:       calc(var(--cardw) * 4.00);
     --text-area:        calc(var(--cardw) * 2.60);
     --box-width:        calc(var(--cardw) * 0.70);
+    --bid-width:        calc(var(--cardw) * 3.00);
     --box-height:       calc(var(--cardw) * 0.31);
     --pick-width:       calc(var(--cardw) * 1.30);
     --stats-width:      calc(var(--cardw) * 5.55);
@@ -177,13 +182,15 @@ input {
 }
 
 #bidBox div {
-    width: var(--box-width);
+    width: var(--bid-width);
     position: absolute;
+    z-index: -100;
 }
 
 #bidBox :nth-child(1) {top: var(--west-top);  left: var(--west-left);  text-align: var(--west-align);}
 #bidBox :nth-child(2) {top: var(--north-top); left: var(--north-left); text-align: center;           }
 #bidBox :nth-child(3) {top: var(--east-top);  left: var(--east-left);  text-align: var(--east-align);}
+#bidBox :nth-child(4) {top: var(--south-top); left: var(--south-left); text-align: center;           }
 
 #menuIcon {
     filter: invert(100%);
@@ -228,25 +235,21 @@ input {
     display: none;
 }
 
-#statsRow0 {
-    margin-bottom: var(--font-size);
-}
-
 #statsRow1, #statsRow2 {
+    margin-top: var(--font-size);
     display: flex;
     flex-direction: row;
     justify-content: center;
 }
 
 #spadesT, #heartsT, #clubsT, #diamondsT {
-    margin-bottom: var(--font-size);
     display: flex;
     flex-direction: row;
     text-align: center;
 }
 
 #heartsT, #diamondsT {
-    margin-left: calc(var(--font-size) * 1.1);
+    margin-left: calc(var(--font-size) * 1.8);
 }
 
 .statColumn {
@@ -273,4 +276,15 @@ input {
     height: calc(var(--font-size) * 0.8);
     position: relative;
     top: calc(var(--font-size) * 0.02);
+}
+
+#trumpIcon {
+    filter: invert(100%);
+    margin: var(--pad);
+    width: var(--icon);
+    height: var(--icon);
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    display: none;
 }

@@ -1,22 +1,30 @@
 "use strict";
 
-// Player values
+const debug = false;
+
+// Player values (or none)
+const none     = -1;
 const west     = 0;
 const north    = 1;
 const east     = 2;
 const south    = 3;
 const players  = 4;
 const player$  = ["West", "North", "East", "South"];
+const next     = [north,  east,    south,  west   ];
+const us       = [false,  true,    false,  true   ];
+const them     = [true,   false,   true,   false  ];
 
-// Suit values
+
+// Suit values (or none)
 const diamonds = 0;
 const clubs    = 5;
 const hearts   = 10;
 const spades   = 15;
 const suits    = 4;
 const suit$    = ["diamonds",,,,,"clubs",,,,,"hearts",,,,,"spades"];
+const suitSrc  = ["suits/diamond.svg",,,,,"suits/club.svg",,,,,"suits/heart.svg",,,,,"suits/spade.svg"];
 
-// Rank values
+// Rank values (or none)
 const jack     = 0;
 const queen    = 1;
 const king     = 2;
@@ -25,9 +33,44 @@ const ace      = 4;
 const ranks    = 5;
 const rank$    = ["jack", "queen", "king", "ten", "ace"];
 
-// Card values = rank + suit
+// Card values = rank + suit (or absent)
 const values   = 20;
-const value$   = ["J♦","Q♦","K♦","T♦","A♦","J♣","Q♣","K♣","T♣","A♣","J♥","Q♥","K♥","T♥","A♥","J♠","Q♠","K♠","T♠","A♠"];
+const absent   = 20;
+const value$   = ["J♦","Q♦","K♦","T♦","A♦","J♣","Q♣","K♣","T♣","A♣","J♥","Q♥","K♥","T♥","A♥","J♠","Q♠","K♠","T♠","A♠","--"];
+
+// suit[v] = suit of card value v
+const suit     = [
+    diamonds, diamonds, diamonds, diamonds, diamonds,
+    clubs, clubs, clubs, clubs, clubs, 
+    hearts, hearts, hearts, hearts, hearts, 
+    spades, spades, spades, spades, spades,
+    none
+];
+
+// rank[v] = rank of card value v
+const rank    = [
+    jack, queen, king, ten, ace, 
+    jack, queen, king, ten, ace, 
+    jack, queen, king, ten, ace, 
+    jack, queen, king, ten, ace,
+    none
+];
+
+// high[v] = card value v is a point card
+const high    = [
+    false, false, true, true, true, 
+    false, false, true, true, true, 
+    false, false, true, true, true, 
+    false, false, true, true, true
+];
+
+// trmp[v] = card value v is a trump card
+const trmp    = [
+    false, false, false, false, false,
+    false, false, false, false, false,
+    false, false, false, false, false,
+    false, false, false, false, false
+];
 
 // faceSrc[v] = face source file for card value v
 const faceSrc = [
@@ -52,7 +95,6 @@ const faceImg = [
 const backImg = new Image();
 
 // bid[p] = player p's bid (or none or pass)
-const none = -1;
 const pass = 0;
 const bid = [none, none, none, none];
 
@@ -80,24 +122,31 @@ class A {
 }
 
 // Card groups
-const gone = 0;                     // gone (not yet dealt, hidden from view or pulled)
+const gone = 0;                     // gone (not yet dealt, hidden from view, or pulled)
 const heap = 1;                     // heap of dealt cards
 const hand = 2;                     // normal hand position
 const bump = 3;                     // bump hand position
-const play = 4;                     // play position 
+const play = 4;                     // play position
 
 // Card class
 class C {
     constructor() {
         this.c    = 0;              // card number
+        this.p    = 0;              // player value
+        this.u    = false;          // player is us (north or south)
         this.v    = 0;              // card value
+        this.s    = 0;              // card suit
+        this.r    = 0;              // card rank
+        this.t    = false;          // card take is one
         this.g    = 0;              // card group
+        this.m    = false;          // card is in trump
         this.z    = 0;              // draw order
-        this.f    = false;          // display face if true; back if false
-        this.gone = new P;          // stacked position
+        this.f    = false;          // display face if true
+        this.k    = false;          // card known to all players
+        this.gone = new P;          // gone position
         this.heap = new P;          // heap position
-        this.hand = new P;          // normal hand position
-        this.bump = new P;          // bump hand position
+        this.hand = new P;          // hand position
+        this.bump = new P;          // bump position
         this.play = new P;          // play position
         this.strt = new A;          // start animation
         this.fnsh = new A;          // finish animation
@@ -114,14 +163,28 @@ const card = [
     new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C
 ];
 
-// remaining[v] = remaining cards of value v to be play
+// plyr[c] = player assigned card c
+const plyr = [
+    west, west, west, west, west, west, west, west, west, west, west, west, west, west, west, west, west, west, west, west,
+    north,north,north,north,north,north,north,north,north,north,north,north,north,north,north,north,north,north,north,north,
+    east, east, east, east, east, east, east, east, east, east, east, east, east, east, east, east, east, east, east, east, 
+    south,south,south,south,south,south,south,south,south,south,south,south,south,south,south,south,south,south,south,south,
+];
+
+// minC[p] = minimum card number assigned to player p
+const minC = [0, 20, 40, 60];
+
+// maxC[p] = maximum card number assigned to player p
+const maxC = [19, 39, 59, 79];
+
+// remaining[v] = remaining cards of value v to be played
 const remaining = Array(values);
 
 // maxCards[p][v] = most cards player p can hold of value v (revealed by meld and play)
-const maxCards  = [Array(values), Array(values), Array(values), Array(values)];
+const maxCards = [Array(values), Array(values), Array(values), Array(values)];
 
 // minCards[p][v] = least cards player p can hold of value v (revealed by meld and play)
-const minCards  = [Array(values), Array(values), Array(values), Array(values)];
+const minCards = [Array(values), Array(values), Array(values), Array(values)];
 
 // Page elements
 const docBody   = document.getElementById("docBody");
@@ -186,12 +249,11 @@ let ondone      = function(){};     // event to invoke after animation completes
 let dealer      = south;            // the player who is dealing or last dealt
 let bidder      = none;             // the player who is bidding or won the bid
 let trump       = none;             // the bidder's trump suit
-let thisPlayer  = none;             // the player who is playing a card
-let thisCard    = none;             // the card number that is being played
-let firstSuit   = none;             // the suit led in this hand
-let highValue   = none;             // the high card value in this hand (so far)
-let highSuit    = none;             // the suit of the high card in this hand (so far)
-let highPlayer  = none;             // the player who play the high card
+let mustToss    = false;            // true is bidder doesn't have a marriage in trump
+let player      = none;             // the player who is choosing then playing a card
+let chosen      = none;             // the card number that was chosen
+let leadCard    = none;             // the card number that was lead
+let highCard    = none;             // the card number of the highest card so far
 let ourBid      = none;             // our bid if we win the bid (or none)
 let theirBid    = none;             // their bid if they win the bid (or none)
 let ourMeld     = 0;                // total of north and south meld for this hand
@@ -200,7 +262,7 @@ let ourTake     = 0;                // total of north and south points so far in
 let theirTake   = 0;                // total of west and east points so far in hand
 let ourScore    = 0;                // total of north and south points so far in game
 let theirScore  = 0;                // total of west and east points so far in game
-let openHand    = false;            // true if faces for all hands are displayed
+let openHand    = true //false;            // true if faces for all hands are displayed
 let tossHand    = false;            // true if bidder decides to toss in the hand
 
 // Dynamic sizes
@@ -212,84 +274,11 @@ let vpad        = 0;                // vertical padding for north and south hand
 let cardw       = 0;                // card width
 let cardh       = 0;                // card height
 
-// Return player assigned to card c
-function c2p(c) {
-    return Math.floor(c / cardsPerPlayer);
-}
-
-// Return first card assigned to player p (or 80 for player south+1)
-function p2c(p) {
-    return p * cardsPerPlayer;
-}
-
-// Return card number of top south card (or undefined) at x,y coordinates 
-function xy2c(x, y) {
-    let topC;
-    card.sort((a,b)=>a.z-b.z);
-    for (let c = 0; c < cards; c++) {
-        if (c2p(card[c].c) == south) {
-            const l = card[c].hand.x - cardw/2;
-            const r = card[c].hand.x + cardw/2;
-            const t = card[c].hand.y - cardh/2;
-            const b = card[c].hand.y + cardh/2;
-            if (card[c].g==hand && x>=l && x<=r && y>=t-cardh*0.0 && y<=b)
-                topC = card[c].c;
-            if (card[c].g==bump && x>=l && x<=r && y>=t-cardh*0.4 && y<=b)
-                topC = card[c].c;
-        }
-    }
-    card.sort((a,b)=>a.c-b.c);
-    return topC;
-}
-
-// Return suit of card value v
-function suit(v) {
-    return Math.floor(v / ranks) * ranks;
-}
-
-// Return rank of card value v
-function rank(v) {
-    return v % ranks;
-}
-
-// Return highest card for player p in suit s (or none)
-function highest(p, s) {
-    let h = none;
-    for (let c = p2c(p); c < p2c(p+1); c++)
-        if (suit(card[c].v)==s && card[c].v>h)
-            h = card[c].v;
-    return h;
-}
-
-// Return true if card value v follows the lead
-function follow(v) {
-    return suit(v) == firstSuit;
-}
-
-// Return true if player p can't follow the lead
-function cantFollow(p) {
-    return highest(p, firstSuit) == none;
-}
-
-// True is player p can't trump
-function cantTrump(p) {
-    return highest(p, trump) == none;
-}
-
-// Return number of player p's cards with card value v
+// Return number of cards of value v in player p's hand
 function nValue(p, v) {
     let n = 0;
-    for (let c = p2c(p); c < p2c(p+1); c++)
-        if (card[c].v == v)
-            n++;
-    return n;
-}
-
-// Return number of player p's face up cards with card value v
-function nValueUp(p, v) {
-    let n = 0;
-    for (let c = p2c(p); c < p2c(p+1); c++)
-        if (card[c].f && card[c].v==v)
+    for (let c = minC[p]; c <= maxC[p]; c++)
+        if (card[c].g==hand && card[c].v==v)
             n++;
     return n;
 }
@@ -301,6 +290,29 @@ function nGroup(g) {
         if (card[c].g == g)
             n++;
     return n;
+}
+
+// Return number of cards of suit s in player p's hand
+function nSuit(p, s) {
+    let n = 0;
+    for (let c = minC[p]; c <= maxC[p]; c++)
+        if (card[c].g==hand && card[c].s==s)
+            n++;
+    return n;
+}
+
+// Return number of cards of rank r in player p's hand
+function nRank(p, r) {
+    let n = 0;
+    for (let c = minC[p]; c <= maxC[p]; c++)
+        if (card[c].g==hand && card[c].r==r)
+            n++;
+    return n;
+}
+
+// Return number of cards in player p's short suit
+function nShort(p) {
+    return Math.min(nSuit(p,spades), nSuit(p,hearts), nSuit(p,clubs), nSuit(p,diamonds));
 }
 
 // Return number of rank r arounds in player p's hand
@@ -343,67 +355,59 @@ function meld(p, t) {
     return m;
 }
 
-// Return minimum meld in bidder's hand
-function minMeld() {
+// Return minimum meld in player p's hand
+function minMeld(p) {
     let min = 999;
     for (let s of [spades, hearts, clubs, diamonds])
-        min = Math.min(meld(bidder, s), min);
+        min = Math.min(meld(p, s), min);
     return min;
 }
 
 // Return maximum meld in bidder's hand
-function maxMeld() {
+function maxMeld(p) {
     let max = 0;
     for (let s of [spades, hearts, clubs, diamonds])
-        max = Math.max(meld(bidder, s), max);
+        max = Math.max(meld(p, s), max);
     return max;
 }
 
-// Return suit with maximum meld 
-function maxSuit() {
+// Return suit with maximum meld in player p's hand
+function maxSuit(p) {
     for (let s of [spades, hearts, clubs, diamonds])
-        if (meld(bidder, s) == maxMeld())
+        if (meld(p, s) == maxMeld(p))
             return s;
 }
 
-// Recall n cards of value v for into player p's hand 
-function recallCards(p, v, n) {
-    for (let c = 0; n > 0 && c < cards; c++)
-        if (c2p(c)==p && card[c].v==v) {
-            card[c].g = hand;
-            card[c].f = true;
+// Tag n cards of value v in player p's hand as known to all
+function tagCards(p, v, n) {
+    for (let c = minC[p]; n > 0 && c <= maxC[p]; c++)
+        if (card[c].v==v) {
+            card[c].k = true;
             n--;
         }
 }
 
-// Recall meld into player's hands
-function recallMeld() {
+// Tag meld in each player's hand
+function tagMeld() {
     for (let p of [west, north, east, south])
-        if (((p==north || p==south) && ourMeld<20) || ((p==west || p==east) && theirMeld<20)) {
+        if ((us[p] && ourMeld<20) || (them[p] && theirMeld<20)) {
             if (p == bidder)
                 for (let r of [queen, king]) 
-                    recallCards(p, r+trump, Math.min(marriages(p, trump)), 1);
+                    tagCards(p, r+trump, Math.min(marriages(p, trump)), 1);
             for (let s of [diamonds, clubs, hearts, spades])
-                recallCards(p, ace+s, arounds(p, ace));
+                tagCards(p, ace+s, arounds(p, ace));
         } else {
             for (let r of [jack, queen, king, ace])
                 for (let s of [diamonds, clubs, hearts, spades])
-                    recallCards(p, r+s, arounds(p, r));
+                    tagCards(p, r+s, arounds(p, r));
             for (let r of [jack, queen, king, ten, ace])
-                recallCards(p, r+trump, runs(p, trump));
-            recallCards(p, jack+diamonds, pinochles(p));
-            recallCards(p, queen+spades, pinochles(p));
+                tagCards(p, r+trump, runs(p, trump));
+            tagCards(p, jack+diamonds, pinochles(p));
+            tagCards(p, queen+spades, pinochles(p));
             for (let r of [queen, king]) 
                 for (let s of [diamonds, clubs, hearts, spades])
-                    recallCards(p, r+s, marriages(p, s));
+                    tagCards(p, r+s, marriages(p, s));
         }
-}
-
-// Return next player after current player p (or none if p is none)
-function nextPlayer(p) {
-    if (p == none)
-        return none;
-    return (p + 1) % players;
 }
 
 // Return next bid based on high bid (or none or pass)
@@ -415,39 +419,26 @@ function nextBid() {
         return high + 5;
 }
 
-// Return number of cards of suit s in the bidder's hand
-function nSuit(s) {
-    return nValue(bidder,ace+s) + nValue(bidder,ten+s) + nValue(bidder,king+s) + nValue(bidder,queen+s) + nValue(bidder,jack+s);
+// Return quality = cards in player p's best suit + aces - cards short suit (7+4-3-8=0)
+function quality(p) {
+    return nSuit(p,maxSuit(p)) + nRank(p,ace) - nShort(p) - 8;
 }
 
-// Return number of cards of rank r in the bidder's hand
-function nRank(r) {
-    return nValue(bidder,r+spades) + nValue(bidder,r+hearts) + nValue(bidder,r+clubs) + nValue(bidder,r+diamonds);
-}
-
-// Return number of cards in bidder's short suit
-function nShort() {
-    return Math.min(nSuit(spades), nSuit(hearts), nSuit(clubs), nSuit(diamonds));
-}
-
-// Return quality = cards in best suit + aces - cards in bidder's short suit (7+4-3-8=0)
-function quality() {
-    return nSuit(maxSuit()) + nRank(ace) - nShort() - 8;
-}
-
-// Return true if bidder has no marriages
-function noMarriages() {
-    return marriages(bidder,spades)==0 && marriages(bidder,hearts)==0 && marriages(bidder,clubs)==0 && marriages(bidder,diamonds)==0;
+// Return true if player p has no marriages
+function noMarriages(p) {
+    return marriages(p,spades)==0 && marriages(p,hearts)==0 && marriages(p,clubs)==0 && marriages(p,diamonds)==0;
 }
 
 // Log bid
 function logBid(n, msg) {
-    const partner = (bidder + 2) % players;
-    if (bid[west]==none && bid[north]==none && bid[east]==none && bid[south]==none) {
-        console.log("\nBid          Message      Quality  MinMeld  MaxMeld  Partner");
-        console.log  ("===========  ===========  =======  =======  =======  =======");
+    if (debug) {
+        const partner = next[next[bidder]];
+        if (bid[west]==none && bid[north]==none && bid[east]==none && bid[south]==none) {
+            console.log("\nBid          Message      Quality  MinMeld  MaxMeld  Partner");
+            console.log  ("===========  ===========  =======  =======  =======  =======");
+        }
+        console.log((((((`${player$[bidder]}:`.padEnd(7)+n).padEnd(13)+msg).padEnd(28)+(quality(bidder)>=0?"+":"")+quality(bidder)).padEnd(37)+minMeld(bidder)).padEnd(46)+maxMeld(bidder)).padEnd(55)+est[partner]);
     }
-    console.log((((((`${player$[bidder]}:`.padEnd(7)+n).padEnd(13)+msg).padEnd(28)+(quality()>=0?"+":"")+quality()).padEnd(37)+minMeld()).padEnd(46)+maxMeld()).padEnd(55)+est[partner]);
 }
 
 // Return number of players who passed
@@ -457,35 +448,35 @@ function nPass() {
 
 // Return computer bidder's bid
 function autoBid() {
-    const left    = (bidder + 1) % players;
-    const partner = (bidder + 2) % players;
-    const right   = (bidder + 3) % players;
+    const left    = next[bidder];
+    const partner = next[left];
+    const right   = next[partner];
     const highBid = Math.max(...bid);
-    const maxBid  = maxMeld() + est[partner] + 20 + quality();
+    const maxBid  = maxMeld(bidder) + est[partner] + 20 + quality(bidder);
     if (nPass() == 3) {
         logBid(Math.max(bid[bidder], 50), "Last bid");
         return Math.max(bid[bidder], 50);
     }
-    if (noMarriages()) {
+    if (noMarriages(bidder)) {
         logBid("Pass", "No marriage");
         return pass;
     }
-    if (bid[left]==none && bid[right]!=pass && highBid<60 && quality()>0 && maxBid>=60) {
+    if (bid[left]==none && bid[right]!=pass && highBid<60 && quality(bidder)>0 && maxBid>=60) {
         logBid(60, "Block bid");
         return 60;
     }
-    if (bid[bidder]==none && bid[partner]!=pass && highBid<58 && minMeld()>15) {
+    if (bid[bidder]==none && bid[partner]!=pass && highBid<58 && minMeld(bidder)>15) {
         const high = Math.max(50, ...bid);
-        const jump = Math.min(high + Math.round(minMeld()/10), 59);
+        const jump = Math.min(high + Math.round(minMeld(bidder)/10), 59);
         est[bidder] = (jump - high) * 10;
         logBid(jump, "Jump bid");
         return jump;
     }
-    if (highBid<60 && quality()>=0 && maxBid>=60 && maxBid<70) {
+    if (highBid<60 && quality(bidder)>=0 && maxBid>=60 && maxBid<70) {
         logBid(60, "Worried");
         return 60;
     }
-    if (quality()>=0 && nextBid() <= maxBid) {
+    if (quality(bidder)>=0 && nextBid() <= maxBid) {
         logBid(nextBid(), "Want bid");
         return nextBid();
     }
@@ -493,23 +484,23 @@ function autoBid() {
         logBid(50, "Save");
         return 50;
     }
-    if (quality() < 0)
+    if (quality(bidder) < 0)
         logBid("Pass", "Bad quality");
     else
         logBid("Pass", "Too high");
     return pass;
 }
 
-// Return true if bidder has run in best suit
-function run() {
-    return runs(bidder, maxSuit()) > 0;
+// Return true if player p has a run in his best suit
+function run(p) {
+    return runs(p, maxSuit(p)) > 0;
 }
 
 // Return computer bidder's trump selection
 function autoPick() {
-    const partner = (bidder + 2) % players;
+    const partner = next[next[bidder]];
     let n = 0, t;
-    if (nRank(king) + nRank(queen) == 0)                        // no kings or queens
+    if (nRank(bidder,king) + nRank(bidder,queen) == 0)          // no kings or queens
         for (let s of [spades, hearts, clubs, diamonds]) {
             if (nValue(bidder, ace+s) > n) {
                 n = nValue(bidder, ace+s);
@@ -524,7 +515,7 @@ function autoPick() {
                 t = s;
             }
         }
-    else if (noMarriages())                                     // no marriages
+    else if (noMarriages(bidder))                               // no marriages
         for (let s of [spades, hearts, clubs, diamonds]) {
             if (nValue(bidder, king+s) > n) {
                 n = nValue(bidder, king+s);
@@ -535,88 +526,267 @@ function autoPick() {
                 t = s;
             }
         }
-    else if (bid[bidder]>maxMeld()+est[partner]+20 && run())    // stretching w/ run
-        t = maxSuit();
+    else if (bid[bidder]>maxMeld(bidder)+est[partner]+20 && run(bidder))    // stretching w/ run
+        t = maxSuit(bidder);
     else                                                        // all other cases
         for (let s of [spades, hearts, clubs, diamonds]) {
-            if (marriages(bidder,s)>0 && nSuit(s)+nValue(bidder,ace+s)>n) {
-                n = nSuit(s) + nValue(bidder, ace+s);
+            if (marriages(bidder,s)>0 && nSuit(bidder,s)+nValue(bidder,ace+s)>n) {
+                n = nSuit(bidder,s) + nValue(bidder, ace+s);
                 t = s;
             }
         }
     return t;
 }
 
-// Return true if card c can be selected
-function legal(c) {
-    const p = c2p(c);
-    const v = card[c].v;
-    if (v == none || p != thisPlayer)
+// Return true if card c can be chosen based on lead card l, high card h, and trump (disturbing nothing)
+function legal(c, l, h) {
+    if (card[c].g!=hand && card[c].g!=bump)                     // c's not in hand or bumped, c's illegal
         return false;
-    if (firstSuit == none)
+    if (l == none)                                              // If no lead card (and no high card), c's legal
         return true;
-    if (firstSuit!=trump && highSuit==trump) {
-        if (follow(v))
+    if (!card[l].m && card[h].m) {                              // If non-trump lead was trumped, 
+        if (card[c].s == card[l].s)                                 // if c follows the lead, c's legal
             return true;
-        if (cantFollow(p) && suit(v)==trump && v>highValue)
+        for (let i = minC[card[c].p]; i <= maxC[card[c].p]; i++)    // if player can follow but doesn't, c's illegal
+            if (card[i].g==hand && card[i].s==card[l].s)
+                return false;
+        if (card[c].m && card[c].r>card[h].r)                       // if player overtrumps, c's legal
             return true;
-        if (cantFollow(p) && highest(p,trump)<=highValue && suit(v)==trump)
+        for (let i = minC[card[c].p]; i <= maxC[card[c].p]; i++)    // if player can overtrump but doesn't, c's illegal
+            if (card[i].g==hand && card[i].m && card[i].r>card[h].r)
+                return false;
+        if (card[c].m)                                              // if c's trump, c's legal
             return true;
-        if (cantFollow(p) && cantTrump(p))
+        for (let i = minC[card[c].p]; i <= maxC[card[c].p]; i++)    // if player can trump but doesn't, c's illegal
+            if (card[i].g==hand && card[i].m)
+                return false;
+    } else {                                                    // If trump was lead or high card isn't trump,
+        if (card[c].s==card[l].s && card[c].r>card[h].r)            // if c follows lead and beats high, c's legal
             return true;
-    } else {
-        if (follow(v) && v>highValue)
+        for (let i = minC[card[c].p]; i <= maxC[card[c].p]; i++)    // if player can follow lead & beat high but doesn't, c's illegal
+            if (card[i].g==hand && card[i].s==card[l].s && card[i].r>card[h].r)
+                return false;
+        if (card[c].s == card[l].s)                                 // if c follows lead, c's legal
             return true;
-        if (follow(v) && highest(p,firstSuit)<=highValue)
+        for (let i = minC[card[c].p]; i <= maxC[card[c].p]; i++)    // if player can follow lead but doesn't, c's illegal
+            if (card[i].g==hand && card[i].s==card[l].s)
+                return false;
+        if (card[c].m)                                              // if card is (first) trump, c's legal
             return true;
-        if (cantFollow(p) && suit(v)==trump)
-            return true;
-        if (cantFollow(p) && cantTrump(p))
-            return true;
+        for (let i = minC[card[c].p]; i <= maxC[card[c].p]; i++)    // if player can trump but doesn't, c's illegal
+            if (card[i].g==hand && card[i].m)
+                return false;
         }
-    return false;
+    return true;                                                // All other c's are legal
 }
 
-/*
-Lead:
-    Play non-trump ace if no one is trumping that suit
-    If partner has all remaining aces in a suit:
-        Play king in that suit
-        Play ten in that suit
-        Play queen in that suit
-        Play jack in that suit
-    If partner alone is trumping a suit, or is over-trumping a suit:
-        Play king in that suit
-        Play ten in that suit
-        Play queen in that suit
-        Play jack in that suit
-
-*/
-
-// Return computer player p's first legal card number
-function autoSelect(p) {
-    for (let c = p2c(p); c < p2c(p+1); c++)
-        if (legal(c))
-            return c;
-}
-
-// Shuffle an array in place
-function shuffleArray(array) {
-    let currentIndex = array.length;
-    while (currentIndex > 0) {
-        let randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex--;
-        let temp = array[currentIndex];
-        array[currentIndex] = array[randomIndex];
-        array[randomIndex] = temp;
+// Shuffle first n elements of array a in place
+function shuffleArray(a, n) {
+    let x = 0, temp = 0;
+    while (n > 0) {
+        x = Math.floor(Math.random() * n--);
+        temp = a[n];
+        a[n] = a[x];
+        a[x] = temp;
     }
     return;
+}
+
+// Display hands on console
+function displayHands (cardV, title) {
+    if (debug) {
+        let t = "";
+        console.log("");
+        console.log(title);
+        console.log("=".repeat(title.length));
+        for (let c = 0; c < cards; c++) {
+            const p = card[c].p;
+            if (c == minC[p])
+                t = `${player$[p]}:`.padEnd(6);
+            t += ` ${value$[cardV[c]]}`;
+            if (c == maxC[p])
+                console.log(t);
+        }
+    }
+}
+
+// Get plausible card values v given other player's unrevealed cards and compliant with maxCards
+function getPlausible(cardV, p) {
+    const unknown = Array(cards).fill(0);
+    let u = 0;
+    displayHands(cardV, "Unscrambled");
+    for (let c = 0; c < cards; c++)
+        if (card[c].g==hand && card[c].p!=p && !card[c].k)
+            unknown[u++] = card[c].v;
+    nextTry: do {
+        shuffleArray(unknown, u);
+        u = 0;
+        for (let c = 0; c < cards; c++)
+            if (card[c].g==hand && card[c].p!=p && !card[c].k)
+                cardV[c] = unknown[u++];
+            else
+                cardV[c] = card[c].g==gone? absent : card[c].v;
+        for (let p of [west, north, east, south])
+            for (let v = 0; v < values; v++) {
+                let nV = 0;
+                for (let c = minC[p]; c <= maxC[p]; c++)
+                    if (card[c].g==hand && cardV[c]==v)
+                        nV++;
+                if (nV > maxCards[p][v])
+                    continue nextTry;
+            }
+    } while (false);
+    displayHands(cardV, "Scrambled");
+}
+
+const trckMerit = 10;   // Merit(demerit) for winning(losing) the trick
+const highMerit = 10;   // Merit(demerit) for each point card won(lost)
+const rankMerit = 1;    // Merit(demerit) for each card  foe(ally) uses
+const trmpMerit = 1;    // Merit(demerit) for each trump foe(ally) uses
+
+function bestMerit(v, bestC, playC, p, leadCard0, highCard0, nPlayed) {
+    let l = leadCard0;
+    let h = highCard0;
+    let merit = 0;
+    let bestM = -100;
+    nextC: for (let c = minC[p]; c <= maxC[p]; c++) {       // For all of player p's cards,
+        if (v[c] != absent) {                                   // if card is in hand,
+            if (l == none)                                          // if no lead card,
+                l = h = c;                                              // lead and high cards are now this card
+            else {                                                  // otherwise,
+                const vc=v[c],     vl=v[l],     vh=v[h];
+                const sc=suit[vc], sl=suit[vl], sh=suit[vh];
+                const rc=rank[vc], rl=rank[vl], rh=rank[vh];
+                const tc=trmp[vc], tl=trmp[vl], th=trmp[vh];
+                if (!tl && th) {                                        // if lead suit isn't trump and high suit is trump, 
+                    if (sc != sl) {                                         // if c doesn't follow the lead,
+                        for (let c = minC[p]; c <= maxC[p]; c++)                // if p can follow the lead, c's no good
+                            if (suit[v[c]] == sl)
+                                continue nextC;
+                        if (!tc || rc<=rh) {                                    // if c doesn't overtrump,
+                            for (let c = minC[p]; c <= maxC[p]; c++)                // if p can overtrump, c's no good
+                                if (trmp[v[c]] && v[c]>vh)
+                                    continue nextC;
+                            if (!tc)                                                // if c's not trump,
+                                for (let c = minC[p]; c <= maxC[p]; c++)                // if p can trump, c's no good
+                                    if (trmp[v[c]])
+                                        continue nextC;
+                        }
+                    }
+                } else {                                                // if lead suit is trump or high suit isn't trump,
+                    if (sc!=sl || rc<=rh) {                                 // if c doesn't follow lead or doesn't beats high,
+                        for (let c = minC[p]; c <= maxC[p]; c++)                // if p can follow lead & beat high, c's no good
+                            if (suit[v[c]]==sl && v[c]>vh)
+                                continue nextC;
+                        if (sc != sl) {                                         // if c doesn't follow lead,
+                            for (let c = minC[p]; c <= maxC[p]; c++)                // if p can follow lead, c's no good
+                                if (suit[v[c]] == sl)
+                                    continue nextC;
+                            if (!tc)                                                // if c's not trump,
+                                for (let c = minC[p]; c <= maxC[p]; c++)                 // if p cam trump, c's no good
+                                    if (trmp[v[c]])
+                                        continue nextC;
+                        }
+                    }
+                }
+                if (sc==sh && rc>rh || tc&&!th)                         // if c beats h or c's trump and h's not,
+                    h = c;                                                  // new high card.
+            }
+            // Legal card: play it
+            playC[p] = c;
+            if (nPlayed+1 < players) {
+                // Play incomplete: recurse to next player
+                merit = -bestMerit(v, bestC, playC, next[p], l, h, nPlayed+1);
+            } else {
+                // Play complete: calculate merit
+                const w=v[playC[west]], n=v[playC[north]], e=v[playC[east]], s=v[playC[south]];
+                if (us[p] && us[plyr[h]]) {
+                    // NS is last player and NS won
+                    merit =  +trckMerit;
+                    merit += (+high[w] + high[n] + high[e] + high[s]) * highMerit;
+                    merit += (+rank[w] - rank[n] + rank[e] - rank[s]) * rankMerit;
+                    merit += (+trmp[w] - trmp[n] + trmp[e] - trmp[s]) * trmpMerit;
+                } else if (!us[p] && !us[plyr[h]]) {
+                    // EW is last player and EW won
+                    merit =  +trckMerit;
+                    merit += (+high[w] + high[n] + high[e] + high[s]) * highMerit;
+                    merit += (-rank[w] + rank[n] - rank[e] + rank[s]) * rankMerit;
+                    merit += (-trmp[w] + trmp[n] - trmp[e] + trmp[s]) * trmpMerit;
+                } else if (us[p] && !us[plyr[h]]) {
+                    // NS is last player and NS lost
+                    merit =  -trckMerit;
+                    merit += (-high[w] - high[n] - high[e] - high[s]) * highMerit;
+                    merit += (+rank[w] - rank[n] + rank[e] - rank[s]) * rankMerit;
+                    merit += (+trmp[w] - trmp[n] + trmp[e] - trmp[s]) * trmpMerit;
+                } else if (!us[p] && us[plyr[h]]) {
+                    // EW is last player and EW lost
+                    merit =  -trckMerit;
+                    merit += (-high[w] - high[n] - high[e] - high[s]) * highMerit;
+                    merit += (-rank[w] + rank[n] - rank[e] + rank[s]) * rankMerit;
+                    merit += (-trmp[w] + trmp[n] - trmp[e] + trmp[s]) * trmpMerit;
+                }
+            }
+            if (merit > bestM) {
+                bestM = merit;
+                bestC[p] = c;
+            }
+            l = leadCard0;
+            h = highCard0;
+        }
+    }
+    return bestM;
+}
+
+// Results class
+class R {
+    constructor(c) {
+        this.c = c;                 // card number
+        this.n = 0;                 // number of times this card had the best merit
+     }
+}
+
+// Return computer player p's best legal card number based on plausible hands (or none)
+function autoSelect(p) {
+    const cardV = Array(cards).fill(0);
+    const nPlayed = nGroup(play);
+    const results = [
+        new R(0),  new R(1),  new R(2),  new R(3),  new R(4),  new R(5),  new R(6),  new R(7),  new R(8),  new R(9),
+        new R(10), new R(11), new R(12), new R(13), new R(14), new R(15), new R(16), new R(17), new R(18), new R(19),
+        new R(20), new R(21), new R(22), new R(23), new R(24), new R(25), new R(26), new R(27), new R(28), new R(29),
+        new R(30), new R(31), new R(32), new R(33), new R(34), new R(35), new R(36), new R(37), new R(38), new R(39),
+        new R(40), new R(41), new R(42), new R(43), new R(44), new R(45), new R(46), new R(47), new R(48), new R(49),
+        new R(50), new R(51), new R(52), new R(53), new R(54), new R(55), new R(56), new R(57), new R(58), new R(59),
+        new R(60), new R(61), new R(62), new R(63), new R(64), new R(65), new R(66), new R(67), new R(68), new R(69),
+        new R(70), new R(71), new R(72), new R(73), new R(74), new R(75), new R(76), new R(77), new R(78), new R(79)
+    ];
+    const a0 = performance.now();
+    let cycles = 0;
+    while (performance.now() - a0 < dealTime/4) {
+        const bestC = [none, none, none, none];
+        const playC = [none, none, none, none];
+        for (let c = 0; c < cards; c++)
+            if (card[c].g == play) {
+                bestC[card[c].p] = c;
+                playC[card[c].p] = c;
+            }
+        getPlausible(cardV, p);
+        bestMerit(cardV, bestC, playC, p, leadCard, highCard, nPlayed);
+        results[bestC[p]].n++;
+        cycles++;
+    }
+    results.sort((a,b)=>b.n-a.n);
+    let s = `${cycles.toLocaleString().padStart(7)} cycles`;
+    for (let i = 0; i < cards; i++)
+        if (results[i].n / cycles >= 0.01)
+            s += `,` + `${(results[i].n/cycles).toLocaleString("en-US",{style:"percent"})}`.padStart(5) + ` ${value$[card[results[i].c].v]}`;
+    console.log(s);
+    return results[0].c;
 }
 
 // Return number of cards in player p's hand
 function nCards(p) {
     let n = 0;
-    for (let c = p2c(p); c < p2c(p+1); c++)
+    for (let c = minC[p]; c <= maxC[p]; c++)
         if (card[c].g == hand)
             n++;
     return n;
@@ -630,8 +800,8 @@ function locateCards(full = false) {
     const rSouth = [+Math.PI,   0,          -Math.PI,   0         ][dealer];
     let n, v;
     for (let c = 0; c < cards; c++) {
-        const p = c2p(c);
-        if (c == p2c(p)) {
+        const p = card[c].p;
+        if (c == minC[p]) {
             n = full? 19 : nCards(p)-1;
             v = 0;
         }
@@ -660,12 +830,10 @@ function locateCards(full = false) {
             v++;
     }
 }
-
 // Move card c from c0(?), group g0 at time t0 to c1(?), group g1, zIndex z1, face f1 over time t1
 function moveCard(c, g0, t0, g1, z1, f1, t1, c0, c1) {
     c0 = c0 ?? c;
     c1 = c1 ?? c;
-    card[c].c = c;
     card[c].g = g1;
     card[c].z = z1;
     card[c].f = f1;
@@ -696,6 +864,26 @@ function setSizes() {
     pad = cardw/10;
     docCanvas.width  = vw;
     docCanvas.height = vh;
+}
+
+// Return card number of top south card (or undefined) at x,y coordinates 
+function xy2c(x, y) {
+    let topC;
+    card.sort((a,b)=>a.z-b.z);
+    for (let c = 0; c < cards; c++) {
+        if (card[c].p == south) {
+            const l = card[c].hand.x - cardw/2;
+            const r = card[c].hand.x + cardw/2;
+            const t = card[c].hand.y - cardh/2;
+            const b = card[c].hand.y + cardh/2;
+            if (card[c].g==hand && x>=l && x<=r && y>=t-cardh*0.0 && y<=b)
+                topC = card[c].c;
+            if (card[c].g==bump && x>=l && x<=r && y>=t-cardh*0.4 && y<=b)
+                topC = card[c].c;
+        }
+    }
+    card.sort((a,b)=>a.c-b.c);
+    return topC;
 }
 
 // Request first animation frame and save animation complete event handler
@@ -778,23 +966,42 @@ function quitClicked() {
 function handEnded() {
     usOld.textContent = ourScore;
     themOld.textContent = theirScore;
-    usBid.textContent = ourBid;
-    themBid.textContent = theirBid;
-    usMeld.textContent = ourMeld = ourMeld < 20 ? 0 : ourMeld;
-    themMeld.textContent = theirMeld = theirMeld < 20 ? 0 : theirMeld;
-    usTake.textContent = ourTake = ourTake < 20 ? 0 : ourTake;
-    themTake.textContent = theirTake = theirTake < 20 ? 0 : theirTake;
-    if (tossHand)
-        if (bidder==north || bidder==south) {
-            ourScore -= ourBid;
-            theirScore += theirMeld;
+    if (us[bidder]) {
+        usBid.innerHTML = ourBid;
+        themBid.innerHTML = "Pass";
+        if (tossHand || ourMeld+ourTake<ourBid) {
+            usMeld.innerHTML = "<s>&nbsp"+ourMeld+"&nbsp</s>";
+            themMeld.innerHTML = theirMeld<20 ? "<s>&nbsp"+theirMeld+"&nbsp</s>" : theirMeld;
+            usTake.innerHTML = "<s>&nbsp"+ourTake+"&nbsp</s>";
+            themTake.innerHTML = theirTake<20 ? "<s>&nbsp"+theirTake+"&nbsp</s>" : theirTake;
+            ourScore = ourScore - ourBid;
+            theirScore = theirScore + theirMeld<20 ? 0 : theirMeld;
         } else {
-            theirScore -= theirBid;
-            ourScore += ourMeld;
+            usMeld.innerHTML = ourMeld;
+            themMeld.innerHTML = theirMeld<20 ? "<s>&nbsp"+theirMeld+"&nbsp</s>" : theirMeld;
+            usTake.innerHTML = ourTake;
+            themTake.innerHTML = theirTake<20 ? "<s>&nbsp"+theirTake+"&nbsp</s>" : theirTake;
+            ourScore = ourScore + ourMeld + ourTake;
+            theirScore = theirScore + (theirTake<20 ? 0 : (theirTake + (theirMeld<20 ? 0 : theirMeld)));
         }
-    else {
-        ourScore = ourMeld + ourTake < ourBid ? ourScore - ourBid : ourScore + ourMeld + ourTake;
-        theirScore = theirMeld + theirTake < theirBid ? theirScore - theirBid : theirScore + theirMeld + theirTake;
+    } else {
+        usBid.innerHTML = "Pass";
+        themBid.innerHTML = theirBid;
+        if (tossHand || theirMeld+theirTake<theirBid) {
+            usMeld.innerHTML = ourMeld<20 ? "<s>&nbsp"+ourMeld+"&nbsp</s>" : ourMeld;
+            themMeld.innerHTML = "<s>&nbsp"+theirMeld+"&nbsp</s>";
+            usTake.innerHTML = ourTake<20 ? "<s>&nbsp"+ourTake+"&nbsp</s>" : ourTake;
+            themTake.innerHTML = "<s>&nbsp"+theirTake+"&nbsp</s>";
+            ourScore = ourScore + ourMeld<20 ? 0 : ourMeld;
+            theirScore = theirScore - theirBid;
+        } else {
+            usMeld.innerHTML = ourMeld<20 ? "<s>&nbsp"+ourMeld+"&nbsp</s>" : ourMeld;
+            themMeld.innerHTML = theirMeld;
+            usTake.innerHTML = ourTake<20 ? "<s>&nbsp"+ourTake+"&nbsp</s>" : ourTake;
+            themTake.innerHTML = theirTake;
+            ourScore = ourScore + (ourTake<20 ? 0 : (ourTake + (ourMeld<20 ? 0 : ourMeld)));
+            theirScore = theirScore + theirMeld + theirTake;
+        }
     }
     usNew.textContent = ourScore;
     themNew.textContent = theirScore;
@@ -802,7 +1009,7 @@ function handEnded() {
         nextDiv.style.display = "block";
         overDiv.style.display = "none";
         handText.style.display = "block";
-        dealer = nextPlayer(dealer);
+        dealer = next[dealer];
         nextBtn.onclick = nextClicked;
     } else {
         nextDiv.style.display = "none";
@@ -821,16 +1028,14 @@ function handEnded() {
 function trickViewed() {
     const now = performance.now();
     for (let c = 0; c < cards; c++)
-        if (card[c].g == play) {
-            card[c].v = none;
-            moveCard(c, play, now, gone, 100, false, dealTime/10, c, p2c(highPlayer));
-        }
-    if (nValue(west, none) < cardsPerPlayer) {
-        thisPlayer = highPlayer;
-        thisCard = firstSuit = highValue = highSuit = highPlayer = none;
+        if (card[c].g == play)
+            moveCard(c, play, now, gone, 100, false, dealTime/10, c, minC[card[highCard].p]);
+    if (nGroup(hand) > 0) {
+        player = card[highCard].p;
+        chosen = leadCard = highCard = none;
         animate(handsRefanned);
     } else {
-        if (highPlayer == north || highPlayer == south)
+        if (card[highCard].u)
             ourTake += 2;
         else
             theirTake += 2;
@@ -843,8 +1048,8 @@ function trickPlayed() {
     const now = performance.now();
     for (let c = 0; c < cards; c++)
         if (card[c].g == play) {
-            if (rank(card[c].v)==ace || rank(card[c].v)==ten || rank(card[c].v)==king)
-                if (highPlayer == north || highPlayer == south)
+            if (card[c].r==ace || card[c].r==ten || card[c].r==king)
+                if (card[highCard].u)
                     ourTake += 1;
                 else
                     theirTake += 1;
@@ -857,70 +1062,64 @@ function trickPlayed() {
 function cardPlayed() {
     const now = performance.now();
     locateCards();
-    moveCard(thisCard, play, now, play, -100, true, 0);
-    thisPlayer = nextPlayer(thisPlayer);
+    moveCard(chosen, play, now, play, -100, true, 0);
+    player = next[player];
     if (nGroup(play) == players)
         animate(trickPlayed);
     else
         animate(handsRefanned);
 }
 
-// Card selected: update stats, play face, then trigger cardPlayed
-function cardSelected() {
+// Card chosen: update stats, play face, then trigger cardPlayed
+function cardChosen() {
     const now = performance.now();
-    const p = thisPlayer;
-    const c = thisCard;
-    const v = card[c].v;
     let msg = "";
 
-    // if card is in high suit and doesn't beat non-ace high card, player must not have any cards that can beat the high card 
-    if (suit(v)==highSuit && highValue!=ace+highSuit && v<=highValue) {
-        msg = `Can't beat ${value$[highValue]}`;
-        for (let v=highValue+1; v<=ace+highSuit; v++)
-            maxCards[p][v] = 0;
+    // if chosen card is in high suit and doesn't beat non-ace high card, player must not have any cards that can beat the high card 
+    if (highCard!=none && card[chosen].s==card[highCard].s && card[highCard].r!=ace && card[chosen].r<=card[highCard].r) {
+        msg = `Can't beat ${value$[card[highCard].v]}`;
+        for (let v=card[highCard].v+1; v<=ace+card[highCard].s; v++)
+            maxCards[player][v] = 0;
     }
-    // if no first suit, this must be the first suit and the high value/suit/player
-    if (firstSuit == none) {
-        console.log(`\nPlay       Remain  West   North  East   South  Message`);
-        console.log  (`=========  ======  =====  =====  =====  =====  =======`);
-        firstSuit = suit(v);
-        highValue = v;
-        highSuit = suit(v);
-        highPlayer = p;
+    // if no lead card, chosen card must be the lead card and the high card
+    if (leadCard == none)
+        leadCard = highCard = chosen;
+    
+    // if chosen card is in trump and trump wasn't led, player must be out of the first suit
+    if (card[chosen].m && !card[leadCard].m) {
+        msg = `Out of ${suit$[card[leadCard].s]}.`;
+        for (let v = jack+card[leadCard].s; v <= ace+card[leadCard].s; v++)
+            maxCards[player][v] = 0;
     }
-    // if card is in trump and trump wasn't led, player must be out of the first suit
-    if (suit(v)==trump && firstSuit!=trump) {
-        msg = `Out of ${suit$[firstSuit]}.`;
-        for (let v = jack+firstSuit; v <= ace+firstSuit; v++)
-            maxCards[p][v] = 0;
-    }
-    // if card is in high suit and beats high card, we have a new high value/suit/player
-    if (suit(v)==highSuit && v>highValue) {
-        highValue = v;
-        highSuit = suit(v);
-        highPlayer = p;
-    }
-    // if card is in trump and the high suit isn't trump, we have a new high value/suit/player
-    if (suit(v)==trump && highSuit!=trump) {
-        highValue = v;
-        highSuit = suit(v);
-        highPlayer = p;
-    }
-    // Update stats based on revealed card
-    remaining[v]--;
-    minCards[p][v] = Math.max(minCards[p][v] - 1, 0);
-    const loose = remaining[v] - minCards[west][v] - minCards[north][v] - minCards[east][v] - minCards[south][v];
+    // if chosen card is in high suit and beats high card, we have a new high card
+    if (card[chosen].s==card[highCard].s && card[chosen].r>card[highCard].r)
+        highCard = chosen;
+
+    // if chosen card is in trump and the high suit isn't trump, we have a new high card
+    if (card[chosen].m && !card[highCard].m)
+        highCard = chosen;
+
+    // Update stats based on chosen card
+    remaining[card[chosen].v]--;
+    minCards[player][card[chosen].v] = Math.max(minCards[player][card[chosen].v] - 1, 0);
+    let loose = remaining[card[chosen].v]
     for (let p of [west, north, east, south])
-        maxCards[p][v] = Math.min(maxCards[p][v], minCards[p][v] + loose);
+        loose -= minCards[p][card[chosen].v];
+    for (let p of [west, north, east, south])
+        maxCards[p][card[chosen].v] = Math.min(maxCards[p][card[chosen].v], minCards[p][card[chosen].v] + loose);
 
     // log this play
-    let t = `${player$[p]}:`.padEnd(7) + `${value$[v]}    ${remaining[v]}     `;
-    for (let p of [west, north, east, south])
-        t += `${minCards[p][v]}...${maxCards[p][v]}  `;
-    console.log(t + msg);
+    if (debug) {
+        console.log(`\nPlay       Remain  West   North  East   South  Message`);
+        console.log  (`=========  ======  =====  =====  =====  =====  =======`);
+        let t = `${player$[player]}:`.padEnd(7) + `${value$[card[chosen].v]}    ${remaining[card[chosen].v]}     `;
+        for (let p of [west, north, east, south])
+            t += `${minCards[p][card[chosen].v]}...${maxCards[p][card[chosen].v]}  `;
+        console.log(t + msg);
+    }
 
     // animate card play
-    moveCard(c, card[c].g, now, play, card[c].z, true, dealTime/10);
+    moveCard(chosen, card[chosen].g, now, play, card[chosen].z, true, dealTime/10);
     animate(cardPlayed);
 }
 
@@ -934,52 +1133,54 @@ function mouseMoved(e) {
                 moveCard(c2, bump, now, hand, c2, true, dealTime/20);
                 requestAnimationFrame(frameEvent);
             }
-    if (c != undefined && card[c].g == hand && legal(c)) {
+    if (c!=undefined && card[c].g==hand && card[c].p==player && legal(c, leadCard, highCard)) {
         moveCard(c, hand, now, bump, c, true, dealTime/20);
         requestAnimationFrame(frameEvent);
     }
 }
 
-// Mouse pressed: if hand/bump southern card, unbump cards; if hand legal card, bump it; if legal, play it
+// Mouse pressed: if hand/bump southern card, unbump cards; if hand legal card, bump it; if legal, choose it
 function mousePressed(e) {
     const now = performance.now();
     const c = xy2c(e.clientX, e.clientY);
     if (c != undefined) {
         for (let c2 = 0; c2 < cards; c2++) {
-            if (c2 != c && card[c2].g == bump) {
+            if (c2!=c && card[c2].g==bump) {
                 moveCard(c2, bump, now, hand, c2, true, dealTime/20);
                 requestAnimationFrame(frameEvent);
             }
         }
-        if (card[c].g == hand && legal(c)) {
+        if (card[c].g==hand && card[c].p==player && legal(c, leadCard, highCard)) {
             moveCard(c, hand, now, bump, c, true, dealTime/20);
             requestAnimationFrame(frameEvent);
         }
-        if (legal(c)) {
-            thisCard = c; 
+        if (card[c].g==bump && card[c].p==player && legal(c, leadCard, highCard)) {
+            chosen = c; 
             docBody.onmousemove = "";
             docBody.onmousedown = "";
             docBody.ontouchstart = "";
             docBody.ontouchmove = "";
-            setTimeout(cardSelected);
+            bidBox[south].textContent = "";
+            setTimeout(cardChosen);
         }
     }
 }
 
-// Touch started: if legal bump card, play it; if isn't bump card, unbump cards; if hand legal, bump it 
+// Touch started: if legal bump card, choose it; if isn't bump card, unbump cards; if hand legal, bump it 
 function touchStarted(e) {
     docBody.onmousedown = "";
     docBody.onmousemove = "";
     const now = performance.now();
     const c = xy2c(e.touches[0].clientX, e.touches[0].clientY);
-    if (c != undefined && card[c].g == bump && legal(c)) {
-        thisCard = c; 
+    if (c!=undefined && card[c].g==bump && card[c].p==player && legal(c, leadCard, highCard)) {
+        chosen = c; 
         docBody.ontouchstart = "";
         docBody.ontouchmove = "";
-        setTimeout(cardSelected);
+        bidBox[south].textContent = "";
+        setTimeout(cardChosen);
         return;
     }
-    if (c == undefined || card[c].g != bump) {
+    if (c==undefined || card[c].g!=bump) {
         for (let c2 = 0; c2 < cards; c2++) {
             if (card[c2].g == bump) {
                 moveCard(c2, bump, now, hand, c2, true, dealTime/20);
@@ -987,7 +1188,7 @@ function touchStarted(e) {
             }
         }
     }
-    if (c != undefined && card[c].g == hand && legal(c)) {
+    if (c!=undefined && card[c].g==hand && card[c].p==player && legal(c, leadCard, highCard)) {
         moveCard(c, hand, now, bump, c, true, dealTime/20);
         requestAnimationFrame(frameEvent);
     }
@@ -997,7 +1198,7 @@ function touchStarted(e) {
 function touchMoved(e) {
     const now = performance.now();
     const c = xy2c(e.touches[0].clientX, e.touches[0].clientY);
-    if (c == undefined || card[c].g != bump) {
+    if (c==undefined || card[c].g!=bump) {
         for (let c2 = 0; c2 < cards; c2++) {
             if (card[c2].g == bump) {
                 moveCard(c2, bump, now, hand, c2, true, dealTime/20);
@@ -1005,22 +1206,23 @@ function touchMoved(e) {
             }
         }
     }
-    if (c != undefined && card[c].g == hand && legal(c)) {
+    if (c!=undefined && card[c].g==hand && card[c].p==player && legal(c, leadCard, highCard)) {
         moveCard(c, hand, now, bump, c, true, dealTime/20);
         requestAnimationFrame(frameEvent);
     }
 }
 
-// Hands re-fanned: now select a card to play, then trigger cardSelected
+// Hands re-fanned: now choose a card to play, then trigger cardChosen
 function handsRefanned() {
-    if (thisPlayer == south) {
+    if (player == south) {
         docBody.onmousemove = mouseMoved;
         docBody.onmousedown = mousePressed;
         docBody.ontouchstart = touchStarted;
         docBody.ontouchmove = touchMoved;
+        bidBox[south].textContent = "Trump is "+suit$[trump];
     } else {
-        thisCard = autoSelect(thisPlayer);
-        setTimeout (cardSelected, dealTime / 10);
+        chosen = autoSelect(player);
+        setTimeout (cardChosen, 0);
     }
 }
 
@@ -1029,12 +1231,12 @@ function meldGathered() {
     const now = performance.now();
     locateCards(true);
     for (let c = 0; c < cards; c++)
-        if (openHand || c2p(c)==south)
+        if (openHand || card[c].p==south)
             moveCard(c, gone, now, hand, c, true, dealTime/10);
         else
             moveCard(c, gone, now, hand, -c, false, dealTime/10);
-    thisPlayer = bidder;
-    thisCard = firstSuit = highValue = highSuit = highPlayer = none;
+    player = bidder;
+    chosen = leadCard = highCard = none;
     ourTake = theirTake = 0;
     tossHand = false;
     animate(handsRefanned);
@@ -1044,18 +1246,17 @@ function meldGathered() {
 function showClicked() {
     const now = performance.now();
     if (showBtn.value == "Show") {
-        for (let c = p2c(south); c < p2c(south+1); c++)
+        for (let c = minC[south]; c <= maxC[south]; c++)
             card[c].g = hand;
         locateCards();
-        for (let c = p2c(south); c < p2c(south+1); c++)
+        for (let c = minC[south]; c <= maxC[south]; c++)
             moveCard(c, gone, now, hand, c, true, dealTime/10);
         showBtn.value = "Hide";
     } else {
-        for (let c = p2c(south); c < p2c(south+1); c++)
-            card[c].g = gone;
-        recallMeld();
+        for (let c = minC[south]; c <= maxC[south]; c++)
+            card[c].g = card[c].k ? hand : gone;
         locateCards();
-        for (let c = p2c(south); c < p2c(south+1); c++)
+        for (let c = minC[south]; c <= maxC[south]; c++)
             if (card[c].g == hand)
                 moveCard(c, gone, now, hand, c, true, dealTime/10);
         showBtn.value = "Show";
@@ -1085,6 +1286,7 @@ function tossClicked() {
     tossBtn.onclick = "";
     playText.style.display = "none";
     tossHand = true;
+    ourTake = theirTake = 0;
     for (let c = 0; c < cards; c++)
         moveCard(c, hand, now, gone, -c, false, dealTime/10);
     animate(handEnded);
@@ -1093,7 +1295,7 @@ function tossClicked() {
 // Meld fanned: display situation, then await showClicked, playClicked or tossClicked 
 function meldFanned() {
     let weNeed = 20, theyNeed = 20;
-    if (bidder == north || bidder == south)
+    if (us[bidder])
         if (ourMeld < 20)
             weNeed = bid[bidder];
         else
@@ -1103,17 +1305,18 @@ function meldFanned() {
             theyNeed = bid[bidder];
         else
             theyNeed = Math.max(20, bid[bidder] - theirMeld);
-    ourBid = [pass, bid[north], pass, bid[south]][bidder];
-    theirBid = [bid[west], pass, bid[east], pass][bidder];
+    ourBid = bid[north] > bid[south] ? bid[north] : bid[south];
+    theirBid = bid[west] > bid[east] ? bid[west] : bid[east];
     playPara[0].textContent = `${player$[bidder]} won the bid at ${bid[bidder]} with ${suit$[trump]}.`;
     playPara[1].textContent = `Our meld is ${ourMeld < 20 ? "< 20" : ourMeld} and their meld is ${theirMeld < 20 ? "< 20" : theirMeld}.`;
-    if (marriages(bidder,trump) == 0) {
+    if (mustToss) {
         playPara[2].textContent = `${player$[bidder]} must toss this hand.`;
         showBtn.style.display = "none";
         playBtn.style.display = "none";
         tossBtn.style.display = "inline";
-    } else if (bidder==west&&theyNeed>30 || bidder==north&&weNeed>30 || bidder==east&&theyNeed>30) {
+    } else if (them[bidder]&&theyNeed>30 || bidder==north&&weNeed>30) {
         tossHand = true;
+        ourTake = theirTake = 0;
         playPara[2].textContent = `${player$[bidder]} decided to toss this hand.`;
         showBtn.style.display = "none";
         playBtn.style.display = "none";
@@ -1133,50 +1336,51 @@ function meldFanned() {
 // Hands regathered: fan out meld, then trigger meldFanned
 function handsRegathered() {
     const now = performance.now();
-    ourMeld = meld(north, trump) + meld(south, trump);
-    theirMeld = meld(west, trump) + meld(east, trump);
 
-    // show meld cards (move meld from stack to face-up hand)
-    recallMeld();
+    // move known (meld) cards into hands
+    for (let c = 0; c < cards; c++)
+        if (card[c].k)
+            card[c].g = hand;
+    displayHands("Meld Shown");
 
-    // Adjust minCards and maxCards based on face up meld cards
+    // Adjust minCards and maxCards based on meld cards
     for (let p of [west, north, east, south]) {
         // Adjust minCards based on revealed cards
         for (let v = 0; v < values; v++)
-            minCards[p][v] = nValueUp(p, v);
+            minCards[p][v] = nValue(p, v);
         // if #A/K/Q/J in other suits > #A/K/Q/J in this suit, max = #A/K/Q/J in this suit
-        for (let rank of [ace, king, queen, jack]) {
+        for (let r of [ace, king, queen, jack]) {
             let minCount = 5;
             let minSuit = none;
             let minHits = 0;
-            for (let suit of [diamonds, clubs, hearts, spades])
-                if (nValueUp(p,rank+suit) < minCount) {
-                    minCount = nValueUp(p,rank+suit);
-                    minSuit = suit;
+            for (let s of [diamonds, clubs, hearts, spades])
+                if (nValue(p,r+s) < minCount) {
+                    minCount = nValue(p,r+s);
+                    minSuit = s;
                     minHits = 1;
-                } else if (nValueUp(p,rank+suit) == minCount)
+                } else if (nValue(p,r+s) == minCount)
                     minHits++;
             if (minHits == 1)
-                maxCards[p][rank+minSuit] = minCount;
+                maxCards[p][r+minSuit] = minCount;
         }
         // if #Q/K < #K/Q in suit, max = #Q/K in suit
-        for (let suit of [diamonds, clubs, hearts, spades])
-            if (nValueUp(p,queen+suit) < nValueUp(p,king+suit))
-                maxCards[p][queen+suit] = nValueUp(p,queen+suit);
-            else if (nValueUp(p,king+suit) < nValueUp(p,queen+suit))
-                maxCards[p][king+suit] = nValueUp(p,king+suit);
+        for (let s of [diamonds, clubs, hearts, spades])
+            if (nValue(p,queen+s) < nValue(p,king+s))
+                maxCards[p][queen+s] = nValue(p,queen+s);
+            else if (nValue(p,king+s) < nValue(p,queen+s))
+                maxCards[p][king+s] = nValue(p,king+s);
         // if #JD/QS < #QS/JD, max = #JD/QS
-        if (nValueUp(p,jack+diamonds) < nValueUp(p,queen+spades))
-            maxCards[p][jack+diamonds] = nValueUp(p,jack+diamonds);
-        else if (nValueUp(p,queen+spades) < nValueUp(p,jack+diamonds))
-            maxCards[p][queen+spades] = nValueUp(p,queen+spades);
+        if (nValue(p,jack+diamonds) < nValue(p,queen+spades))
+            maxCards[p][jack+diamonds] = nValue(p,jack+diamonds);
+        else if (nValue(p,queen+spades) < nValue(p,jack+diamonds))
+            maxCards[p][queen+spades] = nValue(p,queen+spades);
         // if #T < min(#A,#K,#Q,#J) in trump, max = #T
         let minOther = 5;
-        for (let rank of [ace, king, queen, jack])
-            if (nValueUp(p,rank+trump) < minOther)
-                minOther = nValueUp(p,rank+trump);
-        if (nValueUp(p,ten+trump) < minOther)
-            maxCards[p][ten+trump] = nValueUp(p,ten+trump);
+        for (let r of [ace, king, queen, jack])
+            if (nValue(p,r+trump) < minOther)
+                minOther = nValue(p,r+trump);
+        if (nValue(p,ten+trump) < minOther)
+            maxCards[p][ten+trump] = nValue(p,ten+trump);
     }
     // reduce maxCards based on minCards
     for (let p of [west, north, east, south])
@@ -1185,15 +1389,17 @@ function handsRegathered() {
             maxCards[p][v] = Math.min(maxCards[p][v], minCards[p][v] + loose);
         }
     // log stats
-    let t = "";
-    console.log("\nLimits  J♦ Q♦ K♦ T♦ A♦ J♣ Q♣ K♣ T♣ A♣ J♥ Q♥ K♥ T♥ A♥ J♠ Q♠ K♠ T♠ A♠");
-    console.log  ("======  == == == == == == == == == == == == == == == == == == == ==");
-    for (let p of [west, north, east, south]) {
-        t = `${player$[p]}:`;
-        t = t.padEnd(7);
-        for (let v = 0; v < values; v++)
-            t += ` ${minCards[p][v]}${maxCards[p][v]}`;
-        console.log(t);
+    if (debug) {
+        let t = "";
+        console.log("\nLimits  J♦ Q♦ K♦ T♦ A♦ J♣ Q♣ K♣ T♣ A♣ J♥ Q♥ K♥ T♥ A♥ J♠ Q♠ K♠ T♠ A♠");
+        console.log  ("======  == == == == == == == == == == == == == == == == == == == ==");
+        for (let p of [west, north, east, south]) {
+            t = `${player$[p]}:`;
+            t = t.padEnd(7);
+            for (let v = 0; v < values; v++)
+                t += ` ${minCards[p][v]}${maxCards[p][v]}`;
+            console.log(t);
+        }
     }
     // animate movement of meld cards to hand
     locateCards();
@@ -1206,9 +1412,18 @@ function handsRegathered() {
 // Trump picked: regather hands, then trigger handsRegathered
 function trumpPicked() {
     const now = performance.now();
-    console.log(`\n${player$[bidder]} picks ${suit$[trump]}.`)
-    for (let c = 0; c < cards; c++)
+    ourMeld = meld(north, trump) + meld(south, trump);
+    theirMeld = meld(west, trump) + meld(east, trump);
+    mustToss = marriages(bidder, trump) == 0;
+    tagMeld();
+    if (debug)
+        console.log(`\n${player$[bidder]} picks ${suit$[trump]}.`);
+    for (let c = 0; c < cards; c++) {
+        card[c].m = card[c].s==trump;
         moveCard(c, hand, now, gone, -c, false, dealTime/10);
+    }
+    for (let v = 0; v < values; v++)
+        trmp[v] = suit[v]==trump;
     animate(handsRegathered);
 }
 
@@ -1244,7 +1459,7 @@ function biddingDone() {
         trumpBtn[1].disabled = marriages(south, hearts) == 0;
         trumpBtn[2].disabled = marriages(south, clubs) == 0;
         trumpBtn[3].disabled = marriages(south, diamonds) == 0;
-        if (noMarriages())
+        if (noMarriages(bidder))
             trumpBtn[0].disabled = trumpBtn[1].disabled = trumpBtn[2].disabled = trumpBtn[3].disabled = false;
         trumpText.style.display = "flex";
         for (let t = 0; t < trumpBtn.length; t++)
@@ -1273,7 +1488,7 @@ function bidClicked(e) {
             bidBtn[1].value = Number(bidBtn[1].value) - 1;
         else
             bidBtn[1].value = Number(bidBtn[1].value) - 5;
-        if (bidBtn[1].value == nextBid(highBid))
+        if (bidBtn[1].value == nextBid())
             bidBtn[0].value = "Pass";
         return;
     }
@@ -1289,8 +1504,12 @@ function bidClicked(e) {
         bidBtn[b].disabled = true;
         bidBtn[b].onclick = "";
     }
-    bidder = nextPlayer(bidder);
+    bidder = next[bidder];
     if (nPass() == 3) {
+        if (bid[bidder] == none) {
+            logBid(50, "Dropped");
+            bid[bidder] = 50;
+        }
         bidText.style.display = "none";
         setTimeout(biddingDone, dealTime / 4);
     } else
@@ -1300,7 +1519,7 @@ function bidClicked(e) {
 // Hands fanned: await bidClicked or autoBid and retrigger handsFanned or trigger biddingDone
 function handsFanned() {
     while (bid[bidder] == pass) 
-        bidder = nextPlayer(bidder);
+        bidder = next[bidder];
     if (bidder == south && bid[bidder] == none) {
         meldSpan[0].textContent = meld(south, spades);
         meldSpan[1].textContent = meld(south, hearts);
@@ -1310,7 +1529,7 @@ function handsFanned() {
     }
     if (bidder == south) {
         bidBtn[0].value = "Pass";
-        bidBtn[1].value = nextBid(Math.max(...bid));
+        bidBtn[1].value = nextBid();
         bidBtn[2].value = ">";
         for (let b = 0; b < bidBtn.length; b++) {
             bidBtn[b].disabled = false;
@@ -1322,7 +1541,7 @@ function handsFanned() {
             bidBox[bidder].textContent = "Pass";
         else
             bidBox[bidder].textContent = bid[bidder];
-        bidder = nextPlayer(bidder);
+        bidder = next[bidder];
         if (nPass()==3) {
             if (bid[bidder] == none) {
                 logBid(50, "Dropped");
@@ -1340,13 +1559,14 @@ function handsFanned() {
 function handsGathered() {
     const now = performance.now();
     for (let c = 0; c < cards; c++)
-        if (openHand || c2p(c)==south)
+        if (openHand || card[c].p==south)
             moveCard(c, gone, now, hand, c, true, dealTime/10);
         else
             moveCard(c, gone, now, hand, -c, false, dealTime/10);
-    bidder = nextPlayer(dealer);
+    bidder = next[dealer];
     bid[west] = bid[north] = bid[east] = bid[south] = none;
     est[west] = est[north] = est[east] = est[south] = typical;
+    displayHands("Start");
     animate(handsFanned);
 }
 
@@ -1391,14 +1611,23 @@ function statsClicked() {
         const col = Math.floor((s % 25) / 5);
         const grp = Math.floor(s / 25);
         const v = (4 - row) + [spades, hearts, clubs, diamonds][grp];
-        const p = col;
         const unknown = remaining[v] - nValue(south,v) - minCards[west][v] - minCards[north][v] - minCards[east][v];
-        if (col == 3)
-            statField[s].textContent = nValue(south,v) + "-" + nValue(south,v);
-        else if (col == 4)
+        switch (col) {
+        case 0:
+            statField[s].textContent = minCards[west][v]+"-"+Math.min(maxCards[west][v],minCards[west][v]+unknown);
+            break;
+        case 1:
+            statField[s].textContent = minCards[north][v]+"-"+Math.min(maxCards[north][v],minCards[north][v]+unknown);
+            break;
+        case 2:
+            statField[s].textContent = minCards[east][v]+"-"+Math.min(maxCards[east][v],minCards[east][v]+unknown);
+            break;
+        case 3:
+            statField[s].textContent = nValue(south,v);
+            break;
+        case 4:
             statField[s].textContent = unknown;
-        else
-            statField[s].textContent = minCards[p][v] + "-" + Math.min(maxCards[p][v], minCards[p][v] + unknown);
+        }
     }
     for (let s of [spades, hearts, clubs, diamonds]) {
         const element = [diamondsT,,,,,clubsT,,,,,heartsT,,,,,spadesT][s];
@@ -1427,7 +1656,7 @@ function optnsXClicked() {
         dealTime = fastDeal;
     openHand = openChk.checked;
     for (let c = 0; c < cards; c++)
-        if (c2p(c)!=south && card[c].g==hand) {
+        if (card[c].p!=south && card[c].g==hand) {
             if (openHand) {
                 card[c].f = true;
                 card[c].z = c;
@@ -1482,38 +1711,40 @@ function loaded() {
     onresize = resized;
     menuIcon.draggable = false;
     menuIcon.onclick = menuClicked;
-    shuffleArray(deck);
+    shuffleArray(deck, cards);
     for (let p of [west, north, east, south]) {
-        sort = sort.concat(deck.slice(p2c(p),p2c(p+1)).sort((a,b)=>b-a));
+        sort = sort.concat(deck.slice(minC[p],maxC[p]+1).sort((a,b)=>b-a));
         minCards[p].fill(0);
         maxCards[p].fill(4);
     }
-    for (let c = 0; c < cards; c++)
+    for (let c = 0; c < cards; c++) {
+        card[c].c = c; 
+        card[c].p = plyr[c];
+        card[c].u = us[card[c].p];
         card[c].v = sort[c];
+        card[c].s = suit[card[c].v];
+        card[c].r = rank[card[c].v];
+        card[c].t = high[card[c].v];
+        card[c].m = false;
+        card[c].k = false;
+    }
     remaining.fill(4);
     trump = none;
+    trmp.fill(false);
     console.clear();
-    console.log("Start");
-    console.log("=====");
-    let t = "";
-    for (let c = 0; c < cards; c++) {
-        const p = c2p(c);
-        if (c == p2c(p))
-            t = `${player$[p]}:`.padEnd(6);
-        t += ` ${value$[card[c].v]}`;
-        if (c == p2c(p+1)-1)
-            console.log(t);
-    }
     setSizes();
     locateCards(true);
+    dealer = Math.floor(Math.random() * players);
     let t0 = performance.now();
+    let p = next[dealer];
     for (let z = 0; z < cards; z++) {
-        const c = (z%players+dealer+1)%players*20 + Math.floor(z/4);
-        moveCard(c, gone, t0, heap, z, false, dealTime/20, p2c(dealer), c);
+        const c = minC[p] + Math.floor(z/players);
+        moveCard(c, gone, t0, heap, z, false, dealTime/20, minC[dealer], c);
         card[c].fnsh.x += (Math.random()-0.5)*cardw/2;
         card[c].fnsh.y += (Math.random()-0.5)*cardw/2;
         card[c].fnsh.r += (Math.random()-0.5)*Math.PI/4;
         t0 = t0 + (dealTime - dealTime / 20) / cards;
+        p = next[p];
     }
     animate(deckDealt);
 }
