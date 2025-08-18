@@ -1743,6 +1743,7 @@ function loaded() {
     setSizes();
     vh0 = vh;
     vw0 = vw;
+    diagText.innerText = `vh:${vh}, vw:${vw}, vh0:${vh0}, vw0:${vw0}`;
     locateCards(true);
     dealer = Math.floor(Math.random() * players);
     let t0 = performance.now();
