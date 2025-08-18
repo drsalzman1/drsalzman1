@@ -262,7 +262,7 @@ let ourTake     = 0;                // total of north and south points so far in
 let theirTake   = 0;                // total of west and east points so far in hand
 let ourScore    = 0;                // total of north and south points so far in game
 let theirScore  = 0;                // total of west and east points so far in game
-let openHand    = true //false;            // true if faces for all hands are displayed
+let openHand    = false;            // true if faces for all hands are displayed
 let tossHand    = false;            // true if bidder decides to toss in the hand
 
 // Dynamic sizes
