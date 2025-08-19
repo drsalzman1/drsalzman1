@@ -270,8 +270,6 @@ let tossHand    = false;            // true if bidder decides to toss in the han
 // Dynamic sizes
 let vw          = 0;                // view width
 let vh          = 0;                // view height
-let vw0         = 0;                // view width (initial)
-let vh0         = 0;                // view height (initial)
 let cardw       = 0;                // card width
 let cardh       = 0;                // card height
 let iconw       = 0;                // icon width
@@ -857,7 +855,6 @@ function moveCard(c, g0, t0, g1, z1, f1, t1, c0, c1) {
 function setSizes() {
     vw = Number.parseFloat(getComputedStyle(docBody).width);
     vh = Number.parseFloat(getComputedStyle(docBody).height);
-    diagText.innerText = `vh:${vh}, vw:${vw}, wh:${window.innerHeight}, ww:${window.innerWidth} (3)`;
     cardw = Number.parseFloat(getComputedStyle(cardSize).width);
     cardh = Number.parseFloat(getComputedStyle(cardSize).height);
     iconw = Number.parseFloat(getComputedStyle(menuIcon).width);
@@ -1749,8 +1746,6 @@ function loaded() {
     trmp.fill(false);
     console.clear();
     setSizes();
-    vh0 = vh;
-    vw0 = vw;
     locateCards(true);
     dealer = Math.floor(Math.random() * players);
     let t0 = performance.now();
@@ -1768,4 +1763,4 @@ function loaded() {
 }
 
 // Set function to be invoked after app is loaded and rendered
-onload = loaded;
+onload = setTimeout(loaded, 1000);
