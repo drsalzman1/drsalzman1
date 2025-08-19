@@ -1747,7 +1747,7 @@ function loaded() {
     //console.clear();
     setSizes();
     locateCards(true);
-    console.log(card);
+    console.log(`cardw:${cardw}`);
     dealer = Math.floor(Math.random() * players);
     let t0 = performance.now();
     let p = next[dealer];
