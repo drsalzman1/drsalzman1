@@ -798,6 +798,7 @@ function nCards(p) {
 
 // Locate all card positions (full if full hands, n = number of semi-exposed cards; v = visible card number)
 function locateCards(full = false) {
+    console.log(`locateCards: full:${full}`)
     const rWest  = [+Math.PI/2, +Math.PI/2, -Math.PI/2, -Math.PI/2][dealer];
     const rNorth = [0,          0,          0,          0         ][dealer];
     const rEast  = [+Math.PI/2, -Math.PI/2, -Math.PI/2, +Math.PI/2][dealer];
@@ -1719,6 +1720,8 @@ function menuClicked() {
 // Load event: initialize app, deal cards, sort cards, then trigger deckDealt
 function loaded() {
     onresize = "";
+    console.clear();
+    console.log(`loaded`);
     const deck = Array.from(new Array(cards), (v, k) => k % cardsPerPlayer);
     let sort = [];
     for (let v = 0; v < values; v++)
@@ -1746,7 +1749,6 @@ function loaded() {
     remaining.fill(4);
     trump = none;
     trmp.fill(false);
-    //console.clear();
     setSizes();
     locateCards(true);
     dealer = Math.floor(Math.random() * players);
