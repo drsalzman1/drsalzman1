@@ -1586,6 +1586,7 @@ function deckDealt() {
 
 // Resize event: adjust dynamic sizes, then trigger deck redraw
 function resized () {
+    console.log(`resized`);
     const now = performance.now();
     setSizes();
     locateCards();
@@ -1717,6 +1718,7 @@ function menuClicked() {
 
 // Load event: initialize app, deal cards, sort cards, then trigger deckDealt
 function loaded() {
+    console.log(`loaded`);
     const deck = Array.from(new Array(cards), (v, k) => k % cardsPerPlayer);
     let sort = [];
     for (let v = 0; v < values; v++)
