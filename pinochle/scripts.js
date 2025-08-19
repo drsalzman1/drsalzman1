@@ -1,7 +1,5 @@
 "use strict";
 
-const debug = false;
-
 // Player values (or none)
 const none     = -1;
 const west     = 0;
@@ -220,7 +218,6 @@ const againBtn  = document.getElementById("againBtn");
 const quitBtn   = document.getElementById("quitBtn");
 const menuIcon  = document.getElementById("menuIcon");
 const menuText  = document.getElementById("menuText");
-const diagText  = document.getElementById("diagText");
 const menuX     = document.getElementById("menuX");
 const statsItem = document.getElementById("statsItem");
 const optnsItem = document.getElementById("optnsItem");
@@ -277,6 +274,11 @@ let iconh       = 0;                // icon height
 let pad         = 0;                // padding around display elements
 let hpad        = 0;                // horizontal padding for east and west hands
 let vpad        = 0;                // vertical padding for north and south hands 
+
+// Log debugText on console (comment out when done debugging)
+function log(debugText = "") {
+    log(debugText);
+}
 
 // Return number of cards of value v in player p's hand
 function nValue(p, v) {
@@ -435,14 +437,12 @@ function noMarriages(p) {
 
 // Log bid
 function logBid(n, msg) {
-    if (debug) {
-        const partner = next[next[bidder]];
-        if (bid[west]==none && bid[north]==none && bid[east]==none && bid[south]==none) {
-            console.log("\nBid          Message      Quality  MinMeld  MaxMeld  Partner");
-            console.log  ("===========  ===========  =======  =======  =======  =======");
-        }
-        console.log((((((`${player$[bidder]}:`.padEnd(7)+n).padEnd(13)+msg).padEnd(28)+(quality(bidder)>=0?"+":"")+quality(bidder)).padEnd(37)+minMeld(bidder)).padEnd(46)+maxMeld(bidder)).padEnd(55)+est[partner]);
+    const partner = next[next[bidder]];
+    if (bid[west]==none && bid[north]==none && bid[east]==none && bid[south]==none) {
+        log("\nBid          Message      Quality  MinMeld  MaxMeld  Partner");
+        log  ("===========  ===========  =======  =======  =======  =======");
     }
+    log((((((`${player$[bidder]}:`.padEnd(7)+n).padEnd(13)+msg).padEnd(28)+(quality(bidder)>=0?"+":"")+quality(bidder)).padEnd(37)+minMeld(bidder)).padEnd(46)+maxMeld(bidder)).padEnd(55)+est[partner]);
 }
 
 // Return number of players who passed
@@ -598,19 +598,17 @@ function shuffleArray(a, n) {
 
 // Display hands on console
 function displayHands (cardV, title) {
-    if (debug) {
-        let t = "";
-        console.log("");
-        console.log(title);
-        console.log("=".repeat(title.length));
-        for (let c = 0; c < cards; c++) {
-            const p = card[c].p;
-            if (c == minC[p])
-                t = `${player$[p]}:`.padEnd(6);
-            t += ` ${value$[cardV[c]]}`;
-            if (c == maxC[p])
-                console.log(t);
-        }
+    let t = "";
+    log("");
+    log(title);
+    log("=".repeat(title.length));
+    for (let c = 0; c < cards; c++) {
+        const p = card[c].p;
+        if (c == minC[p])
+            t = `${player$[p]}:`.padEnd(6);
+        t += ` ${value$[cardV[c]]}`;
+        if (c == maxC[p])
+            log(t);
     }
 }
 
@@ -783,7 +781,7 @@ function autoSelect(p) {
     for (let i = 0; i < cards; i++)
         if (results[i].n / cycles >= 0.01)
             s += `,` + `${(results[i].n/cycles).toLocaleString("en-US",{style:"percent"})}`.padStart(5) + ` ${value$[card[results[i].c].v]}`;
-    console.log(s);
+    log(s);
     return results[0].c;
 }
 
@@ -798,7 +796,6 @@ function nCards(p) {
 
 // Locate all card positions (full if full hands, n = number of semi-exposed cards; v = visible card number)
 function locateCards(full = false) {
-    console.log(`locateCards: full:${full}`)
     const rWest  = [+Math.PI/2, +Math.PI/2, -Math.PI/2, -Math.PI/2][dealer];
     const rNorth = [0,          0,          0,          0         ][dealer];
     const rEast  = [+Math.PI/2, -Math.PI/2, -Math.PI/2, +Math.PI/2][dealer];
@@ -949,6 +946,7 @@ function frameEvent() {
 
 // Next button clicked: deal the next hand, then trigger onload
 function nextClicked() {
+    log(`nextClicked`);
     nextBtn.onclick = "";
     handText.style.display = "none";
     setTimeout(onload);
@@ -956,6 +954,7 @@ function nextClicked() {
 
 // Again button clicked: reload app
 function againClicked() {
+    log(`againClicked`);
     againBtn.onclick = "";
     quitBtn.onclick = "";
     location.reload();
@@ -963,6 +962,7 @@ function againClicked() {
 
 // Quit button clicked: close app
 function quitClicked() {
+    log(`quitClicked`);
     againBtn.onclick = "";
     quitBtn.onclick = "";
     window.close();
@@ -970,6 +970,7 @@ function quitClicked() {
 
 // Hand ended: display stats and await contClicked, againClicked or quitClicked
 function handEnded() {
+    log(`handEnded`);
     usOld.textContent = ourScore;
     themOld.textContent = theirScore;
     if (us[bidder]) {
@@ -1032,6 +1033,7 @@ function handEnded() {
 
 // Trick viewed: pull trick, then retrigger handsRefanned or trigger handEnded
 function trickViewed() {
+    log(`trickViewed`);
     const now = performance.now();
     for (let c = 0; c < cards; c++)
         if (card[c].g == play)
@@ -1051,6 +1053,7 @@ function trickViewed() {
 
 // Trick played: pause a moment to view trick, then trigger trickViewed
 function trickPlayed() {
+    log(`trickPlayed`);
     const now = performance.now();
     for (let c = 0; c < cards; c++)
         if (card[c].g == play) {
@@ -1066,6 +1069,7 @@ function trickPlayed() {
 
 // Card played: close hand, then trigger trickPlayed or handsRefanned  
 function cardPlayed() {
+    log(`cardPlayed`);
     const now = performance.now();
     locateCards();
     moveCard(chosen, play, now, play, -100, true, 0);
@@ -1078,6 +1082,7 @@ function cardPlayed() {
 
 // Card chosen: update stats, play face, then trigger cardPlayed
 function cardChosen() {
+    log(`cardChosen`);
     const now = performance.now();
     let msg = "";
 
@@ -1115,14 +1120,12 @@ function cardChosen() {
         maxCards[p][card[chosen].v] = Math.min(maxCards[p][card[chosen].v], minCards[p][card[chosen].v] + loose);
 
     // log this play
-    if (debug) {
-        console.log(`\nPlay       Remain  West   North  East   South  Message`);
-        console.log  (`=========  ======  =====  =====  =====  =====  =======`);
-        let t = `${player$[player]}:`.padEnd(7) + `${value$[card[chosen].v]}    ${remaining[card[chosen].v]}     `;
-        for (let p of [west, north, east, south])
-            t += `${minCards[p][card[chosen].v]}...${maxCards[p][card[chosen].v]}  `;
-        console.log(t + msg);
-    }
+    log(`\nPlay       Remain  West   North  East   South  Message`);
+    log  (`=========  ======  =====  =====  =====  =====  =======`);
+    let t = `${player$[player]}:`.padEnd(7) + `${value$[card[chosen].v]}    ${remaining[card[chosen].v]}     `;
+    for (let p of [west, north, east, south])
+        t += `${minCards[p][card[chosen].v]}...${maxCards[p][card[chosen].v]}  `;
+    log(t + msg);
 
     // animate card play
     moveCard(chosen, card[chosen].g, now, play, card[chosen].z, true, dealTime/10);
@@ -1131,6 +1134,7 @@ function cardChosen() {
 
 // Mouse moved: if off bump card, unbump cards; if moved to hand legal card, bump it
 function mouseMoved(e) {
+    log(`mouseMoved`);
     const now = performance.now();
     const c = xy2c(e.clientX, e.clientY);
     if (c == undefined || card[c].g != bump)
@@ -1147,6 +1151,7 @@ function mouseMoved(e) {
 
 // Mouse pressed: if hand/bump southern card, unbump cards; if hand legal card, bump it; if legal, choose it
 function mousePressed(e) {
+    log(`mousePressed`);
     const now = performance.now();
     const c = xy2c(e.clientX, e.clientY);
     if (c != undefined) {
@@ -1174,6 +1179,7 @@ function mousePressed(e) {
 
 // Touch started: if legal bump card, choose it; if isn't bump card, unbump cards; if hand legal, bump it 
 function touchStarted(e) {
+    log(`touchStarted`);
     docBody.onmousedown = "";
     docBody.onmousemove = "";
     const now = performance.now();
@@ -1202,6 +1208,7 @@ function touchStarted(e) {
 
 // Touch moved: if off bump card, unbump cards; if hand legal card, bump it
 function touchMoved(e) {
+    log(`touchMoved`);
     const now = performance.now();
     const c = xy2c(e.touches[0].clientX, e.touches[0].clientY);
     if (c==undefined || card[c].g!=bump) {
@@ -1220,6 +1227,7 @@ function touchMoved(e) {
 
 // Hands re-fanned: now choose a card to play, then trigger cardChosen
 function handsRefanned() {
+    log(`handsRefanned`);
     if (player == south) {
         docBody.onmousemove = mouseMoved;
         docBody.onmousedown = mousePressed;
@@ -1234,6 +1242,7 @@ function handsRefanned() {
 
 // Meld gathered: re-fan hands, then trigger handsRefanned
 function meldGathered() {
+    log(`meldGathered`);
     const now = performance.now();
     locateCards(true);
     for (let c = 0; c < cards; c++)
@@ -1250,6 +1259,7 @@ function meldGathered() {
 
 // Show button clicked: show entire south hand, then trigger meldFanned
 function showClicked() {
+    log(`showClicked`);
     const now = performance.now();
     if (showBtn.value == "Show") {
         for (let c = minC[south]; c <= maxC[south]; c++)
@@ -1272,6 +1282,7 @@ function showClicked() {
 
 // Play button clicked: gather the meld, then trigger meldGathered
 function playClicked() {
+    log(`playClicked`);
     const now = performance.now();
     showBtn.value = "Show";
     showBtn.onclick = "";
@@ -1285,6 +1296,7 @@ function playClicked() {
 
 // Toss button clicked: gather the meld, then trigger handEnded
 function tossClicked() {
+    log(`tossClicked`);
     const now = performance.now();
     showBtn.value = "Show";
     showBtn.onclick = "";
@@ -1300,6 +1312,7 @@ function tossClicked() {
 
 // Meld fanned: display situation, then await showClicked, playClicked or tossClicked 
 function meldFanned() {
+    log(`meldFanned`);
     let weNeed = 20, theyNeed = 20;
     if (us[bidder])
         if (ourMeld < 20)
@@ -1341,6 +1354,7 @@ function meldFanned() {
 
 // Hands regathered: fan out meld, then trigger meldFanned
 function handsRegathered() {
+    log(`handsRegathered`);
     const now = performance.now();
 
     // move known (meld) cards into hands
@@ -1395,17 +1409,15 @@ function handsRegathered() {
             maxCards[p][v] = Math.min(maxCards[p][v], minCards[p][v] + loose);
         }
     // log stats
-    if (debug) {
-        let t = "";
-        console.log("\nLimits  J♦ Q♦ K♦ T♦ A♦ J♣ Q♣ K♣ T♣ A♣ J♥ Q♥ K♥ T♥ A♥ J♠ Q♠ K♠ T♠ A♠");
-        console.log  ("======  == == == == == == == == == == == == == == == == == == == ==");
-        for (let p of [west, north, east, south]) {
-            t = `${player$[p]}:`;
-            t = t.padEnd(7);
-            for (let v = 0; v < values; v++)
-                t += ` ${minCards[p][v]}${maxCards[p][v]}`;
-            console.log(t);
-        }
+    let t = "";
+    log("\nLimits  J♦ Q♦ K♦ T♦ A♦ J♣ Q♣ K♣ T♣ A♣ J♥ Q♥ K♥ T♥ A♥ J♠ Q♠ K♠ T♠ A♠");
+    log  ("======  == == == == == == == == == == == == == == == == == == == ==");
+    for (let p of [west, north, east, south]) {
+        t = `${player$[p]}:`;
+        t = t.padEnd(7);
+        for (let v = 0; v < values; v++)
+            t += ` ${minCards[p][v]}${maxCards[p][v]}`;
+        log(t);
     }
     // animate movement of meld cards to hand
     locateCards();
@@ -1417,13 +1429,13 @@ function handsRegathered() {
 
 // Trump picked: regather hands, then trigger handsRegathered
 function trumpPicked() {
+    log(`trumpPicked`);
     const now = performance.now();
     ourMeld = meld(north, trump) + meld(south, trump);
     theirMeld = meld(west, trump) + meld(east, trump);
     mustToss = marriages(bidder, trump) == 0;
     tagMeld();
-    if (debug)
-        console.log(`\n${player$[bidder]} picks ${suit$[trump]}.`);
+    log(`\n${player$[bidder]} picks ${suit$[trump]}.`);
     for (let c = 0; c < cards; c++) {
         card[c].m = card[c].s==trump;
         moveCard(c, hand, now, gone, -c, false, dealTime/10);
@@ -1435,6 +1447,7 @@ function trumpPicked() {
 
 // Trump button clicked: pick a trump suit, then trigger trumpPicked
 function trumpClicked(e) {
+    log(`trumpClicked`);
     for (let t = 0; t < trumpBtn.length; t++)
         trumpBtn[t].onclick = "";
     switch (e.target.value) {
@@ -1456,6 +1469,7 @@ function trumpClicked(e) {
 
 // Bid won: await trumpClicked or pick trump and trigger trumpPicked
 function biddingDone() {
+    log(`biddingDone`);
     bidBox[west].textContent = bidBox[north].textContent = bidBox[east].textContent ="";
     for (bidder of [west, north, east, south])
         if (bid[bidder] > pass)
@@ -1479,6 +1493,7 @@ function biddingDone() {
 
 // Bid button clicked: handle button and retrigger handsFanned or trigger biddingDone
 function bidClicked(e) {
+    log(`bidClicked`);
     const value = e.target.value;
     const highBid = Math.max(...bid);
     if (value == ">") {
@@ -1524,6 +1539,7 @@ function bidClicked(e) {
 
 // Hands fanned: await bidClicked or autoBid and retrigger handsFanned or trigger biddingDone
 function handsFanned() {
+    log(`handsFanned`);
     while (bid[bidder] == pass) 
         bidder = next[bidder];
     if (bidder == south && bid[bidder] == none) {
@@ -1563,6 +1579,7 @@ function handsFanned() {
 
 // Hands gathered: fan hands, then trigger handsFanned
 function handsGathered() {
+    log(`handsGathered`);
     const now = performance.now();
     for (let c = 0; c < cards; c++)
         if (openHand || card[c].p==south)
@@ -1578,6 +1595,7 @@ function handsGathered() {
 
 // Deck dealt: gather hands, then trigger handsGathered
 function deckDealt() {
+    log(`deckDealt`);
     const now = performance.now();
     for (let c = 0; c < cards; c++)
         moveCard(c, heap, now, gone, -c, false, dealTime/20);
@@ -1586,7 +1604,7 @@ function deckDealt() {
 
 // Resize event: adjust dynamic sizes, then trigger deck redraw
 function resized () {
-    console.log(`resized`);
+    log(`resized`);
     const now = performance.now();
     setSizes();
     locateCards();
@@ -1599,6 +1617,7 @@ function resized () {
 
 // Menu close icon clicked: close the menu, then await menuClicked
 function menuXClicked() {
+    log(`menuXClicked`);
     menuText.style.display = "none";
     menuX.onclick = "";
     menuIcon.onclick = menuClicked;
@@ -1606,6 +1625,7 @@ function menuXClicked() {
 
 // Stats close button clicked: close the stats and menu displays, then await menuClicked
 function statsXClicked() {
+    log(`statsXClicked`);
     statsText.style.display = "none";
     statsX.onclick = "";
     menuIcon.onclick = menuClicked;
@@ -1613,6 +1633,7 @@ function statsXClicked() {
 
 // Statistics menu item clicked: close menu and display stats, then await statsCloseClicked
 function statsClicked() {
+    log(`statsClicked`);
     for (let s = 0; s < statField.length; s++) {
         const row = s % 5;
         const col = Math.floor((s % 25) / 5);
@@ -1653,6 +1674,7 @@ function statsClicked() {
 
 // Options done button clicked: close the options display, then await menuClicked
 function optnsXClicked() {
+    log(`optnsXClicked`);
     const now = performance.now();
     optnsText.style.display = "none";
     optnsXClicked.onclick = "";
@@ -1679,6 +1701,7 @@ function optnsXClicked() {
 
 // Options menu item clicked: close menu and display options, then await doneClicked
 function optionsClicked() {
+    log(`optionsClicked`);
     menuText.style.display = "none";
     optnsText.style.display = "block";
     statsItem.onclick = "";
@@ -1689,6 +1712,7 @@ function optionsClicked() {
 
 // Restart menu item clicked: restart the app
 function restartClicked() {
+    log(`restartClicked`);
     menuText.style.display = "none";
     menuX.onclick = "";
     menuIcon.onclick = menuClicked;
@@ -1702,11 +1726,13 @@ function restartClicked() {
 
 // Exit menu item clicked: close the app
 function exitClicked() {
+    log(`exitClicked`);
     window.close();
 }
 
 // Menu icon clicked: display the menu, then await menuXClicked, statsClicked, restartClicked
 function menuClicked() {
+    log(`menuClicked`);
     menuText.style.display = "block";
     menuIcon.onclick = "";
     menuX.onclick = menuXClicked;
@@ -1718,9 +1744,8 @@ function menuClicked() {
 
 // Load event: initialize app, deal cards, sort cards, then trigger deckDealt
 function loaded() {
-    onresize = "";
     console.clear();
-    console.log(`loaded`);
+    log(`loaded`);
     const deck = Array.from(new Array(cards), (v, k) => k % cardsPerPlayer);
     let sort = [];
     for (let v = 0; v < values; v++)
