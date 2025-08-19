@@ -802,8 +802,8 @@ function nCards(p) {
     return n;
 }
 
-// Locate all card positions (full if full hands, n = number of semi-exposed cards; v = visible card number)
-function locateCards(full = false) {
+// Locate all card positions (n = number of semi-exposed cards; v = visible card number)
+function locateCards() {
     const rWest  = [+Math.PI/2, +Math.PI/2, -Math.PI/2, -Math.PI/2][dealer];
     const rNorth = [0,          0,          0,          0         ][dealer];
     const rEast  = [+Math.PI/2, -Math.PI/2, -Math.PI/2, +Math.PI/2][dealer];
@@ -812,7 +812,7 @@ function locateCards(full = false) {
     for (let c = 0; c < cards; c++) {
         const p = card[c].p;
         if (c == minC[p]) {
-            n = full? 19 : nCards(p)-1;
+            n = nCards(p)-1;
             v = 0;
         }
         card[c].gone.x = [-cardh/2, vw/2, vw+cardh/2, vw/2][p];
@@ -836,7 +836,7 @@ function locateCards(full = false) {
         card[c].fnsh.x = [card[c].gone.x, card[c].heap.x, card[c].hand.x, card[c].bump.x, card[c].play.x][card[c].g];
         card[c].fnsh.y = [card[c].gone.y, card[c].heap.y, card[c].hand.y, card[c].bump.y, card[c].play.y][card[c].g];
         card[c].fnsh.r = [rWest, rNorth, rEast, rSouth][p];
-        if (full || card[c].g==hand)
+        if (card[c].g==hand)
             v++;
     }
 }
@@ -1250,7 +1250,9 @@ function handsRefanned() {
 function meldGathered() {
     log("--> meldGathered");
     const now = performance.now();
-    locateCards(true);
+    for (let c = 0; c < cards; c++)
+        card[c].g = hand;
+    locateCards();
     for (let c = 0; c < cards; c++)
         if (openHand || card[c].p==south)
             moveCard(c, gone, now, hand, c, true, dealTime/10);
@@ -1764,6 +1766,7 @@ function loaded() {
         card[c].s = suit[card[c].v];
         card[c].r = rank[card[c].v];
         card[c].t = high[card[c].v];
+        card[c].g = hand;
         card[c].m = false;
         card[c].k = false;
     }
@@ -1771,7 +1774,7 @@ function loaded() {
     trump = none;
     trmp.fill(false);
     setSizes();
-    locateCards(true);
+    locateCards();
     dealer = Math.floor(Math.random() * players);
     let t0 = performance.now();
     let p = next[dealer];
