@@ -1744,7 +1744,7 @@ function loaded() {
     remaining.fill(4);
     trump = none;
     trmp.fill(false);
-    console.clear();
+    //console.clear();
     setSizes();
     locateCards(true);
     dealer = Math.floor(Math.random() * players);
@@ -1759,6 +1759,7 @@ function loaded() {
         t0 = t0 + (dealTime - dealTime / 20) / cards;
         p = next[p];
     }
+    console.log(card);
     animate(deckDealt);
 }
 
