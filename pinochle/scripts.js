@@ -798,6 +798,7 @@ function nCards(p) {
 
 // Locate all card positions (full if full hands, n = number of semi-exposed cards; v = visible card number)
 function locateCards(full = false) {
+    console.log(`locateCards: vw:${vw}, cardw:${cardw}`);
     const rWest  = [+Math.PI/2, +Math.PI/2, -Math.PI/2, -Math.PI/2][dealer];
     const rNorth = [0,          0,          0,          0         ][dealer];
     const rEast  = [+Math.PI/2, -Math.PI/2, -Math.PI/2, +Math.PI/2][dealer];
@@ -1746,7 +1747,7 @@ function loaded() {
     trmp.fill(false);
     //console.clear();
     setSizes();
-    console.log(`vw:${vw}, cardw:${cardw}`);
+    console.log(`loaded: vw:${vw}, cardw:${cardw}`);
     locateCards(true);
     dealer = Math.floor(Math.random() * players);
     let t0 = performance.now();
