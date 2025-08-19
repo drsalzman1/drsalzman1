@@ -1602,16 +1602,16 @@ function deckDealt() {
 }
 
 // Resize event: adjust dynamic sizes, then trigger deck redraw
-function resized () {
+function resized() {
     log("--> resized");
     const now = performance.now();
     setSizes();
     locateCards();
-    for (let c = 0; c < cards; c++) {
-        card[c].strt.t = now;
-        card[c].fnsh.t = now;
-    }
-    requestAnimationFrame(frameEvent);
+    //for (let c = 0; c < cards; c++) {
+    //    card[c].strt.t = now;
+    //    card[c].fnsh.t = now;
+    //}
+    //requestAnimationFrame(frameEvent);
 }
 
 // Menu close icon clicked: close the menu, then await menuClicked
