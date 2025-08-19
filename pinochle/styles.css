@@ -1,43 +1,43 @@
 @media (orientation: portrait) {
     :root {
-        --cardw:        min(16.807vw, 10.187vh);
-        --west-top:     calc(050vh - var(--cardw)*2.50);
-        --west-left:    calc(050vw - var(--cardw)*1.40);
+        --cardw:        min(16.807dvw, 10.187dvh);
+        --west-top:     calc(050dvh - var(--cardw)*2.50);
+        --west-left:    calc(050dvw - var(--cardw)*1.40);
         --west-align:   left;
-        --north-top:    calc(000vh + var(--cardw)*0.20);
-        --north-left:   calc(050vw - var(--cardw)*1.50);
-        --east-top:     calc(050vh - var(--cardw)*2.50);
-        --east-left:    calc(050vw - var(--cardw)*1.62);
+        --north-top:    calc(000dvh + var(--cardw)*0.20);
+        --north-left:   calc(050dvw - var(--cardw)*1.50);
+        --east-top:     calc(050dvh - var(--cardw)*2.50);
+        --east-left:    calc(050dvw - var(--cardw)*1.62);
         --east-align:   right;
-        --south-top:    calc(100vh - var(--cardw)*2.30);
-        --south-left:   calc(050vw - var(--cardw)*1.50);
+        --south-top:    calc(100dvh - var(--cardw)*2.30);
+        --south-left:   calc(050dvw - var(--cardw)*1.50);
         }
 }
 
 /*@media (max-aspect-ratio: 0.55) {
     :root {
-        --west-top:     calc(050vh - var(--cardw)*3.20);
-        --west-left:    calc(050vw - var(--cardw)*3.65);
+        --west-top:     calc(050dvh - var(--cardw)*3.20);
+        --west-left:    calc(050dvw - var(--cardw)*3.65);
         --west-align:   center;
-        --east-top:     calc(050vh - var(--cardw)*3.20);
-        --east-left:    calc(050vw + var(--cardw)*0.70);
+        --east-top:     calc(050dvh - var(--cardw)*3.20);
+        --east-left:    calc(050dvw + var(--cardw)*0.70);
         --east-align:   center;
         }
 }*/
 
 @media (orientation: landscape) {
     :root {
-        --cardw:        min(16.807vh, 10.187vw);
-        --west-top:     calc(050vh - var(--cardw)*0.155);
-        --west-left:    calc(000vw + var(--cardw)*2.02);
+        --cardw:        min(16.807dvh, 10.187dvw);
+        --west-top:     calc(050dvh - var(--cardw)*0.155);
+        --west-left:    calc(000dvw + var(--cardw)*2.02);
         --west-align:   left;
-        --north-top:    calc(050vh - var(--cardw)*1.45);
-        --north-left:   calc(050vw - var(--cardw)*1.50);
-        --east-top:     calc(050vh - var(--cardw)*0.155);
-        --east-left:    calc(100vw - var(--cardw)*5.03);
+        --north-top:    calc(050dvh - var(--cardw)*1.45);
+        --north-left:   calc(050dvw - var(--cardw)*1.50);
+        --east-top:     calc(050dvh - var(--cardw)*0.155);
+        --east-left:    calc(100dvw - var(--cardw)*5.03);
         --east-align:   right;
-        --south-top:    calc(050vh + var(--cardw)*1.20);
-        --south-left:   calc(050vw - var(--cardw)*1.50);
+        --south-top:    calc(050dvh + var(--cardw)*1.20);
+        --south-left:   calc(050dvw - var(--cardw)*1.50);
         }
 }
 
@@ -68,8 +68,8 @@ input {
 
 #docBody {
     box-sizing: border-box;
-    width: 100vw;
-    height: 100vh;
+    width: 100dvw;
+    height: 100dvh;
     margin: 0px;
     background-color: darkgreen;
     color: white;
@@ -88,8 +88,8 @@ input {
     width: var(--text-area);
     height: var(--text-area);
     position: absolute;
-    top: calc(50vh - var(--text-area)/2);
-    left: calc(50vw - var(--text-area)/2);
+    top: calc(50dvh - var(--text-area)/2);
+    left: calc(50dvw - var(--text-area)/2);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -232,7 +232,7 @@ input {
     background-color: white;
     position: absolute;
     top: var(--pad);
-    left: calc(50vw - var(--stats-width)/2 - var(--pad));
+    left: calc(50dvw - var(--stats-width)/2 - var(--pad));
     display: none;
 }
 
