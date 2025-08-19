@@ -832,7 +832,7 @@ function locateCards(full = false) {
         card[c].fnsh.r = [rWest, rNorth, rEast, rSouth][p];
         if (full || card[c].g==hand)
             v++;
-        console.log(`p:${p}, vh:${vh}, cardw:${cardw}, v:${v}, n:${n}, c:${c}, card[c].hand.y:${card[c].hand.y}`);
+        console.log(`c:${c}, p:${p}, minC[p]:${minC[p]}, full:${full}, n:${n}, v:${v}, vh:${vh}, cardw:${cardw}, card[c].hand.y:${card[c].hand.y}`);
     }
 }
 // Move card c from c0(?), group g0 at time t0 to c1(?), group g1, zIndex z1, face f1 over time t1
