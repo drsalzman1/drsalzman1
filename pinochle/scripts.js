@@ -840,6 +840,7 @@ function locateCards() {
             v++;
     }
 }
+
 // Move card c from c0(?), group g0 at time t0 to c1(?), group g1, zIndex z1, face f1 over time t1
 function moveCard(c, g0, t0, g1, z1, f1, t1, c0, c1) {
     c0 = c0 ?? c;
@@ -1606,6 +1607,7 @@ function resized() {
     log("--> resized");
     const now = performance.now();
     setSizes();
+    log(`resized vw:${vw}, vh:${vh}`);
     //locateCards();
     //for (let c = 0; c < cards; c++) {
     //    card[c].strt.t = now;
@@ -1774,6 +1776,7 @@ function loaded() {
     trump = none;
     trmp.fill(false);
     setSizes();
+    log(`loaded vw:${vw}, vh:${vh}`);
     locateCards();
     dealer = Math.floor(Math.random() * players);
     let t0 = performance.now();
@@ -1787,6 +1790,7 @@ function loaded() {
         t0 = t0 + (dealTime - dealTime / 20) / cards;
         p = next[p];
     }
+    log("--> loaded complete");
     onresize = resized;
     animate(deckDealt);
 }
