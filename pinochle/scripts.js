@@ -1763,4 +1763,4 @@ function loaded() {
 }
 
 // Set function to be invoked after app is loaded and rendered
-onload = setTimeout(loaded, 500);
+onload = setTimeout(loaded, 1000);
