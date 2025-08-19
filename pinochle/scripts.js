@@ -1577,7 +1577,7 @@ function handsFanned() {
     }
 }
 
-// Hands gathered: fan hands, then trigger handsFanned
+// Hands gathered: fan hands, enable resize events, then trigger handsFanned
 function handsGathered() {
     log("--> handsGathered");
     const now = performance.now();
@@ -1590,6 +1590,7 @@ function handsGathered() {
     bid[west] = bid[north] = bid[east] = bid[south] = none;
     est[west] = est[north] = est[east] = est[south] = typical;
     logHands();
+    onresize = resized;
     animate(handsFanned);
 }
 
@@ -1607,13 +1608,12 @@ function resized() {
     log("--> resized");
     const now = performance.now();
     setSizes();
-    log(`resized vw:${vw}, vh:${vh}`);
-    //locateCards();
-    //for (let c = 0; c < cards; c++) {
-    //    card[c].strt.t = now;
-    //    card[c].fnsh.t = now;
-    //}
-    //requestAnimationFrame(frameEvent);
+    locateCards();
+    for (let c = 0; c < cards; c++) {
+        card[c].strt.t = now;
+        card[c].fnsh.t = now;
+    }
+    requestAnimationFrame(frameEvent);
 }
 
 // Menu close icon clicked: close the menu, then await menuClicked
@@ -1743,7 +1743,7 @@ function menuClicked() {
     exitItem.onclick = exitClicked;
 }
 
-// Load event: initialize app, deal cards, sort cards, then trigger deckDealt
+// Load event: initialize app, deal cards, sort cards, disable resize events, then trigger deckDealt
 function loaded() {
     log("_".repeat(80));
     log("--> loaded ");
@@ -1776,7 +1776,6 @@ function loaded() {
     trump = none;
     trmp.fill(false);
     setSizes();
-    log(`loaded vw:${vw}, vh:${vh}`);
     locateCards();
     dealer = Math.floor(Math.random() * players);
     let t0 = performance.now();
@@ -1790,8 +1789,7 @@ function loaded() {
         t0 = t0 + (dealTime - dealTime / 20) / cards;
         p = next[p];
     }
-    log("--> loaded complete");
-    onresize = resized;
+    onresize = "";
     animate(deckDealt);
 }
 
