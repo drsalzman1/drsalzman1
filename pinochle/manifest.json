@@ -25,15 +25,13 @@
   "screenshots" : [
     {
       "src": "screens/wide.png",
-      "sizes": "606x1092",
       "form_factor": "wide",
-      "label": "Homescreen"
+      "label": "Wide Bidding Screen"
     },
     {
       "src": "screens/narrow.png",
-      "sizes": "510x957",
       "form_factor": "narrow",
-      "label": "Homescreen"
+      "label": "Narrow Bidding Screen"
     }
   ]
 }
