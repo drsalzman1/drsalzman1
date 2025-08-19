@@ -1718,13 +1718,12 @@ function menuClicked() {
 
 // Load event: initialize app, deal cards, sort cards, then trigger deckDealt
 function loaded() {
-    console.log(`loaded`);
+    onresize = "";
     const deck = Array.from(new Array(cards), (v, k) => k % cardsPerPlayer);
     let sort = [];
     for (let v = 0; v < values; v++)
         faceImg[v].src = faceSrc[v];
     backImg.src = backSrc;
-    onresize = resized;
     menuIcon.draggable = false;
     menuIcon.onclick = menuClicked;
     shuffleArray(deck, cards);
@@ -1762,8 +1761,9 @@ function loaded() {
         t0 = t0 + (dealTime - dealTime / 20) / cards;
         p = next[p];
     }
+    onresize = resized;
     animate(deckDealt);
 }
 
 // Set function to be invoked after app is loaded and rendered
-onload = setTimeout(loaded, 0);
+onload = loaded;
