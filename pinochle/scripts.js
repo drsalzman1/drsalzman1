@@ -798,7 +798,6 @@ function nCards(p) {
 
 // Locate all card positions (full if full hands, n = number of semi-exposed cards; v = visible card number)
 function locateCards(full = false) {
-    console.log(`locateCards: vw:${vw}, cardw:${cardw}`);
     const rWest  = [+Math.PI/2, +Math.PI/2, -Math.PI/2, -Math.PI/2][dealer];
     const rNorth = [0,          0,          0,          0         ][dealer];
     const rEast  = [+Math.PI/2, -Math.PI/2, -Math.PI/2, +Math.PI/2][dealer];
@@ -833,6 +832,7 @@ function locateCards(full = false) {
         card[c].fnsh.r = [rWest, rNorth, rEast, rSouth][p];
         if (full || card[c].g==hand)
             v++;
+        console.log(`c:${c}, card[c].hand.y:${card[c].hand.y});
     }
 }
 // Move card c from c0(?), group g0 at time t0 to c1(?), group g1, zIndex z1, face f1 over time t1
@@ -1747,7 +1747,6 @@ function loaded() {
     trmp.fill(false);
     //console.clear();
     setSizes();
-    console.log(`loaded: vw:${vw}, cardw:${cardw}`);
     locateCards(true);
     dealer = Math.floor(Math.random() * players);
     let t0 = performance.now();
@@ -1761,7 +1760,6 @@ function loaded() {
         t0 = t0 + (dealTime - dealTime / 20) / cards;
         p = next[p];
     }
-    console.log(card);
     animate(deckDealt);
 }
 
