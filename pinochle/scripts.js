@@ -857,7 +857,7 @@ function moveCard(c, g0, t0, g1, z1, f1, t1, c0, c1) {
 function setSizes() {
     vw = Number.parseFloat(getComputedStyle(docBody).width);
     vh = Number.parseFloat(getComputedStyle(docBody).height);
-    diagText.innerText = `vh:${vh}, vw:${vw}, wh:${window.innerHeight}, ww:${window.innerWidth}*`;
+    diagText.innerText = `vh:${vh}, vw:${vw}, wh:${window.innerHeight}, ww:${window.innerWidth}+`;
     cardw = Number.parseFloat(getComputedStyle(cardSize).width);
     cardh = Number.parseFloat(getComputedStyle(cardSize).height);
     iconw = Number.parseFloat(getComputedStyle(menuIcon).width);
