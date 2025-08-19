@@ -1606,7 +1606,7 @@ function resized() {
     log("--> resized");
     const now = performance.now();
     setSizes();
-    locateCards();
+    //locateCards();
     //for (let c = 0; c < cards; c++) {
     //    card[c].strt.t = now;
     //    card[c].fnsh.t = now;
