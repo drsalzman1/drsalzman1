@@ -1746,8 +1746,8 @@ function loaded() {
     trmp.fill(false);
     //console.clear();
     setSizes();
+    console.log(`vw:${vw}, cardw:${cardw}`);
     locateCards(true);
-    console.log(`cardw:${cardw}`);
     dealer = Math.floor(Math.random() * players);
     let t0 = performance.now();
     let p = next[dealer];
