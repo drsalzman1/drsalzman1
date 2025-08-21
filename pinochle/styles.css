@@ -58,6 +58,7 @@ input {
 }
 
 #docBody {
+    position: relative;
     box-sizing: border-box;
     width: 100svw;
     height: 100svh;
@@ -68,7 +69,6 @@ input {
     font-size: var(--font-size);
     user-select: none;
     touch-action: pan-y;
-    position: relative;
 }
 
 #docCanvas {
@@ -76,11 +76,11 @@ input {
 }
 
 #textArea {
-    width: var(--text-area);
-    height: var(--text-area);
     position: absolute;
     top: calc(50svh - var(--text-area)/2);
     left: calc(50svw - var(--text-area)/2);
+    width: var(--text-area);
+    height: var(--text-area);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -174,8 +174,8 @@ input {
 }
 
 #bidBox div {
-    width: var(--bid-width);
     position: absolute;
+    width: var(--bid-width);
     z-index: -100;
 }
 
@@ -185,45 +185,44 @@ input {
 #bidBox :nth-child(4) {top: var(--south-top); left: var(--south-left); text-align: center;           }
 
 #menuIcon {
+    position: absolute;
+    height: var(--icon);
     filter: invert(100%);
     margin: var(--pad);
-    width: var(--icon);
-    height: var(--icon);
-    position: absolute;
 }
 
 .closeIcon {
-    height: calc(var(--font-size) * 1.2);
-    position: relative;
-    top: calc(var(--font-size) * -0.05);
-    float: right;
+    position: absolute;
+    top: calc(var(--pad) * 0.65);
+    right: var(--pad);
+    height: var(--icon);
 }
 
 #menuText {
+    position: absolute;
+    width: var(--menu-width);
     margin: var(--pad);
     padding: var(--pad);
-    width: var(--menu-width);
     color: black;
     background-color: white;
-    position: absolute;
     display: none;
 }
 
-.menuItem {
-    height: var(--font-size);
+.menuIcon {
     position: relative;
-    top: calc(var(--font-size) * 0.15);
+    top: calc(var(--font-size) * 0.3);
+    height: var(--icon);
 }
 
 #statsText {
+    position: absolute;
+    top: var(--pad);
+    left: var(--pad);
     padding: var(--pad);
     width: var(--stats-width);
     line-height: var(--font-size);
     color: black;
     background-color: white;
-    position: absolute;
-    top: var(--pad);
-    left: var(--pad);
     display: none;
 }
 
@@ -254,6 +253,7 @@ input {
 }
 
 #tutorText {
+    position: absolute;
     margin: var(--pad);
     padding: var(--pad);
     width: var(--tutor-width);
@@ -261,12 +261,25 @@ input {
     line-height: var(--font-size);
     color: black;
     background-color: white;
-    position: absolute;
     display: none;
 }
 
 #tutorText div {
     display: none;
+}
+
+.backIcon {
+    position: absolute;
+    bottom: var(--pad);
+    left: var(--pad);
+    height: var(--icon);
+}
+
+.nextIcon {
+    position: absolute;
+    bottom: calc(var(--pad)*1);
+    right: calc(var(--pad)*1);
+    height: var(--icon);
 }
 
 #tutorText ul {
@@ -275,8 +288,14 @@ input {
     margin-left: calc(var(--pad) * 4);
 }
 
-#tutorText img {
-    height: calc(var(--font-size) * 1.2);
+#aboutText {
+    position: absolute;
+    margin: var(--pad);
+    padding: var(--pad);
+    width: var(--menu-width);
+    color: black;
+    background-color: white;
+    display: none;
 }
 
 #cardSize {

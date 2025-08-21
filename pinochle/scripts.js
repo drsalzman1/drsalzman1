@@ -211,11 +211,8 @@ const themMeld  = document.getElementById("themMeld");
 const themTake  = document.getElementById("themTake");
 const themNew   = document.getElementById("themNew");
 const nextDiv   = document.getElementById("nextDiv");
-const nextBtn   = document.getElementById("nextBtn");
 const overDiv   = document.getElementById("overDiv");
 const overText  = document.getElementById("overText");
-const againBtn  = document.getElementById("againBtn");
-const quitBtn   = document.getElementById("quitBtn");
 const menuIcon  = document.getElementById("menuIcon");
 const menuText  = document.getElementById("menuText");
 const revealTxt = document.getElementById("revealTxt");
@@ -227,6 +224,7 @@ const diamondsT = document.getElementById("diamondsT");
 const statField = document.querySelectorAll(".statColumn div");
 const tutorText = document.getElementById("tutorText");
 const tutorPage = document.querySelectorAll("#tutorText div");
+const aboutText = document.getElementById("aboutText");
 const cardSize  = document.getElementById("cardSize");
 
 // Animation constants
@@ -948,7 +946,6 @@ function frameEvent() {
 // Next button clicked: deal the next hand, then trigger onload
 function nextClicked() {
     log("--> nextClicked");
-    nextBtn.onclick = "";
     handText.style.display = "none";
     setTimeout(onload);
 }
@@ -956,16 +953,12 @@ function nextClicked() {
 // Again button clicked: reload app
 function againClicked() {
     log("--> againClicked");
-    againBtn.onclick = "";
-    quitBtn.onclick = "";
     window.location.reload();
 }
 
 // Quit button clicked: close app
 function quitClicked() {
     log("--> quitClicked");
-    againBtn.onclick = "";
-    quitBtn.onclick = "";
     window.close();
 }
 
@@ -1018,7 +1011,6 @@ function handEnded() {
         overDiv.style.display = "none";
         handText.style.display = "block";
         dealer = next[dealer];
-        nextBtn.onclick = nextClicked;
     } else {
         nextDiv.style.display = "none";
         overDiv.style.display = "block";
@@ -1027,8 +1019,6 @@ function handEnded() {
         else
             overText.textContent = "We lose!";
         handText.style.display = "block";
-        againBtn.onclick = againClicked;
-        quitBtn.onclick = quitClicked;
     }
 }
 
@@ -1286,9 +1276,6 @@ function playClicked() {
     log("--> playClicked");
     const now = performance.now();
     showBtn.value = "Show";
-    showBtn.onclick = "";
-    playBtn.onclick = "";
-    tossBtn.onclick = "";
     playText.style.display = "none";
     for (let c = 0; c < cards; c++)
         moveCard(c, hand, now, gone, -c, false, dealTime/10);
@@ -1300,9 +1287,6 @@ function tossClicked() {
     log("--> tossClicked");
     const now = performance.now();
     showBtn.value = "Show";
-    showBtn.onclick = "";
-    playBtn.onclick = "";
-    tossBtn.onclick = "";
     playText.style.display = "none";
     tossHand = true;
     ourTake = theirTake = 0;
@@ -1347,9 +1331,6 @@ function meldFanned() {
         playBtn.style.display = "inline";
         tossBtn.style.display = ["none", "none", "none", "inline"][bidder];
     }
-    showBtn.onclick = showClicked;
-    playBtn.onclick = playClicked;
-    tossBtn.onclick = tossClicked;
     playText.style.display = "flex";
 }
 
@@ -1437,29 +1418,47 @@ function trumpPicked() {
     animate(handsRegathered);
 }
 
-// Trump button clicked: pick a trump suit, then trigger trumpPicked
-function trumpClicked(e) {
+// Trump button clicked: pick a trump suit s where 0=spades, 1=hearts, 2=clubs, 3=diamonds, then trigger trumpPicked
+function trumpClicked(s) {
     log("--> trumpClicked");
-    for (let t = 0; t < trumpBtn.length; t++)
-        trumpBtn[t].onclick = "";
-    switch (e.target.value) {
-    case "Spades":
-        trump = spades;
-        break;
-    case "Hearts":
-        trump = hearts;
-        break;
-    case "Clubs":
-        trump = clubs;
-        break;
-    case "Diamonds":
-        trump = diamonds;
-    }
+    trump = [spades, hearts, clubs, diamonds][s];
     trumpText.style.display = "none";
     setTimeout(trumpPicked);
 }
 
-// Bid won: await trumpClicked or pick trump and trigger trumpPicked
+// Spades button clicked: set trump, then trigger trumpPicked
+function spadesClicked(s) {
+    log("--> spadesClicked");
+    trump = spades;
+    trumpText.style.display = "none";
+    setTimeout(trumpPicked);
+}
+
+// Hearts button clicked: set trump, then trigger trumpPicked
+function heartsClicked(s) {
+    log("--> heartsClicked");
+    trump = hearts;
+    trumpText.style.display = "none";
+    setTimeout(trumpPicked);
+}
+
+// Clubs button clicked: set trump, then trigger trumpPicked
+function clubsClicked(s) {
+    log("--> clubsClicked");
+    trump = clubs;
+    trumpText.style.display = "none";
+    setTimeout(trumpPicked);
+}
+
+// Diamonds button clicked: set trump, then trigger trumpPicked
+function diamondsClicked(s) {
+    log("--> diamondsClicked");
+    trump = diamonds;
+    trumpText.style.display = "none";
+    setTimeout(trumpPicked);
+}
+
+// Bid won: if south bid, await spadesClicked,heartsClicked,clubsClicked,heartsClicked; else, pick trump & trigger trumpPicked
 function biddingDone() {
     log("--> biddingDone");
     bidBox[west].textContent = bidBox[north].textContent = bidBox[east].textContent ="";
@@ -1474,8 +1473,6 @@ function biddingDone() {
         if (noMarriages(bidder))
             trumpBtn[0].disabled = trumpBtn[1].disabled = trumpBtn[2].disabled = trumpBtn[3].disabled = false;
         trumpText.style.display = "flex";
-        for (let t = 0; t < trumpBtn.length; t++)
-            trumpBtn[t].onclick = trumpClicked;
     } else {
         trump = autoPick();
         trumpText.style.display = "none";
@@ -1719,9 +1716,17 @@ function tutorCloseClicked() {
     tutorText.style.display = "none";
 }
 
-// Exit app menu item clicked: close the app
+// About app menu item clicked: close the app
 function aboutClicked() {
     log("--> aboutClicked");
+    menuText.style.display = "none";
+    aboutText.style.display = "block"
+}
+
+// Tutor close icon clicked: close the tutor display
+function aboutCloseClicked() {
+    log("--> tutorCloseClicked");
+    aboutText.style.display = "none";
 }
 
 // Exit app menu item clicked: close the app
