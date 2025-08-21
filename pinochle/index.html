@@ -94,31 +94,33 @@
             <div></div>
             <div></div>
         </div>
-        <img id="menuIcon" src="icons/menu.svg" alt="menu">
+        <img id="menuIcon" src="icons/menu.svg" alt="menu" onclick="menuIconClicked()">
         <div id="menuText">
-            <b>Double Deck Pinochle v0.7</b><img id="menuX" src="icons/close.svg" alt="close"><br><br>
-            <div id="statsItem">
-                <img class="menuItem" src="icons/analytics.svg" alt="stats"> Card Counts
+            <b>Double Deck Pinochle v0.7</b>
+            <img class="closeIcon" src="icons/close.svg" alt="close" onclick="menuCloseClicked()"><br><br>
+            <div id="statsItem" onclick="statsClicked()">
+                <img class="menuItem" src="icons/analytics.svg" alt="stats"> Display stats
             </div><br>
-            <div id="optnsItem">
-                <img class="menuItem" src="icons/settings.svg" alt="options"> Options
+            <div id="revealItm" onclick="revealClicked()">
+                <img class="menuItem" src="icons/settings.svg" alt="options"> <span id="revealTxt">Reveal cards</span>
             </div><br>
-            <div id="rstrtItem">
-                <img class="menuItem" src="icons/refresh.svg" alt="restart"> Restart
+            <div id="reloadItm" onclick="reloadClicked()">
+                <img class="menuItem" src="icons/refresh.svg" alt="reload"> Reload app
             </div><br>
-            <div id="tutorItem">
-                <img class="menuItem" src="icons/help.svg" alt="tutorial"> Tutorial
+            <div id="tutorItem" onclick="tutorClicked()">
+                <img class="menuItem" src="icons/help.svg" alt="tutorial"> Show tutorial
             </div><br>
-            <div id="aboutItem">
-                <img class="menuItem" src="icons/info.svg" alt="about"> About
+            <div id="aboutItem" onclick="aboutClicked()">
+                <img class="menuItem" src="icons/info.svg" alt="about"> Describe app
             </div><br>
-            <div id="exitItem">
-                <img class="menuItem" src="icons/exit.svg" alt="exit"> Exit
+            <div id="exitItem" onclick="exitClicked()">
+                <img class="menuItem" src="icons/exit.svg" alt="exit"> Exit app
             </div><br>
         </div>
         <div id="statsText">
             <div>
-                <b>Card Counts (min-max)</b><img id="statsX" src="icons/close.svg" alt="close">
+                <b>Card Counts (min-max)</b>
+                <img class="closeIcon" src="icons/close.svg" alt="close" onclick="statsCloseClicked()">
             </div>
             <div id="statsRow1">
                 <div id="spadesT">
@@ -205,10 +207,70 @@
                 </div>
             </div>
         </div>
-        <div id="optnsText">
-                <b>Game Options</b><img id="optnsX" src="icons/close.svg" alt="close"><br><br>
-                <input id="openChk" type="checkbox"> <label for="openChk">Play with open hands</label><br><br>
-                <input id="slowChk" type="checkbox"> <label for="slowChk">Slow down animations</label><br><br>
+        <div id="tutorText">
+            <div>
+                <b>Double Deck Pinochle - Rules</b>
+                <img class="closeIcon" src="icons/close.svg" alt="close" onclick="tutorCloseClicked()"><br>
+                <br>
+                You play south. 
+                Your partner plays north. 
+                Your opponents play west and east.
+                The deck has 4 suits of 20 cards: 4 aces, tens, kings, queens and jacks in that order.<br>
+                <br>
+                The dealer, initially chosen at random, shuffles and deals the entire deck.
+                The player clockwise from the dealer must bid at least 50 or pass.
+                Subsequent bidders must bid higher (5 higher starting at 60) or pass. 
+                Bidding continues until only one bidder remains.
+                If the first three bidders pass, the fourth bidder must bid at least 50.
+                The final bidder picks the trump suit, which beats other suits, and plays first.<br>
+                <br>
+                The first player may lead any card.
+                The next player clockwise must follow the lead suit if possible, and if the lead's not been trumped, 
+                must beat the high card in the lead suit if possible.
+                If they can't follow the lead, they must play trump if possible, and beat any high trump if possible.
+                If they can't follow the lead or play trump, they can play any card.
+                Play continues until everyone's played a card.<br>
+                <br>
+                The winner then collects the trick, and if any cards remain in their hand, leads the next trick. 
+                When the hand is over, the player clockwise from dealer deals the next hand until the game is over.
+                <br>
+                <img src="icons/next.svg" alt="next" onclick="tutorNextClicked()" style="float:right">
+            </div>
+            <div>
+                <b>Double Deck Pinochle - Scoring</b>
+                <img class="closeIcon" src="icons/close.svg" alt="close" onclick="tutorCloseClicked()"><br>
+                <br>
+                Each player's meld comes from their hand:
+                <ul><br>
+                    <li>A (ace) in each suit (around):10; double:100</li>
+                    <li>K (king) in each suit:8; double:80</li>
+                    <li>Q (queen) in each suit:6; double:60</li>
+                    <li>J (jack) in each suit:4; double:40</li>
+                    <li>A, 10, K, Q, J (run) in trump:16; double:150</li>
+                    <li>Q of spades, J of diamonds:4; 2x:30; 3x:90</li>
+                    <li>K, Q in trump (not in run):4; double:8</li>
+                    <li>K, Q (marriage) in non-trump:2; double:4</li>
+                </ul><br>
+                A team's meld is the sum of each member's meld.
+                If a team's meld is less than 20, their meld is 0.<br>
+                <br>
+                After bidding, each player reveals their meld.
+                Even if a player's team melds less than 20, the player must reveal if they have aces around.
+                If a player wins the bid without a run or marraige in trump, they can't play (must toss) the hand.
+                The bid winner may also choose to toss a hand.<br>
+                <br>
+                After each hand, each team counts their take.
+                Each ace, ten and king is worth 1.
+                Taking the last trick is worth 2.
+                If a team's take is less than 20, their take is 0.<br>                 
+                <br>
+                Normally, each team's score increases by their meld plus take.
+                However, if the bid-winning team's meld plus take is less than their bid, their score decreases by their bid.
+                The first team to reach 500, wins.
+                If both teams reach 500, the bid-winning team wins.<br>
+                <br>
+                <img src="icons/back.svg" alt="back" onclick="tutorBackClicked()">
+            </div>
         </div>
         <div id="cardSize">
         </div>

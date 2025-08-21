@@ -218,24 +218,15 @@ const againBtn  = document.getElementById("againBtn");
 const quitBtn   = document.getElementById("quitBtn");
 const menuIcon  = document.getElementById("menuIcon");
 const menuText  = document.getElementById("menuText");
-const menuX     = document.getElementById("menuX");
-const statsItem = document.getElementById("statsItem");
-const optnsItem = document.getElementById("optnsItem");
-const rstrtItem = document.getElementById("rstrtItem");
-const tutorItem = document.getElementById("tutorItem");
-const aboutItem = document.getElementById("aboutItem");
-const exitItem  = document.getElementById("exitItem");
+const revealTxt = document.getElementById("revealTxt");
 const statsText = document.getElementById("statsText");
-const statsX    = document.getElementById("statsX");
 const spadesT   = document.getElementById("spadesT");
 const heartsT   = document.getElementById("heartsT");
 const clubsT    = document.getElementById("clubsT");
 const diamondsT = document.getElementById("diamondsT");
 const statField = document.querySelectorAll(".statColumn div");
-const optnsText = document.getElementById("optnsText");
-const optnsX    = document.getElementById("optnsX");
-const openChk   = document.getElementById("openChk");
-const slowChk   = document.getElementById("slowChk");
+const tutorText = document.getElementById("tutorText");
+const tutorPage = document.querySelectorAll("#tutorText div");
 const cardSize  = document.getElementById("cardSize");
 
 // Animation constants
@@ -263,6 +254,7 @@ let ourScore    = 0;                // total of north and south points so far in
 let theirScore  = 0;                // total of west and east points so far in game
 let openHand    = false;            // true if faces for all hands are displayed
 let tossHand    = false;            // true if bidder decides to toss in the hand
+let tutorialPg  = 0;                // tutorial page
 
 // Dynamic sizes
 let vw          = 0;                // view width
@@ -966,7 +958,7 @@ function againClicked() {
     log("--> againClicked");
     againBtn.onclick = "";
     quitBtn.onclick = "";
-    location.reload();
+    window.location.reload();
 }
 
 // Quit button clicked: close app
@@ -1618,25 +1610,22 @@ function resized() {
     requestAnimationFrame(frameEvent);
 }
 
+// Menu icon clicked: display the menu
+function menuIconClicked() {
+    log("--> menuClicked");
+    menuText.style.display = "block";
+}
+
 // Menu close icon clicked: close the menu, then await menuClicked
-function menuXClicked() {
-    log("--> menuXClicked");
+function menuCloseClicked() {
+    log("--> menuCloseClicked");
     menuText.style.display = "none";
-    menuX.onclick = "";
-    menuIcon.onclick = menuClicked;
 }
 
-// Stats close button clicked: close the stats and menu displays, then await menuClicked
-function statsXClicked() {
-    log("--> statsXClicked");
-    statsText.style.display = "none";
-    statsX.onclick = "";
-    menuIcon.onclick = menuClicked;
-}
-
-// Statistics menu item clicked: close menu and display stats, then await statsCloseClicked
+// Statistics menu item clicked: close menu and display stats
 function statsClicked() {
     log("--> statsClicked");
+    menuText.style.display = "none";
     for (let s = 0; s < statField.length; s++) {
         const row = s % 5;
         const col = Math.floor((s % 25) / 5);
@@ -1667,82 +1656,78 @@ function statsClicked() {
         else
             element.style.backgroundColor = "white";
     }
-    menuText.style.display = "none";
     statsText.style.display = "block";
-    statsItem.onclick = "";
-    optnsItem.onclick = "";
-    rstrtItem.onclick = "";
-    statsX.onclick = statsXClicked;
 }
 
-// Options done button clicked: close the options display, then await menuClicked
-function optnsXClicked() {
-    log("--> optnsXClicked");
+// Stats close button clicked: close the stats and menu displays, then await menuClicked
+function statsCloseClicked() {
+    log("--> statsCloseClicked");
+    statsText.style.display = "none";
+}
+
+// Reveal/Hide cards menu item clicked: close menu, invert openHand and revealTxt, then immediately redraw hands
+function revealClicked() {
+    log("--> revealClicked");
+    menuText.style.display = "none";
     const now = performance.now();
-    optnsText.style.display = "none";
-    optnsXClicked.onclick = "";
-    menuIcon.onclick = menuClicked;
-    if (slowChk.checked)
-        dealTime = slowDeal;
-    else
-        dealTime = fastDeal;
-    openHand = openChk.checked;
+    openHand = !openHand;
+    revealTxt.textContent = openHand ? "Hide cards" : "Reveal cards";
     for (let c = 0; c < cards; c++)
         if (card[c].p!=south && card[c].g==hand) {
-            if (openHand) {
-                card[c].f = true;
-                card[c].z = c;
-            } else {
-                card[c].f = false;
-                card[c].z = -c;
-            }
+            card[c].f = openHand;
+            card[c].z = openHand ? c : -c;
             card[c].strt.t = now;
             card[c].fnsh.t = now;
         }
     requestAnimationFrame(frameEvent);
 }
 
-// Options menu item clicked: close menu and display options, then await doneClicked
-function optionsClicked() {
-    log("--> optionsClicked");
-    menuText.style.display = "none";
-    optnsText.style.display = "block";
-    statsItem.onclick = "";
-    optnsItem.onclick = "";
-    rstrtItem.onclick = "";
-    optnsX.onclick = optnsXClicked;
+// Reload app menu item clicked: restart the app
+function reloadClicked() {
+    log("--> reloadClicked");
+    window.location.reload();
 }
 
-// Restart menu item clicked: restart the app
-function restartClicked() {
-    log("--> restartClicked");
+// Tutor menu item clicked: close menu and display first page of tutorial
+function tutorClicked() {
+    log("--> tutorClicked");
     menuText.style.display = "none";
-    menuX.onclick = "";
-    menuIcon.onclick = menuClicked;
-    handText.style.display = "none";
-    playText.style.display = "none";
-    trumpText.style.display = "none";
-    bidText.style.display = "none";
-    bidBox[west].textContent = bidBox[north].textContent = bidBox[east].textContent ="";
-    loaded(); //location.reload();
+    tutorText.style.display = "block";
+    tutorialPg = 0;
+    tutorPage[tutorialPg].style.display = "block";
 }
 
-// Exit menu item clicked: close the app
+// Tutor back icon clicked: close current page and display previous page
+function tutorBackClicked() {
+    log("--> tutorBackClicked");
+    tutorPage[tutorialPg].style.display = "none";
+    tutorialPg--;
+    tutorPage[tutorialPg].style.display = "block";
+}
+
+// Tutor next icon clicked: close current page and display next page
+function tutorNextClicked() {
+    log("--> tutorNextClicked");
+    tutorPage[tutorialPg].style.display = "none";
+    tutorialPg++;
+    tutorPage[tutorialPg].style.display = "block";
+}
+
+// Tutor close icon clicked: close the tutor display
+function tutorCloseClicked() {
+    log("--> tutorCloseClicked");
+    tutorText.style.display = "none";
+}
+
+// Exit app menu item clicked: close the app
+function aboutClicked() {
+    log("--> aboutClicked");
+}
+
+// Exit app menu item clicked: close the app
 function exitClicked() {
     log("--> exitClicked");
     window.close();
-}
-
-// Menu icon clicked: display the menu, then await menuXClicked, statsClicked, restartClicked
-function menuClicked() {
-    log("--> menuClicked");
-    menuText.style.display = "block";
-    menuIcon.onclick = "";
-    menuX.onclick = menuXClicked;
-    statsItem.onclick = statsClicked;
-    optnsItem.onclick = optionsClicked;
-    rstrtItem.onclick = restartClicked;
-    exitItem.onclick = exitClicked;
 }
 
 // Load event: initialize app, deal cards, sort cards, disable resize events, then trigger deckDealt
@@ -1755,7 +1740,6 @@ function loaded() {
         faceImg[v].src = faceSrc[v];
     backImg.src = backSrc;
     menuIcon.draggable = false;
-    menuIcon.onclick = menuClicked;
     shuffleArray(deck, cards);
     for (let p of [west, north, east, south]) {
         sort = sort.concat(deck.slice(minC[p],maxC[p]+1).sort((a,b)=>b-a));
