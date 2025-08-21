@@ -1751,29 +1751,6 @@ function loaded() {
         minCards[p].fill(0);
         maxCards[p].fill(4);
     }
-class C {
-    constructor() {
-        this.c    = 0;              // card number
-        this.p    = 0;              // player value
-        this.u    = false;          // player is us (north or south)
-        this.v    = 0;              // card value
-        this.s    = 0;              // card suit
-        this.r    = 0;              // card rank
-        this.t    = false;          // card take is one
-        this.g    = 0;              // card group
-        this.m    = false;          // card is in trump
-        this.z    = 0;              // draw order
-        this.f    = false;          // display face if true
-        this.k    = false;          // card known to all players
-        this.gone = new P;          // gone position
-        this.heap = new P;          // heap position
-        this.hand = new P;          // hand position
-        this.bump = new P;          // bump position
-        this.play = new P;          // play position
-        this.strt = new A;          // start animation
-        this.fnsh = new A;          // finish animation
-    }
-}
     for (let c = 0; c < cards; c++) {
         card[c].c = c; 
         card[c].p = plyr[c];
