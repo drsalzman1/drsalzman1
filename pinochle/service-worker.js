@@ -1,5 +1,5 @@
 // The version of the cache.
-const VERSION = "v0.4";
+const VERSION = "v0.5";
 
 // The name of the cache
 const CACHE_NAME = `pinochle-${VERSION}`;
@@ -11,7 +11,7 @@ const APP_STATIC_RESOURCES = [
     "./cards/kc.svg", "./cards/kd.svg", "./cards/kh.svg", "./cards/ks.svg",
     "./cards/qc.svg", "./cards/qd.svg", "./cards/qh.svg", "./cards/qs.svg",
     "./cards/tc.svg", "./cards/td.svg", "./cards/th.svg", "./cards/ts.svg", "./cards/gb.svg",
-    "./icons/analytics.svg", "./icons/back.svg", "./icons/close.svg", "./icons/exit.svg", 
+    "./icons/analytics.svg", /*"./icons/back.svg", "./icons/close.svg",*/ "./icons/exit.svg", 
     "./icons/help.svg", "./icons/info.svg", "./icons/menu.svg", "./icons/next.svg", 
     "./icons/refresh.svg", "./icons/settings.svg", "./icons/pinochle.svg",
     "./screens/narrow.png", "./screens/wide.png",
