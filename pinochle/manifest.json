@@ -12,19 +12,19 @@
   "theme_color": "#ffffff",
   "icons": [
     {
-      "src": "icons/pinochle.svg",
+      "src": "./icons/pinochle.svg",
       "sizes": "640x640",
       "purpose": "any"
     }
   ],
   "screenshots" : [
     {
-      "src": "screens/wide.png",
+      "src": "./screens/wide.png",
       "form_factor": "wide",
       "label": "Wide Bidding Screen"
     },
     {
-      "src": "screens/narrow.png",
+      "src": "./screens/narrow.png",
       "form_factor": "narrow",
       "label": "Narrow Bidding Screen"
     }
