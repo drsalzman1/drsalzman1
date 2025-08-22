@@ -12,14 +12,9 @@
   "theme_color": "#ffffff",
   "icons": [
     {
-      "src": "icons/unmaskable.svg",
+      "src": "icons/pinochle.svg",
       "sizes": "640x640",
       "purpose": "any"
-    },
-    {
-      "src": "icons/maskable.svg",
-      "sizes": "640x640",
-      "purpose": "maskable"
     }
   ],
   "screenshots" : [
