@@ -28,7 +28,7 @@ const APP_STATIC_RESOURCES = [
     "./cards/kc.svg", "./cards/kd.svg", "./cards/kh.svg", "./cards/ks.svg",
     "./cards/qc.svg", "./cards/qd.svg", "./cards/qh.svg", "./cards/qs.svg",
     "./cards/tc.svg", "./cards/td.svg", "./cards/th.svg", "./cards/ts.svg", "./cards/gb.svg",
-    "./icons/analytics.svg", "./icons/Back.svg", "./icons/close.svg", "./icons/exit.svg", 
+    "./icons/analytics.svg", "./icons/back.svg", "./icons/close.svg", "./icons/exit.svg", 
     "./icons/help.svg", "./icons/info.svg", "./icons/maskable.svg", "./icons/menu.svg", 
     "./icons/next.svg", "./icons/refresh.svg", "./icons/settings.svg", "./icons/unmaskable.svg",
     "./screens/narrow.png", "./screens/wide.png",
