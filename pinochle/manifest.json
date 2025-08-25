@@ -14,17 +14,19 @@
     {
       "src": "./icons/pinochle.svg",
       "sizes": "640x640",
-      "purpose": "any"
+      "purpose": "maskable"
     }
   ],
   "screenshots" : [
     {
       "src": "./screens/wide.png",
+      "sizes": "1142x516",
       "form_factor": "wide",
       "label": "Wide Bidding Screen"
     },
     {
       "src": "./screens/narrow.png",
+      "sizes": "517x1145",
       "form_factor": "narrow",
       "label": "Narrow Bidding Screen"
     }
