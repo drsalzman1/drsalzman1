@@ -1,12 +1,12 @@
 // The version of the cache.
-const VERSION = "v0.1";
+const VERSION = "v0.11";
 
 // The name of the cache
 const CACHE_NAME = `pinochle-${VERSION}`;
 
 // The static resources that the app needs to function.
 const APP_STATIC_RESOURCES = [
-    "./cards/ac.svg", "./cards/ad.svg", "./cards/ah.svg", "./cards/as.svg",
+    "./cards/ac.svg" /*, "./cards/ad.svg", "./cards/ah.svg", "./cards/as.svg",
     "./cards/jc.svg", "./cards/jd.svg", "./cards/jh.svg", "./cards/js.svg",
     "./cards/kc.svg", "./cards/kd.svg", "./cards/kh.svg", "./cards/ks.svg",
     "./cards/qc.svg", "./cards/qd.svg", "./cards/qh.svg", "./cards/qs.svg",
@@ -16,7 +16,7 @@ const APP_STATIC_RESOURCES = [
     "./icons/next.svg", "./icons/refresh.svg", "./icons/settings.svg",
     "./screens/narrow.png", "./screens/wide.png",
     "./suits/diamond.svg", "./suits/club.svg", "./suits/heart.svg", "./suits/spade.svg",
-    "./", "./index.html", "./manifest.json", "./scripts.js", "./styles.css",
+    "./", "./index.html", "./manifest.json", "./scripts.js", "./styles.css" */
 ];
 
 // On install, cache the static resources
