@@ -14,7 +14,7 @@
     {
       "src": "./icons/pinochle.svg",
       "sizes": "640x640",
-      "purpose": "maskable"
+      "purpose": "any"
     }
   ],
   "screenshots" : [
