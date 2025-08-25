@@ -1,5 +1,5 @@
 // The version of the cache.
-const VERSION = "v0.16";
+const VERSION = "v0.17";
 
 // The name of the cache
 const CACHE_NAME = `pinochle-${VERSION}`;
@@ -16,7 +16,7 @@ const APP_STATIC_RESOURCES = [
     "./icons/next.svg", "./icons/refresh.svg", "./icons/settings.svg",
     "./screens/narrow.png", "./screens/wide.png",
     "./suits/diamond.svg", "./suits/club.svg", "./suits/heart.svg", "./suits/spade.svg",
-    /*"./",*/ "./index.html", "./manifest.json", "./scripts.js", "./styles.css"
+    "./", "./index.html", "./pinochle.webmanifest", "./scripts.js", "./styles.css"
 ];
 
 // On install, cache the static resources
