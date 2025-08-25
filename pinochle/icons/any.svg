@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
    version="1.1"
-   width="144"
-   height="144"
-   viewBox="0 0 144 144"
+   width="512"
+   height="512"
+   viewBox="0 0 512 512"
    xml:space="preserve"
    id="svg70"
    sodipodi:docname="any.svg"
    inkscape:version="1.4.2 (f4327f4, 2025-05-13)"
-   inkscape:export-filename="any.png"
-   inkscape:export-xdpi="96"
-   inkscape:export-ydpi="96"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -24,9 +21,9 @@
    inkscape:pageopacity="0.0"
    inkscape:pagecheckerboard="0"
    inkscape:deskcolor="#d1d1d1"
-   inkscape:zoom="6.5393674"
-   inkscape:cx="72.942836"
-   inkscape:cy="73.172216"
+   inkscape:zoom="2.3300781"
+   inkscape:cx="256"
+   inkscape:cy="256"
    inkscape:window-width="2560"
    inkscape:window-height="1411"
    inkscape:window-x="-9"
@@ -122,7 +119,7 @@
 
 <g
    id="g3"
-   transform="matrix(0.30783275,0,0,0.30200266,-16.426152,-30.785596)"><use
+   transform="translate(19.999999)"><use
      xlink:href="#VDJ-7"
      height="70"
      width="70"
@@ -130,7 +127,7 @@
      y="-156"
      id="use2"
      style="stroke-width:5.03393;stroke-dasharray:none"
-     transform="matrix(3.6880483,0,0,3.7054884,517.00446,679.99589)" /><use
+     transform="matrix(3.6945903,0,0,3.6075044,456.42954,562.77069)" /><use
      xlink:href="#SDJ-2"
      height="58.557999"
      width="58.557999"
@@ -138,9 +135,9 @@
      y="-81"
      id="use3"
      style="stroke-width:5.03393;stroke-dasharray:none"
-     transform="matrix(3.6880483,0,0,3.7054884,517.00446,679.99589)" /></g><g
+     transform="matrix(3.8423444,0,0,4.4263808,469.28397,632.93684)" /></g><g
    id="g4"
-   transform="matrix(-0.29794593,0,0,0.30174208,231.24657,-30.774115)"><use
+   transform="translate(-6.000001)"><use
      xlink:href="#VSQ-3"
      height="70"
      width="70"
@@ -148,7 +145,7 @@
      y="-156"
      id="use2-4"
      style="stroke-width:5.03571;stroke-dasharray:none"
-     transform="matrix(3.6877226,0,0,3.7087013,761.097,680.54544)" /><use
+     transform="matrix(-3.5714263,0,0,3.5714289,52.285866,557.14289)" /><use
      xlink:href="#SSQ-5"
      height="58.557999"
      width="58.557999"
@@ -156,4 +153,4 @@
      y="-81"
      id="use3-0"
      style="stroke-width:5.03571;stroke-dasharray:none"
-     transform="matrix(3.6877226,0,0,3.7087013,761.097,680.54544)" /></g></svg>
+     transform="matrix(-4.3294022,0,0,4.4263808,-13.65799,632.93684)" /></g></svg>
