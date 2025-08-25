@@ -12,9 +12,14 @@
   "theme_color": "#ffffff",
   "icons": [
     {
-      "src": "./icons/144x144.png",
+      "src": "./icons/maskable.png",
       "sizes": "144x144",
-      "purpose": "maskable any"
+      "purpose": "maskable"
+    },
+    {
+      "src": "./icons/any.png",
+      "sizes": "144x144",
+      "purpose": "any"
     }
   ],
   "screenshots" : [
