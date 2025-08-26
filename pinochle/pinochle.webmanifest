@@ -2,7 +2,7 @@
   "background_color": "#ffffff",
   "dir": "ltr",
   "display": "fullscreen",
-  "name": "Double-Deck Pinochle",
+  "name": "Pinochle",
   "description": "This is a simple double-deck Pinochle game that I wrote to learn HTML, CSS and Javascript.",
   "orientation": "any",
   "short_name": "Pinochle",

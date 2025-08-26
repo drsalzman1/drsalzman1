@@ -255,6 +255,8 @@ let tossHand    = false;            // true if bidder decides to toss in the han
 let tutorialPg  = 0;                // tutorial page
 
 // Dynamic sizes
+let vw0         = 0;                // previous view width
+let vh0         = 0;                // previous view height
 let vw          = 0;                // view width
 let vh          = 0;                // view height
 let cardw       = 0;                // card width
@@ -1599,12 +1601,16 @@ function resized() {
     log("--> resized");
     const now = performance.now();
     setSizes();
-    locateCards();
-    for (let c = 0; c < cards; c++) {
-        card[c].strt.t = now;
-        card[c].fnsh.t = now;
+    if (vh!=vh0 || vw!=vw0) {
+        vh0 = vh;
+        vw0 = vw;
+        locateCards();
+        for (let c = 0; c < cards; c++) {
+            card[c].strt.t = now;
+            card[c].fnsh.t = now;
+        }
+        requestAnimationFrame(frameEvent);
     }
-    requestAnimationFrame(frameEvent);
 }
 
 // Menu icon clicked: display the menu
@@ -1769,6 +1775,8 @@ function loaded() {
     trump = none;
     trmp.fill(false);
     setSizes();
+    vh0 = vh;
+    vw0 = vw;
     locateCards();
     dealer = Math.floor(Math.random() * players);
     let t0 = performance.now();
