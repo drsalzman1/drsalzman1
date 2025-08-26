@@ -41,9 +41,9 @@
     --bid-width:        calc(var(--cardw) * 3.00);
     --box-height:       calc(var(--cardw) * 0.31);
     --pick-width:       calc(var(--cardw) * 1.30);
-    --stats-width:      calc(var(--cardw) * 5.55);
-    --tutor-width:      calc(100svw - var(--pad) * 4);
-    --tutor-height:     calc(100svh - var(--pad) * 4);
+    --stats-width:      calc(100svw - var(--pad) * 2); /*calc(var(--cardw) * 5.55);*/
+    --tutor-width:      calc(100svw - var(--pad) * 2);
+    --tutor-height:     calc(100svh - var(--pad) * 2);
 }
 
 input {
@@ -110,8 +110,7 @@ input {
 }
 
 #trumpColumn img {
-    filter: invert(100%);
-    height: calc(var(--font-size) * 0.75);
+    height: calc(var(--font-size) * 0.8);
 }
 
 #bidButtons {
@@ -202,7 +201,6 @@ input {
 #menuText {
     position: absolute;
     width: var(--menu-width);
-    margin: var(--pad);
     padding: var(--pad);
     color: black;
     background-color: white;
@@ -217,8 +215,6 @@ input {
 
 #statsText {
     position: absolute;
-    top: var(--pad);
-    left: var(--pad);
     padding: var(--pad);
     width: var(--stats-width);
     line-height: var(--font-size);
@@ -255,7 +251,6 @@ input {
 
 #tutorText {
     position: absolute;
-    margin: var(--pad);
     padding: var(--pad);
     width: var(--tutor-width);
     height: var(--tutor-height);

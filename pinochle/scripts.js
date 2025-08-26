@@ -252,7 +252,7 @@ let ourScore    = 0;                // total of north and south points so far in
 let theirScore  = 0;                // total of west and east points so far in game
 let openHand    = false;            // true if faces for all hands are displayed
 let tossHand    = false;            // true if bidder decides to toss in the hand
-let tutorialPg  = 0;                // tutorial page
+let tutorialPg  = none;             // tutorial page (or none)
 
 // Dynamic sizes
 let vw0         = 0;                // previous view width
@@ -872,7 +872,7 @@ function setSizes() {
 
 // Return card number of top south card (or undefined) at x,y coordinates 
 function xy2c(x, y) {
-    let topC;
+    let topC = none;
     card.sort((a,b)=>a.z-b.z);
     for (let c = 0; c < cards; c++) {
         if (card[c].p == south) {
@@ -1719,6 +1719,7 @@ function tutorNextClicked() {
 // Tutor close icon clicked: close the tutor display
 function tutorCloseClicked() {
     log("--> tutorCloseClicked");
+    tutorialPg = none;
     tutorText.style.display = "none";
 }
 
