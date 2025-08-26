@@ -5,31 +5,34 @@
   "name": "Double-Deck Pinochle",
   "description": "This is a simple double-deck Pinochle game that I wrote to learn HTML, CSS and Javascript.",
   "orientation": "any",
-  "scope": "./",
   "short_name": "Pinochle",
   "start_url": "index.html",
   "id": "pinochle",
   "theme_color": "#ffffff",
   "icons": [
     {
-      "src": "./icons/maskable.png",
+      "src": "icons/maskable.png",
       "sizes": "512x512",
       "purpose": "maskable"
     },
     {
-      "src": "./icons/any.png",
+      "src": "icons/any.png",
       "sizes": "512x512",
       "purpose": "any"
     }
   ],
   "screenshots" : [
     {
-      "src": "./screens/wide.png",
-      "sizes": "1142x516"
+      "src": "screens/wide.png",
+      "sizes": "1142x516",
+      "form_factor": "wide",
+      "label": "Wide Bidding Screen"
     },
     {
-      "src": "./screens/narrow.png",
-      "sizes": "517x1145"
+      "src": "screens/narrow.png",
+      "sizes": "517x1145",
+      "form_factor": "narrow",
+      "label": "Narrow Bidding Screen"
     }
   ]
 }
