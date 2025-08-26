@@ -286,7 +286,6 @@ input {
 
 #aboutText {
     position: absolute;
-    margin: var(--pad);
     padding: var(--pad);
     width: var(--menu-width);
     color: black;
