@@ -225,6 +225,7 @@ const statField = document.querySelectorAll(".statColumn div");
 const tutorText = document.getElementById("tutorText");
 const tutorPage = document.querySelectorAll("#tutorText div");
 const aboutText = document.getElementById("aboutText");
+const vsText    = document.getElementById("vsText");
 const cardSize  = document.getElementById("cardSize");
 
 // Animation constants
@@ -1800,7 +1801,7 @@ onload = loaded;
 // Service Worker message received: log message
 function messageRxed(e) {
     console.log("--> messageRxed");
-    console.log(`e: ${e}, e.data: ${e.data}, e.origin: ${e.origin}`)
+    vsText.textContent = e.data;
 }
 
 const channel = new BroadcastChannel("Pinochle");
