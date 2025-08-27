@@ -1805,7 +1805,7 @@ function messageRxed(e) {
 
 // Implement proxy server for web fetches when app is offline
 if ("serviceWorker" in navigator && window.location.origin != "file://") {
-    navigator.serviceWorker.register("service-worker.js", {updateViaCache: "none"});
-    navigator.serviceWorker.onmessage = messageRxed;
+    console.log(navigator.serviceWorker.register("service-worker.js", {updateViaCache: "none"}));
+    console.log(navigator.serviceWorker.onmessage = messageRxed);
 }
 
