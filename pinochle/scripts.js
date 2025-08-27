@@ -1796,3 +1796,16 @@ function loaded() {
 
 // Set function to be invoked after app is loaded and rendered
 onload = loaded;
+
+// Service Worker message received: log message
+function messageRxed(e) {
+    console.log("--> messageRxed");
+    console.log(`e: ${e}, e.data: ${e.data}, e.origin: ${e.origin}`)
+}
+
+// Implement proxy server for web fetches when app is offline
+if ("serviceWorker" in navigator && window.location.origin != "file://") {
+    navigator.serviceWorker.register("service-worker.js", {updateViaCache: "none"});
+    navigator.serviceWorker.onmessage = messageRxed;
+}
+

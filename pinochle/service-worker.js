@@ -1,5 +1,5 @@
 // The version of the cache.
-const VERSION = "v0.32";
+const VERSION = "v0.33";
 
 // The name of the cache
 const CACHE_NAME = `pinochle-${VERSION}`;
@@ -22,10 +22,13 @@ const APP_STATIC_RESOURCES = [
 
 // On install, cache the static resources
 self.addEventListener("install", (event) => {
+    self.skipwaiting();
     event.waitUntil(
         (async () => {
             const cache = await caches.open(CACHE_NAME);
+            const client = await self.clients.get(event.clientId);
             cache.addAll(APP_STATIC_RESOURCES);
+            client.postMessage(VERSION);
         })()
     );
 });
