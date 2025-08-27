@@ -234,7 +234,7 @@ let dealTime    = fastDeal;         // milliseconds to deal all cards
 
 // Global variables
 let ondone      = "";               // event to invoke after animation completes
-let dealer      = south;            // the player who is dealing or last dealt
+let dealer      = Math.floor(Math.random()*players); // the player who is dealing or last dealt
 let bidder      = none;             // the player who is bidding or won the bid
 let trump       = none;             // the bidder's trump suit
 let mustToss    = false;            // true is bidder doesn't have a marriage in trump
@@ -949,7 +949,7 @@ function frameEvent() {
 function nextClicked() {
     log("--> nextClicked");
     handText.style.display = "none";
-    setTimeout(onload);
+    setTimeout(loaded);
 }
 
 // Again button clicked: reload app
@@ -964,7 +964,7 @@ function quitClicked() {
     window.close();
 }
 
-// Hand ended: display stats and await contClicked, againClicked or quitClicked
+// Hand ended: display stats and await nextClicked, againClicked or quitClicked
 function handEnded() {
     log("--> handEnded");
     usOld.textContent = ourScore;
@@ -972,13 +972,13 @@ function handEnded() {
     if (us[bidder]) {
         usBid.innerHTML = ourBid;
         themBid.innerHTML = "Pass";
-        if (tossHand || ourMeld+ourTake<ourBid) {
+        if (tossHand || ourMeld<20 || ourTake<20 || ourMeld+ourTake<ourBid) {
             usMeld.innerHTML = "<s>&nbsp"+ourMeld+"&nbsp</s>";
             themMeld.innerHTML = theirMeld<20 ? "<s>&nbsp"+theirMeld+"&nbsp</s>" : theirMeld;
             usTake.innerHTML = "<s>&nbsp"+ourTake+"&nbsp</s>";
             themTake.innerHTML = theirTake<20 ? "<s>&nbsp"+theirTake+"&nbsp</s>" : theirTake;
             ourScore = ourScore - ourBid;
-            theirScore = theirScore + theirMeld<20 ? 0 : theirMeld;
+            theirScore = theirScore + (theirTake<20 ? 0 : (theirTake + (theirMeld<20 ? 0 : theirMeld)));
         } else {
             usMeld.innerHTML = ourMeld;
             themMeld.innerHTML = theirMeld<20 ? "<s>&nbsp"+theirMeld+"&nbsp</s>" : theirMeld;
@@ -990,12 +990,12 @@ function handEnded() {
     } else {
         usBid.innerHTML = "Pass";
         themBid.innerHTML = theirBid;
-        if (tossHand || theirMeld+theirTake<theirBid) {
+        if (tossHand || theirMeld<20 || theirTake<20 || theirMeld+theirTake<theirBid) {
             usMeld.innerHTML = ourMeld<20 ? "<s>&nbsp"+ourMeld+"&nbsp</s>" : ourMeld;
             themMeld.innerHTML = "<s>&nbsp"+theirMeld+"&nbsp</s>";
             usTake.innerHTML = ourTake<20 ? "<s>&nbsp"+ourTake+"&nbsp</s>" : ourTake;
             themTake.innerHTML = "<s>&nbsp"+theirTake+"&nbsp</s>";
-            ourScore = ourScore + ourMeld<20 ? 0 : ourMeld;
+            ourScore = ourScore + (ourTake<20 ? 0 : (ourTake + (ourMeld<20 ? 0 : ourMeld)));
             theirScore = theirScore - theirBid;
         } else {
             usMeld.innerHTML = ourMeld<20 ? "<s>&nbsp"+ourMeld+"&nbsp</s>" : ourMeld;
@@ -1012,7 +1012,6 @@ function handEnded() {
         nextDiv.style.display = "block";
         overDiv.style.display = "none";
         handText.style.display = "block";
-        dealer = next[dealer];
     } else {
         nextDiv.style.display = "none";
         overDiv.style.display = "block";
@@ -1779,7 +1778,7 @@ function loaded() {
     vh0 = vh;
     vw0 = vw;
     locateCards();
-    dealer = Math.floor(Math.random() * players);
+    dealer = next[dealer];
     let t0 = performance.now();
     let p = next[dealer];
     for (let z = 0; z < cards; z++) {
