@@ -872,7 +872,7 @@ function setSizes() {
 
 // Return card number of top south card (or undefined) at x,y coordinates 
 function xy2c(x, y) {
-    let topC = none;
+    let topC;
     card.sort((a,b)=>a.z-b.z);
     for (let c = 0; c < cards; c++) {
         if (card[c].p == south) {
