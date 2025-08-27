@@ -1534,7 +1534,6 @@ function bidClicked(e) {
 // Hands fanned: await bidClicked or autoBid and retrigger handsFanned or trigger biddingDone
 function handsFanned() {
     log("--> handsFanned");
-    channel.postMessage = "get version";
     while (bid[bidder] == pass) 
         bidder = next[bidder];
     if (bidder == south && bid[bidder] == none) {
@@ -1730,6 +1729,7 @@ function tutorCloseClicked() {
 // About app menu item clicked: close the app
 function aboutClicked() {
     log("--> aboutClicked");
+    channel.postMessage = "get version";
     menuText.style.display = "none";
     aboutText.style.display = "block"
 }
