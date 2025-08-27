@@ -1534,6 +1534,7 @@ function bidClicked(e) {
 // Hands fanned: await bidClicked or autoBid and retrigger handsFanned or trigger biddingDone
 function handsFanned() {
     log("--> handsFanned");
+    channel.postMessage = "get version";
     while (bid[bidder] == pass) 
         bidder = next[bidder];
     if (bidder == south && bid[bidder] == none) {
@@ -1593,7 +1594,6 @@ function handsGathered() {
 // Deck dealt: gather hands, then trigger handsGathered
 function deckDealt() {
     log("--> deckDealt");
-    channel.postMessage = "get version";
     const now = performance.now();
     for (let c = 0; c < cards; c++)
         moveCard(c, heap, now, gone, -c, false, dealTime/20);
