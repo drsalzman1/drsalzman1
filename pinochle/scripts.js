@@ -1729,14 +1729,14 @@ function tutorCloseClicked() {
 // About app menu item clicked: close the app
 function aboutClicked() {
     log("--> aboutClicked");
-    channel.postMessage = "get version";
+    channel.postMessage("get version");
     menuText.style.display = "none";
     aboutText.style.display = "block"
 }
 
 // Tutor close icon clicked: close the tutor display
 function aboutCloseClicked() {
-    log("--> tutorCloseClicked");
+    log("--> aboutCloseClicked");
     aboutText.style.display = "none";
 }
 
