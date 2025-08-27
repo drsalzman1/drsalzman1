@@ -1803,9 +1803,10 @@ function messageRxed(e) {
     console.log(`e: ${e}, e.data: ${e.data}, e.origin: ${e.origin}`)
 }
 
+const channel = new BroadcastChannel("Pinochle");
+
 // Implement proxy server for web fetches when app is offline
 if ("serviceWorker" in navigator && window.location.origin != "file://") {
-    console.log(navigator.serviceWorker.register("service-worker.js", {updateViaCache: "none"}));
-    console.log(navigator.serviceWorker.onmessage = messageRxed);
+    navigator.serviceWorker.register("service-worker.js", {updateViaCache: "none"});
+    channel.onmessage = messageRxed;
 }
-

@@ -1,11 +1,11 @@
 // The version of the cache.
-const VERSION = "v0.36";
+const version = "v0.37";
 
 // The name of the cache
-const CACHE_NAME = `pinochle-${VERSION}`;
+const cacheName = `pinochle-${version}`;
 
 // The static resources that the app needs to function.
-const APP_STATIC_RESOURCES = [
+const appStaticResources = [
     "cards/ac.svg", "cards/ad.svg", "cards/ah.svg", "cards/as.svg", "cards/gb.svg",
     "cards/jc.svg", "cards/jd.svg", "cards/jh.svg", "cards/js.svg",
     "cards/kc.svg", "cards/kd.svg", "cards/kh.svg", "cards/ks.svg",
@@ -20,16 +20,17 @@ const APP_STATIC_RESOURCES = [
     "suits/club.svg", "suits/diamond.svg", "suits/heart.svg", "suits/spade.svg"
 ];
 
+// The channel used to communicate with the client(s)
+const channel = new BroadcastChannel("Pinochle");
+
 // On install, cache the static resources
 self.addEventListener("install", (event) => {
+    channel.postMessage(version);
     self.skipWaiting();
     event.waitUntil(
         (async () => {
-            const cache = await caches.open(CACHE_NAME);
-            const client = await self.clients.get(event.clientId);
-            cache.addAll(APP_STATIC_RESOURCES);
-            console.log(`self:${self}, event:${event}, cache:${cache}, client:${client}`)
-            client.postMessage(VERSION);
+            const cache = await caches.open(cacheName);
+            cache.addAll(appStaticResources);
         })()
     );
 });
@@ -41,7 +42,7 @@ self.addEventListener("activate", (event) => {
             const names = await caches.keys();
             await Promise.all(
                 names.map((name) => {
-                if (name !== CACHE_NAME) {
+                if (name !== cacheName) {
                     return caches.delete(name);
                 }
                 })
@@ -55,7 +56,7 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
     event.respondWith(
         (async () => {
-            const cache = await caches.open(CACHE_NAME);
+            const cache = await caches.open(cacheName);
             const cachedResponse = await cache.match(event.request);
             return cachedResponse || fetch(event.request);
         })()
