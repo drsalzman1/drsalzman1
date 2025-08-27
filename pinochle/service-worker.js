@@ -1,5 +1,5 @@
 // The version of the cache.
-const version = "v0.44";
+const version = "v0.45";
 
 // The name of the cache
 const cacheName = `pinochle-${version}`;
@@ -63,6 +63,8 @@ const channel = new BroadcastChannel("Pinochle");
 
 // Message received from client: if requested, post version
 function messageRxed(e) {
+    console.log("--> messageRxed by service-worker.js");
+    console.log(`e.data:"${e.data}"`)
     if (e.data == "get version")
         channel.postMessage(version);
 }

@@ -1804,7 +1804,8 @@ onload = loaded;
 
 // Message received from service worker: note service worker version message
 function messageRxed(e) {
-    console.log("--> messageRxed");
+    console.log("--> messageRxed by scripts.js");
+    console.log(`e.data:"${e.data}"`)
     vsText.textContent = e.data;
 }
 
