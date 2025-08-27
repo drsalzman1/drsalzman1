@@ -1,5 +1,5 @@
 // The version of the cache.
-const version = "v0.38";
+const version = "v0.39";
 
 // The name of the cache
 const cacheName = `pinochle-${version}`;
@@ -25,7 +25,6 @@ const channel = new BroadcastChannel("Pinochle");
 
 // On install, cache the static resources
 self.addEventListener("install", (event) => {
-    channel.postMessage(version);
     self.skipWaiting();
     event.waitUntil(
         (async () => {
@@ -54,6 +53,7 @@ self.addEventListener("activate", (event) => {
 
 // On fetch, intercept server request and respond with cached response, if any
 self.addEventListener("fetch", (event) => {
+    channel.postMessage(version);
     event.respondWith(
         (async () => {
             const cache = await caches.open(cacheName);
