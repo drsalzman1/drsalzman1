@@ -974,14 +974,14 @@ function handEnded() {
         themBid.innerHTML = "Pass";
         if (tossHand || ourMeld<20 || ourTake<20 || ourMeld+ourTake<ourBid) {
             usMeld.innerHTML = "<s>&nbsp"+ourMeld+"&nbsp</s>";
-            themMeld.innerHTML = theirMeld<20 ? "<s>&nbsp"+theirMeld+"&nbsp</s>" : theirMeld;
+            themMeld.innerHTML = (theirMeld<20||theirTake<20) ? "<s>&nbsp"+theirMeld+"&nbsp</s>" : theirMeld;
             usTake.innerHTML = "<s>&nbsp"+ourTake+"&nbsp</s>";
             themTake.innerHTML = theirTake<20 ? "<s>&nbsp"+theirTake+"&nbsp</s>" : theirTake;
             ourScore = ourScore - ourBid;
             theirScore = theirScore + (theirTake<20 ? 0 : (theirTake + (theirMeld<20 ? 0 : theirMeld)));
         } else {
             usMeld.innerHTML = ourMeld;
-            themMeld.innerHTML = theirMeld<20 ? "<s>&nbsp"+theirMeld+"&nbsp</s>" : theirMeld;
+            themMeld.innerHTML = (theirMeld<20||theirTake<20) ? "<s>&nbsp"+theirMeld+"&nbsp</s>" : theirMeld;
             usTake.innerHTML = ourTake;
             themTake.innerHTML = theirTake<20 ? "<s>&nbsp"+theirTake+"&nbsp</s>" : theirTake;
             ourScore = ourScore + ourMeld + ourTake;
@@ -991,14 +991,14 @@ function handEnded() {
         usBid.innerHTML = "Pass";
         themBid.innerHTML = theirBid;
         if (tossHand || theirMeld<20 || theirTake<20 || theirMeld+theirTake<theirBid) {
-            usMeld.innerHTML = ourMeld<20 ? "<s>&nbsp"+ourMeld+"&nbsp</s>" : ourMeld;
+            usMeld.innerHTML = (ourMeld<20||ourTake<20) ? "<s>&nbsp"+ourMeld+"&nbsp</s>" : ourMeld;
             themMeld.innerHTML = "<s>&nbsp"+theirMeld+"&nbsp</s>";
             usTake.innerHTML = ourTake<20 ? "<s>&nbsp"+ourTake+"&nbsp</s>" : ourTake;
             themTake.innerHTML = "<s>&nbsp"+theirTake+"&nbsp</s>";
             ourScore = ourScore + (ourTake<20 ? 0 : (ourTake + (ourMeld<20 ? 0 : ourMeld)));
             theirScore = theirScore - theirBid;
         } else {
-            usMeld.innerHTML = ourMeld<20 ? "<s>&nbsp"+ourMeld+"&nbsp</s>" : ourMeld;
+            usMeld.innerHTML = (ourMeld<20||ourTake<20) ? "<s>&nbsp"+ourMeld+"&nbsp</s>" : ourMeld;
             themMeld.innerHTML = theirMeld;
             usTake.innerHTML = ourTake<20 ? "<s>&nbsp"+ourTake+"&nbsp</s>" : ourTake;
             themTake.innerHTML = theirTake;
