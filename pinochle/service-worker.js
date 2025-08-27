@@ -1,5 +1,5 @@
 // The version of the cache.
-const version = "v0.42";
+const version = "v0.43";
 
 // The name of the cache
 const cacheName = `pinochle-${version}`;
@@ -50,7 +50,6 @@ self.addEventListener("activate", (event) => {
 
 // On fetch, intercept server request and respond with cached response, if any
 self.addEventListener("fetch", (event) => {
-    channel.postMessage(version);
     event.respondWith(
         (async () => {
             const cache = await caches.open(cacheName);
