@@ -228,6 +228,9 @@ const aboutText = document.getElementById("aboutText");
 const vsText    = document.getElementById("vsText");
 const cardSize  = document.getElementById("cardSize");
 
+// Communication channel with service worker
+const channel = new BroadcastChannel("Pinochle");
+
 // Animation constants
 const fastDeal  = 2000;             // fast (2 second) deal
 const slowDeal  = 10000;            // slow (10 second) deal
@@ -1590,6 +1593,7 @@ function handsGathered() {
 // Deck dealt: gather hands, then trigger handsGathered
 function deckDealt() {
     log("--> deckDealt");
+    channel.postMessage = "get version";
     const now = performance.now();
     for (let c = 0; c < cards; c++)
         moveCard(c, heap, now, gone, -c, false, dealTime/20);
@@ -1798,13 +1802,11 @@ function loaded() {
 // Set function to be invoked after app is loaded and rendered
 onload = loaded;
 
-// Service Worker message received: log message
+// Message received from service worker: note service worker version message
 function messageRxed(e) {
     console.log("--> messageRxed");
     vsText.textContent = e.data;
 }
-
-const channel = new BroadcastChannel("Pinochle");
 
 // Implement proxy server for web fetches when app is offline
 if ("serviceWorker" in navigator && window.location.origin != "file://") {

@@ -1,5 +1,5 @@
 // The version of the cache.
-const version = "v0.39";
+const version = "v0.40";
 
 // The name of the cache
 const cacheName = `pinochle-${version}`;
@@ -19,9 +19,6 @@ const appStaticResources = [
     "scripts.js", "styles.css", 
     "suits/club.svg", "suits/diamond.svg", "suits/heart.svg", "suits/spade.svg"
 ];
-
-// The channel used to communicate with the client(s)
-const channel = new BroadcastChannel("Pinochle");
 
 // On install, cache the static resources
 self.addEventListener("install", (event) => {
@@ -62,3 +59,13 @@ self.addEventListener("fetch", (event) => {
         })()
     );
 });
+
+const channel = new BroadcastChannel("Pinochle");
+
+// Message received from client: if requested, post version
+function messageRxed(e) {
+    if (e.data == "get version")
+        channel.postMessage(version);
+}
+
+channel.onmessage = messageRxed;
