@@ -1,5 +1,5 @@
 // The version of the cache.
-const version = "v0.50";
+const version = "v0.51";
 
 // The name of the cache
 const cacheName = `pinochle-${version}`;
