@@ -213,6 +213,14 @@ input {
     height: var(--icon);
 }
 
+#trmpIcon {
+    position: relative;
+    float: right;
+    margin: var(--pad);
+    height: var(--icon);
+    display: none;
+}
+
 #statsText {
     position: absolute;
     padding: var(--pad);

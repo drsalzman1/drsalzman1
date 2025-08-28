@@ -214,6 +214,7 @@ const nextDiv   = document.getElementById("nextDiv");
 const overDiv   = document.getElementById("overDiv");
 const overText  = document.getElementById("overText");
 const menuIcon  = document.getElementById("menuIcon");
+const trmpIcon  = document.getElementById("trmpIcon");
 const menuText  = document.getElementById("menuText");
 const revealTxt = document.getElementById("revealTxt");
 const statsText = document.getElementById("statsText");
@@ -971,6 +972,7 @@ function quitClicked() {
 // Hand ended: display stats and await nextClicked, againClicked or quitClicked
 function handEnded() {
     log("--> handEnded");
+    trmpIcon.style.display = "none";
     usOld.textContent = ourScore;
     themOld.textContent = theirScore;
     if (us[bidder]) {
@@ -1165,7 +1167,6 @@ function mousePressed(e) {
             docBody.onmousedown = "";
             docBody.ontouchstart = "";
             docBody.ontouchmove = "";
-            bidBox[south].textContent = "";
             setTimeout(cardChosen);
         }
     }
@@ -1182,7 +1183,6 @@ function touchStarted(e) {
         chosen = c; 
         docBody.ontouchstart = "";
         docBody.ontouchmove = "";
-        bidBox[south].textContent = "";
         setTimeout(cardChosen);
         return;
     }
@@ -1227,7 +1227,6 @@ function handsRefanned() {
         docBody.onmousedown = mousePressed;
         docBody.ontouchstart = touchStarted;
         docBody.ontouchmove = touchMoved;
-        bidBox[south].textContent = "Trump is "+suit$[trump];
     } else {
         chosen = autoSelect(player);
         setTimeout (cardChosen, 0);
@@ -1409,6 +1408,8 @@ function handsRegathered() {
 function trumpPicked() {
     log("--> trumpPicked");
     const now = performance.now();
+    trmpIcon.src = suitSrc[trump];
+    trmpIcon.style.display = "block";
     ourMeld = meld(north, trump) + meld(south, trump);
     theirMeld = meld(west, trump) + meld(east, trump);
     mustToss = marriages(bidder, trump) == 0;
