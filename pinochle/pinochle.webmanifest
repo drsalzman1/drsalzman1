@@ -2,6 +2,7 @@
   "background_color": "#ffffff",
   "dir": "ltr",
   "display": "fullscreen",
+  "display-override": ["window-controls-overlay"],
   "name": "Pinochle",
   "description": "This is a simple double-deck Pinochle game that I wrote to learn HTML, CSS and Javascript.",
   "orientation": "any",
