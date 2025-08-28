@@ -1,7 +1,6 @@
 {
-  "background_color": "#006400",
+  "background_color": "#ffffff",
   "dir": "ltr",
-  "display-override": ["window-controls-overlay"],
   "display": "fullscreen",
   "name": "Pinochle",
   "description": "This is a simple double-deck Pinochle game that I wrote to learn HTML, CSS and Javascript.",
@@ -9,7 +8,7 @@
   "short_name": "Pinochle",
   "start_url": "index.html",
   "id": "pinochle",
-  "theme_color": "#006400",
+  "theme_color": "#ffffff",
   "icons": [
     {
       "src": "icons/maskable.png",
