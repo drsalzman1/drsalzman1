@@ -978,7 +978,14 @@ function handEnded() {
     if (us[bidder]) {
         usBid.innerHTML = ourBid;
         themBid.innerHTML = "Pass";
-        if (tossHand || ourMeld<20 || ourTake<20 || ourMeld+ourTake<ourBid) {
+        if (tossHand) {
+            usMeld.innerHTML = "<s>&nbsp"+ourMeld+"&nbsp</s>";
+            themMeld.innerHTML = theirMeld<20 ? "<s>&nbsp"+theirMeld+"&nbsp</s>" : theirMeld;
+            usTake.innerHTML = "<s>&nbsp"+ourTake+"&nbsp</s>";
+            themTake.innerHTML = "<s>&nbsp"+theirTake+"&nbsp</s>";
+            ourScore = ourScore - ourBid;
+            theirScore = theirScore + theirMeld<20 ? 0 : theirMeld;
+        } else if (ourMeld<20 || ourTake<20 || ourMeld+ourTake<ourBid) {
             usMeld.innerHTML = "<s>&nbsp"+ourMeld+"&nbsp</s>";
             themMeld.innerHTML = (theirMeld<20||theirTake<20) ? "<s>&nbsp"+theirMeld+"&nbsp</s>" : theirMeld;
             usTake.innerHTML = "<s>&nbsp"+ourTake+"&nbsp</s>";
@@ -996,7 +1003,14 @@ function handEnded() {
     } else {
         usBid.innerHTML = "Pass";
         themBid.innerHTML = theirBid;
-        if (tossHand || theirMeld<20 || theirTake<20 || theirMeld+theirTake<theirBid) {
+        if (tossHand) {
+            usMeld.innerHTML = ourMeld<20 ? "<s>&nbsp"+ourMeld+"&nbsp</s>" : ourMeld;
+            themMeld.innerHTML = "<s>&nbsp"+theirMeld+"&nbsp</s>";
+            usTake.innerHTML = "<s>&nbsp"+ourTake+"&nbsp</s>";
+            themTake.innerHTML = "<s>&nbsp"+theirTake+"&nbsp</s>";
+            ourScore = ourScore + ourMeld<20 ? 0 : ourMeld;
+            theirScore = theirScore - theirBid;
+        } else if (theirMeld<20 || theirTake<20 || theirMeld+theirTake<theirBid) {
             usMeld.innerHTML = (ourMeld<20||ourTake<20) ? "<s>&nbsp"+ourMeld+"&nbsp</s>" : ourMeld;
             themMeld.innerHTML = "<s>&nbsp"+theirMeld+"&nbsp</s>";
             usTake.innerHTML = ourTake<20 ? "<s>&nbsp"+ourTake+"&nbsp</s>" : ourTake;
