@@ -1,0 +1,310 @@
+@media (orientation: portrait) {
+    :root {
+        --cardw:        min(16.807svw, 10.187svh);
+        --west-top:     calc(050svh - var(--cardw)*2.50);
+        --west-left:    calc(050svw - var(--cardw)*1.40);
+        --west-align:   left;
+        --north-top:    calc(000svh + var(--cardw)*0.20);
+        --north-left:   calc(050svw - var(--cardw)*1.50);
+        --east-top:     calc(050svh - var(--cardw)*2.50);
+        --east-left:    calc(050svw - var(--cardw)*1.62);
+        --east-align:   right;
+        --south-top:    calc(100svh - var(--cardw)*2.30);
+        --south-left:   calc(050svw - var(--cardw)*1.50);
+        }
+}
+
+@media (orientation: landscape) {
+    :root {
+        --cardw:        min(16.807svh, 10.187svw);
+        --west-top:     calc(050svh - var(--cardw)*0.155);
+        --west-left:    calc(000svw + var(--cardw)*2.02);
+        --west-align:   left;
+        --north-top:    calc(050svh - var(--cardw)*1.45);
+        --north-left:   calc(050svw - var(--cardw)*1.50);
+        --east-top:     calc(050svh - var(--cardw)*0.155);
+        --east-left:    calc(100svw - var(--cardw)*5.03);
+        --east-align:   right;
+        --south-top:    calc(050svh + var(--cardw)*1.20);
+        --south-left:   calc(050svw - var(--cardw)*1.50);
+        }
+}
+
+:root {
+    --cardh:            calc(var(--cardw) * 1.40);
+    --font-size:        calc(var(--cardw) * 0.25);
+    --pad:              calc(var(--cardw) * 0.10);
+    --icon:             calc(var(--cardw) * 0.33);
+    --menu-width:       calc(var(--cardw) * 4.00);
+    --text-area:        calc(var(--cardw) * 2.60);
+    --box-width:        calc(var(--cardw) * 0.70);
+    --bid-width:        calc(var(--cardw) * 3.00);
+    --box-height:       calc(var(--cardw) * 0.31);
+    --pick-width:       calc(var(--cardw) * 1.30);
+    --stats-width:      calc(100svw - var(--pad) * 2); /*calc(var(--cardw) * 5.55);*/
+    --tutor-width:      calc(100svw - var(--pad) * 2);
+    --tutor-height:     calc(100svh - var(--pad) * 2);
+}
+
+input {
+    width: var(--box-width);
+    height: var(--box-height);
+    padding: 0px;
+    margin: 0px;
+    border: none;
+    background-color: powderblue;
+    font-family: sans-serif;
+    font-size: var(--font-size);
+}
+
+#docBody {
+    position: relative;
+    box-sizing: border-box;
+    width: 100svw;
+    height: 100svh;
+    margin: 0px;
+    background-color: darkgreen;
+    color: white;
+    font-family: sans-serif;
+    font-size: var(--font-size);
+    -webkit-user-select: none;
+    user-select: none;
+    touch-action: pan-y;
+}
+
+#docCanvas {
+    position: absolute;
+}
+
+#textArea {
+    position: absolute;
+    top: calc(50svh - var(--text-area)/2);
+    left: calc(50svw - var(--text-area)/2);
+    width: var(--text-area);
+    height: var(--text-area);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#bidText {
+    width: 100%;
+    height: 100%;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+
+#meldTable {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    text-align: center;
+}
+
+#trumpColumn {
+    margin-right: var(--pad);
+}
+
+#trumpColumn img {
+    height: calc(var(--font-size) * 0.8);
+}
+
+#bidButtons {
+    width: 100%;
+    margin-top: var(--pad);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+#trumpText {
+    width: 100%;
+    height: 100%;
+    display: none;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    text-align: center;
+}
+
+#trumpText input {
+    width: var(--pick-width);
+}
+
+#playText {
+    width: 100%;
+    height: 100%;
+    display: none;
+    flex-direction: column;
+    justify-content: space-around;
+    text-align: left;
+}
+
+#playBtns {
+    width: 100%;
+    margin-top: var(--pad);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+#handText {
+    width: 100%;
+    display: none;
+    text-align: left;
+}
+
+#handTable {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: center;
+}
+
+#nextDiv, #overDiv, #playBtns {
+    width: 100%;
+    text-align: center;
+}
+
+#bidBox div {
+    position: absolute;
+    width: var(--bid-width);
+    z-index: -100;
+}
+
+#bidBox :nth-child(1) {top: var(--west-top);  left: var(--west-left);  text-align: var(--west-align);}
+#bidBox :nth-child(2) {top: var(--north-top); left: var(--north-left); text-align: center;           }
+#bidBox :nth-child(3) {top: var(--east-top);  left: var(--east-left);  text-align: var(--east-align);}
+#bidBox :nth-child(4) {top: var(--south-top); left: var(--south-left); text-align: center;           }
+
+#menuIcon {
+    position: absolute;
+    height: var(--icon);
+    filter: invert(100%);
+    margin: var(--pad);
+}
+
+.closeIcon {
+    position: absolute;
+    top: calc(var(--pad) * 0.65);
+    right: var(--pad);
+    height: var(--icon);
+}
+
+#menuText {
+    position: absolute;
+    width: var(--menu-width);
+    padding: var(--pad);
+    color: black;
+    background-color: white;
+    display: none;
+}
+
+.menuIcon {
+    position: relative;
+    top: calc(var(--font-size) * 0.3);
+    height: var(--icon);
+}
+
+#trmpIcon {
+    position: relative;
+    float: right;
+    margin: var(--pad);
+    height: var(--icon);
+    display: none;
+}
+
+#statsText {
+    position: absolute;
+    padding: var(--pad);
+    width: var(--stats-width);
+    line-height: var(--font-size);
+    color: black;
+    background-color: white;
+    display: none;
+}
+
+#statsRow1, #statsRow2 {
+    margin-top: var(--font-size);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+#spadesT, #heartsT, #clubsT, #diamondsT {
+    display: flex;
+    flex-direction: row;
+    text-align: center;
+}
+
+#heartsT, #diamondsT {
+    margin-left: calc(var(--font-size) * 1.8);
+}
+
+.statColumn {
+    margin-left: calc(var(--pad) * 1.55);
+}
+
+#closeDiv {
+    width: 100%;
+    text-align: center;
+}
+
+#tutorText {
+    position: absolute;
+    padding: var(--pad);
+    width: var(--tutor-width);
+    height: var(--tutor-height);
+    line-height: var(--font-size);
+    color: black;
+    background-color: white;
+    display: none;
+}
+
+#tutorText div {
+    display: none;
+}
+
+.backIcon {
+    position: absolute;
+    bottom: var(--pad);
+    left: var(--pad);
+    height: var(--icon);
+}
+
+.nextIcon {
+    position: absolute;
+    bottom: calc(var(--pad)*1);
+    right: calc(var(--pad)*1);
+    height: var(--icon);
+}
+
+#tutorText ul {
+    padding: 0;
+    margin: 0;
+    margin-left: calc(var(--pad) * 4);
+}
+
+#aboutText {
+    position: absolute;
+    padding: var(--pad);
+    width: var(--menu-width);
+    color: black;
+    background-color: white;
+    display: none;
+}
+
+#cardSize {
+    width: var(--cardw);
+    height: var(--cardh);
+    margin-left: var(--);
+    position: absolute;
+    display: none;
+}

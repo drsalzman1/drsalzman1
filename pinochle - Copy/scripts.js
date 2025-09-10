@@ -235,11 +235,11 @@ const channel = new BroadcastChannel("Pinochle");
 // Animation constants
 const fastDeal  = 2000;             // fast (2 second) deal
 const slowDeal  = 20000;            // slow (10 second) deal
-let dealTime    = fastDeal;         // milliseconds to deal all cards
+let dealTime    = slowDeal;         // milliseconds to deal all cards
 
 // Global variables
 let ondone      = "";               // event to invoke after animation completes
-let dealer      = Math.floor(Math.random()*players); // the player who is dealing or last dealt
+let dealer      = east; //Math.floor(Math.random()*players); // the player who is dealing or last dealt
 let bidder      = none;             // the player who is bidding or won the bid
 let trump       = none;             // the bidder's trump suit
 let mustToss    = false;            // true is bidder doesn't have a marriage in trump
@@ -815,9 +815,9 @@ function locateCards() {
         card[c].gone.x = [-cardh/2, vw/2, vw+cardh/2, vw/2][p];
         card[c].gone.y = [vh/2, -cardh/2, vh/2, vh+cardh/2][p];
         card[c].gone.r = [rWest, rNorth, rEast, rSouth][p];
-        card[c].heap.x = [cardw+hpad, vw/2, vw-cardw-hpad, vw/2][p] + (Math.random()-0.5)*cardw/2;
-        card[c].heap.y = [vh/2, cardw+vpad, vh/2, vh-cardw-vpad][p] + (Math.random()-0.5)*cardw/2;
-        card[c].heap.r = [Math.PI/2, 0, -Math.PI/2, 0][dealer] + (Math.random()-0.5)*Math.PI/4;
+        card[c].heap.x = [cardw+hpad, vw/2, vw-cardw-hpad, vw/2][p];
+        card[c].heap.y = [vh/2, cardw+vpad, vh/2, vh-cardw-vpad][p];
+        card[c].heap.r = [rWest, rNorth, rEast, rSouth][p];
         card[c].hand.x = [cardh/2+hpad, vw/2-cardw/4*(v-n/2), vw-cardh/2-hpad, vw/2+cardw/4*(v-n/2)][p];
         card[c].hand.y = [vh/2+cardw/4*(v-n/2), cardh/2+vpad, vh/2-cardw/4*(v-n/2), vh-cardh/2-vpad][p];
         card[c].hand.r = [rWest, rNorth, rEast, rSouth][p];
@@ -1805,6 +1805,9 @@ function loaded() {
     for (let z = 0; z < cards; z++) {
         const c = minC[p] + Math.floor(z/players);
         moveCard(c, gone, t0, heap, z, false, dealTime/20, minC[dealer], c);
+        /*card[c].fnsh.x += (Math.random()-0.5)*cardw/2;
+        card[c].fnsh.y += (Math.random()-0.5)*cardw/2;
+        card[c].fnsh.r += (Math.random()-0.5)*Math.PI/4;*/
         t0 = t0 + (dealTime - dealTime / 20) / cards;
         p = next[p];
     }
