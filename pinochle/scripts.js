@@ -234,7 +234,7 @@ const channel = new BroadcastChannel("Pinochle");
 
 // Animation constants
 const fastDeal  = 2000;             // fast (2 second) deal
-const slowDeal  = 10000;            // slow (10 second) deal
+const slowDeal  = 20000;            // slow (10 second) deal
 let dealTime    = fastDeal;         // milliseconds to deal all cards
 
 // Global variables
@@ -975,6 +975,7 @@ function handEnded() {
     trmpIcon.style.display = "none";
     usOld.textContent = ourScore;
     themOld.textContent = theirScore;
+    console.log(`bidder:${bidder}, us[bidder]:${us[bidder]}, tossHand:${tossHand}, ourMeld:${ourMeld}, theirMeld:${theirMeld}, ourTake:${ourTake}, theirTake:${theirTake}`)
     if (us[bidder]) {
         usBid.innerHTML = ourBid;
         themBid.innerHTML = "Pass";
