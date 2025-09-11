@@ -173,6 +173,28 @@ input {
     text-align: center;
 }
 
+#infoText {
+    position: absolute;
+    padding: var(--pad);
+    width: 100%;
+    height: 100%;
+    display: none;
+    text-align: left;
+    color: black;
+    background-color: white;
+}
+
+#infoTrump {
+    height: calc(var(--font-size) * 0.8);
+}
+
+#infoCloseIcon {
+    position: absolute;
+    top: calc(var(--pad) * 0.65);
+    right: var(--pad);
+    height: var(--icon);
+}
+
 #bidBox div {
     position: absolute;
     width: var(--bid-width);

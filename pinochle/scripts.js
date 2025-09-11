@@ -30,6 +30,7 @@ const ten      = 3;
 const ace      = 4;
 const ranks    = 5;
 const rank$    = ["jack", "queen", "king", "ten", "ace"];
+const rankSrc  = ["ranks/j.svg", "ranks/q.svg", "ranks/k.svg", "ranks/t.svg", "suits/a.svg"];
 
 // Card values = rank + suit (or absent)
 const values   = 20;
@@ -184,6 +185,15 @@ const maxCards = [Array(values), Array(values), Array(values), Array(values)];
 // minCards[p][v] = least cards player p can hold of value v (revealed by meld and play)
 const minCards = [Array(values), Array(values), Array(values), Array(values)];
 
+// barSrc[min][max] = bar image representing minCards[p][v] min and maxCards[p][v] max
+const barSrc = [
+    ["bars/0-0.svg", "bars/0-1.svg", "bars/0-2.svg", "bars/0-3.svg", "bars/0-4.svg"],
+    ["",             "bars/1-1.svg", "bars/1-2.svg", "bars/1-3.svg", "bars/1-4.svg"],
+    ["",             "",             "bars/2-2.svg", "bars/2-3.svg", "bars/2-4.svg"],
+    ["",             "",             "",             "bars/3-3.svg", "bars/3-4.svg"],
+    ["",             "",             "",             "",             "bars/4-4.svg"]
+];
+
 // Page elements
 const docBody   = document.getElementById("docBody");
 const docCanvas = document.getElementById("docCanvas");
@@ -227,6 +237,9 @@ const tutorText = document.getElementById("tutorText");
 const tutorPage = document.querySelectorAll("#tutorText div");
 const aboutText = document.getElementById("aboutText");
 const vsText    = document.getElementById("vsText");
+const infoText  = document.getElementById("infoText");
+const infoPlayr = document.getElementById("infoPlayr");
+const infoTrump = document.getElementById("infoTrump");
 const cardSize  = document.getElementById("cardSize");
 
 // Communication channel with service worker
@@ -985,21 +998,21 @@ function handEnded() {
             usTake.innerHTML = "<s>&nbsp"+ourTake+"&nbsp</s>";
             themTake.innerHTML = "<s>&nbsp"+theirTake+"&nbsp</s>";
             ourScore = ourScore - ourBid;
-            theirScore = theirScore + theirMeld<20 ? 0 : theirMeld;
+            theirScore = theirScore + (theirMeld<20?0:theirMeld);
         } else if (ourMeld<20 || ourTake<20 || ourMeld+ourTake<ourBid) {
             usMeld.innerHTML = "<s>&nbsp"+ourMeld+"&nbsp</s>";
             themMeld.innerHTML = (theirMeld<20||theirTake<20) ? "<s>&nbsp"+theirMeld+"&nbsp</s>" : theirMeld;
             usTake.innerHTML = "<s>&nbsp"+ourTake+"&nbsp</s>";
             themTake.innerHTML = theirTake<20 ? "<s>&nbsp"+theirTake+"&nbsp</s>" : theirTake;
             ourScore = ourScore - ourBid;
-            theirScore = theirScore + (theirTake<20 ? 0 : (theirTake + (theirMeld<20 ? 0 : theirMeld)));
+            theirScore = theirScore + (theirTake<20 ? 0 : (theirTake + (theirMeld<20?0:theirMeld)));
         } else {
             usMeld.innerHTML = ourMeld;
             themMeld.innerHTML = (theirMeld<20||theirTake<20) ? "<s>&nbsp"+theirMeld+"&nbsp</s>" : theirMeld;
             usTake.innerHTML = ourTake;
             themTake.innerHTML = theirTake<20 ? "<s>&nbsp"+theirTake+"&nbsp</s>" : theirTake;
             ourScore = ourScore + ourMeld + ourTake;
-            theirScore = theirScore + (theirTake<20 ? 0 : (theirTake + (theirMeld<20 ? 0 : theirMeld)));
+            theirScore = theirScore + (theirTake<20 ? 0 : (theirTake + (theirMeld<20?0:theirMeld)));
         }
     } else {
         usBid.innerHTML = "Pass";
@@ -1009,21 +1022,21 @@ function handEnded() {
             themMeld.innerHTML = "<s>&nbsp"+theirMeld+"&nbsp</s>";
             usTake.innerHTML = "<s>&nbsp"+ourTake+"&nbsp</s>";
             themTake.innerHTML = "<s>&nbsp"+theirTake+"&nbsp</s>";
-            ourScore = ourScore + ourMeld<20 ? 0 : ourMeld;
+            ourScore = ourScore + (ourMeld<20?0:ourMeld);
             theirScore = theirScore - theirBid;
         } else if (theirMeld<20 || theirTake<20 || theirMeld+theirTake<theirBid) {
             usMeld.innerHTML = (ourMeld<20||ourTake<20) ? "<s>&nbsp"+ourMeld+"&nbsp</s>" : ourMeld;
             themMeld.innerHTML = "<s>&nbsp"+theirMeld+"&nbsp</s>";
             usTake.innerHTML = ourTake<20 ? "<s>&nbsp"+ourTake+"&nbsp</s>" : ourTake;
             themTake.innerHTML = "<s>&nbsp"+theirTake+"&nbsp</s>";
-            ourScore = ourScore + (ourTake<20 ? 0 : (ourTake + (ourMeld<20 ? 0 : ourMeld)));
+            ourScore = ourScore + (ourTake<20 ? 0 : (ourTake + (ourMeld<20?0:ourMeld)));
             theirScore = theirScore - theirBid;
         } else {
             usMeld.innerHTML = (ourMeld<20||ourTake<20) ? "<s>&nbsp"+ourMeld+"&nbsp</s>" : ourMeld;
             themMeld.innerHTML = theirMeld;
             usTake.innerHTML = ourTake<20 ? "<s>&nbsp"+ourTake+"&nbsp</s>" : ourTake;
             themTake.innerHTML = theirTake;
-            ourScore = ourScore + (ourTake<20 ? 0 : (ourTake + (ourMeld<20 ? 0 : ourMeld)));
+            ourScore = ourScore + (ourTake<20 ? 0 : (ourTake + (ourMeld<20?0:ourMeld)));
             theirScore = theirScore + theirMeld + theirTake;
         }
     }
@@ -1634,7 +1647,7 @@ function resized() {
 
 // Menu icon clicked: display the menu
 function menuIconClicked() {
-    log("--> menuClicked");
+    log("--> menuIconClicked");
     menuText.style.display = "block";
 }
 
@@ -1760,6 +1773,20 @@ function aboutCloseClicked() {
 function exitClicked() {
     log("--> exitClicked");
     window.close();
+}
+
+// Info icon clicked: display the info
+function infoIconClicked() {
+    log("--> infoIconClicked");
+    infoPlayr.innerText = player$[bidder];
+    infoTrump.src = suitSrc[trump];
+    infoText.style.display = "block";
+}
+
+// Info close icon clicked: close the info
+function infoCloseClicked() {
+    log("--> infoCloseClicked");
+    infoText.style.display = "none";
 }
 
 // Load event: initialize app, deal cards, sort cards, disable resize events, then trigger deckDealt

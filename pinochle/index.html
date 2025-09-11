@@ -87,6 +87,25 @@
                     <input type="button" value="Quit" onclick="quitClicked()">
                 </div>
             </div>
+            <div id="infoText">
+                <span id="infoPlayr"></span> chose <img id="infoTrump" src="suits/diamond.svg" alt="trump">.
+                <img id="infoCloseIcon" src="icons/close.svg" alt="close" onclick="infoCloseClicked()"><br>
+                <br>
+                Q West North East<br>
+                Q &#9608;&#9608;&#9618;&#9618; &#9608;&#9608;&#9608;&#9608; &#9608;&#9608;&#9608;&#9608;<br>
+                <!--<div id="infoTable">
+                    <div>
+                        West<br>
+                        AAAA<br>
+                    </div>
+                    <div>
+                        North
+                    </div>
+                    <div>
+                        East
+                    </div>
+                </div>-->
+            </div>
         </div>
         <div id="bidBox">
             <div></div>
@@ -95,7 +114,7 @@
             <div></div>
         </div>
         <img id="menuIcon" src="icons/menu.svg" alt="menu" onclick="menuIconClicked()">
-        <img id="trmpIcon" src="suits/club.svg" alt="trump"> 
+        <img id="trmpIcon" src="suits/club.svg" alt="trump" onclick="infoIconClicked()"> 
         <div id="menuText">
             <b>Double Deck Pinochle</b>
             <img class="closeIcon" src="icons/close.svg" alt="close" onclick="menuCloseClicked()"><br>
