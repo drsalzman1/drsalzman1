@@ -1,11 +1,14 @@
 // The version of the cache.
-const version = "v0.56";
+const version = "v0.57";
 
 // The name of the cache
 const cacheName = `pinochle-${version}`;
 
 // The static resources that the app needs to function.
 const appStaticResources = [
+    "bars/4-4.svg", "bars/0-0.svg", "bars/0-1.svg", "bars/0-2.svg", "bars/0-3.svg", 
+    "bars/0-4.svg", "bars/1-1.svg", "bars/1-2.svg", "bars/1-3.svg", "bars/1-4.svg", 
+    "bars/2-2.svg", "bars/2-3.svg", "bars/2-4.svg", "bars/3-3.svg", "bars/3-4.svg",
     "cards/ac.svg", "cards/ad.svg", "cards/ah.svg", "cards/as.svg", "cards/gb.svg",
     "cards/jc.svg", "cards/jd.svg", "cards/jh.svg", "cards/js.svg",
     "cards/kc.svg", "cards/kd.svg", "cards/kh.svg", "cards/ks.svg",
@@ -14,7 +17,8 @@ const appStaticResources = [
     "icons/analytics.svg", "icons/any.png", "icons/any.svg", "icons/back.svg", "icons/close.svg", 
     "icons/exit.svg", "icons/help.svg", "icons/info.svg", "icons/maskable.png", "icons/menu.svg", 
     "icons/next.svg", "icons/refresh.svg", "icons/settings.svg",
-    "index.html", "pinochle.webmanifest", 
+    "index.html", "pinochle.webmanifest",
+    "ranks/ten.svg", "ranks/ace.svg", "ranks/jack.svg", "ranks/king.svg", "ranks/queen.svg",
     "screens/narrow.png", "screens/wide.png",
     "scripts.js", "styles.css", 
     "suits/club.svg", "suits/diamond.svg", "suits/heart.svg", "suits/spade.svg"

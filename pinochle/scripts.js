@@ -30,7 +30,7 @@ const ten      = 3;
 const ace      = 4;
 const ranks    = 5;
 const rank$    = ["jack", "queen", "king", "ten", "ace"];
-const rankSrc  = ["ranks/j.svg", "ranks/q.svg", "ranks/k.svg", "ranks/t.svg", "suits/a.svg"];
+const rankSrc  = ["ranks/jack.svg", "ranks/queen.svg", "ranks/king.svg", "ranks/ten.svg", "suits/ace.svg"];
 
 // Card values = rank + suit (or absent)
 const values   = 20;
@@ -237,9 +237,11 @@ const tutorText = document.getElementById("tutorText");
 const tutorPage = document.querySelectorAll("#tutorText div");
 const aboutText = document.getElementById("aboutText");
 const vsText    = document.getElementById("vsText");
-const infoText  = document.getElementById("infoText");
-const infoPlayr = document.getElementById("infoPlayr");
-const infoTrump = document.getElementById("infoTrump");
+const iText     = document.getElementById("iText");
+const iTrump    = document.getElementById("iTrump");
+const iOutText  = document.getElementById("iOutText");
+const iIcon     = document.getElementById("iIcon");
+const iBar      = document.querySelectorAll(".bar");
 const cardSize  = document.getElementById("cardSize");
 
 // Communication channel with service worker
@@ -612,7 +614,7 @@ function shuffleArray(a, n) {
 // Log hands on console
 function logHands() {
     let t = "";
-    for (let p of [west, north, south, east]) {
+    for (let p of [west, north, east, south]) {
         t = `${player$[p][0]}:`;
         for (let c = minC[p]; c <= maxC[p]; c++)
             t += card[c].g==hand? ` ${value$[card[c].v]}` : ` --`;
@@ -632,18 +634,22 @@ function logStats() {
     }
 }
 
-// Get plausible card values v given other player's unrevealed cards and compliant with maxCards
-function getPlausible(cardV, p) {
+// Get plausible card values cardV given other players' unknown cards
+function getPlausible(cardV) {
+
+    // Make list of unknown cards in other players' hands
     const unknown = Array(cards).fill(0);
     let u = 0;
     for (let c = 0; c < cards; c++)
-        if (card[c].g==hand && card[c].p!=p && !card[c].k)
+        if (card[c].g==hand && card[c].p!=player && !card[c].k)
             unknown[u++] = card[c].v;
+
+    // Until compliant: shuffle list, fill in cardV, and test for compliance
     nextTry: do {
         shuffleArray(unknown, u);
         u = 0;
         for (let c = 0; c < cards; c++)
-            if (card[c].g==hand && card[c].p!=p && !card[c].k)
+            if (card[c].g==hand && card[c].p!=player && !card[c].k)
                 cardV[c] = unknown[u++];
             else
                 cardV[c] = card[c].g==gone? absent : card[c].v;
@@ -653,7 +659,10 @@ function getPlausible(cardV, p) {
                 for (let c = minC[p]; c <= maxC[p]; c++)
                     if (card[c].g==hand && cardV[c]==v)
                         nV++;
-                if (nV > maxCards[p][v])
+                let loose = remaining[v] - nValue(player,v);
+                for (let p = next[player]; p != player; p = next[p])
+                    loose -= minCards[p][v];
+                if (nV > Math.min(maxCards[p][v], minCards[p][v] + loose))
                     continue nextTry;
             }
     } while (false);
@@ -765,8 +774,8 @@ class R {
      }
 }
 
-// Return computer player p's best legal card number based on plausible hands (or none)
-function autoSelect(p) {
+// Return computer player's best legal card number based on plausible hands (or none)
+function autoSelect() {
     const cardV = Array(cards).fill(0);
     const nPlayed = nGroup(play);
     const results = [
@@ -789,9 +798,9 @@ function autoSelect(p) {
                 bestC[card[c].p] = c;
                 playC[card[c].p] = c;
             }
-        getPlausible(cardV, p);
-        bestMerit(cardV, bestC, playC, p, leadCard, highCard, nPlayed);
-        results[bestC[p]].n++;
+        getPlausible(cardV);
+        bestMerit(cardV, bestC, playC, player, leadCard, highCard, nPlayed);
+        results[bestC[player]].n++;
         cycles++;
     }
     results.sort((a,b)=>b.n-a.n);
@@ -1112,6 +1121,12 @@ function cardChosen() {
     const now = performance.now();
     let msg = "Best follow";
 
+    // Choose player's last known card with chosen's value (if any)
+    const oldChosen = chosen;
+    for (let c = minC[player]; c <= maxC[player]; c++)
+        if (card[c].g==hand && card[c].v==card[chosen].v && card[c].k)
+            chosen = c;
+
     // if chosen card is in high suit and doesn't beat non-ace high card, player must not have any cards that can beat the high card 
     if (highCard!=none && card[chosen].s==card[highCard].s && card[highCard].r!=ace && card[chosen].r<=card[highCard].r) {
         msg = `Can't beat ${value$[card[highCard].v]}`;
@@ -1158,7 +1173,7 @@ function cardChosen() {
 
 // Mouse moved: if off bump card, unbump cards; if moved to hand legal card, bump it
 function mouseMoved(e) {
-    log("--> mouseMoved");
+    //log("--> mouseMoved");
     const now = performance.now();
     const c = xy2c(e.clientX, e.clientY);
     if (c == undefined || card[c].g != bump)
@@ -1230,7 +1245,7 @@ function touchStarted(e) {
 
 // Touch moved: if off bump card, unbump cards; if hand legal card, bump it
 function touchMoved(e) {
-    log("--> touchMoved");
+    //log("--> touchMoved");
     const now = performance.now();
     const c = xy2c(e.touches[0].clientX, e.touches[0].clientY);
     if (c==undefined || card[c].g!=bump) {
@@ -1250,13 +1265,15 @@ function touchMoved(e) {
 // Hands re-fanned: now choose a card to play, then trigger cardChosen
 function handsRefanned() {
     log("--> handsRefanned");
+    trmpIcon.src = suitSrc[trump];
+    trmpIcon.style.display = "block";
     if (player == south) {
         docBody.onmousemove = mouseMoved;
         docBody.onmousedown = mousePressed;
         docBody.ontouchstart = touchStarted;
         docBody.ontouchmove = touchMoved;
     } else {
-        chosen = autoSelect(player);
+        chosen = autoSelect();
         setTimeout (cardChosen, 0);
     }
 }
@@ -1436,8 +1453,6 @@ function handsRegathered() {
 function trumpPicked() {
     log("--> trumpPicked");
     const now = performance.now();
-    trmpIcon.src = suitSrc[trump];
-    trmpIcon.style.display = "block";
     ourMeld = meld(north, trump) + meld(south, trump);
     theirMeld = meld(west, trump) + meld(east, trump);
     mustToss = marriages(bidder, trump) == 0;
@@ -1775,18 +1790,46 @@ function exitClicked() {
     window.close();
 }
 
-// Info icon clicked: display the info
-function infoIconClicked() {
-    log("--> infoIconClicked");
-    infoPlayr.innerText = player$[bidder];
-    infoTrump.src = suitSrc[trump];
-    infoText.style.display = "block";
+// Update iItem grid based on suit s
+function updateGrid(s) {
+    let i = 0;
+    let q = 0;
+    for (let r of [ace, ten, king, queen, jack]) {
+        const v = r + s;
+        const n = remaining[v] - nValue(south, v);
+        iBar[i++].src = barSrc[n][n];
+        q += n;
+    }
+    iOutText.innerText = q==1 ? `${q} ${suit$[s].substring(0,suit$[s].length-1)} is out.` : `${q} ${suit$[s]} are out.`;
+    iIcon.src = suitSrc[s];
+    for (let p of [west, north, east])
+        for (let r of [ace, ten, king, queen, jack]) {
+            const v = r + s;
+            const unk = remaining[v] - nValue(south,v) - minCards[west][v] - minCards[north][v] - minCards[east][v];
+            const min = minCards[p][v];
+            const max = Math.min(maxCards[p][v], min + unk);
+            iBar[i++].src = barSrc[min][max];
+        }
 }
 
-// Info close icon clicked: close the info
-function infoCloseClicked() {
-    log("--> infoCloseClicked");
-    infoText.style.display = "none";
+// Trmp icon clicked: display the info
+function trmpIconClicked() {
+    log("--> trmpIconClicked");
+    iTrump.innerText = suit$[trump];
+    updateGrid(trump);
+    iText.style.display = "flex";
+}
+
+// iNav s icon clicked
+function iNavClicked(s) {
+    log(`--> iNavClicked(${s})`);
+    updateGrid(s);
+}
+
+// iClose icon clicked: close the info
+function iCloseClicked() {
+    log("--> iCloseClicked");
+    iText.style.display = "none";
 }
 
 // Load event: initialize app, deal cards, sort cards, disable resize events, then trigger deckDealt

@@ -173,26 +173,39 @@ input {
     text-align: center;
 }
 
-#infoText {
+#iText {
     position: absolute;
     padding: var(--pad);
     width: 100%;
     height: 100%;
     display: none;
+    flex-direction: column;
+    justify-content: space-between;
     text-align: left;
     color: black;
     background-color: white;
 }
 
-#infoTrump {
-    height: calc(var(--font-size) * 0.8);
+#iGrid {
+    display: grid;
+    grid-template-columns: auto auto auto auto auto auto;
+    justify-content: space-evenly;
+    text-align: center;
 }
 
-#infoCloseIcon {
-    position: absolute;
-    top: calc(var(--pad) * 0.65);
-    right: var(--pad);
-    height: var(--icon);
+#iGrid img {
+    height: calc(var(--font-size) * 0.75);
+}
+
+#iBot {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: center;
+}
+
+#iBot img {
+    height: var(--font-size);
 }
 
 #bidBox div {
@@ -216,7 +229,7 @@ input {
 .closeIcon {
     position: absolute;
     top: calc(var(--pad) * 0.65);
-    right: var(--pad);
+    right: calc(var(--pad) * 0.65);
     height: var(--icon);
 }
 
