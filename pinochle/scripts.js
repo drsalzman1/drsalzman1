@@ -239,8 +239,8 @@ const aboutText = document.getElementById("aboutText");
 const vsText    = document.getElementById("vsText");
 const iText     = document.getElementById("iText");
 const iTrump    = document.getElementById("iTrump");
-const iOutText  = document.getElementById("iOutText");
 const iIcon     = document.getElementById("iIcon");
+const iOutText  = document.getElementById("iOutText");
 const iBar      = document.querySelectorAll(".bar");
 const cardSize  = document.getElementById("cardSize");
 
@@ -846,8 +846,8 @@ function locateCards() {
         card[c].bump.x = card[c].hand.x + [cardh*0.4, 0, -cardh*0.4, 0][p];
         card[c].bump.y = card[c].hand.y + [0, cardh*0.4, 0, -cardh*0.4][p];
         card[c].bump.r = [rWest, rNorth, rEast, rSouth][p];
-        card[c].play.x = vw/2 + [-cardh/2-pad/4, cardw/2+pad/4, cardh/2+pad/4, -cardw/2-pad/4][p];
-        card[c].play.y = vh/2 + [-cardw/2-pad/4, -cardh/2-pad/4, cardw/2+pad/4, cardh/2+pad/4][p];
+        card[c].play.x = vw/2 + [-cardh/2, +cardw/2, +cardh/2, -cardw/2][p];
+        card[c].play.y = vh/2 + [-cardw/2, -cardh/2, +cardw/2, +cardh/2][p];
         card[c].play.r = [rWest, rNorth, rEast, rSouth][p];
         card[c].strt.x = [card[c].gone.x, card[c].heap.x, card[c].hand.x, card[c].bump.x, card[c].play.x][card[c].g];
         card[c].strt.y = [card[c].gone.y, card[c].heap.y, card[c].hand.y, card[c].bump.y, card[c].play.y][card[c].g];
@@ -1800,7 +1800,7 @@ function updateGrid(s) {
         iBar[i++].src = barSrc[n][n];
         q += n;
     }
-    iOutText.innerText = q==1 ? `${q} ${suit$[s].substring(0,suit$[s].length-1)} is out.` : `${q} ${suit$[s]} are out.`;
+    iOutText.innerText = `${q} out`;
     iIcon.src = suitSrc[s];
     for (let p of [west, north, east])
         for (let r of [ace, ten, king, queen, jack]) {
