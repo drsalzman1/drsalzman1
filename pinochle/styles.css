@@ -189,17 +189,12 @@ input {
 #iGrid {
     display: grid;
     grid-template-columns: auto auto auto auto auto auto;
-    grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
     justify-content: space-evenly;
     text-align: center;
 }
 
 #iGrid img {
-    height: calc(var(--font-size) * 1);
-}
-
-.arrow {
-    margin-top: calc(var(--font-size) * -0.2);
+    height: var(--font-size);
 }
 
 #iBot {

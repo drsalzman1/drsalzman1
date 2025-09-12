@@ -187,11 +187,11 @@ const minCards = [Array(values), Array(values), Array(values), Array(values)];
 
 // barSrc[min][max] = bar image representing minCards[p][v] min and maxCards[p][v] max
 const barSrc = [
-    ["bars/0-0.svg", "bars/0-1.svg", "bars/0-2.svg", "bars/0-3.svg", "bars/0-4.svg"],
-    ["",             "bars/1-1.svg", "bars/1-2.svg", "bars/1-3.svg", "bars/1-4.svg"],
-    ["",             "",             "bars/2-2.svg", "bars/2-3.svg", "bars/2-4.svg"],
-    ["",             "",             "",             "bars/3-3.svg", "bars/3-4.svg"],
-    ["",             "",             "",             "",             "bars/4-4.svg"]
+    ["icons/0-0.svg", "icons/0-1.svg", "icons/0-2.svg", "icons/0-3.svg", "icons/0-4.svg"],
+    ["",              "icons/1-1.svg", "icons/1-2.svg", "icons/1-3.svg", "icons/1-4.svg"],
+    ["",              "",              "icons/2-2.svg", "icons/2-3.svg", "icons/2-4.svg"],
+    ["",              "",              "",              "icons/3-3.svg", "icons/3-4.svg"],
+    ["",              "",              "",              "",              "icons/4-4.svg"]
 ];
 
 // Page elements
@@ -227,12 +227,10 @@ const menuIcon  = document.getElementById("menuIcon");
 const trmpIcon  = document.getElementById("trmpIcon");
 const menuText  = document.getElementById("menuText");
 const revealTxt = document.getElementById("revealTxt");
-const statsText = document.getElementById("statsText");
 const spadesT   = document.getElementById("spadesT");
 const heartsT   = document.getElementById("heartsT");
 const clubsT    = document.getElementById("clubsT");
 const diamondsT = document.getElementById("diamondsT");
-const statField = document.querySelectorAll(".statColumn div");
 const tutorText = document.getElementById("tutorText");
 const tutorPage = document.querySelectorAll("#tutorText div");
 const aboutText = document.getElementById("aboutText");
@@ -673,6 +671,7 @@ const highMerit = 10;   // Merit(demerit) for each point card won(lost)
 const rankMerit = 1;    // Merit(demerit) for each card  foe(ally) uses
 const trmpMerit = 1;    // Merit(demerit) for each trump foe(ally) uses
 
+// Find player p's best legal move bestC[p] given card values v and played cards playC[west..south]
 function bestMerit(v, bestC, playC, p, leadCard0, highCard0, nPlayed) {
     let l = leadCard0;
     let h = highCard0;
@@ -1670,49 +1669,6 @@ function menuIconClicked() {
 function menuCloseClicked() {
     log("--> menuCloseClicked");
     menuText.style.display = "none";
-}
-
-// Statistics menu item clicked: close menu and display stats
-function statsClicked() {
-    log("--> statsClicked");
-    menuText.style.display = "none";
-    for (let s = 0; s < statField.length; s++) {
-        const row = s % 5;
-        const col = Math.floor((s % 25) / 5);
-        const grp = Math.floor(s / 25);
-        const v = (4 - row) + [spades, hearts, clubs, diamonds][grp];
-        const unknown = remaining[v] - nValue(south,v) - minCards[west][v] - minCards[north][v] - minCards[east][v];
-        switch (col) {
-        case 0:
-            statField[s].textContent = minCards[west][v]+"-"+Math.min(maxCards[west][v],minCards[west][v]+unknown);
-            break;
-        case 1:
-            statField[s].textContent = minCards[north][v]+"-"+Math.min(maxCards[north][v],minCards[north][v]+unknown);
-            break;
-        case 2:
-            statField[s].textContent = minCards[east][v]+"-"+Math.min(maxCards[east][v],minCards[east][v]+unknown);
-            break;
-        case 3:
-            statField[s].textContent = nValue(south,v);
-            break;
-        case 4:
-            statField[s].textContent = unknown;
-        }
-    }
-    for (let s of [spades, hearts, clubs, diamonds]) {
-        const element = [diamondsT,,,,,clubsT,,,,,heartsT,,,,,spadesT][s];
-        if (trump == s)
-            element.style.backgroundColor = "#D0FFD0";
-        else
-            element.style.backgroundColor = "white";
-    }
-    statsText.style.display = "block";
-}
-
-// Stats close button clicked: close the stats and menu displays, then await menuClicked
-function statsCloseClicked() {
-    log("--> statsCloseClicked");
-    statsText.style.display = "none";
 }
 
 // Reveal/Hide cards menu item clicked: close menu, invert openHand and revealTxt, then immediately redraw hands
