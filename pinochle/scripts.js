@@ -653,7 +653,7 @@ function getPlausible(cardV) {
     // Cap known cards based on minCards (in case a known card was chosen rather than an unknown card)
     for (let p of [west, north, east, west])
         for (let v = 0; v < values; v++) {
-            const nMin = minCards[p][v];
+            let nMin = minCards[p][v];
             for (let c = minC[p]; c <= maxC[p]; c++)
                 if (card[c].g==hand && card[c].v==v && card[c].k)
                     if (nMin > 0)
