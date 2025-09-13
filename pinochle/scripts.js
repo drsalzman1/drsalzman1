@@ -647,6 +647,15 @@ function capMaxCards(p1, v, p2) {
     return Math.min(maxCards[p1][v], minCards[p1][v] + loose);
 }
 
+// Update count grid based on minCards, maxCards, remaining, and south's cards
+function updateGrid() {
+    let i = 0;
+    for (let p of [west, north, east])
+        for (let s of [spades, hearts, clubs, diamonds])
+            for (let r of [ace, ten, king, queen, jack])
+                count[i++].src = barSrc[minCards[p][r+s]][capMaxCards(p,r+s,south)];
+}
+
 // Get plausible card values cardV given other players' unknown cards
 function getPlausible(cardV) {
 
@@ -1179,6 +1188,7 @@ function cardChosen() {
         loose -= minCards[p][card[chosen].v];
     for (let p of [west, north, east, south])
         maxCards[p][card[chosen].v] = Math.min(maxCards[p][card[chosen].v], minCards[p][card[chosen].v] + loose);
+    updateGrid();
 
     // log this play
     log(`${player$[player]} chose ${value$[card[chosen].v]}, msg:${msg}`);
@@ -1457,6 +1467,7 @@ function handsRegathered() {
             maxCards[p][v] = Math.min(maxCards[p][v], minCards[p][v] + loose);
         }
     logStats();
+    updateGrid();
 
     // animate movement of meld cards to hand
     locateCards();
@@ -1695,11 +1706,6 @@ function exposeClicked() {
     menuText.style.display = "none";
     exposeCnts = !exposeCnts;
     exposeTxt.textContent = exposeCnts ? "Hide counts" : "Expose counts";
-    let i = 0;
-    for (let p of [west, north, east])
-        for (let s of [spades, hearts, clubs, diamonds])
-            for (let r of [ace, ten, king, queen, jack])
-                count[i++].src = barSrc[minCards[p][r+s]][capMaxCards(p,r+s,south)];
     wGrid.style.display = nGrid.style.display = eGrid.style.display = exposeCnts ? "grid" : "none";
 }
 
@@ -1820,6 +1826,7 @@ function loaded() {
         minCards[p].fill(0);
         maxCards[p].fill(4);
     }
+    updateGrid();
     for (let c = 0; c < cards; c++) {
         card[c].c = c; 
         card[c].p = plyr[c];
