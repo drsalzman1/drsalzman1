@@ -650,6 +650,18 @@ function capMaxCards(p1, v, p2) {
 // Get plausible card values cardV given other players' unknown cards
 function getPlausible(cardV) {
 
+    // Cap known cards based on minCards (in case a known card was chosen rather than an unknown card)
+    for (let p of [west, north, east, west])
+        for (let v = 0; v < values; v++) {
+            const nMin = minCards[p][v];
+            for (let c = minC[p]; c <= maxC[p]; c++)
+                if (card[c].g==hand && card[c].v==v && card[c].k)
+                    if (nMin > 0)
+                        nMin--;
+                    else
+                        card[c].k = false;
+        }
+
     // Make list of unknown cards in other players' hands
     const unknown = Array(cards).fill(0);
     let u = 0;
@@ -1131,12 +1143,6 @@ function cardChosen() {
     log("--> cardChosen");
     const now = performance.now();
     let msg = "Best follow";
-
-    // Choose player's last known card with chosen's value (if any)
-    const oldChosen = chosen;
-    for (let c = minC[player]; c <= maxC[player]; c++)
-        if (card[c].g==hand && card[c].v==card[chosen].v && card[c].k)
-            chosen = c;
 
     // if chosen card is in high suit and doesn't beat non-ace high card, player must not have any cards that can beat the high card 
     if (highCard!=none && card[chosen].s==card[highCard].s && card[highCard].r!=ace && card[chosen].r<=card[highCard].r) {
