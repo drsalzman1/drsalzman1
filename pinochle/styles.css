@@ -11,6 +11,12 @@
         --east-align:   right;
         --south-top:    calc(100svh - var(--cardw)*2.30);
         --south-left:   calc(050svw - var(--cardw)*1.50);
+        --wgrid-left:   calc(050svw - var(--cardw)*2.87);
+        --wgrid-top:    calc(050svh - var(--cardw)*0.70);
+        --ngrid-left:   calc(050svw - var(--cardw)*0.70);
+        --ngrid-top:    calc(050svh - var(--cardw)*4.37);
+        --egrid-left:   calc(050svw + var(--cardw)*1.48);
+        --egrid-top:    calc(050svh - var(--cardw)*0.70);
         }
 }
 
@@ -27,6 +33,12 @@
         --east-align:   right;
         --south-top:    calc(050svh + var(--cardw)*1.20);
         --south-left:   calc(050svw - var(--cardw)*1.50);
+        --wgrid-left:   calc(050svw - var(--cardw)*5.18);
+        --wgrid-top:    calc(050svh - var(--cardw)*0.70);
+        --ngrid-left:   calc(050svw - var(--cardw)*0.70);
+        --ngrid-top:    calc(050svh - var(--cardw)*2.86);
+        --egrid-left:   calc(050svw + var(--cardw)*3.81);
+        --egrid-top:    calc(050svh - var(--cardw)*0.70);
         }
 }
 
@@ -44,6 +56,9 @@
     --stats-width:      calc(100svw - var(--pad) * 2); /*calc(var(--cardw) * 5.55);*/
     --tutor-width:      calc(100svw - var(--pad) * 2);
     --tutor-height:     calc(100svh - var(--pad) * 2);
+    --grid-size:        calc(var(--cardh) * 0.98);
+    --grid-row1:        calc(var(--cardh) * 0.18);
+    --grid-row2:        calc(var(--cardh) * 0.20);
 }
 
 input {
@@ -179,21 +194,44 @@ input {
     width: 100%;
     height: 100%;
     display: none;
-    flex-direction: column;
-    justify-content: space-between;
     text-align: left;
     color: black;
     background-color: white;
 }
 
-#iGrid {
-    display: grid;
+#wGrid, #nGrid, #eGrid {
+    position: absolute;
+    width: var(--grid-size);
+    height: var(--grid-size);
+    display: none;
     grid-template-columns: auto auto auto auto auto auto;
-    justify-content: space-evenly;
+    grid-template-rows: var(--grid-row1) var(--grid-row2) var(--grid-row2) var(--grid-row2) var(--grid-row2);
+    justify-content: space-around;
     text-align: center;
+    color: black;
+    background-color: #ffffffc0;
 }
 
-#iGrid img {
+#wGrid {
+    top: var(--wgrid-top);
+    left: var(--wgrid-left);
+}
+
+#nGrid {
+    top: var(--ngrid-top);
+    left: var(--ngrid-left);
+}
+
+#eGrid {
+    top: var(--egrid-top);
+    left: var(--egrid-left);
+}
+
+.gIcon {
+    height: calc(var(--font-size) * 0.8);
+}
+
+.count {
     height: var(--font-size);
 }
 

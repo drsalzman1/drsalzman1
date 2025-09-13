@@ -185,7 +185,7 @@ const maxCards = [Array(values), Array(values), Array(values), Array(values)];
 // minCards[p][v] = least cards player p can hold of value v (revealed by meld and play)
 const minCards = [Array(values), Array(values), Array(values), Array(values)];
 
-// barSrc[min][max] = bar image representing minCards[p][v] min and maxCards[p][v] max
+// barSrc[min][max] = bar image representing minCards[p1][v] min and capMaxCards(p1,v,p2) max
 const barSrc = [
     ["icons/0-0.svg", "icons/0-1.svg", "icons/0-2.svg", "icons/0-3.svg", "icons/0-4.svg"],
     ["",              "icons/1-1.svg", "icons/1-2.svg", "icons/1-3.svg", "icons/1-4.svg"],
@@ -237,9 +237,13 @@ const aboutText = document.getElementById("aboutText");
 const vsText    = document.getElementById("vsText");
 const iText     = document.getElementById("iText");
 const iTrump    = document.getElementById("iTrump");
-const iIcon     = document.getElementById("iIcon");
-const iOutText  = document.getElementById("iOutText");
-const iBar      = document.querySelectorAll(".bar");
+const iOut      = document.getElementById("iOut");
+const iOur      = document.getElementById("iOur");
+const iTheir    = document.getElementById("iTheir");
+const wGrid     = document.getElementById("wGrid");
+const nGrid     = document.getElementById("nGrid");
+const eGrid     = document.getElementById("eGrid");
+const count     = document.querySelectorAll(".count");
 const cardSize  = document.getElementById("cardSize");
 
 // Communication channel with service worker
@@ -264,11 +268,14 @@ let ourBid      = none;             // our bid if we win the bid (or none)
 let theirBid    = none;             // their bid if they win the bid (or none)
 let ourMeld     = 0;                // total of north and south meld for this hand
 let theirMeld   = 0;                // total of west and east meld for this hand
+let weNeed      = 0;                // take north and south need to save
+let theyNeed    = 0;                // take west and east need to save
 let ourTake     = 0;                // total of north and south points so far in hand
 let theirTake   = 0;                // total of west and east points so far in hand
 let ourScore    = 0;                // total of north and south points so far in game
 let theirScore  = 0;                // total of west and east points so far in game
 let openHand    = false;            // true if faces for all hands are displayed
+let exposeCnts  = false;            // true is card counts are exposed
 let tossHand    = false;            // true if bidder decides to toss in the hand
 let tutorialPg  = none;             // tutorial page (or none)
 
@@ -632,6 +639,14 @@ function logStats() {
     }
 }
 
+// Cap max cards for player p1 of value v given remaining[v], player p2's cards, minCards[p1][v], and maxCards[p1][v]
+function capMaxCards(p1, v, p2) {
+    let loose = remaining[v] - nValue(p2, v);
+    for (let p = next[p2]; p != p2; p = next[p])
+        loose -= minCards[p][v];
+    return Math.min(maxCards[p1][v], minCards[p1][v] + loose);
+}
+
 // Get plausible card values cardV given other players' unknown cards
 function getPlausible(cardV) {
 
@@ -657,10 +672,7 @@ function getPlausible(cardV) {
                 for (let c = minC[p]; c <= maxC[p]; c++)
                     if (card[c].g==hand && cardV[c]==v)
                         nV++;
-                let loose = remaining[v] - nValue(player,v);
-                for (let p = next[player]; p != player; p = next[p])
-                    loose -= minCards[p][v];
-                if (nV > Math.min(maxCards[p][v], minCards[p][v] + loose))
+                if (nV > capMaxCards(p, v, player))
                     continue nextTry;
             }
     } while (false);
@@ -1346,7 +1358,7 @@ function tossClicked() {
 // Meld fanned: display situation, then await showClicked, playClicked or tossClicked 
 function meldFanned() {
     log("--> meldFanned");
-    let weNeed = 20, theyNeed = 20;
+    weNeed = theyNeed = 20;
     if (us[bidder])
         if (ourMeld < 20)
             weNeed = bid[bidder];
@@ -1671,6 +1683,20 @@ function menuCloseClicked() {
     menuText.style.display = "none";
 }
 
+// Expose/Hide counts menu item clicked: close menu, invert exposeTxt and grid displays
+function exposeClicked() {
+    log("--> exposeClicked");
+    menuText.style.display = "none";
+    exposeCnts = !exposeCnts;
+    exposeTxt.textContent = exposeCnts ? "Hide counts" : "Expose counts";
+    let i = 0;
+    for (let p of [west, north, east])
+        for (let s of [spades, hearts, clubs, diamonds])
+            for (let r of [ace, ten, king, queen, jack])
+                count[i++].src = barSrc[minCards[p][r+s]][capMaxCards(p,r+s,south)];
+    wGrid.style.display = nGrid.style.display = eGrid.style.display = exposeCnts ? "grid" : "none";
+}
+
 // Reveal/Hide cards menu item clicked: close menu, invert openHand and revealTxt, then immediately redraw hands
 function revealClicked() {
     log("--> revealClicked");
@@ -1746,40 +1772,24 @@ function exitClicked() {
     window.close();
 }
 
-// Update iItem grid based on suit s
-function updateGrid(s) {
-    let i = 0;
-    let q = 0;
-    for (let r of [ace, ten, king, queen, jack]) {
-        const v = r + s;
-        const n = remaining[v] - nValue(south, v);
-        iBar[i++].src = barSrc[n][n];
-        q += n;
-    }
-    iOutText.innerText = `${q} out`;
-    iIcon.src = suitSrc[s];
-    for (let p of [west, north, east])
-        for (let r of [ace, ten, king, queen, jack]) {
-            const v = r + s;
-            const unk = remaining[v] - nValue(south,v) - minCards[west][v] - minCards[north][v] - minCards[east][v];
-            const min = minCards[p][v];
-            const max = Math.min(maxCards[p][v], min + unk);
-            iBar[i++].src = barSrc[min][max];
-        }
-}
-
 // Trmp icon clicked: display the info
 function trmpIconClicked() {
     log("--> trmpIconClicked");
-    iTrump.innerText = suit$[trump];
-    updateGrid(trump);
-    iText.style.display = "flex";
-}
-
-// iNav s icon clicked
-function iNavClicked(s) {
-    log(`--> iNavClicked(${s})`);
-    updateGrid(s);
+    iTrump.innerText = `Trump is ${suit$[trump]}.`;
+    let t = "There are ";
+    for (let s of [spades, hearts, clubs, diamonds]) {
+        let q = 0;
+        for (let r of [ace, ten, king, queen, jack])
+            q += remaining[r+s] - nValue(south,r+s);
+        if (s != diamonds)
+            t += `${q} ${suit$[s]}, `;
+        else
+            t += `and ${q} ${suit$[s]} in the other players' hands.`;
+    }
+    iOut.innerText = t;
+    iOur.innerText = `Our take is ${ourTake} of ${weNeed}.`;
+    iTheir.innerText = `Their take is ${theirTake} of ${theyNeed}.`;
+    iText.style.display = "block";
 }
 
 // iClose icon clicked: close the info
