@@ -1180,6 +1180,12 @@ function cardChosen() {
         msg = "Must trump"
         highCard = chosen;
     }
+    // if chosen card doesn't follow the lead and isn't trump, player must be out of lead suit and trump
+    if (card[chosen].s!=card[leadCard].s && !card[chosen].m) {
+        msg = `Out of ${suit$[card[leadCard].s]} and out of trump.`;
+        for (let r of [jack, queen, king, ten, ace])
+            maxCards[player][r+card[leadCard].s] = maxCards[player][r+trump] = 0;
+    }
     // Update stats based on chosen card
     remaining[card[chosen].v]--;
     minCards[player][card[chosen].v] = Math.max(minCards[player][card[chosen].v] - 1, 0);
@@ -1788,7 +1794,7 @@ function exitClicked() {
 function trmpIconClicked() {
     log("--> trmpIconClicked");
     iTrump.innerText = `Trump is ${suit$[trump]}.`;
-    let t = "There are ";
+    let t = "The other players hold ";
     for (let s of [spades, hearts, clubs, diamonds]) {
         let q = 0;
         for (let r of [ace, ten, king, queen, jack])
@@ -1796,7 +1802,7 @@ function trmpIconClicked() {
         if (s != diamonds)
             t += `${q} ${suit$[s]}, `;
         else
-            t += `and ${q} ${suit$[s]} in the other players' hands.`;
+            t += `${q} ${suit$[s]}.`;
     }
     iOut.innerText = t;
     iOur.innerText = `Our take is ${ourTake} of ${weNeed}.`;
@@ -1826,6 +1832,7 @@ function loaded() {
         minCards[p].fill(0);
         maxCards[p].fill(4);
     }
+    remaining.fill(4);
     updateGrid();
     for (let c = 0; c < cards; c++) {
         card[c].c = c; 
@@ -1841,7 +1848,6 @@ function loaded() {
         card[c].f = false;
         card[c].k = false;
     }
-    remaining.fill(4);
     trump = none;
     trmp.fill(false);
     setSizes();
