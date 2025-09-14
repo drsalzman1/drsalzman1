@@ -238,8 +238,7 @@ const vsText    = document.getElementById("vsText");
 const iText     = document.getElementById("iText");
 const iTrump    = document.getElementById("iTrump");
 const iOut      = document.getElementById("iOut");
-const iOur      = document.getElementById("iOur");
-const iTheir    = document.getElementById("iTheir");
+const iTake     = document.getElementById("iTake");
 const wGrid     = document.getElementById("wGrid");
 const nGrid     = document.getElementById("nGrid");
 const eGrid     = document.getElementById("eGrid");
@@ -1794,19 +1793,19 @@ function exitClicked() {
 function trmpIconClicked() {
     log("--> trmpIconClicked");
     iTrump.innerText = `Trump is ${suit$[trump]}.`;
-    let t = "The other players hold ";
+    let t = "";
     for (let s of [spades, hearts, clubs, diamonds]) {
         let q = 0;
         for (let r of [ace, ten, king, queen, jack])
             q += remaining[r+s] - nValue(south,r+s);
-        if (s != diamonds)
-            t += `${q} ${suit$[s]}, `;
+        t += `${q} ${suit$[s]}`;
+        if (s==spades || s==hearts || s==clubs)
+            t += ", ";
         else
-            t += `${q} ${suit$[s]}.`;
+            t += " are in other hands.";
     }
     iOut.innerText = t;
-    iOur.innerText = `Our take is ${ourTake} of ${weNeed}.`;
-    iTheir.innerText = `Their take is ${theirTake} of ${theyNeed}.`;
+    iTake.innerText = `Our take is ${ourTake} of ${weNeed}. Their take is ${theirTake} of ${theyNeed}.`;
     iText.style.display = "block";
 }
 
