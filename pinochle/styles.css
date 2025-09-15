@@ -345,6 +345,14 @@ input {
     display: none;
 }
 
+#tGrid {
+    display: grid;
+    width: calc(var(--icon) * 6);
+    margin: auto;
+    grid-template-columns: repeat(6, var(--icon));
+    text-align: center;
+}
+
 .backIcon {
     position: absolute;
     bottom: var(--pad);
