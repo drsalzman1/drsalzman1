@@ -1,16 +1,14 @@
 @media (orientation: portrait) {
     :root {
-        --cardw:        min(16.807svw, 10.187svh);
-        --west-top:     calc(050svh - var(--cardw)*2.50);
-        --west-left:    calc(050svw - var(--cardw)*1.40);
-        --west-align:   left;
+        --cardw:        min(15svw, 9.5svh);
+        --west-top:     calc(050svh - var(--cardw)*3.20);
+        --west-left:    calc(050svw - var(--cardw)*2.87);
         --north-top:    calc(000svh + var(--cardw)*0.20);
-        --north-left:   calc(050svw - var(--cardw)*1.50);
-        --east-top:     calc(050svh - var(--cardw)*2.50);
-        --east-left:    calc(050svw - var(--cardw)*1.62);
-        --east-align:   right;
-        --south-top:    calc(100svh - var(--cardw)*2.30);
-        --south-left:   calc(050svw - var(--cardw)*1.50);
+        --north-left:   calc(050svw - var(--cardw)*0.70);
+        --east-top:     calc(050svh - var(--cardw)*3.20);
+        --east-left:    calc(050svw + var(--cardw)*1.48);
+        --south-top:    calc(100svh - var(--cardw)*2.25);
+        --south-left:   calc(050svw - var(--cardw)*0.70);
         --wgrid-left:   calc(050svw - var(--cardw)*2.87);
         --wgrid-top:    calc(050svh - var(--cardw)*0.70);
         --ngrid-left:   calc(050svw - var(--cardw)*0.70);
@@ -22,17 +20,15 @@
 
 @media (orientation: landscape) {
     :root {
-        --cardw:        min(16.807svh, 10.187svw);
-        --west-top:     calc(050svh - var(--cardw)*0.155);
-        --west-left:    calc(000svw + var(--cardw)*2.02);
-        --west-align:   left;
-        --north-top:    calc(050svh - var(--cardw)*1.45);
-        --north-left:   calc(050svw - var(--cardw)*1.50);
-        --east-top:     calc(050svh - var(--cardw)*0.155);
-        --east-left:    calc(100svw - var(--cardw)*5.03);
-        --east-align:   right;
-        --south-top:    calc(050svh + var(--cardw)*1.20);
-        --south-left:   calc(050svw - var(--cardw)*1.50);
+        --cardw:        min(15svh, 10.3svw);
+        --west-top:     calc(050svh - var(--cardw)*3.20);
+        --west-left:    calc(000svw + var(--cardw)*0.54);
+        --north-top:    calc(050svh - var(--cardw)*3.20);
+        --north-left:   calc(050svw - var(--cardw)*0.70);
+        --east-top:     calc(050svh - var(--cardw)*3.20);
+        --east-left:    calc(100svw - var(--cardw)*1.93);
+        --south-top:    calc(050svh + var(--cardw)*1.16);
+        --south-left:   calc(050svw - var(--cardw)*0.70);
         --wgrid-left:   calc(000svw + var(--cardw)*0.54);
         --wgrid-top:    calc(050svh - var(--cardw)*0.70);
         --ngrid-left:   calc(050svw - var(--cardw)*0.70);
@@ -50,7 +46,6 @@
     --menu-width:       calc(var(--cardw) * 4.00);
     --text-area:        calc(var(--cardw) * 2.60);
     --box-width:        calc(var(--cardw) * 0.70);
-    --bid-width:        calc(var(--cardw) * 3.00);
     --box-height:       calc(var(--cardw) * 0.31);
     --pick-width:       calc(var(--cardw) * 1.30);
     --stats-width:      calc(100svw - var(--pad) * 2); /*calc(var(--cardw) * 5.55);*/
@@ -126,6 +121,7 @@ input {
 
 #trumpColumn img {
     height: calc(var(--font-size) * 0.8);
+    filter: brightness(75%);
 }
 
 #bidButtons {
@@ -246,16 +242,47 @@ input {
     height: var(--font-size);
 }
 
-#bidBox div {
+#bidBoxes {
+    display: block;
+    text-align: center;
+}
+
+#bidBoxes div {
     position: absolute;
-    width: var(--bid-width);
+    width: var(--cardh);
     z-index: -100;
 }
 
-#bidBox :nth-child(1) {top: var(--west-top);  left: var(--west-left);  text-align: var(--west-align);}
-#bidBox :nth-child(2) {top: var(--north-top); left: var(--north-left); text-align: center;           }
-#bidBox :nth-child(3) {top: var(--east-top);  left: var(--east-left);  text-align: var(--east-align);}
-#bidBox :nth-child(4) {top: var(--south-top); left: var(--south-left); text-align: center;           }
+#bidBoxes :nth-child(1) {top: var(--west-top);  left: var(--west-left); }
+#bidBoxes :nth-child(2) {top: var(--north-top); left: var(--north-left);}
+#bidBoxes :nth-child(3) {top: var(--east-top);  left: var(--east-left); }
+#bidBoxes :nth-child(4) {top: var(--south-top); left: var(--south-left);}
+
+#hintBoxes {
+    display: none;
+    text-align: center;
+}
+
+#hintBoxes div {
+    position: absolute;
+    width: var(--cardh);
+    z-index: -100;
+}
+
+#hintBoxes :nth-child(1) {top: var(--west-top);  left: var(--west-left); }
+#hintBoxes :nth-child(2) {top: var(--north-top); left: var(--north-left);}
+#hintBoxes :nth-child(3) {top: var(--east-top);  left: var(--east-left); }
+#hintBoxes :nth-child(4) {top: var(--south-top); left: var(--south-left);}
+
+#hintBoxes div img {
+    height: calc(var(--font-size) * 0.73);
+    filter: brightness(75%);
+}
+
+#hintBoxes div :nth-child(2) {color:black}
+#hintBoxes div :nth-child(4) {color:hsl(0, 100%, 33%)}
+#hintBoxes div :nth-child(6) {color:black}
+#hintBoxes div :nth-child(8) {color:hsl(0, 100%, 33%)}
 
 #menuIcon {
     position: absolute;
@@ -291,6 +318,7 @@ input {
     float: right;
     margin: var(--pad);
     height: var(--icon);
+    filter: brightness(75%);
     display: none;
 }
 

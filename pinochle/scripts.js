@@ -200,7 +200,10 @@ const docCanvas = document.getElementById("docCanvas");
 const context   = docCanvas.getContext("2d");
 const bidText   = document.getElementById("bidText");
 const meldSpan  = document.querySelectorAll("#meldColumn span");
-const bidBox    = document.querySelectorAll("#bidBox div");
+const bidBoxes  = document.getElementById("bidboxes");
+const bidBox    = document.querySelectorAll("#bidBoxes div");
+const hintBoxes = document.getElementById("hintBoxes");
+const hintBox   = document.querySelectorAll("#hintBoxes div");
 const bidBtn    = document.querySelectorAll("#bidText input");
 const trumpText = document.getElementById("trumpText");
 const trumpBtn  = document.querySelectorAll("#trumpText input");
@@ -852,6 +855,18 @@ function nCards(p) {
     return n;
 }
 
+// Locate east and west info boxes based on east and west hands
+function locateInfo() {
+    const n = Math.max(nCards(west),nCards(east));
+    if (vw > vh) {
+        bidBox[west].style.top  = hintBox[west].style.top  = vh/2 - cardw*(0.70+nCards(west)/8) + "px";
+        bidBox[east].style.top  = hintBox[east].style.top  = vh/2 - cardw*(0.70+nCards(east)/8) + "px";
+    } else {
+        bidBox[west].style.top  = hintBox[west].style.top  = vh/2 - cardw*(0.70+nCards(west)/8) + "px";
+        bidBox[east].style.top  = hintBox[east].style.top  = vh/2 - cardw*(0.70+nCards(east)/8) + "px";
+    }
+}
+
 // Locate all card positions (n = number of semi-exposed cards; v = visible card number)
 function locateCards() {
     const rWest  = [+Math.PI/2, +Math.PI/2, -Math.PI/2, -Math.PI/2][dealer];
@@ -1138,6 +1153,7 @@ function cardPlayed() {
     log("--> cardPlayed");
     const now = performance.now();
     locateCards();
+    locateInfo();
     moveCard(chosen, play, now, play, -100, true, 0);
     player = next[player];
     if (nGroup(play) == players)
@@ -1299,6 +1315,7 @@ function handsRefanned() {
     log("--> handsRefanned");
     trmpIcon.src = suitSrc[trump];
     trmpIcon.style.display = "block";
+    hintBoxes.style.display = "block";
     if (player == south) {
         docBody.onmousemove = mouseMoved;
         docBody.onmousedown = mousePressed;
@@ -1317,6 +1334,7 @@ function meldGathered() {
     for (let c = 0; c < cards; c++)
         card[c].g = hand;
     locateCards();
+    locateInfo();
     for (let c = 0; c < cards; c++)
         if (openHand || card[c].p==south)
             moveCard(c, gone, now, hand, c, true, dealTime/10);
@@ -1337,6 +1355,7 @@ function showClicked() {
         for (let c = minC[south]; c <= maxC[south]; c++)
             card[c].g = hand;
         locateCards();
+        locateInfo();
         for (let c = minC[south]; c <= maxC[south]; c++)
             moveCard(c, gone, now, hand, c, true, dealTime/10);
         showBtn.value = "Hide";
@@ -1344,6 +1363,7 @@ function showClicked() {
         for (let c = minC[south]; c <= maxC[south]; c++)
             card[c].g = card[c].k ? hand : gone;
         locateCards();
+        locateInfo();
         for (let c = minC[south]; c <= maxC[south]; c++)
             if (card[c].g == hand)
                 moveCard(c, gone, now, hand, c, true, dealTime/10);
@@ -1476,6 +1496,7 @@ function handsRegathered() {
 
     // animate movement of meld cards to hand
     locateCards();
+    locateInfo();
     for (let c = 0; c < cards; c++)
         if (card[c].g == hand)
             moveCard(c, gone, now, hand, c, true, dealTime/10);
@@ -1500,50 +1521,18 @@ function trumpPicked() {
     animate(handsRegathered);
 }
 
-// Trump button clicked: pick a trump suit s where 0=spades, 1=hearts, 2=clubs, 3=diamonds, then trigger trumpPicked
-function trumpClicked(s) {
-    log("--> trumpClicked");
-    trump = [spades, hearts, clubs, diamonds][s];
+// Suit s clicked: set trump, then trigger trumpPicked
+function suitClicked(s) {
+    log(`--> ${suit$[s]}Clicked`);
+    trump = s;
     trumpText.style.display = "none";
     setTimeout(trumpPicked);
 }
 
-// Spades button clicked: set trump, then trigger trumpPicked
-function spadesClicked(s) {
-    log("--> spadesClicked");
-    trump = spades;
-    trumpText.style.display = "none";
-    setTimeout(trumpPicked);
-}
-
-// Hearts button clicked: set trump, then trigger trumpPicked
-function heartsClicked(s) {
-    log("--> heartsClicked");
-    trump = hearts;
-    trumpText.style.display = "none";
-    setTimeout(trumpPicked);
-}
-
-// Clubs button clicked: set trump, then trigger trumpPicked
-function clubsClicked(s) {
-    log("--> clubsClicked");
-    trump = clubs;
-    trumpText.style.display = "none";
-    setTimeout(trumpPicked);
-}
-
-// Diamonds button clicked: set trump, then trigger trumpPicked
-function diamondsClicked(s) {
-    log("--> diamondsClicked");
-    trump = diamonds;
-    trumpText.style.display = "none";
-    setTimeout(trumpPicked);
-}
-
-// Bid won: if south bid, await spadesClicked,heartsClicked,clubsClicked,heartsClicked; else, pick trump & trigger trumpPicked
+// Bid won: if south bid, await suitClicked; else, pick trump & trigger trumpPicked
 function biddingDone() {
     log("--> biddingDone");
-    bidBox[west].textContent = bidBox[north].textContent = bidBox[east].textContent ="";
+    bidBox[west].textContent = bidBox[north].textContent = bidBox[east].textContent = bidBox[south].textContent ="";
     for (bidder of [west, north, east, south])
         if (bid[bidder] > pass)
             break;
@@ -1562,10 +1551,10 @@ function biddingDone() {
     }
 }
 
-// Bid button clicked: handle button and retrigger handsFanned or trigger biddingDone
-function bidClicked(e) {
+// Bid button clicked: handle button n and retrigger handsFanned or trigger biddingDone
+function bidClicked(n) {
     log("--> bidClicked");
-    const value = e.target.value;
+    const value = bidBtn[n].value;
     const highBid = Math.max(...bid);
     if (value == ">") {
         if (highBid < 60)
@@ -1585,17 +1574,17 @@ function bidClicked(e) {
         return;
     }
     logBid(value, "No reason");
-    if (value == "Pass")
+    if (value == "Pass") {
         bid[south] = pass;
-    else {
+        bidBox[south].innerText = "Pass";
+    } else {
         if (bid[south]==none && Number(value)>51 && Number(value)<60)
             est[south] = (Number(value) - Math.max(50, ...bid)) * 10;
         bid[south] = Number(value);
+        bidBox[south].innerText = value;
     }
-    for (let b = 0; b < bidBtn.length; b++) {
+    for (let b = 0; b < bidBtn.length; b++)
         bidBtn[b].disabled = true;
-        bidBtn[b].onclick = "";
-    }
     bidder = next[bidder];
     if (nPass() == 3) {
         if (bid[bidder] == none) {
@@ -1624,10 +1613,8 @@ function handsFanned() {
         bidBtn[0].value = "Pass";
         bidBtn[1].value = nextBid();
         bidBtn[2].value = ">";
-        for (let b = 0; b < bidBtn.length; b++) {
+        for (let b = 0; b < bidBtn.length; b++)
             bidBtn[b].disabled = false;
-            bidBtn[b].onclick = bidClicked;
-        }
     } else {
         bid[bidder] = autoBid();
         if (bid[bidder] == pass)
@@ -1655,6 +1642,7 @@ function handsGathered() {
     for (let c = 0; c < cards; c++)
         card[c].g = hand;
     locateCards();
+    locateInfo();
     for (let c = 0; c < cards; c++)
         if (openHand || card[c].p==south)
             moveCard(c, gone, now, hand, c, true, dealTime/10);
@@ -1685,6 +1673,7 @@ function resized() {
         vh0 = vh;
         vw0 = vw;
         locateCards();
+        locateInfo();
         for (let c = 0; c < cards; c++) {
             card[c].strt.t = now;
             card[c].fnsh.t = now;
@@ -1854,6 +1843,7 @@ function loaded() {
     vw0 = vw;
     dealer = next[dealer];
     locateCards();
+    locateInfo();
     let t0 = performance.now();
     let p = next[dealer];
     for (let z = 0; z < cards; z++) {

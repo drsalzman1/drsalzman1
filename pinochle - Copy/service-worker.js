@@ -1,5 +1,5 @@
 // The version of the cache.
-const version = "v0.54";
+const version = "v0.66";
 
 // The name of the cache
 const cacheName = `pinochle-${version}`;
@@ -11,10 +11,14 @@ const appStaticResources = [
     "cards/kc.svg", "cards/kd.svg", "cards/kh.svg", "cards/ks.svg",
     "cards/qc.svg", "cards/qd.svg", "cards/qh.svg", "cards/qs.svg",
     "cards/tc.svg", "cards/td.svg", "cards/th.svg", "cards/ts.svg",
-    "icons/analytics.svg", "icons/any.png", "icons/any.svg", "icons/back.svg", "icons/close.svg", 
-    "icons/exit.svg", "icons/help.svg", "icons/info.svg", "icons/maskable.png", "icons/menu.svg", 
-    "icons/next.svg", "icons/refresh.svg", "icons/settings.svg",
-    "index.html", "pinochle.webmanifest", 
+    "icons/0-0.svg", "icons/0-1.svg", "icons/0-2.svg", "icons/0-3.svg", "icons/0-4.svg", 
+    "icons/1-1.svg", "icons/1-2.svg", "icons/1-3.svg", "icons/1-4.svg", "icons/2-2.svg", 
+    "icons/2-3.svg", "icons/2-4.svg", "icons/3-3.svg", "icons/3-4.svg", "icons/4-4.svg",
+    "icons/analytics.svg", "icons/any.png", "icons/any.svg", "icons/back.svg", "icons/close.svg", "icons/east.svg",
+    "icons/exit.svg", "icons/help.svg", "icons/info.svg", "icons/maskable.png", "icons/menu.svg", "icons/next.svg", 
+    "icons/north.svg", "icons/refresh.svg", "icons/settings.svg", "icons/south.svg", "icons/west.svg",
+    "index.html", "pinochle.webmanifest",
+    "ranks/ace.svg", "ranks/jack.svg", "ranks/king.svg", "ranks/queen.svg", "ranks/ten.svg",
     "screens/narrow.png", "screens/wide.png",
     "scripts.js", "styles.css", 
     "suits/club.svg", "suits/diamond.svg", "suits/heart.svg", "suits/spade.svg"

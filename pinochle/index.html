@@ -29,14 +29,16 @@
                     </div>
                 </div>
                 <div id="bidButtons">
-                    <input type="button" value="1"><input type="button" value="2"><input type="button" value="3">
+                    <input type="button" value="0" onclick="bidClicked(0)">
+                    <input type="button" value="1" onclick="bidClicked(1)">
+                    <input type="button" value="2" onclick="bidClicked(2)">
                 </div>
             </div>
             <div id="trumpText">
-                <div><input type="button" value="Spades" onclick="spadesClicked()"></div>
-                <div><input type="button" value="Hearts" onclick="heartsClicked()"></div>
-                <div><input type="button" value="Clubs" onclick="clubsClicked()"></div>
-                <div><input type="button" value="Diamonds" onclick="diamondsClicked()"></div>
+                <div><input type="button" value="Spades"   onclick="suitClicked(15)"></div>
+                <div><input type="button" value="Hearts"   onclick="suitClicked(10)"></div>
+                <div><input type="button" value="Clubs"    onclick="suitClicked(5) "></div>
+                <div><input type="button" value="Diamonds" onclick="suitClicked(0) "></div>
             </div>
             <div id="playText">
                 <div></div>
@@ -192,11 +194,37 @@
             <div><img class="count" src="icons/3-3.svg"     alt="count">  </div>
             <div><img class="count" src="icons/4-4.svg"     alt="count">  </div>
         </div>
-        <div id="bidBox">
+        <div id="bidBoxes">
             <div></div>
             <div></div>
             <div></div>
             <div></div>
+        </div>
+        <div id="hintBoxes">
+            <div>
+                <img src="suits/spade.svg"   alt="spade"  ><span>!</span>
+                <img src="suits/heart.svg"   alt="heart"  ><span>!</span>
+                <img src="suits/club.svg"    alt="club"   ><span>!</span>
+                <img src="suits/diamond.svg" alt="diamond"><span>!</span>
+            </div>
+            <div>
+                <img src="suits/spade.svg"   alt="spade"  ><span>!</span>
+                <img src="suits/heart.svg"   alt="heart"  ><span>!</span>
+                <img src="suits/club.svg"    alt="club"   ><span>!</span>
+                <img src="suits/diamond.svg" alt="diamond"><span>!</span>
+            </div>
+            <div>
+                <img src="suits/spade.svg"   alt="spade"  ><span>!</span>
+                <img src="suits/heart.svg"   alt="heart"  ><span>!</span>
+                <img src="suits/club.svg"    alt="club"   ><span>!</span>
+                <img src="suits/diamond.svg" alt="diamond"><span>!</span>
+            </div>
+            <div>
+                <img src="suits/spade.svg"   alt="spade"  ><span>!</span>
+                <img src="suits/heart.svg"   alt="heart"  ><span>!</span>
+                <img src="suits/club.svg"    alt="club"   ><span>!</span>
+                <img src="suits/diamond.svg" alt="diamond"><span>!</span>
+            </div>
         </div>
         <img id="menuIcon" src="icons/menu.svg" alt="menu" onclick="menuIconClicked()">
         <img id="trmpIcon" src="suits/club.svg" alt="trump" onclick="trmpIconClicked()"> 
