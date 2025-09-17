@@ -686,12 +686,12 @@ function updateHints() {
             else
                 hintImg[i++].style.opacity = "0%";
     if (!showHints[west] && !showHints[north] && !showHints[east])
-        nTrump.innerText = "";
+        nTrump.textContent = "";
     else {
         let q = 0;
         for (let r of [ace, ten, king, queen, jack])
             q += remaining[r+trump] - nValue(south,r+trump);
-        nTrump.innerText = q;
+        nTrump.textContent = q;
     }
  }
 
@@ -1079,7 +1079,7 @@ function quitClicked() {
 function handEnded() {
     log("--> handEnded");
     trmpIcon.style.display = "none";
-    nTrump.innerText = "";
+    nTrump.textContent = "";
     for (let i = 0; i < hintImg.length; i++)
         hintImg[i].style.opacity = "0%";
     usOld.textContent = ourScore;
@@ -1632,12 +1632,12 @@ function bidClicked(n) {
     logBid(value, "No reason");
     if (value == "Pass") {
         bid[south] = pass;
-        bidBox[south].innerText = "Pass";
+        bidBox[south].textContent = "Pass";
     } else {
         if (bid[south]==none && Number(value)>51 && Number(value)<60)
             est[south] = (Number(value) - Math.max(50, ...bid)) * 10;
         bid[south] = Number(value);
-        bidBox[south].innerText = value;
+        bidBox[south].textContent = value;
     }
     for (let b = 0; b < bidBtn.length; b++)
         bidBtn[b].disabled = true;
@@ -1707,7 +1707,7 @@ function handsGathered() {
     bidder = next[dealer];
     bid[west] = bid[north] = bid[east] = bid[south] = none;
     est[west] = est[north] = est[east] = est[south] = typical;
-    bidBox[west].innerText = bidBox[north].innerText = bidBox[east].innerText = bidBox[south].innerText = "";
+    bidBox[west].textContent = bidBox[north].textContent = bidBox[east].textContent = bidBox[south].textContent = "";
     logHands();
     animate(handsFanned);
 }
@@ -1838,7 +1838,7 @@ function exitClicked() {
 // Trmp icon clicked: display the info
 function trmpIconClicked() {
     log("--> trmpIconClicked");
-    iTrump.innerText = `Trump is ${suit$[trump]}.`;
+    iTrump.textContent = `Trump is ${suit$[trump]}.`;
     let t = "";
     for (let s of [spades, hearts, clubs, diamonds]) {
         let q = 0;
@@ -1850,8 +1850,8 @@ function trmpIconClicked() {
         else
             t += " are in other hands.";
     }
-    iOut.innerText = t;
-    iTake.innerText = `Our take is ${ourTake} of ${weNeed}. Their take is ${theirTake} of ${theyNeed}.`;
+    iOut.textContent = t;
+    iTake.textContent = `Our take is ${ourTake} of ${weNeed}. Their take is ${theirTake} of ${theyNeed}.`;
     iText.style.display = "flex";
 }
 
