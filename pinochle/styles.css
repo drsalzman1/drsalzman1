@@ -15,6 +15,10 @@
         --ngrid-top:    calc(000svh + var(--cardw)*0.45);
         --egrid-left:   calc(100svw - var(--cardw)*1.48);
         --egrid-top:    calc(050svh - var(--cardw)*0.70);
+        --ntrump-left:  calc(100svw - var(--cardw)*0.74);
+        --ntrump-top:   calc(000svh + var(--cardw)*0.11);
+        --ntrump-width: calc(000svh + var(--cardw)*0.35);
+        --ntrump-align: right;
         }
 }
 
@@ -35,6 +39,10 @@
         --ngrid-top:    calc(000svh + var(--cardw)*0.44);
         --egrid-left:   calc(100svw - var(--cardw)*1.92);
         --egrid-top:    calc(050svh - var(--cardw)*0.70);
+        --ntrump-left:  calc(100svw - var(--cardw)*0.41);
+        --ntrump-top:   calc(000svh + var(--cardw)*0.40);
+        --ntrump-width: calc(000svh + var(--cardw)*0.35);
+        --ntrump-align: center;
         }
 }
 
@@ -45,7 +53,7 @@
     --icon:             calc(var(--cardw) * 0.33);
     --menu-width:       calc(var(--cardw) * 4.00);
     --text-width:       calc(var(--cardw) * 2.75);
-    --text-height:      calc(var(--cardw) * 2.10);
+    --text-height:      calc(var(--cardw) * 2.14);
     --box-width:        calc(var(--cardw) * 0.70);
     --box-height:       calc(var(--cardw) * 0.31);
     --pick-width:       calc(var(--cardw) * 1.30);
@@ -317,6 +325,14 @@ input {
     height: var(--font-size);
     filter: invert();
     display: none;
+}
+
+#nTrump {
+    position: absolute;
+    top: var(--ntrump-top);
+    left: var(--ntrump-left);
+    width: var(--ntrump-width);
+    text-align: var(--ntrump-align);
 }
 
 #statsText {

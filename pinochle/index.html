@@ -224,7 +224,8 @@
             </div>
         </div>
         <img id="menuIcon" src="icons/menu.svg" alt="menu" onclick="menuIconClicked()">
-        <img id="trmpIcon" src="suits/club.svg" alt="trump" onclick="trmpIconClicked()"> 
+        <img id="trmpIcon" src="suits/club.svg" alt="trump" onclick="trmpIconClicked()">
+        <div id="nTrump"></div> 
         <div id="menuText">
             <b>Double Deck Pinochle</b>
             <img class="closeIcon" src="icons/close.svg" alt="close" onclick="menuCloseClicked()"><br>
@@ -356,10 +357,11 @@
                     <li>Four white quadrants indicate there are no cards in that player/suit/rank</li>
                 </ul><br>
                 You know your own cards. 
-                The other players reveal their cards when they lay down their meld, 
+                The other players reveal their cards when they lay down their meld, play a card,
                 trump the lead suit, don't beat a high card, or don't follow the lead suit.<br>
                 <br>
-                You can see a player's count summary by clicking on the player's hand. 
+                You can see the number of trump cards remaining in the other players' hands and 
+                a player's count summary by clicking on a player's hand. 
                 The opacity of each suit icon indicates the player's cards:<br>
                 <br><ul>
                     <li>100% - definitely has an ace in that suit</li>

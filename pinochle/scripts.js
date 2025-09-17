@@ -227,6 +227,7 @@ const overDiv   = document.getElementById("overDiv");
 const overText  = document.getElementById("overText");
 const menuIcon  = document.getElementById("menuIcon");
 const trmpIcon  = document.getElementById("trmpIcon");
+const nTrump    = document.getElementById("nTrump");
 const menuText  = document.getElementById("menuText");
 const revealTxt = document.getElementById("revealTxt");
 const spadesT   = document.getElementById("spadesT");
@@ -684,7 +685,15 @@ function updateHints() {
                 hintImg[i++].style.opacity = "33%";
             else
                 hintImg[i++].style.opacity = "0%";
-}
+    if (!showHints[west] && !showHints[north] && !showHints[east])
+        nTrump.innerText = "";
+    else {
+        let q = 0;
+        for (let r of [ace, ten, king, queen, jack])
+            q += remaining[r+trump] - nValue(south,r+trump);
+        nTrump.innerText = q;
+    }
+ }
 
 // Get plausible card values cardV given other players' unknown cards
 function getPlausible(cardV) {
