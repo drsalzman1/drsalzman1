@@ -1,38 +1,38 @@
 @media (orientation: portrait) {
     :root {
-        --cardw:        min(15svw, 9.5svh);
+        --cardw:        min(17svw, 10.2svh);
         --west-top:     calc(050svh - var(--cardw)*3.20);
-        --west-left:    calc(050svw - var(--cardw)*2.87);
-        --north-top:    calc(000svh + var(--cardw)*0.20);
+        --west-left:    calc(000svw + var(--cardw)*0.10);
+        --north-top:    calc(000svh + var(--cardw)*0.11);
         --north-left:   calc(050svw - var(--cardw)*0.70);
         --east-top:     calc(050svh - var(--cardw)*3.20);
-        --east-left:    calc(050svw + var(--cardw)*1.48);
-        --south-top:    calc(100svh - var(--cardw)*2.25);
+        --east-left:    calc(100svw - var(--cardw)*1.50);
+        --south-top:    calc(100svh - var(--cardw)*0.41);
         --south-left:   calc(050svw - var(--cardw)*0.70);
-        --wgrid-left:   calc(050svw - var(--cardw)*2.87);
+        --wgrid-left:   calc(000svw + var(--cardw)*0.11);
         --wgrid-top:    calc(050svh - var(--cardw)*0.70);
         --ngrid-left:   calc(050svw - var(--cardw)*0.70);
-        --ngrid-top:    calc(000svh + var(--cardw)*0.54);
-        --egrid-left:   calc(050svw + var(--cardw)*1.48);
+        --ngrid-top:    calc(000svh + var(--cardw)*0.45);
+        --egrid-left:   calc(100svw - var(--cardw)*1.48);
         --egrid-top:    calc(050svh - var(--cardw)*0.70);
         }
 }
 
 @media (orientation: landscape) {
     :root {
-        --cardw:        min(15svh, 10.3svw);
+        --cardw:        min(17svh, 10.3svw);
         --west-top:     calc(050svh - var(--cardw)*3.20);
         --west-left:    calc(000svw + var(--cardw)*0.54);
-        --north-top:    calc(050svh - var(--cardw)*3.20);
+        --north-top:    calc(000svh + var(--cardw)*0.11);
         --north-left:   calc(050svw - var(--cardw)*0.70);
         --east-top:     calc(050svh - var(--cardw)*3.20);
         --east-left:    calc(100svw - var(--cardw)*1.93);
-        --south-top:    calc(050svh + var(--cardw)*1.16);
+        --south-top:    calc(100svh - var(--cardw)*0.41);
         --south-left:   calc(050svw - var(--cardw)*0.70);
         --wgrid-left:   calc(000svw + var(--cardw)*0.54);
         --wgrid-top:    calc(050svh - var(--cardw)*0.70);
         --ngrid-left:   calc(050svw - var(--cardw)*0.70);
-        --ngrid-top:    calc(050svh - var(--cardw)*2.86);
+        --ngrid-top:    calc(000svh + var(--cardw)*0.44);
         --egrid-left:   calc(100svw - var(--cardw)*1.92);
         --egrid-top:    calc(050svh - var(--cardw)*0.70);
         }
@@ -44,7 +44,8 @@
     --pad:              calc(var(--cardw) * 0.10);
     --icon:             calc(var(--cardw) * 0.33);
     --menu-width:       calc(var(--cardw) * 4.00);
-    --text-area:        calc(var(--cardw) * 2.60);
+    --text-width:       calc(var(--cardw) * 2.75);
+    --text-height:      calc(var(--cardw) * 2.10);
     --box-width:        calc(var(--cardw) * 0.70);
     --box-height:       calc(var(--cardw) * 0.31);
     --pick-width:       calc(var(--cardw) * 1.30);
@@ -88,10 +89,10 @@ input {
 
 #textArea {
     position: absolute;
-    top: calc(50svh - var(--text-area)/2);
-    left: calc(50svw - var(--text-area)/2);
-    width: var(--text-area);
-    height: var(--text-area);
+    top: calc(50svh - var(--text-height)/2);
+    left: calc(50svw - var(--text-width)/2);
+    width: var(--text-width);
+    height: var(--text-height);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -111,7 +112,7 @@ input {
     width: 100%;
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: space-evenly;
     text-align: center;
 }
 
@@ -121,7 +122,7 @@ input {
 
 #trumpColumn img {
     height: calc(var(--font-size) * 0.8);
-    filter: brightness(75%);
+    filter: invert();
 }
 
 #bidButtons {
@@ -158,7 +159,6 @@ input {
 
 #playBtns {
     width: 100%;
-    margin-top: var(--pad);
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -185,11 +185,14 @@ input {
 }
 
 #iText {
+    box-sizing: border-box;
     position: absolute;
-    padding: var(--pad);
     width: 100%;
     height: 100%;
+    padding: var(--pad);
     display: none;
+    flex-direction: column;
+    justify-content: space-between;
     text-align: left;
     color: black;
     background-color: white;
@@ -242,14 +245,11 @@ input {
     height: var(--font-size);
 }
 
-#bidBoxes {
-    display: block;
-    text-align: center;
-}
-
 #bidBoxes div {
     position: absolute;
     width: var(--cardh);
+    text-align: center;
+    color: white;
     z-index: -100;
 }
 
@@ -258,14 +258,10 @@ input {
 #bidBoxes :nth-child(3) {top: var(--east-top);  left: var(--east-left); }
 #bidBoxes :nth-child(4) {top: var(--south-top); left: var(--south-left);}
 
-#hintBoxes {
-    display: none;
-    text-align: center;
-}
-
 #hintBoxes div {
     position: absolute;
     width: var(--cardh);
+    text-align: center;
     z-index: -100;
 }
 
@@ -275,8 +271,9 @@ input {
 #hintBoxes :nth-child(4) {top: var(--south-top); left: var(--south-left);}
 
 #hintBoxes div img {
-    height: calc(var(--font-size) * 0.73);
-    filter: brightness(75%);
+    height: var(--font-size);
+    filter: invert();
+    opacity: 0%;
 }
 
 #hintBoxes div :nth-child(2) {color:black}
@@ -317,8 +314,8 @@ input {
     position: relative;
     float: right;
     margin: var(--pad);
-    height: var(--icon);
-    filter: brightness(75%);
+    height: var(--font-size);
+    filter: invert();
     display: none;
 }
 

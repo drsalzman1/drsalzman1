@@ -200,10 +200,9 @@ const docCanvas = document.getElementById("docCanvas");
 const context   = docCanvas.getContext("2d");
 const bidText   = document.getElementById("bidText");
 const meldSpan  = document.querySelectorAll("#meldColumn span");
-const bidBoxes  = document.getElementById("bidboxes");
 const bidBox    = document.querySelectorAll("#bidBoxes div");
-const hintBoxes = document.getElementById("hintBoxes");
 const hintBox   = document.querySelectorAll("#hintBoxes div");
+const hintImg   = document.querySelectorAll("#hintBoxes div img");
 const bidBtn    = document.querySelectorAll("#bidText input");
 const trumpText = document.getElementById("trumpText");
 const trumpBtn  = document.querySelectorAll("#trumpText input");
@@ -280,6 +279,8 @@ let openHand    = false;            // true if faces for all hands are displayed
 let exposeCnts  = false;            // true is card counts are exposed
 let tossHand    = false;            // true if bidder decides to toss in the hand
 let tutorialPg  = none;             // tutorial page (or none)
+let showHints   = [false, false, false, false]; // true if should show hints for player
+let playZ       = -1000;            // z-index for played card (auto-increments)
 
 // Dynamic sizes
 let vw0         = 0;                // previous view width
@@ -292,7 +293,9 @@ let iconw       = 0;                // icon width
 let iconh       = 0;                // icon height
 let pad         = 0;                // padding around display elements
 let hpad        = 0;                // horizontal padding for east and west hands
-let vpad        = 0;                // vertical padding for north and south hands 
+let vpad        = 0;                // vertical padding for north and south hands
+let hpitch      = 0;                // horizontal card pitch for north and south hands
+let vpitch      = 0;                // vertical card pitch for east and west hands
 
 // Log debugText on console (comment out when done debugging)
 function log(debugText = "") {
@@ -656,6 +659,31 @@ function updateGrid() {
         for (let s of [spades, hearts, clubs, diamonds])
             for (let r of [ace, ten, king, queen, jack])
                 count[i++].src = barSrc[minCards[p][r+s]][capMaxCards(p,r+s,south)];
+    if (!exposeCnts || player==none)
+        wGrid.style.display = nGrid.style.display = eGrid.style.display = "none";
+    else
+        wGrid.style.display = nGrid.style.display = eGrid.style.display = "grid";
+}
+
+// Update hint images based on minCards and capMaxCards
+function updateHints() {
+    let i = 0;
+    for (let p of [west, north, east])
+        for (let s of [spades, hearts, clubs, diamonds])
+            if (showHints[p] && player!=none && minCards[p][ace+s])
+                hintImg[i++].style.opacity = "100%";
+            else if (showHints[p] && player!=none && capMaxCards(p,ace+s,south)>0)
+                hintImg[i++].style.opacity = "66%";
+            else if (showHints[p] && player!=none && capMaxCards(p,ten+s,south)>0)
+                hintImg[i++].style.opacity = "33%";
+            else if (showHints[p] && player!=none && capMaxCards(p,king+s,south)>0)
+                hintImg[i++].style.opacity = "33%";
+            else if (showHints[p] && player!=none && capMaxCards(p,queen+s,south)>0)
+                hintImg[i++].style.opacity = "33%";
+            else if (showHints[p] && player!=none && capMaxCards(p,jack+s,south)>0)
+                hintImg[i++].style.opacity = "33%";
+            else
+                hintImg[i++].style.opacity = "0%";
 }
 
 // Get plausible card values cardV given other players' unknown cards
@@ -857,13 +885,12 @@ function nCards(p) {
 
 // Locate east and west info boxes based on east and west hands
 function locateInfo() {
-    const n = Math.max(nCards(west),nCards(east));
-    if (vw > vh) {
-        bidBox[west].style.top  = hintBox[west].style.top  = vh/2 - cardw*(0.70+nCards(west)/8) + "px";
-        bidBox[east].style.top  = hintBox[east].style.top  = vh/2 - cardw*(0.70+nCards(east)/8) + "px";
+    if (card[0].g == heap) {
+        bidBox[west].style.top  = hintBox[west].style.top  = vh/2 - cardw*1.4 + "px";
+        bidBox[east].style.top  = hintBox[east].style.top  = vh/2 - cardw*1.4 + "px";
     } else {
-        bidBox[west].style.top  = hintBox[west].style.top  = vh/2 - cardw*(0.70+nCards(west)/8) + "px";
-        bidBox[east].style.top  = hintBox[east].style.top  = vh/2 - cardw*(0.70+nCards(east)/8) + "px";
+        bidBox[west].style.top  = hintBox[west].style.top  = vh/2 - cardw*0.70 - nCards(west)*vpitch/2 + "px";
+        bidBox[east].style.top  = hintBox[east].style.top  = vh/2 - cardw*0.70 - nCards(east)*vpitch/2 + "px";
     }
 }
 
@@ -886,14 +913,14 @@ function locateCards() {
         card[c].heap.x = [cardw+hpad, vw/2, vw-cardw-hpad, vw/2][p] + (Math.random()-0.5)*cardw/2;
         card[c].heap.y = [vh/2, cardw+vpad, vh/2, vh-cardw-vpad][p] + (Math.random()-0.5)*cardw/2;
         card[c].heap.r = [Math.PI/2, 0, -Math.PI/2, 0][dealer] + (Math.random()-0.5)*Math.PI/4;
-        card[c].hand.x = [cardh/2+hpad, vw/2-cardw/4*(v-n/2), vw-cardh/2-hpad, vw/2+cardw/4*(v-n/2)][p];
-        card[c].hand.y = [vh/2+cardw/4*(v-n/2), cardh/2+vpad, vh/2-cardw/4*(v-n/2), vh-cardh/2-vpad][p];
+        card[c].hand.x = [cardh/2+hpad, vw/2-hpitch*(v-n/2), vw-cardh/2-hpad, vw/2+hpitch*(v-n/2)][p];
+        card[c].hand.y = [vh/2+vpitch*(v-n/2), cardh/2+vpad, vh/2-vpitch*(v-n/2), vh-cardh/2-vpad][p];
         card[c].hand.r = [rWest, rNorth, rEast, rSouth][p];
         card[c].bump.x = card[c].hand.x + [cardh*0.4, 0, -cardh*0.4, 0][p];
         card[c].bump.y = card[c].hand.y + [0, cardh*0.4, 0, -cardh*0.4][p];
         card[c].bump.r = [rWest, rNorth, rEast, rSouth][p];
-        card[c].play.x = vw/2 + [-cardh/2, +cardw/2, +cardh/2, -cardw/2][p];
-        card[c].play.y = vh/2 + [-cardw/2, -cardh/2, +cardw/2, +cardh/2][p];
+        card[c].play.x = vw/2 + [-cardw*0.38, 0, +cardw*0.38, 0][p];
+        card[c].play.y = vh/2 + [0, -cardw*0.38, 0, +cardw*0.38][p];
         card[c].play.r = [rWest, rNorth, rEast, rSouth][p];
         card[c].strt.x = [card[c].gone.x, card[c].heap.x, card[c].hand.x, card[c].bump.x, card[c].play.x][card[c].g];
         card[c].strt.y = [card[c].gone.y, card[c].heap.y, card[c].hand.y, card[c].bump.y, card[c].play.y][card[c].g];
@@ -933,11 +960,15 @@ function setSizes() {
     iconh = Number.parseFloat(getComputedStyle(menuIcon).height);
     pad   = Number.parseFloat(getComputedStyle(menuIcon).marginLeft);
     if (vw < vh) {
-        hpad = vw/2 - cardw*(1+19/4)/2;
-        vpad = iconh + 2*pad;
+        hpad = pad;
+        vpad = iconh + pad;
+        hpitch = cardw/4;
+        vpitch = Math.min(cardw/4, (vh - cardh*2 - iconw*4 - pad*3 - cardw) / 19);
     } else {
-        hpad = iconw + 2*pad;
-        vpad = vh/2 - cardw*(1+19/4)/2;
+        hpad = iconw + pad*2;
+        vpad = iconw + pad;
+        hpitch = cardw/4;
+        vpitch = Math.min(cardw/4, (vh - iconw*2 - pad*2 - cardw) / 19);
     }
     docCanvas.width  = vw;
     docCanvas.height = vh;
@@ -948,16 +979,14 @@ function xy2c(x, y) {
     let topC;
     card.sort((a,b)=>a.z-b.z);
     for (let c = 0; c < cards; c++) {
-        if (card[c].p == south) {
-            const l = card[c].hand.x - cardw/2;
-            const r = card[c].hand.x + cardw/2;
-            const t = card[c].hand.y - cardh/2;
-            const b = card[c].hand.y + cardh/2;
-            if (card[c].g==hand && x>=l && x<=r && y>=t-cardh*0.0 && y<=b)
-                topC = card[c].c;
-            if (card[c].g==bump && x>=l && x<=r && y>=t-cardh*0.4 && y<=b)
-                topC = card[c].c;
-        }
+        const l = card[c].hand.x - [cardh/2, cardw/2, cardh/2, cardw/2][card[c].p];
+        const r = card[c].hand.x + [cardh/2, cardw/2, cardh/2, cardw/2][card[c].p];
+        const t = card[c].hand.y - [cardw/2, cardh/2, cardw/2, cardh/2][card[c].p];
+        const b = card[c].hand.y + [cardw/2, cardh/2, cardw/2, cardh/2][card[c].p];
+        if (card[c].g==hand && x>=l && x<=r && y>=t && y<=b)
+            topC = card[c].c;
+        else if (card[c].g==bump && x>=l && x<=r && y>=t-cardh*0.4 && y<=b)
+            topC = card[c].c;
     }
     card.sort((a,b)=>a.c-b.c);
     return topC;
@@ -1041,6 +1070,8 @@ function quitClicked() {
 function handEnded() {
     log("--> handEnded");
     trmpIcon.style.display = "none";
+    for (let i = 0; i < hintImg.length; i++)
+        hintImg[i].style.opacity = "0%";
     usOld.textContent = ourScore;
     themOld.textContent = theirScore;
     log(`bidder:${bidder}, us[bidder]:${us[bidder]}, tossHand:${tossHand}, ourMeld:${ourMeld}, theirMeld:${theirMeld}, ourTake:${ourTake}, theirTake:${theirTake}`)
@@ -1124,6 +1155,9 @@ function trickViewed() {
         chosen = leadCard = highCard = none;
         animate(handsRefanned);
     } else {
+        player = none;
+        updateGrid();
+        updateHints();
         if (card[highCard].u)
             ourTake += 2;
         else
@@ -1143,7 +1177,7 @@ function trickPlayed() {
                     ourTake += 1;
                 else
                     theirTake += 1;
-            moveCard(c, play, now, play, -100, true, dealTime/4);
+            moveCard(c, play, now, play, card[c].z, true, dealTime/4);
         }
     animate(trickViewed);
 }
@@ -1154,12 +1188,13 @@ function cardPlayed() {
     const now = performance.now();
     locateCards();
     locateInfo();
-    moveCard(chosen, play, now, play, -100, true, 0);
-    player = next[player];
+    moveCard(chosen, play, now, play, playZ++, true, 0);
     if (nGroup(play) == players)
         animate(trickPlayed);
-    else
+    else {
+        player = next[player];
         animate(handsRefanned);
+    }
 }
 
 // Card chosen: update stats, play face, then trigger cardPlayed
@@ -1210,6 +1245,7 @@ function cardChosen() {
     for (let p of [west, north, east, south])
         maxCards[p][card[chosen].v] = Math.min(maxCards[p][card[chosen].v], minCards[p][card[chosen].v] + loose);
     updateGrid();
+    updateHints();
 
     // log this play
     log(`${player$[player]} chose ${value$[card[chosen].v]}, msg:${msg}`);
@@ -1242,6 +1278,11 @@ function mousePressed(e) {
     const now = performance.now();
     const c = xy2c(e.clientX, e.clientY);
     if (c != undefined) {
+        if (card[c].p != south) {
+            showHints[card[c].p] = !showHints[card[c].p];
+            updateHints();
+        }
+        log(player$[card[c].p]);
         for (let c2 = 0; c2 < cards; c2++) {
             if (c2!=c && card[c2].g==bump) {
                 moveCard(c2, bump, now, hand, c2, true, dealTime/20);
@@ -1270,6 +1311,10 @@ function touchStarted(e) {
     docBody.onmousemove = "";
     const now = performance.now();
     const c = xy2c(e.touches[0].clientX, e.touches[0].clientY);
+    if (c!=undefined && card[c].p!=south) {
+        showHints[card[c].p] = !showHints[card[c].p];
+        updateHints();
+    }
     if (c!=undefined && card[c].g==bump && card[c].p==player && legal(c, leadCard, highCard)) {
         chosen = c; 
         docBody.ontouchstart = "";
@@ -1315,7 +1360,8 @@ function handsRefanned() {
     log("--> handsRefanned");
     trmpIcon.src = suitSrc[trump];
     trmpIcon.style.display = "block";
-    hintBoxes.style.display = "block";
+    updateGrid();
+    updateHints();
     if (player == south) {
         docBody.onmousemove = mouseMoved;
         docBody.onmousedown = mousePressed;
@@ -1412,8 +1458,8 @@ function meldFanned() {
             theyNeed = Math.max(20, bid[bidder] - theirMeld);
     ourBid = bid[north] > bid[south] ? bid[north] : bid[south];
     theirBid = bid[west] > bid[east] ? bid[west] : bid[east];
-    playPara[0].textContent = `${player$[bidder]} won the bid at ${bid[bidder]} with ${suit$[trump]}.`;
-    playPara[1].textContent = `Our meld is ${ourMeld < 20 ? "< 20" : ourMeld} and their meld is ${theirMeld < 20 ? "< 20" : theirMeld}.`;
+    playPara[0].textContent = `${player$[bidder]} picked ${suit$[trump]}.`;
+    playPara[1].textContent = `Our meld is ${ourMeld < 20 ? "<20" : ourMeld}. Their meld is ${theirMeld < 20 ? "<20" : theirMeld}.`;
     if (mustToss) {
         playPara[2].textContent = `${player$[bidder]} must toss this hand.`;
         showBtn.style.display = "none";
@@ -1427,7 +1473,7 @@ function meldFanned() {
         playBtn.style.display = "none";
         tossBtn.style.display = "inline";
     } else {
-        playPara[2].textContent = `We need to pull ${weNeed} and they need to pull ${theyNeed}.`;
+        playPara[2].textContent = `We need to take ${weNeed}. They need ${theyNeed}.`;
         showBtn.style.display = ["none", "none", "none", "inline"][bidder];
         playBtn.style.display = "inline";
         tossBtn.style.display = ["none", "none", "none", "inline"][bidder];
@@ -1635,7 +1681,7 @@ function handsFanned() {
     }
 }
 
-// Hands gathered: fan hands, enable resize events, then trigger handsFanned
+// Hands gathered: fan hands, then trigger handsFanned
 function handsGathered() {
     log("--> handsGathered");
     const now = performance.now();
@@ -1651,6 +1697,7 @@ function handsGathered() {
     bidder = next[dealer];
     bid[west] = bid[north] = bid[east] = bid[south] = none;
     est[west] = est[north] = est[east] = est[south] = typical;
+    bidBox[west].innerText = bidBox[north].innerText = bidBox[east].innerText = bidBox[south].innerText = "";
     logHands();
     animate(handsFanned);
 }
@@ -1700,7 +1747,7 @@ function exposeClicked() {
     menuText.style.display = "none";
     exposeCnts = !exposeCnts;
     exposeTxt.textContent = exposeCnts ? "Hide counts" : "Expose counts";
-    wGrid.style.display = nGrid.style.display = eGrid.style.display = exposeCnts ? "grid" : "none";
+    updateGrid();
 }
 
 // Reveal/Hide cards menu item clicked: close menu, invert openHand and revealTxt, then immediately redraw hands
@@ -1795,7 +1842,7 @@ function trmpIconClicked() {
     }
     iOut.innerText = t;
     iTake.innerText = `Our take is ${ourTake} of ${weNeed}. Their take is ${theirTake} of ${theyNeed}.`;
-    iText.style.display = "block";
+    iText.style.display = "flex";
 }
 
 // iClose icon clicked: close the info
@@ -1806,7 +1853,7 @@ function iCloseClicked() {
 
 // Load event: initialize app, deal cards, sort cards, disable resize events, then trigger deckDealt
 function loaded() {
-    log("_".repeat(80));
+    console.clear();
     log("--> loaded ");
     const deck = Array.from(new Array(cards), (v, k) => k % cardsPerPlayer);
     let sort = [];
@@ -1819,6 +1866,7 @@ function loaded() {
         sort = sort.concat(deck.slice(minC[p],maxC[p]+1).sort((a,b)=>b-a));
         minCards[p].fill(0);
         maxCards[p].fill(4);
+        bidBox[p].textContent = player$[p];
     }
     remaining.fill(4);
     updateGrid();
@@ -1842,8 +1890,8 @@ function loaded() {
     vh0 = vh;
     vw0 = vw;
     dealer = next[dealer];
+    player = none;
     locateCards();
-    locateInfo();
     let t0 = performance.now();
     let p = next[dealer];
     for (let z = 0; z < cards; z++) {
@@ -1852,6 +1900,8 @@ function loaded() {
         t0 = t0 + (dealTime - dealTime / 20) / cards;
         p = next[p];
     }
+    playZ = -1000;
+    locateInfo();
     onresize = resized;
     animate(deckDealt);
 }

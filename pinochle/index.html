@@ -78,7 +78,6 @@
                     </div>
                 </div>
                 <div id="nextDiv">
-                    <br>
                     <input type="button" value="Next" onclick="nextClicked()">
                 </div>
                 <div id="overDiv">
@@ -92,9 +91,7 @@
             <div id="iText">
                 <img class="closeIcon" src="icons/close.svg" alt="close" onclick="iCloseClicked()">
                 <div id="iTrump">Trump is diamonds.</div>
-                <br>
-                <div id="iOut">15 spades, 17 hearts, 10 clubs & 16 diamonds are out.</div>
-                <br>
+                <div id="iOut">15 spades, 17 hearts, 10 clubs and 16 diamonds are out.</div>
                 <div id="iTake">Our take's 15 of 20 and their take's 15 of 20.</div>
             </div>
         </div>
@@ -195,35 +192,35 @@
             <div><img class="count" src="icons/4-4.svg"     alt="count">  </div>
         </div>
         <div id="bidBoxes">
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
+            <div>West</div>
+            <div>North</div>
+            <div>East</div>
+            <div>South</div>
         </div>
         <div id="hintBoxes">
             <div>
-                <img src="suits/spade.svg"   alt="spade"  ><span>!</span>
-                <img src="suits/heart.svg"   alt="heart"  ><span>!</span>
-                <img src="suits/club.svg"    alt="club"   ><span>!</span>
-                <img src="suits/diamond.svg" alt="diamond"><span>!</span>
+                <img src="suits/spade.svg" alt="spade">
+                <img src="suits/heart.svg" alt="heart">
+                <img src="suits/club.svg" alt="club">
+                <img src="suits/diamond.svg" alt="diamond">
             </div>
             <div>
-                <img src="suits/spade.svg"   alt="spade"  ><span>!</span>
-                <img src="suits/heart.svg"   alt="heart"  ><span>!</span>
-                <img src="suits/club.svg"    alt="club"   ><span>!</span>
-                <img src="suits/diamond.svg" alt="diamond"><span>!</span>
+                <img src="suits/spade.svg" alt="spade">
+                <img src="suits/heart.svg" alt="heart">
+                <img src="suits/club.svg" alt="club">
+                <img src="suits/diamond.svg" alt="diamond">
             </div>
             <div>
-                <img src="suits/spade.svg"   alt="spade"  ><span>!</span>
-                <img src="suits/heart.svg"   alt="heart"  ><span>!</span>
-                <img src="suits/club.svg"    alt="club"   ><span>!</span>
-                <img src="suits/diamond.svg" alt="diamond"><span>!</span>
+                <img src="suits/spade.svg" alt="spade">
+                <img src="suits/heart.svg" alt="heart">
+                <img src="suits/club.svg" alt="club">
+                <img src="suits/diamond.svg" alt="diamond">
             </div>
             <div>
-                <img src="suits/spade.svg"   alt="spade"  ><span>!</span>
-                <img src="suits/heart.svg"   alt="heart"  ><span>!</span>
-                <img src="suits/club.svg"    alt="club"   ><span>!</span>
-                <img src="suits/diamond.svg" alt="diamond"><span>!</span>
+                <img src="suits/spade.svg" alt="spade">
+                <img src="suits/heart.svg" alt="heart">
+                <img src="suits/club.svg" alt="club">
+                <img src="suits/diamond.svg" alt="diamond">
             </div>
         </div>
         <img id="menuIcon" src="icons/menu.svg" alt="menu" onclick="menuIconClicked()">
@@ -283,8 +280,8 @@
                 <b>Double Deck Pinochle - Meld</b>
                 <img class="closeIcon" src="icons/close.svg" alt="close" onclick="tutorCloseClicked()"><br>
                 <br>
-                Each player's meld comes from their hand:<br><br>
-                <ul>
+                Each player's meld comes from their hand:<br>
+                <br><ul>
                     <li>A (ace) in each suit (around):10; double:100</li>
                     <li>K (king) in each suit:8; double:80</li>
                     <li>Q (queen) in each suit:6; double:60</li>
@@ -341,7 +338,7 @@
                 If you play an ace on your partner's ace, the app assumes nothing.
                 If you play a jack on your partner's ace, the app assumes nothing.<br>
                 <br>
-                This app offers a menu option to reveal everyone's cards.
+                This app offers a menu option to "reveal cards" to everyone.
                 This allows you to <del>cheat</del> learn, but this app doesn't exploit the open hands.<br>
                 <br>
                 <img class="backIcon" src="icons/back.svg" alt="back" onclick="tutorBackClicked()">
@@ -351,54 +348,25 @@
                 <b>Double Deck Pinochle - Counts</b>
                 <img class="closeIcon" src="icons/close.svg" alt="close" onclick="tutorCloseClicked()"><br>
                 <br>
-                This app offers a menu option to expose the minimum and maximum number of cards each player
-                has revealed for each rank of each suit.<br>
+                This app offers a menu option to "expose counts" of the minimum and maximum number of cards each player
+                has revealed for each rank of each suit using rectangles:<br>
+                <br><ul>
+                    <li>Black quadrants indicate the minimum number of cards in that player/rank/suit</li>
+                    <li>Black/gray quadrants indicate the maximum number of cards in that player/rank/suit</li>
+                    <li>Four white quadrants indicate there are no cards in that player/suit/rank</li>
+                </ul><br>
+                You know your own cards. 
+                The other players reveal their cards when they lay down their meld, 
+                trump the lead suit, don't beat a high card, or don't follow the lead suit.<br>
                 <br>
-                You always know your own cards. The other players reveal their cards when they lay down their meld 
-                and when they fail to beat a high card, trump a suit, or fail to follow suit.<br>
-                <br>
-                The following symbols show the minimun counts (rows) and the maximum counts (columns):<br>
-                <br>
-                <span id="tGrid">
-                    <span></span>
-                        <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span>
-                    <span>0</span>
-                        <span><img class="count" src="icons/0-0.svg" alt="count"></span>
-                        <span><img class="count" src="icons/0-1.svg" alt="count"></span>
-                        <span><img class="count" src="icons/0-2.svg" alt="count"></span>
-                        <span><img class="count" src="icons/0-3.svg" alt="count"></span>
-                        <span><img class="count" src="icons/0-4.svg" alt="count"></span>
-                    <span>1</span>
-                        <span></span>
-                        <span><img class="count" src="icons/1-1.svg" alt="count"></span>
-                        <span><img class="count" src="icons/1-2.svg" alt="count"></span>
-                        <span><img class="count" src="icons/1-3.svg" alt="count"></span>
-                        <span><img class="count" src="icons/1-4.svg" alt="count"></span>
-                    <span>2</span>
-                        <span></span>
-                        <span></span>
-                        <span><img class="count" src="icons/2-2.svg" alt="count"></span>
-                        <span><img class="count" src="icons/2-3.svg" alt="count"></span>
-                        <span><img class="count" src="icons/2-4.svg" alt="count"></span>
-                    <span>3</span>
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                        <span><img class="count" src="icons/3-3.svg" alt="count"></span>
-                        <span><img class="count" src="icons/3-4.svg" alt="count"></span>
-                    <span>4</span>
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                        <span><img class="count" src="icons/4-4.svg" alt="count"></span>
-                </span>
-                <br>
-                For example, if a player's table has a white rectangle in the ace column of their clubs row,
-                they don't have an ace of clubs.<br>
-                <br>
-                Unlike Las Vegas, there's no rule against card counting in Pinochle.
-                In fact, the computer players count cards in order to play well.
+                You can see a player's count summary by clicking on the player's hand. 
+                The opacity of each suit icon indicates the player's cards:<br>
+                <br><ul>
+                    <li>100% - definitely has an ace in that suit</li>
+                    <li>66% - may have an ace in that suit</li>
+                    <li>33% - doesn't have an ace in that suit</li>
+                    <li>0% - has no cards in that suit</li>
+                </ul><br>
                 <br>
                 <img class="backIcon" src="icons/back.svg" alt="back" onclick="tutorBackClicked()">
                 <img class="nextIcon" src="icons/next.svg" alt="next" onclick="tutorNextClicked()">
@@ -409,14 +377,13 @@
                 <br>
                 During play, this app displays the trump suit as an icon in the upper right hand corner of the screen.<br>
                 <br>
-                You can tap this icon to display additional information such as:<br><br>
-                <ul>
+                You can tap this icon to display additional information such as:<br>
+                <br><ul>
                     <li>Trump suit</li>
                     <li>Total cards per suit in other players' hands</li>
                     <li>Points we've taken of the points we'll need</li>
                     <li>Points they've taken of the points they'll need</li>
-                </ul>
-                <br>
+                </ul><br>
                 <img class="backIcon" src="icons/back.svg" alt="back" onclick="tutorBackClicked()">
                 <img class="nextIcon" src="icons/next.svg" alt="next" onclick="tutorNextClicked()">
             </div>
