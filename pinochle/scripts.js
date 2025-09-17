@@ -1079,6 +1079,7 @@ function quitClicked() {
 function handEnded() {
     log("--> handEnded");
     trmpIcon.style.display = "none";
+    nTrump.innerText = "";
     for (let i = 0; i < hintImg.length; i++)
         hintImg[i].style.opacity = "0%";
     usOld.textContent = ourScore;
