@@ -1142,10 +1142,10 @@ function handEnded() {
         nextDiv.style.display = "block";
         overDiv.style.display = "none";
         handText.style.display = "block";
-    } else {
+    } else { // outTake==50 || theirTake==50 || ourScore>=500 || theirScore>=500
         nextDiv.style.display = "none";
         overDiv.style.display = "block";
-        if (ourTake==50 || ourScore>=500)
+        if (ourTake==50 || (ourScore>=500 && theirScore<500) || (ourScore>=500 && theirScore>=500 && us[bidder]))
             overText.textContent = "We win!";
         else
             overText.textContent = "We lose!";
