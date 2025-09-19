@@ -1,5 +1,5 @@
 // The version of the cache.
-const version = "v0.72";
+const version = "v0.73";
 
 // The name of the cache
 const cacheName = `pinochle-${version}`;
@@ -24,17 +24,26 @@ const appStaticResources = [
     "suits/club.svg", "suits/diamond.svg", "suits/heart.svg", "suits/spade.svg"
 ];
 
-// On install, cache the static resources
+// On install, open/create cache, add static resources, delete other caches, and start using this cache
 self.addEventListener("install", (event) => {
     self.skipWaiting();
     event.waitUntil(
         (async () => {
             const cache = await caches.open(cacheName);
-            cache.addAll(appStaticResources);
+            await cache.addAll(appStaticResources);
+            await Promise.all(
+                names.map((name) => {
+                if (name !== cacheName) {
+                    return caches.delete(name);
+                }
+                })
+            );
+            await clients.claim();
         })()
     );
 });
 
+/*
 // On activate, delete old caches
 self.addEventListener("activate", (event) => {
     event.waitUntil(
@@ -51,6 +60,7 @@ self.addEventListener("activate", (event) => {
         })()
     );
 });
+*/
 
 // On fetch, intercept server request and respond with cached response, if any
 self.addEventListener("fetch", (event) => {
