@@ -1,5 +1,5 @@
 // The version of the cache.
-const version = "v0.73";
+const version = "v0.74";
 
 // The name of the cache
 const cacheName = `pinochle-${version}`;
@@ -31,6 +31,7 @@ self.addEventListener("install", (event) => {
         (async () => {
             const cache = await caches.open(cacheName);
             await cache.addAll(appStaticResources);
+            const names = await caches.keys();
             await Promise.all(
                 names.map((name) => {
                 if (name !== cacheName) {
