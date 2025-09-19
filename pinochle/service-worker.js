@@ -1,5 +1,5 @@
 // The version of the cache.
-const version = "v0.75";
+const version = "v0.76";
 
 // The name of the cache
 const cacheName = `pinochle-${version}`;
@@ -59,7 +59,6 @@ self.addEventListener("activate", (event) => {
         })()
     );
 });
-*/
 
 // On fetch, intercept server request and respond with cached response, if any
 self.addEventListener("fetch", (event) => {
