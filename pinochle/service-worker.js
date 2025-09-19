@@ -1,5 +1,5 @@
 // The version of the cache.
-const version = "v0.74";
+const version = "v0.75";
 
 // The name of the cache
 const cacheName = `pinochle-${version}`;
@@ -39,24 +39,22 @@ self.addEventListener("install", (event) => {
                 }
                 })
             );
-            await clients.claim();
         })()
     );
 });
 
-/*
 // On activate, delete old caches
 self.addEventListener("activate", (event) => {
     event.waitUntil(
         (async () => {
-            const names = await caches.keys();
+            /*const names = await caches.keys();
             await Promise.all(
                 names.map((name) => {
                 if (name !== cacheName) {
                     return caches.delete(name);
                 }
                 })
-            );
+            );*/
             await clients.claim();
         })()
     );
