@@ -1,5 +1,5 @@
 // The version of the cache.
-const version = "v0.80";
+const version = "v0.81";
 
 // The name of the cache
 const cacheName = `pinochle-${version}`;
@@ -31,7 +31,7 @@ self.addEventListener("install", (event) => {
         (async () => {
             const cache = await caches.open(cacheName);
             for (let url of appStaticResources) {
-                const response = await fetch(url);
+                const response = await fetch(url, {cache:"reload"});
                 await cache.put(url, response);
             }
             //await cache.addAll(appStaticResources);
