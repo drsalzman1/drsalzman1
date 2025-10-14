@@ -1,47 +1,47 @@
 @media (orientation: portrait) {
     :root {
-        --cardw:        min(17svw, 10.2svh);
-        --west-top:     calc(050svh - var(--cardw)*3.20);
+        --cardw:        min(17svw, 10.2dvh);
+        --west-top:     calc(050dvh - var(--cardw)*3.20);
         --west-left:    calc(000svw + var(--cardw)*0.10);
-        --north-top:    calc(000svh + var(--cardw)*0.11);
+        --north-top:    calc(000dvh + var(--cardw)*0.11);
         --north-left:   calc(050svw - var(--cardw)*0.70);
-        --east-top:     calc(050svh - var(--cardw)*3.20);
+        --east-top:     calc(050dvh - var(--cardw)*3.20);
         --east-left:    calc(100svw - var(--cardw)*1.50);
-        --south-top:    calc(100svh - var(--cardw)*0.41);
+        --south-top:    calc(100dvh - var(--cardw)*0.41);
         --south-left:   calc(050svw - var(--cardw)*0.70);
         --wgrid-left:   calc(000svw + var(--cardw)*0.11);
-        --wgrid-top:    calc(050svh - var(--cardw)*0.70);
+        --wgrid-top:    calc(050dvh - var(--cardw)*0.70);
         --ngrid-left:   calc(050svw - var(--cardw)*0.70);
-        --ngrid-top:    calc(000svh + var(--cardw)*0.45);
+        --ngrid-top:    calc(000dvh + var(--cardw)*0.45);
         --egrid-left:   calc(100svw - var(--cardw)*1.48);
-        --egrid-top:    calc(050svh - var(--cardw)*0.70);
+        --egrid-top:    calc(050dvh - var(--cardw)*0.70);
         --ntrump-left:  calc(100svw - var(--cardw)*0.74);
-        --ntrump-top:   calc(000svh + var(--cardw)*0.11);
-        --ntrump-width: calc(000svh + var(--cardw)*0.35);
+        --ntrump-top:   calc(000dvh + var(--cardw)*0.11);
+        --ntrump-width: calc(000dvh + var(--cardw)*0.35);
         --ntrump-align: right;
         }
 }
 
 @media (orientation: landscape) {
     :root {
-        --cardw:        min(17svh, 10.3svw);
-        --west-top:     calc(050svh - var(--cardw)*3.20);
+        --cardw:        min(17dvh, 10.3svw);
+        --west-top:     calc(050dvh - var(--cardw)*3.20);
         --west-left:    calc(000svw + var(--cardw)*0.54);
-        --north-top:    calc(000svh + var(--cardw)*0.11);
+        --north-top:    calc(000dvh + var(--cardw)*0.11);
         --north-left:   calc(050svw - var(--cardw)*0.70);
-        --east-top:     calc(050svh - var(--cardw)*3.20);
+        --east-top:     calc(050dvh - var(--cardw)*3.20);
         --east-left:    calc(100svw - var(--cardw)*1.93);
-        --south-top:    calc(100svh - var(--cardw)*0.41);
+        --south-top:    calc(100dvh - var(--cardw)*0.41);
         --south-left:   calc(050svw - var(--cardw)*0.70);
         --wgrid-left:   calc(000svw + var(--cardw)*0.54);
-        --wgrid-top:    calc(050svh - var(--cardw)*0.70);
+        --wgrid-top:    calc(050dvh - var(--cardw)*0.70);
         --ngrid-left:   calc(050svw - var(--cardw)*0.70);
-        --ngrid-top:    calc(000svh + var(--cardw)*0.44);
+        --ngrid-top:    calc(000dvh + var(--cardw)*0.44);
         --egrid-left:   calc(100svw - var(--cardw)*1.92);
-        --egrid-top:    calc(050svh - var(--cardw)*0.70);
+        --egrid-top:    calc(050dvh - var(--cardw)*0.70);
         --ntrump-left:  calc(100svw - var(--cardw)*0.41);
-        --ntrump-top:   calc(000svh + var(--cardw)*0.40);
-        --ntrump-width: calc(000svh + var(--cardw)*0.35);
+        --ntrump-top:   calc(000dvh + var(--cardw)*0.40);
+        --ntrump-width: calc(000dvh + var(--cardw)*0.35);
         --ntrump-align: center;
         }
 }
@@ -59,7 +59,7 @@
     --pick-width:       calc(var(--cardw) * 1.30);
     --stats-width:      calc(100svw - var(--pad) * 2); /*calc(var(--cardw) * 5.55);*/
     --tutor-width:      calc(100svw - var(--pad) * 2);
-    --tutor-height:     calc(100svh - var(--pad) * 2);
+    --tutor-height:     calc(100dvh - var(--pad) * 2);
     --grid-size:        calc(var(--cardh) * 0.98);
     --grid-row1:        calc(var(--cardh) * 0.18);
     --grid-row2:        calc(var(--cardh) * 0.20);
@@ -80,7 +80,7 @@ input {
     position: relative;
     box-sizing: border-box;
     width: 100svw;
-    height: 100svh;
+    height: 100dvh;
     margin: 0px;
     background-color: darkgreen;
     color: white;
@@ -97,7 +97,7 @@ input {
 
 #textArea {
     position: absolute;
-    top: calc(50svh - var(--text-height)/2);
+    top: calc(50dvh - var(--text-height)/2);
     left: calc(50svw - var(--text-width)/2);
     width: var(--text-width);
     height: var(--text-height);
