@@ -211,6 +211,7 @@ const playPara  = document.querySelectorAll("#playText div");
 const showBtn   = document.getElementById("showBtn");
 const playBtn   = document.getElementById("playBtn");
 const tossBtn   = document.getElementById("tossBtn");
+const okayBtn   = document.getElementById("okayBtn");
 const handText  = document.getElementById("handText");
 const usOld     = document.getElementById("usOld");
 const usBid     = document.getElementById("usBid");
@@ -1472,21 +1473,20 @@ function meldFanned() {
     playPara[1].textContent = `Our meld is ${ourMeld < 20 ? "<20" : ourMeld}. Their meld is ${theirMeld < 20 ? "<20" : theirMeld}.`;
     if (mustToss) {
         playPara[2].textContent = `${player$[bidder]} must toss this hand.`;
-        showBtn.style.display = "none";
-        playBtn.style.display = "none";
-        tossBtn.style.display = "inline";
+        showBtn.style.display = playBtn.style.display = tossBtn.style.display = "none";
+        okayBtn.style.display = "inline";
     } else if (them[bidder]&&theyNeed>30 || bidder==north&&weNeed>30) {
         tossHand = true;
         ourTake = theirTake = 0;
         playPara[2].textContent = `${player$[bidder]} decided to toss this hand.`;
-        showBtn.style.display = "none";
-        playBtn.style.display = "none";
-        tossBtn.style.display = "inline";
+        showBtn.style.display = playBtn.style.display = tossBtn.style.display = "none";
+        okayBtn.style.display = "inline";
     } else {
         playPara[2].textContent = `We need to take ${weNeed}. They need ${theyNeed}.`;
         showBtn.style.display = ["none", "none", "none", "inline"][bidder];
         playBtn.style.display = "inline";
         tossBtn.style.display = ["none", "none", "none", "inline"][bidder];
+        okayBtn.style.display = "none";
     }
     playText.style.display = "flex";
 }
