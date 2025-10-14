@@ -80,7 +80,7 @@ input {
     position: relative;
     box-sizing: border-box;
     width: 100svw;
-    height: 100svh;
+    height: 100lvh;
     margin: 0px;
     background-color: darkgreen;
     color: white;
