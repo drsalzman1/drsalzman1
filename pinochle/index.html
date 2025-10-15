@@ -251,6 +251,50 @@
                 <img class="menuIcon" src="icons/exit.svg" alt="exit"> Exit app
             </div><br>
         </div>
+        <div id="setForm">
+            <b>Double Deck Pinochle - Settings</b>
+            <img class="closeIcon" src="icons/close.svg" alt="close" onclick="setCloseClicked()"><br>
+            <form>
+                <fieldset>
+                    <legend>Players</legend>
+                    <div id="playersGrid">
+                        <div>Position</div>
+                        <div>Name</div>
+                        <div>Human
+                        </div>
+                        <div>South</div>
+                        <div><input type="text" value="South"></div>
+                        <div><input type="checkbox" checked></div>
+                        <div>West</div>
+                        <div><input type="text" value="West"></div>
+                        <div><input type="checkbox" unchecked></div>
+                        <div>North</div>
+                        <div><input type="text" value="North"></div>
+                        <div><input type="checkbox" unchecked></div>
+                        <div>East</div>
+                        <div><input type="text" value="East"></div>
+                        <div><input type="checkbox" unchecked></div>
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <legend>Assistance</legend>
+                    <div id="assistanceGrid">
+                        <div>Trump count:</div>
+                        <div><input type="checkbox" checked></div>
+                        <div>Card count icons:</div>
+                        <div><input type="checkbox" checked></div>
+                        <div>Card count details:</div>
+                        <div><input type="checkbox" unchecked></div>
+                        <div>Open hands:</div>
+                        <div><input type="checkbox" unchecked></div>
+                    </div>
+                </fieldset>
+                <div id="setButtons">
+                    <input type="button" value="Save" onclick="saveClicked()">
+                    <input type="button" value="Reset" onclick="resetClicked()">
+                </div>
+            </form>
+        </div>
         <div id="tutorText">
             <div>
                 <b>Double Deck Pinochle - Rules</b>

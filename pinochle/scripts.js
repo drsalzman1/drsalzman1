@@ -235,6 +235,7 @@ const spadesT   = document.getElementById("spadesT");
 const heartsT   = document.getElementById("heartsT");
 const clubsT    = document.getElementById("clubsT");
 const diamondsT = document.getElementById("diamondsT");
+const setForm   = document.getElementById("setForm");
 const tutorText = document.getElementById("tutorText");
 const tutorPage = document.querySelectorAll("#tutorText div");
 const aboutText = document.getElementById("aboutText");

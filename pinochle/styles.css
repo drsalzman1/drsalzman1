@@ -57,7 +57,7 @@
     --box-width:        calc(var(--cardw) * 0.70);
     --box-height:       calc(var(--cardw) * 0.31);
     --pick-width:       calc(var(--cardw) * 1.30);
-    --stats-width:      calc(100svw - var(--pad) * 2); /*calc(var(--cardw) * 5.55);*/
+    --set-width:        calc(100svw - var(--pad) * 2);
     --tutor-width:      calc(100svw - var(--pad) * 2);
     --tutor-height:     calc(100svh - var(--pad) * 2);
     --grid-size:        calc(var(--cardh) * 0.98);
@@ -312,6 +312,58 @@ input {
     display: none;
 }
 
+#setForm {
+    position: absolute;
+    width: var(--set-width);
+    padding: var(--pad);
+    color: black;
+    background-color: white;
+    /*display: none;*/
+}
+
+#setForm fieldset {
+    border: 1px solid;
+    padding: var(--pad);
+    margin: var(--pad) 0 0 0;
+}
+
+#setForm legend {
+    font-weight: bold;
+}
+
+#playersGrid {
+    display: grid;
+    margin-top: var(--pad);
+    grid-template-columns: auto calc(var(--font-size)*6) auto;
+    grid-template-rows: repeat(5, calc(var(--font-size)*2));
+    justify-content: center;
+    text-align: center;
+}
+
+#playersGrid input[type="text"] {
+    width: 100%;
+    padding: var(--pad);
+    margin-bottom: var(--pad);
+    box-sizing: border-box;
+    border: 1px solid;
+    text-align: center;
+}
+
+#assistanceGrid {
+    display: grid;
+    margin-top: var(--pad);
+    grid-template-columns: auto auto;
+    grid-template-rows: repeat(4, calc(var(--font-size)*2));
+    justify-content: center;
+    text-align: right;
+}
+
+#setButtons {
+    margin-top: calc(var(--pad)*2);
+    margin-bottom: var(--pad);
+    text-align: center;
+}
+
 .menuIcon {
     position: relative;
     top: calc(var(--font-size) * 0.3);
@@ -333,23 +385,6 @@ input {
     left: var(--ntrump-left);
     width: var(--ntrump-width);
     text-align: var(--ntrump-align);
-}
-
-#statsText {
-    position: absolute;
-    padding: var(--pad);
-    width: var(--stats-width);
-    line-height: var(--font-size);
-    color: black;
-    background-color: white;
-    display: none;
-}
-
-#statsRow1, #statsRow2 {
-    margin-top: var(--font-size);
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
 }
 
 #spadesT, #heartsT, #clubsT, #diamondsT {
