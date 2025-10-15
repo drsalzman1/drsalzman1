@@ -1453,6 +1453,19 @@ function tossClicked() {
     animate(handEnded);
 }
 
+// OK button clicked: gather the meld, then trigger handEnded
+function okayClicked() {
+    log("--> okayClicked");
+    const now = performance.now();
+    showBtn.value = "Show";
+    playText.style.display = "none";
+    tossHand = true;
+    ourTake = theirTake = 0;
+    for (let c = 0; c < cards; c++)
+        moveCard(c, hand, now, gone, -c, false, dealTime/10);
+    animate(handEnded);
+}
+
 // Meld fanned: display situation, then await showClicked, playClicked or tossClicked 
 function meldFanned() {
     log("--> meldFanned");
