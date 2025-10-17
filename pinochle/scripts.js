@@ -8,6 +8,7 @@ const east     = 2;
 const south    = 3;
 const players  = 4;
 const player$  = ["West", "North", "East", "South"];
+const human    = [false,  false,   false,  true   ];
 const next     = [north,  east,    south,  west   ];
 const us       = [false,  true,    false,  true   ];
 const them     = [true,   false,   true,   false  ];
@@ -230,12 +231,12 @@ const menuIcon  = document.getElementById("menuIcon");
 const trmpIcon  = document.getElementById("trmpIcon");
 const nTrump    = document.getElementById("nTrump");
 const menuText  = document.getElementById("menuText");
-const revealTxt = document.getElementById("revealTxt");
 const spadesT   = document.getElementById("spadesT");
 const heartsT   = document.getElementById("heartsT");
 const clubsT    = document.getElementById("clubsT");
 const diamondsT = document.getElementById("diamondsT");
-const setForm   = document.getElementById("setForm");
+const setText   = document.getElementById("setText");
+const setInput  = document.querySelectorAll("#setForm input");
 const tutorText = document.getElementById("tutorText");
 const tutorPage = document.querySelectorAll("#tutorText div");
 const aboutText = document.getElementById("aboutText");
@@ -278,12 +279,16 @@ let ourTake     = 0;                // total of north and south points so far in
 let theirTake   = 0;                // total of west and east points so far in hand
 let ourScore    = 0;                // total of north and south points so far in game
 let theirScore  = 0;                // total of west and east points so far in game
-let openHand    = false;            // true if faces for all hands are displayed
-let exposeCnts  = false;            // true is card counts are exposed
 let tossHand    = false;            // true if bidder decides to toss in the hand
 let tutorialPg  = none;             // tutorial page (or none)
-let showHints   = [false, false, false, false]; // true if should show hints for player
 let playZ       = -1000;            // z-index for played card (auto-increments)
+
+// Settings
+let showTrump   = true;             // true if trump suit icon is displayed
+let showCount   = true;             // true if trump count is displayed 
+let showSummary = true;             // true if card count summary icons are displayed
+let showDetail  = false;            // true if card count detail tables are displayed
+let openHand    = false;            // true if faces for all hands are displayed
 
 // Dynamic sizes
 let vw0         = 0;                // previous view width
@@ -655,47 +660,51 @@ function capMaxCards(p1, v, p2) {
     return Math.min(maxCards[p1][v], minCards[p1][v] + loose);
 }
 
-// Update count grid based on minCards, maxCards, remaining, and south's cards
-function updateGrid() {
-    let i = 0;
-    for (let p of [west, north, east])
-        for (let s of [spades, hearts, clubs, diamonds])
-            for (let r of [ace, ten, king, queen, jack])
-                count[i++].src = barSrc[minCards[p][r+s]][capMaxCards(p,r+s,south)];
-    if (!exposeCnts || player==none)
-        wGrid.style.display = nGrid.style.display = eGrid.style.display = "none";
-    else
-        wGrid.style.display = nGrid.style.display = eGrid.style.display = "grid";
-}
-
 // Update hint images based on minCards and capMaxCards
 function updateHints() {
-    let i = 0;
-    for (let p of [west, north, east])
-        for (let s of [spades, hearts, clubs, diamonds])
-            if (showHints[p] && player!=none && minCards[p][ace+s])
-                hintImg[i++].style.opacity = "100%";
-            else if (showHints[p] && player!=none && capMaxCards(p,ace+s,south)>0)
-                hintImg[i++].style.opacity = "66%";
-            else if (showHints[p] && player!=none && capMaxCards(p,ten+s,south)>0)
-                hintImg[i++].style.opacity = "33%";
-            else if (showHints[p] && player!=none && capMaxCards(p,king+s,south)>0)
-                hintImg[i++].style.opacity = "33%";
-            else if (showHints[p] && player!=none && capMaxCards(p,queen+s,south)>0)
-                hintImg[i++].style.opacity = "33%";
-            else if (showHints[p] && player!=none && capMaxCards(p,jack+s,south)>0)
-                hintImg[i++].style.opacity = "33%";
-            else
-                hintImg[i++].style.opacity = "0%";
-    if (!showHints[west] && !showHints[north] && !showHints[east])
-        nTrump.textContent = "";
-    else {
+    if (showTrump && trump!=none) {
+        trmpIcon.src = suitSrc[trump];
+        trmpIcon.style.display = "block";
+    } else
+        trmpIcon.style.display = "none";
+    if (showCount && trump!=none) {
         let q = 0;
         for (let r of [ace, ten, king, queen, jack])
             q += remaining[r+trump] - nValue(south,r+trump);
         nTrump.textContent = q;
-    }
- }
+    } else
+        nTrump.textContent = "";
+    if (showSummary && player!=none) {
+        let i = 0;
+        for (let p of [west, north, east])
+            for (let s of [spades, hearts, clubs, diamonds])
+                if (minCards[p][ace+s])
+                    hintImg[i++].style.opacity = "100%";
+                else if (capMaxCards(p,ace+s,south)>0)
+                    hintImg[i++].style.opacity = "66%";
+                else if (capMaxCards(p,ten+s,south)>0)
+                    hintImg[i++].style.opacity = "33%";
+                else if (capMaxCards(p,king+s,south)>0)
+                    hintImg[i++].style.opacity = "33%";
+                else if (capMaxCards(p,queen+s,south)>0)
+                    hintImg[i++].style.opacity = "33%";
+                else if (capMaxCards(p,jack+s,south)>0)
+                    hintImg[i++].style.opacity = "33%";
+                else
+                    hintImg[i++].style.opacity = "0%";
+    } else
+        for (let i = 0; i < hintImg.length; i++)
+            hintImg[i].style.opacity = "0%";
+    if (showDetail && player!=none) {
+        let i = 0;
+        for (let p of [west, north, east])
+            for (let s of [spades, hearts, clubs, diamonds])
+                for (let r of [ace, ten, king, queen, jack])
+                    count[i++].src = barSrc[minCards[p][r+s]][capMaxCards(p,r+s,south)];
+        wGrid.style.display = nGrid.style.display = eGrid.style.display = "grid";
+    } else
+        wGrid.style.display = nGrid.style.display = eGrid.style.display = "none";
+}
 
 // Get plausible card values cardV given other players' unknown cards
 function getPlausible(cardV) {
@@ -1168,7 +1177,6 @@ function trickViewed() {
         animate(handsRefanned);
     } else {
         player = none;
-        updateGrid();
         updateHints();
         if (card[highCard].u)
             ourTake += 2;
@@ -1256,7 +1264,6 @@ function cardChosen() {
         loose -= minCards[p][card[chosen].v];
     for (let p of [west, north, east, south])
         maxCards[p][card[chosen].v] = Math.min(maxCards[p][card[chosen].v], minCards[p][card[chosen].v] + loose);
-    updateGrid();
     updateHints();
 
     // log this play
@@ -1290,10 +1297,6 @@ function mousePressed(e) {
     const now = performance.now();
     const c = xy2c(e.clientX, e.clientY);
     if (c != undefined) {
-        if (card[c].p != south) {
-            showHints[card[c].p] = !showHints[card[c].p];
-            updateHints();
-        }
         log(player$[card[c].p]);
         for (let c2 = 0; c2 < cards; c2++) {
             if (c2!=c && card[c2].g==bump) {
@@ -1323,10 +1326,6 @@ function touchStarted(e) {
     docBody.onmousemove = "";
     const now = performance.now();
     const c = xy2c(e.touches[0].clientX, e.touches[0].clientY);
-    if (c!=undefined && card[c].p!=south) {
-        showHints[card[c].p] = !showHints[card[c].p];
-        updateHints();
-    }
     if (c!=undefined && card[c].g==bump && card[c].p==player && legal(c, leadCard, highCard)) {
         chosen = c; 
         docBody.ontouchstart = "";
@@ -1370,9 +1369,6 @@ function touchMoved(e) {
 // Hands re-fanned: now choose a card to play, then trigger cardChosen
 function handsRefanned() {
     log("--> handsRefanned");
-    trmpIcon.src = suitSrc[trump];
-    trmpIcon.style.display = "block";
-    updateGrid();
     updateHints();
     if (player == south) {
         docBody.onmousemove = mouseMoved;
@@ -1562,7 +1558,7 @@ function handsRegathered() {
             maxCards[p][v] = Math.min(maxCards[p][v], minCards[p][v] + loose);
         }
     logStats();
-    updateGrid();
+    updateHints();
 
     // animate movement of meld cards to hand
     locateCards();
@@ -1759,28 +1755,43 @@ function menuIconClicked() {
     menuText.style.display = "block";
 }
 
-// Menu close icon clicked: close the menu, then await menuClicked
+// Menu close icon clicked: close the menu
 function menuCloseClicked() {
     log("--> menuCloseClicked");
     menuText.style.display = "none";
 }
 
-// Expose/Hide counts menu item clicked: close menu, invert exposeTxt and grid displays
-function exposeClicked() {
-    log("--> exposeClicked");
+// Settings menu item clicked: close menu, then open settings
+function settingsClicked() {
+    log("--> settingsClicked");
     menuText.style.display = "none";
-    exposeCnts = !exposeCnts;
-    exposeTxt.textContent = exposeCnts ? "Hide counts" : "Expose counts";
-    updateGrid();
+    setText.style.display = "block";
 }
 
-// Reveal/Hide cards menu item clicked: close menu, invert openHand and revealTxt, then immediately redraw hands
-function revealClicked() {
-    log("--> revealClicked");
-    menuText.style.display = "none";
+// Settings close icon clicked: close settings
+function settingsCloseClicked() {
+    log("--> settingsCloseClicked");
+    setText.style.display = "none";
+}
+
+// Settings save button clicked: save and act on new settings
+function settingsSaveClicked() {
+    log("--> settingsSaveClicked");
     const now = performance.now();
-    openHand = !openHand;
-    revealTxt.textContent = openHand ? "Hide cards" : "Reveal cards";
+    localStorage.setItem("southPlayer", player$[south] = setInput[0].value);
+    localStorage.setItem("southHuman",  human[south]   = setInput[1].checked);
+    localStorage.setItem("westPlayer",  player$[west]  = setInput[2].value);
+    localStorage.setItem("westHuman",   human[west]    = setInput[3].checked);
+    localStorage.setItem("northPlayer", player$[north] = setInput[4].value);
+    localStorage.setItem("southHuman",  human[north]   = setInput[5].checked);
+    localStorage.setItem("eastPlayer",  player$[east]  = setInput[6].value);
+    localStorage.setItem("southHuman",  human[east]    = setInput[7].checked);
+    localStorage.setItem("showTrump",   showTrump      = setInput[8].checked);
+    localStorage.setItem("showCount",   showCount      = setInput[9].checked);
+    localStorage.setItem("showSummary", showSummary    = setInput[10].checked);
+    localStorage.setItem("showDetail",  showDetail     = setInput[11].checked);
+    localStorage.setItem("openHand",    openHand       = setInput[12].checked);
+    updateHints();
     for (let c = 0; c < cards; c++)
         if (card[c].p!=south && card[c].g==hand) {
             card[c].f = openHand;
@@ -1879,6 +1890,34 @@ function iCloseClicked() {
 function loaded() {
     console.clear();
     log("--> loaded ");
+    if (localStorage.length == 0) {
+        localStorage.setItem("southPlayer", player$[south]);
+        localStorage.setItem("southHuman",  human[south]);
+        localStorage.setItem("westPlayer",  player$[west]);
+        localStorage.setItem("westHuman",   human[west]);
+        localStorage.setItem("northPlayer", player$[north]);
+        localStorage.setItem("northHuman",  human[north]);
+        localStorage.setItem("eastPlayer",  player$[east]);
+        localStorage.setItem("eastHuman",   human[east]);
+        localStorage.setItem("showTrump",   showTrump);
+        localStorage.setItem("showCount",   showCount);
+        localStorage.setItem("showSummary", showSummary);
+        localStorage.setItem("showDetail",  showDetail);
+        localStorage.setItem("openHand",    openHand);
+    }
+    player$[south] = setInput[0].value    = localStorage.getItem("southPlayer");
+    human[south]   = setInput[1].checked  = localStorage.getItem("southHuman" ) == "true";
+    player$[west]  = setInput[2].value    = localStorage.getItem("westPlayer" );
+    human[west]    = setInput[3].checked  = localStorage.getItem("westHuman"  ) == "true";
+    player$[north] = setInput[4].value    = localStorage.getItem("northPlayer");
+    human[north]   = setInput[5].checked  = localStorage.getItem("northHuman" ) == "true";
+    player$[east]  = setInput[6].value    = localStorage.getItem("eastPlayer" );
+    human[east]    = setInput[7].checked  = localStorage.getItem("eastHuman"  ) == "true";
+    showTrump      = setInput[8].checked  = localStorage.getItem("showTrump"  ) == "true";
+    showCount      = setInput[9].checked  = localStorage.getItem("showCount"  ) == "true";
+    showSummary    = setInput[10].checked = localStorage.getItem("showSummary") == "true";
+    showDetail     = setInput[11].checked = localStorage.getItem("showDetail" ) == "true";
+    openHand       = setInput[12].checked = localStorage.getItem("openHand"   ) == "true";
     const deck = Array.from(new Array(cards), (v, k) => k % cardsPerPlayer);
     let sort = [];
     for (let v = 0; v < values; v++)
@@ -1893,7 +1932,6 @@ function loaded() {
         bidBox[p].textContent = player$[p];
     }
     remaining.fill(4);
-    updateGrid();
     for (let c = 0; c < cards; c++) {
         card[c].c = c; 
         card[c].p = plyr[c];
@@ -1927,6 +1965,7 @@ function loaded() {
     playZ = -1000;
     locateInfo();
     onresize = resized;
+    updateHints();
     animate(deckDealt);
 }
 

@@ -232,11 +232,8 @@
             <b>Double Deck Pinochle</b>
             <img class="closeIcon" src="icons/close.svg" alt="close" onclick="menuCloseClicked()"><br>
             <br>
-            <div onclick="exposeClicked()">
-                <img class="menuIcon" src="icons/analytics.svg" alt="options"> <span id="exposeTxt">Expose counts</span>
-            </div><br>
-            <div onclick="revealClicked()">
-                <img class="menuIcon" src="icons/settings.svg" alt="options"> <span id="revealTxt">Reveal cards</span>
+            <div onclick="settingsClicked()">
+                <img class="menuIcon" src="icons/settings.svg" alt="options"> Change settings
             </div><br>
             <div onclick="reloadClicked()">
                 <img class="menuIcon" src="icons/refresh.svg" alt="reload"> Reload app
@@ -251,10 +248,10 @@
                 <img class="menuIcon" src="icons/exit.svg" alt="exit"> Exit app
             </div><br>
         </div>
-        <div id="setForm">
+        <div id="setText">
             <b>Double Deck Pinochle - Settings</b>
-            <img class="closeIcon" src="icons/close.svg" alt="close" onclick="setCloseClicked()"><br>
-            <form>
+            <img class="closeIcon" src="icons/close.svg" alt="close" onclick="settingsCloseClicked()"><br>
+            <form id="setForm">
                 <fieldset>
                     <legend>Players</legend>
                     <div id="playersGrid">
@@ -264,34 +261,73 @@
                         </div>
                         <div>South</div>
                         <div><input type="text" value="South"></div>
-                        <div><input type="checkbox" checked></div>
+                        <div><input type="checkbox" checked disabled></div>
                         <div>West</div>
                         <div><input type="text" value="West"></div>
-                        <div><input type="checkbox" unchecked></div>
+                        <div><input type="checkbox" unchecked disabled></div>
                         <div>North</div>
                         <div><input type="text" value="North"></div>
-                        <div><input type="checkbox" unchecked></div>
+                        <div><input type="checkbox" unchecked disabled></div>
                         <div>East</div>
                         <div><input type="text" value="East"></div>
-                        <div><input type="checkbox" unchecked></div>
+                        <div><input type="checkbox" unchecked disabled></div>
                     </div>
                 </fieldset>
                 <fieldset>
                     <legend>Assistance</legend>
                     <div id="assistanceGrid">
+                        <div>Trump suit:</div>
+                        <div><input type="checkbox" checked></div>
+                        <div class="tip">
+                            <img src="icons/info.svg" alt="info">
+                            <div class="tiptext">
+                                Show trump suit icon in upper-right corner.
+                            </div>
+                        </div>
                         <div>Trump count:</div>
                         <div><input type="checkbox" checked></div>
-                        <div>Card count icons:</div>
+                        <div class="tip">
+                            <img src="icons/info.svg" alt="info">
+                            <div class="tiptext">
+                                Show number of trump in other player's hands in upper-right corner.
+                            </div>
+                        </div>
+                        <div>Card count summary:</div>
                         <div><input type="checkbox" checked></div>
-                        <div>Card count details:</div>
+                        <div class="tip">
+                            <img src="icons/info.svg" alt="info">
+                            <div class="tiptext">
+                                Show suit icons above each hand:<br>
+                                    &nbsp; - White if definite ace in suit<br>
+                                    &nbsp; - Light if possible ace in suit<br> 
+                                    &nbsp; - Dark if no ace in suit<br>
+                                    &nbsp; - Transparent if no cards in suit
+                            </div>
+                        </div>
+                        <div>Card count detail:</div>
                         <div><input type="checkbox" unchecked></div>
-                        <div>Open hands:</div>
+                        <div class="tip">
+                            <img src="icons/info.svg" alt="info">
+                            <div class="tiptext">
+                                Overlay each hand with a table of rectangles indicating the minimum 
+                                and maximum number of cards for each rank and suit:<br>
+                                    &nbsp; - # black quads = min cards<br>
+                                    &nbsp; - # black/gray quads = max cards<br>
+                                    &nbsp; - 4 white quads = no cards
+                            </div>
+                        </div>
+                        <div>Open hand:</div>
                         <div><input type="checkbox" unchecked></div>
+                        <div class="tip">
+                            <img src="icons/info.svg" alt="info">
+                            <div class="tiptext">
+                                Show evey player's cards.
+                            </div>
+                        </div>
                     </div>
                 </fieldset>
-                <div id="setButtons">
-                    <input type="button" value="Save" onclick="saveClicked()">
-                    <input type="button" value="Reset" onclick="resetClicked()">
+                <br>
+                <input type="button" value="Save" onclick="settingsSaveClicked()">
                 </div>
             </form>
         </div>

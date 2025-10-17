@@ -19,7 +19,7 @@
         --ntrump-top:   calc(000svh + var(--cardw)*0.11);
         --ntrump-width: calc(000svh + var(--cardw)*0.35);
         --ntrump-align: right;
-        }
+    }
 }
 
 @media (orientation: landscape) {
@@ -43,7 +43,7 @@
         --ntrump-top:   calc(000svh + var(--cardw)*0.40);
         --ntrump-width: calc(000svh + var(--cardw)*0.35);
         --ntrump-align: center;
-        }
+   }
 }
 
 :root {
@@ -58,6 +58,8 @@
     --box-height:       calc(var(--cardw) * 0.31);
     --pick-width:       calc(var(--cardw) * 1.30);
     --set-width:        calc(100svw - var(--pad) * 2);
+    --field-width:      calc(var(--cardw) * 4.00);
+    --field-height:     calc(var(--cardw) * 2.80);
     --tutor-width:      calc(100svw - var(--pad) * 2);
     --tutor-height:     calc(100svh - var(--pad) * 2);
     --grid-size:        calc(var(--cardh) * 0.98);
@@ -312,19 +314,27 @@ input {
     display: none;
 }
 
-#setForm {
+#setText {
     position: absolute;
     width: var(--set-width);
     padding: var(--pad);
     color: black;
     background-color: white;
-    /*display: none;*/
+    display: none;
+}
+
+#setForm {
+    text-align: center;
 }
 
 #setForm fieldset {
+    display: inline;
+    width: var(--field-width);
+    height: var(--field-height);
     border: 1px solid;
     padding: var(--pad);
     margin: var(--pad) 0 0 0;
+    text-align: left;
 }
 
 #setForm legend {
@@ -352,16 +362,39 @@ input {
 #assistanceGrid {
     display: grid;
     margin-top: var(--pad);
-    grid-template-columns: auto auto;
-    grid-template-rows: repeat(4, calc(var(--font-size)*2));
+    grid-template-columns: auto auto auto;
+    grid-template-rows: repeat(5, calc(var(--font-size)*2));
     justify-content: center;
     text-align: right;
 }
 
-#setButtons {
+.tip {
+    position: relative;
+}
+
+.tip img {
+    width: var(--icon);
+}
+
+.tiptext {
+    visibility: hidden;
+    position: absolute;
+    width: 1170%;
+    bottom: 110%;
+    right: -100%;
+    color: white;
+    background-color: black;
+    padding: var(--pad);
+    text-align: left;
+}
+
+.tip:hover .tiptext {
+    visibility: visible;
+}
+
+#setText input[type="button"] {
     margin-top: calc(var(--pad)*2);
     margin-bottom: var(--pad);
-    text-align: center;
 }
 
 .menuIcon {
