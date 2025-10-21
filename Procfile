@@ -1,1 +1,1 @@
-web: heroku-buildpack-static
+web: heroku-php-apache2
