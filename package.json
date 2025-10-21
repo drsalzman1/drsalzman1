@@ -1,6 +1,6 @@
 {
   "name": "pinochle",
-  "version": "0.01",
+  "version": "1.0.0",
   "description": "",
   "main": "server.js",
   "scripts": {
