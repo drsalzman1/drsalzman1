@@ -7,7 +7,7 @@
         Open console to see messages.
     </body>
     <script>
-        const eventSource = new EventSource('http:/localhost:8080/events');
+        const eventSource = new EventSource('/events');
         eventSource.onerror = (event) => {
             console.log('Error');
         }
