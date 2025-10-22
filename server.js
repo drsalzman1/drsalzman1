@@ -1,30 +1,16 @@
-function wssConnected(ws) {
-    function wsMessaged(buffer) {
-        const msg = buffer.toString();
-        console.log(`Server: message rxed: ${msg}`);
-        ws.send(msg);
-        console.log(`Server: message txed: ${msg}`);
+const http = require('http');
+http.createServer((req, res) => {
+    if (req.url === '/events') {
+        console.log(`createServer: ${req.url}`);
+        res.writeHead(200, {
+            'Content-Type': 'text/event-stream',
+            'Cache-Control': 'no-cache',
+            'Connection': 'keep-alive',
+            'Access-Control-Allow-Origin': '*'  
+        });
+        setInterval(() => {
+            res.write(`data: ${JSON.stringify({ time: new Date().toISOString() })}\n\n`);
+        }, 1000);
     }
-
-    function wsClosed() {
-        console.log('Server: WebSocket closed');
-    }
-
-    function wsErred(error) {
-        console.error('Server: WebSocket error');
-    }
-
-    console.log('Server: client connected');
-    ws.on('message', wsMessaged);
-    ws.on('close', wsClosed);
-    ws.on('error', wsErred);
-}
-
-function wssErred(error) {
-    console.error(error);
-}
-
-import {WebSocketServer} from 'ws';
-const wss = new WebSocketServer({port:8080});
-wss.on('connection', wssConnected);
-wss.on('error', wssErred);
+}).listen(8080);
+console.log("Server is up");

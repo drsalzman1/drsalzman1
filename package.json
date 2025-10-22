@@ -16,8 +16,5 @@
   "bugs": {
     "url": "https://github.com/drsalzman1/drsalzman1/issues"
   },
-  "homepage": "https://github.com/drsalzman1/drsalzman1#readme",
-  "dependencies": {
-    "ws": "^8.18.3"
-  }
+  "homepage": "https://github.com/drsalzman1/drsalzman1#readme"
 }

@@ -1,62 +1,21 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>WebSocket Client</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        max-width: 600px;
-        margin: 0 auto;
-        padding: 20px;
-      }
-    </style>
-  </head>
-  <body>
-    <input type="text" id="messageInput" placeholder="Type your message">
-    <button onclick="sendMessage()">Send</button>
-
+    <head>
+        <title>SSE Demo</title>
+    </head>
+    <body>
+        Open console to see messages.
+    </body>
     <script>
-      function wsOpened() {
-        console.log(`Client: WebSocket opened`);
-      }
-
-      function wsErred() {
-        console.error('Client: WebSocket error');
-      }
-
-      function wsMessaged(event) {
-        const message = event.data.toString();
-        console.log(`Client: message rxed: ${message}`);
-      }
-
-      function msClosed() {
-        console.log(`Client: WebSocket closed`);
-      }
-
-      function sendMessage() {
-        const message = messageInput.value.trim();
-        messageInput.value = '';
-        if (message) {
-          ws.send(message);
-          console.log(`Client: message txed: ${message}`);
+        const eventSource = new EventSource('http:/localhost:8080/events');
+        eventSource.onerror = (event) => {
+            console.log('Error');
         }
-      }
-
-      function keyPressed(event) {
-        if (event.key == 'Enter')
-          sendMessage();
-      }
-
-      console.clear();
-
-      const messageInput = document.getElementById('messageInput');
-      messageInput.onkeypress = keyPressed;
-
-      const ws = new WebSocket('wss://games.keyob.app:8080');
-      ws.onopen = wsOpened;
-      ws.onerror = wsErred;
-      ws.onmessage = wsMessaged;
-      ws.onclose = msClosed;
+        eventSource.onopen = (event) => {
+            console.log('Opened');
+        };
+        eventSource.onmessage = (event) => {
+            console.log('New message:', event.data);
+        };
     </script>
-  </body>
 </html>
