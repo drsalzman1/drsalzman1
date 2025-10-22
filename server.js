@@ -1,3 +1,16 @@
+const http = require('http');
+
+const server = http.createServer((req, res) => {
+  res.statusCode = 200; // Success status code
+  res.setHeader('Content-Type', 'text/plain'); // Set content type
+  res.end('Hello, World!\n'); // Send response
+});
+
+server.listen(8080, () => {
+  console.log("Server listening");
+});
+
+/*
 console.log("This is a console.log test");
 console.debug("This is a console.debug test");
 const http = require('http');
@@ -17,3 +30,4 @@ http.createServer((req, res) => {
     }
 }).listen(8080);
 console.debug("Server is up");
+*/
