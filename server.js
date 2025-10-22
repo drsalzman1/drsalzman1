@@ -1,9 +1,32 @@
 const http = require('http');
+const fs = require('fs');
+const path = require('path');
+
+const publicDirectory = path.join(__dirname, 'public');
 
 const server = http.createServer((req, res) => {
-  res.statusCode = 200; // Success status code
-  res.setHeader('Content-Type', 'text/plain'); // Set content type
-  res.end(`req.url: ${req.url}\n`); // Send response
+    let filePath = path.join(publicDirectory, req.url === '/' ? 'index.html' : req.url);
+    const extname = String(path.extname(filePath)).toLowerCase();
+    const mimeTypes = {
+        '.html': 'text/html',
+        '.js': 'text/javascript',
+        '.css': 'text/css',
+        '.json': 'application/json',
+        '.png': 'image/png',
+        '.jpg': 'image/jpg',
+        '.gif': 'image/gif',
+        '.svg': 'image/svg+xml',
+        '.wav': 'audio/wav',
+        '.mp4': 'video/mp4',
+        '.woff': 'application/font-woff',
+        '.ttf': 'application/font-ttf',
+        '.eot': 'application/vnd.ms-fontobject',
+        '.otf': 'application/font-otf',
+        '.wasm': 'application/wasm'
+    };
+    res.statusCode = 200; // Success status code
+    res.setHeader('Content-Type', 'text/plain'); // Set content type
+    res.end(`filepath: ${filePath}\n`); // Send response
 });
 
 server.listen(8080, () => {
