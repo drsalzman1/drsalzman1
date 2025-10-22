@@ -3,7 +3,7 @@ const http = require('http');
 const server = http.createServer((req, res) => {
   res.statusCode = 200; // Success status code
   res.setHeader('Content-Type', 'text/plain'); // Set content type
-  res.end('Hello, World!\n'); // Send response
+  res.end(`req.url: ${req.url}\n`); // Send response
 });
 
 server.listen(8080, () => {
