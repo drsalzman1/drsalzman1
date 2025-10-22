@@ -52,7 +52,7 @@
       const messageInput = document.getElementById('messageInput');
       messageInput.onkeypress = keyPressed;
 
-      const ws = new WebSocket('ws://games.keyob.app:8080');
+      const ws = new WebSocket('wss://games.keyob.app:8080');
       ws.onopen = wsOpened;
       ws.onerror = wsErred;
       ws.onmessage = wsMessaged;
