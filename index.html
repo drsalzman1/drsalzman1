@@ -7,7 +7,7 @@
         Open console to see messages.
     </body>
     <script>
-        const eventSource = new EventSource('/events');
+        const eventSource = new EventSource('https://games.koyeb.app/events');
         eventSource.onerror = (event) => {
             console.log('Error');
         }
