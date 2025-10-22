@@ -1,5 +1,6 @@
 const http = require('http');
 http.createServer((req, res) => {
+    console.debug(`createServer: ${req.url}`);
     if (req.url === '/events') {
         console.log(`createServer: ${req.url}`);
         res.writeHead(200, {
@@ -13,4 +14,4 @@ http.createServer((req, res) => {
         }, 1000);
     }
 }).listen(8080);
-console.log("Server is up");
+console.debug("Server is up");
