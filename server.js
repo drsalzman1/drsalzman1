@@ -1,8 +1,30 @@
-// Load HTTP module
-const http = require("http");
+function wssConnected(ws) {
+    function wsMessaged(buffer) {
+        const msg = buffer.toString();
+        console.log(`Server: message rxed: ${msg}`);
+        ws.send(msg);
+        console.log(`Server: message txed: ${msg}`);
+    }
 
-const server = http.createServer((req, res) => {
-  res.writeHead(200, { "Content-Type": "text/plain" });
-  res.write("Hello World\n");
-  res.end();  
-}).listen(8080);
+    function wsClosed() {
+        console.log('Server: WebSocket closed');
+    }
+
+    function wsErred(error) {
+        console.error('Server: WebSocket error');
+    }
+
+    console.log('Server: client connected');
+    ws.on('message', wsMessaged);
+    ws.on('close', wsClosed);
+    ws.on('error', wsErred);
+}
+
+function wssErred(error) {
+    console.error(error);
+}
+
+import {WebSocketServer} from 'ws';
+const wss = new WebSocketServer({port:8080});
+wss.on('connection', wssConnected);
+wss.on('error', wssErred);

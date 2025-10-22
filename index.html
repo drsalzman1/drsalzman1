@@ -1,20 +1,62 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <title>Dave's Apps</title>
-    </head>
-    <body>
-        <h1>
-            Dave's Apps
-        </h1>
-        Hover on link to see the direct URL.
-        <ul>
-            <li><a href="checkers">Checkers Game</a></li>
-            <li><a href="solver">Waffle Solver</a></li>
-            <li><a href="adviser">Wordle Adviser</a></li>
-            <li><a href="tutor">Sudoku Tutor</a></li>
-            <li><a href="pinochle">Pinochle Game</a></li>
-        </ul>
-    </body>
+  <head>
+    <title>WebSocket Client</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <input type="text" id="messageInput" placeholder="Type your message">
+    <button onclick="sendMessage()">Send</button>
+
+    <script>
+      function wsOpened() {
+        console.log(`Client: WebSocket opened`);
+      }
+
+      function wsErred() {
+        console.error('Client: WebSocket error');
+      }
+
+      function wsMessaged(event) {
+        const message = event.data.toString();
+        console.log(`Client: message rxed: ${message}`);
+      }
+
+      function msClosed() {
+        console.log(`Client: WebSocket closed`);
+      }
+
+      function sendMessage() {
+        const message = messageInput.value.trim();
+        messageInput.value = '';
+        if (message) {
+          ws.send(message);
+          console.log(`Client: message txed: ${message}`);
+        }
+      }
+
+      function keyPressed(event) {
+        if (event.key == 'Enter')
+          sendMessage();
+      }
+
+      console.clear();
+
+      const messageInput = document.getElementById('messageInput');
+      messageInput.onkeypress = keyPressed;
+
+      const ws = new WebSocket('ws://games.keyob.app:8080');
+      ws.onopen = wsOpened;
+      ws.onerror = wsErred;
+      ws.onmessage = wsMessaged;
+      ws.onclose = msClosed;
+    </script>
+  </body>
 </html>
