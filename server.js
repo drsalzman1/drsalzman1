@@ -5,7 +5,7 @@ const path = require('path');
 const publicDirectory = path.join(__dirname, 'public');
 
 const server = http.createServer((req, res) => {
-    let filePath = path.join(publicDirectory, req.url === '/' ? 'index.html' : req.url);
+    let filePath = path.join(__dirname, req.url === '/' ? 'index.html' : req.url);
     const extname = String(path.extname(filePath)).toLowerCase();
     const mimeTypes = {
         '.html': 'text/html',
