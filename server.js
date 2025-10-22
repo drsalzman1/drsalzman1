@@ -1,6 +1,5 @@
 console.log("This is a console.log test");
 console.debug("This is a console.debug test");
-/*
 const http = require('http');
 http.createServer((req, res) => {
     console.debug(`createServer: ${req.url}`);
@@ -18,4 +17,3 @@ http.createServer((req, res) => {
     }
 }).listen(8080);
 console.debug("Server is up");
-*/
