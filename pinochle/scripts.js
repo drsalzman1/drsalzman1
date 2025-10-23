@@ -1999,8 +1999,11 @@ function wsSend() {
     counter++;
 }
 
+let url = `wss://${document.location.hostname}:3000`;
+if (document.location.hostname == "localhost")
+    url = `ws://${document.location.hostname}:3000`;
 console.log(`document.location.hostname: ${document.location.hostname}`);
-console.log(`url: ws://${document.location.hostname}:3000`);
+console.log(`url: ${url}`);
 const socket = new WebSocket(`ws://${document.location.hostname}:3000`);
 socket.onopen = wsOpened;
 socket.onerror = wsErred;
