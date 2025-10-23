@@ -1,10 +1,11 @@
-import { createServer } from 'http';
-import { readFile } from 'fs';
-import { join, extname as _extname } from 'path';
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
 const sseHeaders = {
     'Content-Type': 'text/event-stream', 
     'Cache-Control': 'no-cache', 
-    'Connection': 'keep-alive'
+    'Connection': 'keep-alive' /*, 
+    'Access-Control-Allow-Origin': '*'*/
 };
 const mimeTypes = {
     '.html': 'text/html',
@@ -41,11 +42,11 @@ function reqReceived(req, res) {
                 res.end(content, 'utf-8');
             }
         }
-        let filePath = join(import.meta.dirname, req.url=='/'?'index.html':req.url);
-        const extname = String(_extname(filePath)).toLowerCase();
+        let filePath = path.join(__dirname, req.url=='/'?'index.html':req.url);
+        const extname = String(path.extname(filePath)).toLowerCase();
         const contentType = mimeTypes[extname] || 'application/octet-stream';
-        readFile(filePath, read);
+        fs.readFile(filePath, read);
     }
 }
 
-const server = createServer(reqReceived).listen(8080);
+const server = http.createServer(reqReceived).listen(8080);
