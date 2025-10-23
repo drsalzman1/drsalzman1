@@ -84,7 +84,7 @@ function erred(error) {
 }
 
 import {WebSocketServer} from 'ws';
-const socketServer = new WebSocketServer({port:3000});
+const socketServer = new WebSocketServer({path: "/ws", port:3000});
 socketServer.on('connection', connected);
 socketServer.on('error', erred);
 console.log('socketServer initialized');
