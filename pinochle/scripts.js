@@ -2004,7 +2004,7 @@ if (document.location.hostname == "localhost")
     url = `ws://${document.location.hostname}:3000`;
 console.log(`document.location.hostname: ${document.location.hostname}`);
 console.log(`url: ${url}`);
-const socket = new WebSocket(`ws://${document.location.hostname}:3000`);
+const socket = new WebSocket(url);
 socket.onopen = wsOpened;
 socket.onerror = wsErred;
 socket.onmessage = wsMessaged;
