@@ -49,4 +49,4 @@ function reqReceived(req, res) {
     }
 }
 
-const server = http.createServer(reqReceived).listen(8080);
+const server = http.createServer(reqReceived).listen(80);
