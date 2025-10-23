@@ -307,7 +307,7 @@ let vpitch      = 0;                // vertical card pitch for east and west han
 
 // Log debugText on console (comment out when done debugging)
 function log(debugText = "") {
-    console.log(debugText);
+    //console.log(debugText);
 }
 
 // Return number of cards of value v in player p's hand
@@ -1888,7 +1888,7 @@ function iCloseClicked() {
 
 // Load event: initialize app, deal cards, sort cards, disable resize events, then trigger deckDealt
 function loaded() {
-    console.clear();
+    //console.clear();
     log("--> loaded ");
     if (localStorage.length == 0) {
         localStorage.setItem("southPlayer", player$[south]);
@@ -1972,6 +1972,55 @@ function loaded() {
 // Set function to be invoked after app is loaded and rendered
 onload = loaded;
 
+let counter = 0;
+
+function wsOpened() {
+    console.log(`socket opened`);
+    socket.send(`socket opened`);
+    console.log(`socket message txed: socket opened`);
+}
+
+function wsErred() {
+    console.error('socket error');
+}
+
+function wsMessaged(event) {
+    const message = event.data.toString();
+    console.log(`socket message rxed: ${message}`);
+}
+
+function wsClosed() {
+    console.log(`socket closed`);
+}
+
+function wsSend() {
+    socket.send(`${counter}`);
+    console.log(`socket message txed: ${counter}`);
+    counter++;
+}
+
+console.log(`document.location.hostname: ${document.location.hostname}`);
+console.log(`url: ws://${document.location.hostname}:3000`);
+const socket = new WebSocket(`ws://${document.location.hostname}:3000`);
+socket.onopen = wsOpened;
+socket.onerror = wsErred;
+socket.onmessage = wsMessaged;
+socket.onclose = wsClosed;
+//setInterval(wsSend, 1000);
+
+/*
+        const eventSource = new EventSource('/events');
+        eventSource.onerror = (event) => {
+            console.log('Error');
+        }
+        eventSource.onopen = (event) => {
+            console.log('Opened');
+        };
+        eventSource.onmessage = (event) => {
+            console.log('New message:', event.data);
+        };
+*/
+/*
 // Message received from service worker: note service worker version message
 function messageRxed(e) {
     log("--> messageRxed by scripts.js");
@@ -1980,7 +2029,8 @@ function messageRxed(e) {
 }
 
 // Implement proxy server for web fetches when app is offline
-// if ("serviceWorker" in navigator && window.location.origin != "file://") {
-//     navigator.serviceWorker.register("service-worker.js", {updateViaCache: "none"});
-//     channel.onmessage = messageRxed;
-// }
+if ("serviceWorker" in navigator && window.location.origin != "file://") {
+    navigator.serviceWorker.register("service-worker.js", {updateViaCache: "none"});
+    channel.onmessage = messageRxed;
+}
+*/
