@@ -539,4 +539,16 @@
         </div>
     </body>
     <script src="scripts.js" defer></script>
+    <script defer>
+        const eventSource = new EventSource('/events');
+        eventSource.onerror = (event) => {
+            console.log('Error');
+        }
+        eventSource.onopen = (event) => {
+            console.log('Opened');
+        };
+        eventSource.onmessage = (event) => {
+            console.log('New message:', event.data);
+        };
+    </script>
 </html>
