@@ -1,6 +1,6 @@
 import { createServer } from 'http';
 import { readFile } from 'fs';
-import { join, extname as _extname } from 'path';
+import { join, extname } from 'path';
 const sseHeaders = {
     'Content-Type': 'text/event-stream', 
     'Cache-Control': 'no-cache', 
@@ -42,8 +42,8 @@ function reqReceived(req, res) {
             }
         }
         let filePath = join(import.meta.dirname, req.url=='/'?'index.html':req.url);
-        const extname = String(_extname(filePath)).toLowerCase();
-        const contentType = mimeTypes[extname] || 'application/octet-stream';
+        const ext = String(extname(filePath)).toLowerCase();
+        const typ = mimeTypes[ext] || 'application/octet-stream';
         readFile(filePath, read);
     }
 }
