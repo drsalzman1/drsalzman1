@@ -1,11 +1,10 @@
-const http = require('http');
-const fs = require('fs');
-const path = require('path');
+import { createServer } from 'http';
+import { readFile } from 'fs';
+import { join, extname } from 'path';
 const sseHeaders = {
     'Content-Type': 'text/event-stream', 
     'Cache-Control': 'no-cache', 
-    'Connection': 'keep-alive' /*, 
-    'Access-Control-Allow-Origin': '*'*/
+    'Connection': 'keep-alive'
 };
 const mimeTypes = {
     '.html': 'text/html',
@@ -38,15 +37,15 @@ function reqReceived(req, res) {
                 res.writeHead(404, {'Content-Type':'text/html' });
                 res.end();
             } else {
-                res.writeHead(200, { 'Content-Type': contentType });
+                res.writeHead(200, { 'Content-Type': typ });
                 res.end(content, 'utf-8');
             }
         }
-        let filePath = path.join(__dirname, req.url=='/'?'index.html':req.url);
-        const extname = String(path.extname(filePath)).toLowerCase();
-        const contentType = mimeTypes[extname] || 'application/octet-stream';
-        fs.readFile(filePath, read);
+        let filePath = join(import.meta.dirname, req.url=='/'?'index.html':req.url);
+        const ext = String(extname(filePath)).toLowerCase();
+        const typ = mimeTypes[ext] || 'application/octet-stream';
+        readFile(filePath, read);
     }
 }
 
-const server = http.createServer(reqReceived).listen(8080);
+const server = createServer(reqReceived).listen(8080);

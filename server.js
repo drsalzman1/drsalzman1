@@ -23,12 +23,17 @@ const mimeTypes = {
     '.otf': 'application/font-otf',
     '.wasm': 'application/wasm'
 };
+let counter = 0;
 
 function reqReceived(req, res) {
     function ticked() {
-        res.write(`data: ${JSON.stringify({ time: new Date().toISOString() })}\n\n`);
+        res.write(`data: ${counter}\n\n`);
+        console.log(`event sent: ${counter}`);
+        counter++;
     }
+
     if (req.url == '/events') {
+        console.log('events connected');
         res.writeHead(200, sseHeaders);
         setInterval(ticked, 1000);
     } else {
@@ -41,6 +46,7 @@ function reqReceived(req, res) {
                 res.end(content, 'utf-8');
             }
         }
+
         let filePath = join(import.meta.dirname, req.url=='/'?'index.html':req.url);
         const ext = String(extname(filePath)).toLowerCase();
         const typ = mimeTypes[ext] || 'application/octet-stream';
@@ -48,4 +54,37 @@ function reqReceived(req, res) {
     }
 }
 
-const server = createServer(reqReceived).listen(8080);
+createServer(reqReceived).listen(8080);
+console.log('fileServer initialized');
+
+function connected(socket) {
+    function messaged(buffer) {
+        const msg = buffer.toString();
+        console.log(`socket message rxed: ${msg}`);
+        socket.send(msg);
+        console.log(`socket message txed: ${msg}`);
+    }
+
+    function closed() {
+        console.log('socket closed');
+    }
+
+    function erred(error) {
+        console.error(`socket error: ${error}`);
+    }
+
+    console.log('socket connected');
+    socket.on('message', messaged);
+    socket.on('close', closed);
+    socket.on('error', erred);
+}
+
+function erred(error) {
+    console.log(`socketServer error: ${error}`);
+}
+
+import {WebSocketServer} from 'ws';
+const socketServer = new WebSocketServer({port:3000});
+socketServer.on('connection', connected);
+socketServer.on('error', erred);
+console.log('socketServer initialized');
