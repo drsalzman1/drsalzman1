@@ -3,6 +3,18 @@ const fs = require('fs');
 const path = require('path');
 
 const server = http.createServer((req, res) => {
+    if (req.url == '/events') {
+        res.writeHead(200, {
+            'Content-Type': 'text/event-stream',
+            'Cache-Control': 'no-cache',
+            'Connection': 'keep-alive',
+            'Access-Control-Allow-Origin': '*'  
+        });
+        setInterval(() => {
+            res.write(`data: ${JSON.stringify({ time: new Date().toISOString() })}\n\n`);
+        }, 1000);
+        return;
+    }
     let filePath = path.join(__dirname, req.url=='/'?'index.html':req.url);
     const extname = String(path.extname(filePath)).toLowerCase();
     const mimeTypes = {
