@@ -2007,7 +2007,7 @@ socket.onopen = wsOpened;
 socket.onerror = wsErred;
 socket.onmessage = wsMessaged;
 socket.onclose = wsClosed;
-setInterval(wsSend, 1000);
+setInterval(wsSend, 10000);
 
 /*
 // Implement proxy server for web fetches when app is offline
