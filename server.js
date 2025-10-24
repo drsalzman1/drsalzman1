@@ -43,12 +43,13 @@ console.log('fileServer initialized');
 
 let client = 1;
 
-function connected(socket) {
+function connected(socket, req) {
     function messaged(buffer) {
         const msg = buffer.toString();
-        console.log(`server rxed '${msg}' (${id})`);
-        socket.send(msg == "ping" ? "pong" : msg);
-        console.log(`server sent '${msg == "ping" ? "pong" : msg}' (${id})`);
+        if (msg == "ping")
+            socket.send("pong");
+        else
+            console.log(`server rxed '${msg}' (${id})`);
     }
 
     function closed() {
@@ -61,8 +62,8 @@ function connected(socket) {
 
     const id = client++;
     console.log(`socket connected (${id})`);
-    socket.send(`Welcome! You are client ${id}`)
-    console.log(`server sent 'Welcome! You are client ${id}' (${id})`)
+    socket.send(`You are client ${id}`)
+    console.log(`server sent 'You are client ${id}' (${id})`)
 
     socket.on('message', messaged);
     socket.on('close', closed);

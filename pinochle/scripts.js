@@ -1973,24 +1973,25 @@ function loaded() {
 onload = loaded;
 
 function wsOpened(event) {
-    console.log(`[${new Date()}] socket opened`);
+    console.log(`socket opened`);
 }
 
 function wsErred(event) {
-    console.log(`[${new Date()}] socket erred`);
+    console.log(`socket erred`);
 }
 
 function wsMessaged(event) {
-    console.log(`[${new Date()}] socket messaged, data:${event.data}, elapsed:${Math.round(performance.now()-t0)}`);
+    const msg = event.data.toString();
+    if (msg != 'pong')
+        console.log(`socket rxed '${msg}'`);
 }
 
 function wsClosed(event) {
-    console.log(`[${new Date()}] socket closed, code:${event.code}`);
+    console.log(`socket closed (${event.code})`);
 }
 
 let socket = null;
-let t0 = performance.now();
-function wsConnect() {
+function wsOpen() {
     if (document.location.hostname == "localhost")
         socket = new WebSocket("ws://localhost:3000");
     else    
@@ -1999,26 +2000,26 @@ function wsConnect() {
     socket.onerror = wsErred;
     socket.onmessage = wsMessaged;
     socket.onclose = wsClosed;
-    console.log(`[${new Date()}] socket connecting...`);
+    console.log(`socket opening...`);
 }
 
 function wsTick() {
-    if (socket.readyState == WebSocket.CONNECTING) {
-        console.log(`[${new Date()}] socket connecting...`);
-    } else if (socket.readyState == WebSocket.OPEN) {
+    if (socket.readyState == WebSocket.CONNECTING)
+        console.log(`socket connecting...`);
+    else if (socket.readyState == WebSocket.OPEN)
         socket.send(`ping`);
-        t0 = performance.now();
-        console.log(`[${new Date()}] socket open: pinging server...`);
-    } else if (socket.readyState == WebSocket.CLOSING) {
-        console.log(`[${new Date()}] socket closing...`);
-    } else if (socket.readyState == WebSocket.CLOSED) {
-        wsConnect();
-    } else
-        console.log(`[${new Date()}] socket in unknown state: ${socket.readyState}`);
+    else if (socket.readyState == WebSocket.CLOSING)
+        console.log(`socket closing...`);
+    else if (socket.readyState == WebSocket.CLOSED)
+        wsOpen();
+    else
+        console.log(`socket in unknown state (${socket.readyState})`);
 }
 
-wsConnect();
-setInterval(wsTick, 10000);
+if (document.location.hostname) {
+    wsOpen();
+    setInterval(wsTick, 10000);
+}
 
 /*
 // Implement proxy server for web fetches when app is offline
