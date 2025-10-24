@@ -2002,35 +2002,14 @@ function wsSend() {
 let url = `wss://${document.location.hostname}/ws`;
 if (document.location.hostname == "localhost")
     url = `ws://${document.location.hostname}:3000`;
-console.log(`document.location.hostname: ${document.location.hostname}`);
-console.log(`url: ${url}`);
 const socket = new WebSocket(url);
 socket.onopen = wsOpened;
 socket.onerror = wsErred;
 socket.onmessage = wsMessaged;
 socket.onclose = wsClosed;
-//setInterval(wsSend, 1000);
+setInterval(wsSend, 1000);
 
 /*
-        const eventSource = new EventSource('/events');
-        eventSource.onerror = (event) => {
-            console.log('Error');
-        }
-        eventSource.onopen = (event) => {
-            console.log('Opened');
-        };
-        eventSource.onmessage = (event) => {
-            console.log('New message:', event.data);
-        };
-*/
-/*
-// Message received from service worker: note service worker version message
-function messageRxed(e) {
-    log("--> messageRxed by scripts.js");
-    log(`e.data:"${e.data}"`)
-    vsText.textContent = e.data;
-}
-
 // Implement proxy server for web fetches when app is offline
 if ("serviceWorker" in navigator && window.location.origin != "file://") {
     navigator.serviceWorker.register("service-worker.js", {updateViaCache: "none"});
