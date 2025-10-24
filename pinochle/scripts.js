@@ -1999,7 +1999,7 @@ function wsSend() {
     counter++;
 }
 
-let url = `wss://${document.location.hostname}/ws`;
+let url = `https://${document.location.hostname}/ws`;
 if (document.location.hostname == "localhost")
     url = `ws://${document.location.hostname}:3000/ws`;
 console.log(`document.location.hostname: ${document.location.hostname}`);
