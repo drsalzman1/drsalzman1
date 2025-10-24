@@ -61,8 +61,8 @@ function connected(socket) {
     function messaged(buffer) {
         const msg = buffer.toString();
         console.log(`socket message rxed: ${msg}`);
-        socket.send(msg);
-        console.log(`socket message txed: ${msg}`);
+        socket.send(msg == "ping" ? "pong" : msg);
+        console.log(`socket message txed: ${msg == "ping" ? "pong" : msg}`);
     }
 
     function closed() {

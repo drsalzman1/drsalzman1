@@ -1993,21 +1993,21 @@ function wsClosed() {
     console.log(`socket closed`);
 }
 
-function wsSend() {
-    socket.send(`${counter}`);
-    console.log(`socket message txed: ${counter}`);
+function wsPing() {
+    socket.send(`ping`);
+    console.log(`socket message sent: ping`);
     counter++;
 }
 
 let url = `wss://${document.location.hostname}/ws`;
 if (document.location.hostname == "localhost")
-    url = `ws://${document.location.hostname}:3000`;
+    url = `ws://localhost:3000`;
 const socket = new WebSocket(url);
 socket.onopen = wsOpened;
 socket.onerror = wsErred;
 socket.onmessage = wsMessaged;
 socket.onclose = wsClosed;
-setInterval(wsSend, 10000);
+setInterval(wsPing, 10000);
 
 /*
 // Implement proxy server for web fetches when app is offline
