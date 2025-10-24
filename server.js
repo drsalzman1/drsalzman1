@@ -39,11 +39,11 @@ function reqReceived(req, res) {
 }
 
 createServer(reqReceived).listen(8080);
-console.log('fileServer initialized');
+console.log('fileServer listening to port 8080');
 
 let client = 1;
 
-function connected(socket, req) {
+function connected(socket) {
     function messaged(buffer) {
         const msg = buffer.toString();
         if (msg == "ping")
@@ -64,7 +64,6 @@ function connected(socket, req) {
     console.log(`socket connected (${id})`);
     socket.send(`You are client ${id}`)
     console.log(`server sent 'You are client ${id}' (${id})`)
-
     socket.on('message', messaged);
     socket.on('close', closed);
     socket.on('error', erred);
@@ -77,4 +76,4 @@ function erred(error) {
 const socketServer = new WebSocketServer({port:3000});
 socketServer.on('connection', connected);
 socketServer.on('error', erred);
-console.log('socketServer initialized');
+console.log('socketServer listening to port 3000');
