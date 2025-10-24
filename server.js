@@ -1,47 +1,26 @@
 import { createServer } from 'http';
 import { readFile } from 'fs';
-import { join, extname } from 'path';
+import { join } from 'path';
+import { lookup } from 'mime-types';
 import { WebSocketServer } from 'ws';
-
-const mimeTypes = {
-    '.html': 'text/html',
-    '.js': 'text/javascript',
-    '.css': 'text/css',
-    '.json': 'application/json',
-    '.png': 'image/png',
-    '.jpg': 'image/jpg',
-    '.gif': 'image/gif',
-    '.svg': 'image/svg+xml',
-    '.wav': 'audio/wav',
-    '.mp4': 'video/mp4',
-    '.woff': 'application/font-woff',
-    '.ttf': 'application/font-ttf',
-    '.eot': 'application/vnd.ms-fontobject',
-    '.otf': 'application/font-otf',
-    '.wasm': 'application/wasm'
-};
 
 function reqReceived(req, res) {
     function read(error, content) {
         if (error) {
-            res.writeHead(404, {'Content-Type':'text/html' });
+            res.writeHead(404, {'Content-Type': 'text/html'});
             res.end();
         } else {
-            res.writeHead(200, { 'Content-Type': typ });
+            res.writeHead(200, {'Content-Type': lookup(filePath)});
             res.end(content, 'utf-8');
         }
     }
 
-    let filePath = join(import.meta.dirname, req.url=='/'?'index.html':req.url);
-    const ext = String(extname(filePath)).toLowerCase();
-    const typ = mimeTypes[ext] || 'application/octet-stream';
+    const filePath = join(import.meta.dirname, req.url=='/'?'index.html':req.url);
     readFile(filePath, read);
 }
 
 createServer(reqReceived).listen(8080);
 console.log('fileServer listening to port 8080');
-
-let client = 1;
 
 function connected(socket) {
     function messaged(buffer) {
@@ -60,7 +39,7 @@ function connected(socket) {
         console.error(`socket error: ${error} (${id})`);
     }
 
-    const id = client++;
+    const id = Math.round(performance.now());
     console.log(`socket connected (${id})`);
     socket.send(`You are client ${id}`)
     console.log(`server sent 'You are client ${id}' (${id})`)

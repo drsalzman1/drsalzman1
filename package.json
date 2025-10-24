@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/drsalzman1/drsalzman1#readme",
   "dependencies": {
+    "mime-types": "^3.0.1",
     "ws": "^8.18.3"
   }
 }
