@@ -41,23 +41,29 @@ function reqReceived(req, res) {
 createServer(reqReceived).listen(8080);
 console.log('fileServer initialized');
 
+let client = 1;
+
 function connected(socket) {
     function messaged(buffer) {
         const msg = buffer.toString();
-        console.log(`socket message rxed: ${msg}`);
+        console.log(`server rxed '${msg}' (${id})`);
         socket.send(msg == "ping" ? "pong" : msg);
-        console.log(`socket message txed: ${msg == "ping" ? "pong" : msg}`);
+        console.log(`server sent '${msg == "ping" ? "pong" : msg}' (${id})`);
     }
 
     function closed() {
-        console.log('socket closed');
+        console.log(`socket closed (${id})`);
     }
 
     function erred(error) {
-        console.error(`socket error: ${error}`);
+        console.error(`socket error: ${error} (${id})`);
     }
 
-    console.log('socket connected');
+    const id = client++;
+    console.log(`socket connected (${id})`);
+    socket.send(`Welcome! You are client ${id}`)
+    console.log(`server sent 'Welcome! You are client ${id}' (${id})`)
+
     socket.on('message', messaged);
     socket.on('close', closed);
     socket.on('error', erred);
