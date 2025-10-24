@@ -1972,8 +1972,6 @@ function loaded() {
 // Set function to be invoked after app is loaded and rendered
 onload = loaded;
 
-let counter = 0;
-
 function wsOpened() {
     console.log(`socket opened`);
     socket.send(`socket opened`);
@@ -1996,7 +1994,6 @@ function wsClosed() {
 function wsPing() {
     socket.send(`ping`);
     console.log(`socket message sent: ping`);
-    counter++;
 }
 
 let url = `wss://${document.location.hostname}/ws`;
