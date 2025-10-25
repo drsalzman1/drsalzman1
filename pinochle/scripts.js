@@ -1972,53 +1972,53 @@ function loaded() {
 // Set function to be invoked after app is loaded and rendered
 onload = loaded;
 
-function wsOpened(event) {
-    console.log(`socket opened`);
+function webSocketOpened(event) {
+    console.log(`web socket opened`);
 }
 
-function wsErred(event) {
-    console.log(`socket erred`);
+function webSocketErred(event) {
+    console.log(`web socket erred`);
 }
 
-function wsMessaged(event) {
+function webSocketMessaged(event) {
     const msg = event.data.toString();
     if (msg != 'pong')
-        console.log(`socket rxed '${msg}'`);
+        console.log(`web socket received '${msg}'`);
 }
 
-function wsClosed(event) {
-    console.log(`socket closed (${event.code})`);
+function webSocketClosed(event) {
+    console.log(`web socket closed (${event.code})`);
 }
 
-let socket = null;
-function wsOpen() {
+let webSocket = null;
+function webSocketOpen() {
     if (document.location.hostname == "localhost")
-        socket = new WebSocket("ws://localhost:3000");
+        webSocket = new WebSocket("ws://localhost:3000");
     else    
-        socket = new WebSocket(`wss://${document.location.hostname}/ws`);
-    socket.onopen = wsOpened;
-    socket.onerror = wsErred;
-    socket.onmessage = wsMessaged;
-    socket.onclose = wsClosed;
-    console.log(`socket opening...`);
+        webSocket = new WebSocket(`wss://${document.location.hostname}/ws`);
+    webSocket.onopen = webSocketOpened;
+    webSocket.onerror = webSocketErred;
+    webSocket.onmessage = webSocketMessaged;
+    webSocket.onclose = webSocketClosed;
+    console.log(`web socket opening...`);
 }
 
-function wsTick() {
-    if (socket.readyState == WebSocket.CONNECTING)
-        console.log(`socket connecting...`);
-    else if (socket.readyState == WebSocket.OPEN)
-        socket.send(`ping`);
-    else if (socket.readyState == WebSocket.CLOSING)
-        console.log(`socket closing...`);
-    else if (socket.readyState == WebSocket.CLOSED)
-        wsOpen();
+function webSocketTick() {
+    if (webSocket.readyState == WebSocket.CONNECTING)
+        console.log(`web socket connecting...`);
+    else if (webSocket.readyState == WebSocket.OPEN)
+        webSocket.send(`ping`);
+    else if (webSocket.readyState == WebSocket.CLOSING)
+        console.log(`web socket closing...`);
+    else if (webSocket.readyState == WebSocket.CLOSED)
+        webSocketOpen();
     else
-        console.log(`socket in unknown state (${socket.readyState})`);
+        console.log(`web socket in unknown state (${webSocket.readyState})`);
 }
 
 if (document.location.hostname) {
-    wsOpen();
-    setInterval(wsTick, 10000);
+    webSocketOpen();
+    setInterval(webSocketTick, 10000);
 }
 
 /*
