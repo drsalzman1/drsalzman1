@@ -1993,9 +1993,9 @@ function webSocketClosed(event) {
 let webSocket = null;
 function webSocketOpen() {
     if (document.location.hostname == "localhost")
-        webSocket = new WebSocket("ws://localhost:3000");
+        webSocket = new WebSocket("ws://localhost:3000/ws/2");
     else    
-        webSocket = new WebSocket(`wss://${document.location.hostname}/ws`);
+        webSocket = new WebSocket(`wss://${document.location.hostname}/ws/2`);
     webSocket.onopen = webSocketOpened;
     webSocket.onerror = webSocketErred;
     webSocket.onmessage = webSocketMessaged;
