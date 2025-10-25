@@ -34,7 +34,7 @@ function logClients() {
     console.log(msg);
 }
 
-function webSocketServerConnected(webSocket) {
+function webSocketServerConnected(webSocket, req) {
     function webSocketMessaged(buffer) {
         const msg = buffer.toString();
         if (msg == "ping")
@@ -55,7 +55,7 @@ function webSocketServerConnected(webSocket) {
 
     const id = Math.round(performance.now());
     clients.push({id:id, webSocket:webSocket});
-    console.log(`web socket ${id} opened`);
+    console.log(`web socket ${id} opened with url:${req.url}`);
     webSocket.send(`you are using web socket ${id}`)
     console.log(`web socket ${id} sent 'you are client ${id}'`)
     logClients();
