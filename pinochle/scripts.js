@@ -1972,15 +1972,37 @@ function loaded() {
 // Set function to be invoked after app is loaded and rendered
 onload = loaded;
 
-// id is the identity of the websocket client (or none)
-let id = none;
+const normalClosure = 1000;         // first known error code
+const tlsHandshake = 1015;          // last known error code
+const errorReason = [               // errorReason[errorCode-normalClosure] is the reason for errorCode
+    'Normal Closure', 
+    'Going Away', 
+    'Protocol error', 
+    'Unsupported Data', 
+    'Reserved', 
+    'No Status Received', 
+    'Abnormal Closure', 
+    'Invalid frame payload data', 
+    'Policy Violation', 
+    'Message Too Big', 
+    'Mandatory Ext.', 
+    'Internal Error', 
+    'Service Restart', 
+    'Try Again Later', 
+    'Bad Gateway', 
+    'TLS handshake'];
+let id = none;                      // id is the identity of the websocket client (or none)
+let websocket = null;               // websocket is the websocket object
 
-// websocket is the websocket object
-let websocket = null;
-
-// Handle websocket's close event
-function wsClose(event) {
-    console.log(`websocket closed`);
+// Handle websocket's close event's closeEvent
+function wsClose(closeEvent) {
+    let reason = closeEvent.reason;
+    if (reason == "")
+        if (closeEvent.code<normalClosure || closeEvent.code>tlsHandshake)
+            reason = closeEvent.code.toString();
+        else
+            reason = errorReason[closeEvent.code - normalClosure];
+    console.log(`websocket closed ${closeEvent.wasClean?'cleanly':'uncleanly'} due to ${reason}`);
 }
 
 // Handle websocket's error event's event
@@ -1989,8 +2011,8 @@ function wsError(event) {
 }
 
 // Handle websocket's message event's event
-function wsMessage(event) {
-    const msg = JSON.parse(event.data);
+function wsMessage(messageEvent) {
+    const msg = JSON.parse(messageEvent.data);
     switch (msg.op) {
         case "pong":
             break;
@@ -2018,12 +2040,12 @@ function wsConnect() {
     websocket.onerror = wsError;
     websocket.onmessage = wsMessage;
     websocket.onclose = wsClose;
-    console.log(`websocket connecting...`);
+    console.log(`websocket opening...`);
 }
 
 function wsTick() {
     if (websocket.readyState == WebSocket.CONNECTING)
-        console.log(`websocket connecting...`);
+        console.log(`websocket opening...`);
     else if (websocket.readyState == WebSocket.OPEN)
         websocket.send(`{"op":"ping", "id":"${id}"}`);
     else if (websocket.readyState == WebSocket.CLOSING)

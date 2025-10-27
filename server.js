@@ -39,6 +39,27 @@ hs.listen(hsPort, hsListening);
 
 // websocket port
 const wsPort = 3000;
+const normalClosure = 1000;
+const tlsHandshake = 1015;
+const errorReason = [
+    'Normal Closure', 
+    'Going Away', 
+    'Protocol error', 
+    'Unsupported Data', 
+    'Reserved', 
+    'No Status Received', 
+    'Abnormal Closure', 
+    'Invalid frame payload data', 
+    'Policy Violation', 
+    'Message Too Big', 
+    'Mandatory Ext.', 
+    'Internal Error', 
+    'Service Restart', 
+    'Try Again Later', 
+    'Bad Gateway', 
+    'TLS handshake'
+];
+
 
 // websocketList[id] is the websocket for websocket id
 const websocketList = [];
@@ -65,9 +86,14 @@ function wsConnection(websocket, request) {
     }
 
     // Handle websocket id's close event's code and reason
-    function close(code, reason) {
+    function close(code, reason="") {
+        if (reason == "")
+            if (code<normalClosure || code>tlsHandshake)
+                reason = code.toString();
+            else
+                reason = errorReason[code - normalClosure];
         websocketList[id] = null;                                               // clear this websocket from list
-        logList(`websocket ${id} closed with code '${code}'`);
+        logList(`websocket ${id} closed due to ${reason}`);
     }
 
     // Handle websocket id's error event's error.code
@@ -82,7 +108,7 @@ function wsConnection(websocket, request) {
         if (msg.id!= id)                                                        // if wrong id, log error
             console.error(`message id ${msg.id} != websocket id ${id}`);
         if (websocketList[id] != websocket)
-            console.error(`websocket ${id} rxed '${msg}' with websocketList[${id}==${websocketList[id]}`);
+            console.error(`websocket ${id} rxed '${msg}' with websocketList[${id}]==${websocketList[id]}`);
         if (msg.op == "ping")                                                   // if op is ping, send pong
             websocket.send(`{"op":"pong", "id":"${id}"}`);
         else                                                                    // otherwise, log msg and isBinary
