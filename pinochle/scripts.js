@@ -2025,7 +2025,7 @@ function wsTick() {
     if (websocket.readyState == WebSocket.CONNECTING)
         console.log(`websocket connecting...`);
     else if (websocket.readyState == WebSocket.OPEN)
-        websocket.send(`{"op":"ping"}`);
+        websocket.send(`{"op":"ping", "id":"${id}"}`);
     else if (websocket.readyState == WebSocket.CLOSING)
         console.log(`websocket closing...`);
     else if (websocket.readyState == WebSocket.CLOSED)

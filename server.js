@@ -79,8 +79,10 @@ function wsConnection(websocket, request) {
     function message(data, isBinary) {
         let msg = data.toString();                                              // convert buffer to string
         msg = JSON.parse(data);                                                 // parse msg from data
-        if (msg.id && msg.id!= id)                                              // if wrong id, log error
+        if (msg.id!= id)                                                        // if wrong id, log error
             console.error(`message id ${msg.id} != websocket id ${id}`);
+        if (websocketList[id] != websocket)
+            console.error(`websocket ${id} rxed '${msg}' with websocketList[${id}==${websocketList[id]}`);
         if (msg.op == "ping")                                                   // if op is ping, send pong
             websocket.send(`{"op":"pong", "id":"${id}"}`);
         else                                                                    // otherwise, log msg and isBinary
