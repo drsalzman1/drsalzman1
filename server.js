@@ -86,14 +86,18 @@ function wsConnection(websocket, request) {
     }
 
     // Handle websocket id's close event's code and reason
-    function close(code, reason="") {
-        if (reason == "")
+    function close(code, reason) {
+        text = reason.toString();
+        if (text == "")
             if (code<normalClosure || code>tlsHandshake)
-                reason = code.toString();
+                text = code.toString();
             else
-                reason = errorReason[code - normalClosure];
+                text = errorReason[code - normalClosure];
+        logList(`websocket ${id} closed due to '${text}'`);
+        console.log(`websocket ${id} readyState is now ${websocket.readyState}`);
+        websocket.terminate();
+        console.log(`websocket ${id} terminated -- readyState is now ${websocket.readyState}`);
         websocketList[id] = null;                                               // clear this websocket from list
-        logList(`websocket ${id} closed due to ${reason}`);
     }
 
     // Handle websocket id's error event's error.code

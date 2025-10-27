@@ -1996,13 +1996,13 @@ let websocket = null;               // websocket is the websocket object
 
 // Handle websocket's close event's closeEvent
 function wsClose(closeEvent) {
-    let reason = closeEvent.reason;
-    if (reason == "")
+    let text = closeEvent.reason;
+    if (text == "")
         if (closeEvent.code<normalClosure || closeEvent.code>tlsHandshake)
-            reason = closeEvent.code.toString();
+            text = closeEvent.code.toString();
         else
-            reason = errorReason[closeEvent.code - normalClosure];
-    console.log(`websocket closed ${closeEvent.wasClean?'cleanly':'uncleanly'} due to ${reason}`);
+            text = errorReason[closeEvent.code - normalClosure];
+    console.log(`websocket closed ${closeEvent.wasClean?'cleanly':'uncleanly'} due to ${text}`);
 }
 
 // Handle websocket's error event's event
