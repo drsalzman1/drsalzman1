@@ -87,7 +87,7 @@ function wsConnection(websocket, request) {
 
     // Handle websocket id's close event's code and reason
     function close(code, reason) {
-        text = reason.toString();
+        let text = reason.toString();
         if (text == "")
             if (code<normalClosure || code>tlsHandshake)
                 text = code.toString();
