@@ -81,6 +81,7 @@ function wsConnection(websocket, request) {
             else
                 text = errorReason[code - normalClosure];
         console.log(`websocket ${id} closed due to '${text}'`);
+        websocketList[id] = null;
     }
 
     // Handle websocket id's error event's error.code
@@ -130,13 +131,7 @@ function wsConnection(websocket, request) {
         console.log(`websocket ${id} upgraded with response '${response}'`);
     }
 
-    // Handle the websocket server's connection event's websocket and request where request.url should be `/${id}`
-    /*
-    let id = Number.parseInt(request.url.substring(1));                         // get id from request (-1 if TBD)
-    if (id<0 || id>websocketList.length)                                        // if id is invalid, id is next valid id
-        id = websocketList.length;
-    websocket.id = id;
-    */
+    // Handle the websocket server's connection event's websocket and request
     let id = websocketList.length;
     websocketList[id] = websocket;                                              // assign this websocket to this id
     websocket.on('close', close);
