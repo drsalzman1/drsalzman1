@@ -1972,9 +1972,9 @@ function loaded() {
 // Set function to be invoked after app is loaded and rendered
 onload = loaded;
 
-const normalClosure = 1000;         // first known error code
-const tlsHandshake = 1015;          // last known error code
-const errorReason = [               // errorReason[errorCode-normalClosure] is the reason for errorCode
+const normalClosure = 1000;                                     // first known error code
+const tlsHandshake = 1015;                                      // last known error code
+const closeReason = [                                           // close reasons
     'Normal Closure', 
     'Going Away', 
     'Protocol error', 
@@ -1991,76 +1991,89 @@ const errorReason = [               // errorReason[errorCode-normalClosure] is t
     'Try Again Later', 
     'Bad Gateway', 
     'TLS handshake'];
-let id = none;                      // id is the identity of the websocket client (or none)
-let websocket = null;               // websocket is the websocket object
+let wx = none;                                                  // websocket index (or none)
+let websocket = null;                                           // websocket object
 
-// Handle websocket's close event's closeEvent
+// Handle the websocket's close event
 function wsClose(closeEvent) {
-    let text = closeEvent.reason;
-    if (text == "")
-        if (closeEvent.code<normalClosure || closeEvent.code>tlsHandshake)
-            text = closeEvent.code.toString();
-        else
-            text = errorReason[closeEvent.code - normalClosure];
-    console.log(`websocket closed ${closeEvent.wasClean?'cleanly':'uncleanly'} due to '${text}'`);
+    const code = closeEvent.code;                               // recall close code
+    let reason = code.toString();                               // translate close code to close reason
+    if (code>=normalClosure && code<=tlsHandshake)
+        reason = errorReason[code - normalClosure];
+    console.log(`websocket closed ${closeEvent.wasClean?'cleanly':'uncleanly'} due to '${reason}'`);
 }
 
-// Handle websocket's error event's event
-function wsError(event) {
+// Handle the websocket's error event
+function wsError() {
     console.log(`websocket erred`);
 }
 
-// Handle websocket's message event's event
+// Handle the websocket's message event
 function wsMessage(messageEvent) {
-    const msg = JSON.parse(messageEvent.data);
+    const msg = JSON.parse(messageEvent.data);                  // parse the message
     switch (msg.op) {
-        case "pong":
-            if (msg.id != id)
-                console.log(`websocket received websocket ${id}'s pong`);
+        case "pong":                                            // if pong, check for mismatch
+            if (msg.wx != wx)
+                console.log(`websocket received websocket ${wx}'s pong`);
             break;
-        case "assign":
-            id = msg.id;
-            console.log(`websocket id is ${id}`);
+        case "assign":                                          // if assign, record new(?) websocket index
+            wx = msg.wx;
+            console.log(`websocket index is now ${wx}`);
             break;
-        default:
+        default:                                                // if unrecognized, log message
             console.log(`websocket received '${msg}'`);
     }
 }
 
+// Handle the websocket's open event
 function wsOpen(event) {
     console.log(`websocket opened`);
 }
 
+// Connect to my websocket server
 function wsConnect() {
     let url = "";
     if (document.location.hostname == "localhost")
         url = `ws://localhost:3000`;
     else
         url = `wss://${document.location.hostname}/ws`;
-    websocket = new WebSocket(url);
-    websocket.onopen = wsOpen;
+    websocket = new WebSocket(url);                             // create websocket for my server
+    websocket.onopen = wsOpen;                                  // prepare for call backs
     websocket.onerror = wsError;
     websocket.onmessage = wsMessage;
     websocket.onclose = wsClose;
     console.log(`websocket opening...`);
 }
 
+// Handle setInterval callback
 function wsTick() {
-    if (websocket.readyState == WebSocket.CONNECTING)
-        console.log(`websocket opening...`);
-    else if (websocket.readyState == WebSocket.OPEN)
-        websocket.send(`{"op":"ping", "id":"${id}"}`);
-    else if (websocket.readyState == WebSocket.CLOSING)
-        console.log(`websocket closing...`);
-    else if (websocket.readyState == WebSocket.CLOSED)
-        wsConnect();
-    else
-        console.log(`websocket in unknown state (${websocket.readyState})`);
+    switch (websocket.readyState) {
+        case WebSocket.CONNECTING:                              // if websocket connecting, log state
+            console.log(`websocket opening...`);
+            break;
+        case WebSocket.OPEN:                                    // if websocket open, ping server
+            websocket.send(`{"op":"ping", "wx":"${wx}"}`);
+            break;
+        case WebSocket.CLOSING:                                 // if websocket closing, log state
+            console.log(`websocket closing...`);
+            break;
+        case WebSocket.CLOSED:                                  // if websocket closed, free memory and try to reconnect
+            websocket.onopen = null;
+            websocket.onerror = null;
+            websocket.onmessage = null;
+            websocket.onclose = null;
+            websocket = null;
+            wsConnect();
+            break;
+        default:                                                // if websocket in unknown state, log state
+            console.log(`websocket in unknown state '${websocket.readyState}'`);
+    }
 }
 
+// Initialize websocket if server exists
 if (document.location.hostname) {
-    wsConnect();
-    setInterval(wsTick, 10000);
+    wsConnect();                                                // connect to websocket server
+    setInterval(wsTick, 10000);                                 // prepare to ping and, if neccessary, reconnect
 }
 
 /*

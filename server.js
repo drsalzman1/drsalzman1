@@ -8,11 +8,10 @@ import { WebSocketServer } from 'ws';
 
 const hsPort = 8080;
 
-// Handle http server's request event's request and response
+// Handle the http server's request event
 function hsRequest(request, response) {
-
-    // Handle readFile's callback's error and content
-    function readFileCallback(error, content) {
+    const filePath = join(import.meta.dirname, request.url=='/'?'index.html':request.url);
+    readFile(filePath, (error, content) => {
         if (error) {
             response.writeHead(404, {'Content-Type': 'text/html'});
             response.end();
@@ -20,13 +19,10 @@ function hsRequest(request, response) {
             response.writeHead(200, {'Content-Type': lookup(filePath)});
             response.end(content, 'utf-8');
         }
-    }
-
-    // Handle http server's request event's request and response
-    const filePath = join(import.meta.dirname, request.url=='/'?'index.html':request.url);
-    readFile(filePath, readFileCallback);
+    });
 }
 
+// Handle the http server's listening event
 function hsListening() {
     console.log(`http server listening to port ${hsPort}`);
 }
@@ -41,7 +37,7 @@ hs.listen(hsPort, hsListening);
 const wssPort = 3000;
 const normalClosure = 1000;
 const tlsHandshake = 1015;
-const errorReason = [
+const closeReason = [
     'Normal Closure', 
     'Going Away', 
     'Protocol error', 
@@ -60,48 +56,55 @@ const errorReason = [
     'TLS handshake'
 ];
 
-const websocket = [];                                           // websocket[id] is the websocket for websocket id
+const websocket = [];                                           // websocket[wx] is the websocket for websocket wx
 
 // Handle a websocket's close event
 function wsClose(closeEvent) {
     const code = closeEvent.code;                               // recall close code
     const ws = closeEvent.target;                               // recall websocket
-    const id = ws.id;                                           // recall websocket id
-    let reason = code.toString();                               // translate code to reason
+    const wx = ws.wx;                                           // recall websocket index
+    let reason = code.toString();                               // translate close code to close reason
     if (code>=normalClosure && code<=tlsHandshake)
-        reason = errorReason[code - normalClosure];
-    console.log(`websocket ${id} closed due to '${reason}'${websocket[id]==null?" while closed":""}`);
+        reason = closeReason[code - normalClosure];
+    console.log(`websocket ${wx} closed due to '${reason}'${websocket[wx]==null?" while closed":""}`);
     ws.onclose = null;
     ws.onmessage = null;
-    websocket[id] = null;
+    websocket[wx] = null;
 }
 
 // Handle a websocket's message event
 function wsMessage(messageEvent) {
     const msg = JSON.parse(messageEvent.data);                  // parse msg from data
     const ws = messageEvent.target;                             // recall websocket
-    const id = ws.id;                                           // recall websocket id
-    if (websocket[id] == null)
-        console.log(`websocket ${id} rxed message '${msg}' while closed`);
-    if (msg.id != id)                                           // if wrong id, log error
-        console.log(`websocket ${id} rxed message '${msg}'`);
-    if (msg.op == "ping")                                       // if op is ping, send pong
-        ws.send(`{"op":"pong", "id":"${id}"}`);
-    else                                                        // otherwise, log msg and isBinary
-        console.log(`websocket ${id} rxed '${msg}'`);
+    const wx = ws.wx;                                           // recall websocket index
+    if (websocket[wx] == null)                                  // if this websocket is closed, log error
+        console.log(`websocket ${wx} rxed message '${msg}' while closed`);
+    if (msg.wx != wx)                                           // if wrong wx, log error
+        console.log(`websocket ${wx} rxed message '${msg}'`);
+    switch (msg.op) {
+        case "ping":                                            // if op is ping, send pong
+            ws.send(`{"op":"pong", "wx":"${wx}"}`);
+            break;
+        case "create":
+            gp = group.length;
+            group[gp] = [wx];
+            ws.send(`{"op":"pong", "wx":"${wx}"}`)
+        default:                                                // if op is unknown, log msg
+            console.log(`websocket ${wx} rxed '${msg}'`);
+    }
 }
 
 // Handle the websocket server's connection event
 function wssConnection(ws) {
-    let id = 0;                                                 // find first available id (may be at end)
-    while (websocket[id])
-        id++;
-    websocket[id] = ws;                                         // save id's websocket
-    ws.id = id;                                                 // save id
+    let wx = 0;                                                 // find first available websock index (may be at end)
+    while (websocket[wx])
+        wx++;
+    websocket[wx] = ws;                                         // save websocket
+    ws.wx = wx;                                                 // save websock index
     ws.onclose = wsClose;                                       // prepare callbacks
     ws.onmessage = wsMessage;
-    ws.send(`{"op":"assign", "id":"${id}"}`);                   // inform client of their new(?) id
-    console.log(`websocket ${id} assigned`);
+    ws.send(`{"op":"assign", "wx":"${wx}"}`);                   // inform client of their new(?) wx
+    console.log(`websocket ${wx} opened`);
 }
 
 // Handle the websocket server's listening event
