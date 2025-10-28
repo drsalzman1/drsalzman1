@@ -71,7 +71,7 @@ function wsClose(closeEvent) {
     let reason = code.toString();
     if (code>=normalClosure && code<=tlsHandshake)
         reason = errorReason[code - normalClosure];
-    console.log(`websocket ${id} closed due to '${reason}'`);
+    console.log(`websocket ${id} closed due to '${reason}'${websocket[id]==null?" while closed":""}`);
     ws.onclose = null;
     ws.onmessage = null;
     websocket[id] = null;
@@ -82,6 +82,8 @@ function wsMessage(messageEvent) {
     const msg = JSON.parse(messageEvent.data);                  // parse msg from data
     const ws = messageEvent.target;
     const id = ws.id;
+    if (websocket[id] == null)
+        console.log(`websocket ${id} rxed message '${msg}' while closed`);
     if (msg.id != id)                                           // if wrong id, log error
         console.log(`websocket ${id} rxed message '${msg}'`);
     if (msg.op == "ping")                                       // if op is ping, send pong
