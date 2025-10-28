@@ -72,19 +72,6 @@ function wsClose() {
 // Handle the websocket server's connection event's websocket and request
 function wsConnection(websocket, request) {
 
-    // Log the current non-empty websocketList indices
-    function logList(text) {
-        text += " -- the list is now";
-        for (let id = 0; id < websocketList.length; id++)
-            if (websocketList[id] != null && websocketList[id] != undefined)
-                text += " " + id + ",";
-        if (text.endsWith(","))
-            text = text.slice(0, -1);
-        if (text.endsWith("now"))
-            text += " empty";
-        console.log(text);
-    }
-
     // Handle websocket id's close event's code and reason
     function close(code, reason) {
         let text = reason.toString();
@@ -93,11 +80,7 @@ function wsConnection(websocket, request) {
                 text = code.toString();
             else
                 text = errorReason[code - normalClosure];
-        logList(`websocket ${id} closed due to '${text}'`);
-        console.log(`websocket ${id} readyState is now ${websocket.readyState}`);
-        websocket.terminate();
-        console.log(`websocket ${id} terminated -- readyState is now ${websocket.readyState}`);
-        websocketList[id] = null;                                               // clear this websocket from list
+        console.log(`websocket ${id} closed due to '${text}'`);
     }
 
     // Handle websocket id's error event's error.code
@@ -110,13 +93,11 @@ function wsConnection(websocket, request) {
         let msg = data.toString();                                              // convert buffer to string
         msg = JSON.parse(data);                                                 // parse msg from data
         if (msg.id!= id)                                                        // if wrong id, log error
-            console.error(`message id ${msg.id} != websocket id ${id}`);
-        if (websocketList[id] != websocket)
-            console.error(`websocket ${id} rxed '${msg}' with websocketList[${id}]==${websocketList[id]}`);
+            console.log(`websocket ${id} rxed message '${msg}'`);
         if (msg.op == "ping")                                                   // if op is ping, send pong
             websocket.send(`{"op":"pong", "id":"${id}"}`);
         else                                                                    // otherwise, log msg and isBinary
-            console.log(`websocket ${id} rxed '${msg}' with isBinary '${isBinary}'`);
+            console.log(`websocket ${id} rxed '${msg}'`);
     }
 
     // Handle websocket id's open event
@@ -150,14 +131,14 @@ function wsConnection(websocket, request) {
     }
 
     // Handle the websocket server's connection event's websocket and request where request.url should be `/${id}`
+    /*
     let id = Number.parseInt(request.url.substring(1));                         // get id from request (-1 if TBD)
-    if (id < 0)                                                                 // if id < 0, use first unused list index
-        id = websocketList.findIndex((ws)=>{return ws==null||ws==undefined});
-    if (id < 0)                                                                 // if no unused indices, use next index
+    if (id<0 || id>websocketList.length)                                        // if id is invalid, id is next valid id
         id = websocketList.length;
-    websocketList[id] = websocket;                                              // save this websocket in list
-    websocket.send(`{"op":"assign", "id":"${id}"}`);                            // assign id to client for reconnect
-    logList(`websocket ${id} opened`);
+    websocket.id = id;
+    */
+    let id = websocketList.length;
+    websocketList[id] = websocket;                                              // assign this websocket to this id
     websocket.on('close', close);
     websocket.on('error', error);
     websocket.on('message', message);
@@ -167,6 +148,8 @@ function wsConnection(websocket, request) {
     websocket.on('redirect', redirect);
     websocket.on('unexpected-response', unexpectedResponse);
     websocket.on('upgrade', upgraded);
+    websocket.send(`{"op":"assign", "id":"${id}"}`);
+    console.log(`websocket ${id} assigned`);
 }
 
 // Handle websocket server's error event's error.code
@@ -179,7 +162,7 @@ function wsHeaders(headers, request) {
 }
 
 // Handle websocket server's listening event
-function wsListening() {
+function websocketListening() {
     console.log(`websocket server listening to port ${wsPort}`);
 }
 
@@ -194,5 +177,5 @@ ws.on('close', wsClose);
 ws.on('connection', wsConnection);
 ws.on('error', wsError);
 ws.on('headers', wsHeaders);
-ws.on('listening', wsListening);
+ws.on('listening', websocketListening);
 ws.on('wsClientErred', wsClientError);

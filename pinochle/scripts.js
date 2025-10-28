@@ -2015,6 +2015,8 @@ function wsMessage(messageEvent) {
     const msg = JSON.parse(messageEvent.data);
     switch (msg.op) {
         case "pong":
+            if (msg.id != id)
+                console.log(`websocket received websocket ${id}'s pong`);
             break;
         case "assign":
             id = msg.id;
