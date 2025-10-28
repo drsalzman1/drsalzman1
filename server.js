@@ -32,13 +32,13 @@ function hsListening() {
 }
 
 // initialize http server
-const hs = createServer(hsRequest); // adds hsRequest to http server's request event listener
+const hs = createServer(hsRequest);                             // adds hsRequest to http server's request event listener
 hs.listen(hsPort, hsListening);
 
 //--------------------- websocket server -----------------------
 
-// websocket port
-const wsPort = 3000;
+// websocket server port
+const wssPort = 3000;
 const normalClosure = 1000;
 const tlsHandshake = 1015;
 const errorReason = [
@@ -61,116 +61,52 @@ const errorReason = [
 ];
 
 
-// websocketList[id] is the websocket for websocket id
-const websocketList = [];
+const websocket = [];                                           // websocket[id] is the websocket for websocket id
 
-// Handle websocket server's close event
-function wsClose() {
-    console.log(`websocket server closed`);
+// Handle a websocket's close event
+function wsClose(closeEvent) {
+    const code = closeEvent.code;
+    const ws = closeEvent.target;
+    const id = ws.id;
+    let reason = code.toString();
+    if (code>=normalClosure && code<=tlsHandshake)
+        reason = errorReason[code - normalClosure];
+    console.log(`websocket ${id} closed due to '${reason}'`);
+    ws.onclose = null;
+    ws.onmessage = null;
+    websocket[id] = null;
 }
 
-// Handle the websocket server's connection event's websocket and request
-function wsConnection(websocket, request) {
+// Handle a websocket's message event
+function wsMessage(messageEvent) {
+    const msg = JSON.parse(messageEvent.data);                  // parse msg from data
+    const ws = messageEvent.target;
+    const id = ws.id;
+    if (msg.id != id)                                           // if wrong id, log error
+        console.log(`websocket ${id} rxed message '${msg}'`);
+    if (msg.op == "ping")                                       // if op is ping, send pong
+        ws.send(`{"op":"pong", "id":"${id}"}`);
+    else                                                        // otherwise, log msg and isBinary
+        console.log(`websocket ${id} rxed '${msg}'`);
+}
 
-    // Handle websocket id's close event's code and reason
-    function close(code, reason) {
-        let text = reason.toString();
-        if (text == "")
-            if (code<normalClosure || code>tlsHandshake)
-                text = code.toString();
-            else
-                text = errorReason[code - normalClosure];
-        console.log(`websocket ${id} closed due to '${text}'`);
-        websocketList[id] = null;
-    }
-
-    // Handle websocket id's error event's error.code
-    function error(error) {
-        console.log(`websocket ${id} erred with error.code '${error.code}'`);
-    }
-
-    // Handle websocket id's message event's data and isBinary
-    function message(data, isBinary) {
-        let msg = data.toString();                                              // convert buffer to string
-        msg = JSON.parse(data);                                                 // parse msg from data
-        if (msg.id!= id)                                                        // if wrong id, log error
-            console.log(`websocket ${id} rxed message '${msg}'`);
-        if (msg.op == "ping")                                                   // if op is ping, send pong
-            websocket.send(`{"op":"pong", "id":"${id}"}`);
-        else                                                                    // otherwise, log msg and isBinary
-            console.log(`websocket ${id} rxed '${msg}'`);
-    }
-
-    // Handle websocket id's open event
-    function open() {
-        console.log(`websocket ${id} opened`);
-    }
-
-    // Handle websocket id's ping event's buffer
-    function ping(buffer) {
-        console.log(`websocket ${id} pinged with buffer '${buffer}'`);
-    }
-
-    // Handle websocket id's pong event's buffer
-    function pong(buffer) {
-        console.log(`websocket ${id} ponged with buffer '${buffer}'`);
-    }
-
-    // Handle websocket id's redirect event's url and request
-    function redirect(url, request) {
-        console.log(`websocket ${id} redirected with url '${url}' and request '${request}'`);
-    }
-
-    // Handle websocket id's unexpected-response event's response to request
-    function unexpectedResponse(request, response) {
-        console.log(`websocket ${id} received an unexpected response '${response}' to request '${request}'`);
-    }
-
-    // Handle websocket id's upgraded event's response
-    function upgraded(response) {
-        console.log(`websocket ${id} upgraded with response '${response}'`);
-    }
-
-    // Handle the websocket server's connection event's websocket and request
-    let id = websocketList.length;
-    websocketList[id] = websocket;                                              // assign this websocket to this id
-    websocket.on('close', close);
-    websocket.on('error', error);
-    websocket.on('message', message);
-    websocket.on('open', open);
-    websocket.on('ping', ping);
-    websocket.on('pong', pong);
-    websocket.on('redirect', redirect);
-    websocket.on('unexpected-response', unexpectedResponse);
-    websocket.on('upgrade', upgraded);
-    websocket.send(`{"op":"assign", "id":"${id}"}`);
+// Handle the websocket server's connection event
+function wssConnection(ws, req) {
+    let id = websocket.length;
+    websocket[id] = ws;                                         // assign this websocket to this id
+    ws.id = id;
+    ws.onclose = wsClose;
+    ws.onmessage = wsMessage;
+    ws.send(`{"op":"assign", "id":"${id}"}`);
     console.log(`websocket ${id} assigned`);
 }
 
-// Handle websocket server's error event's error.code
-function wsError(error) {
-    console.log(`websocket server error.code '${error.code}'`);
-}
-
-// Handle websocket server's headers event's headers and request
-function wsHeaders(headers, request) {
-}
-
-// Handle websocket server's listening event
-function websocketListening() {
-    console.log(`websocket server listening to port ${wsPort}`);
-}
-
-// Handle websocket wsClientError's listening event's error, socket and request
-function wsClientError(error, socket, request) {
-    console.log(`websocket server wsClientError with error.code '${error.code}, socket '${socket}', request '${request}'`);
+// Handle the websocket server's listening event
+function wssListening() {
+    console.log(`websocket server listening to port ${wssPort}`);
 }
 
 // Initialize websocket server
-const ws = new WebSocketServer({port:wsPort});
-ws.on('close', wsClose);
-ws.on('connection', wsConnection);
-ws.on('error', wsError);
-ws.on('headers', wsHeaders);
-ws.on('listening', websocketListening);
-ws.on('wsClientErred', wsClientError);
+const wss = new WebSocketServer({port:wssPort});
+wss.on('connection', wssConnection);
+wss.on('listening', wssListening);

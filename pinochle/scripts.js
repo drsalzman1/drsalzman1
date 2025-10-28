@@ -2002,7 +2002,7 @@ function wsClose(closeEvent) {
             text = closeEvent.code.toString();
         else
             text = errorReason[closeEvent.code - normalClosure];
-    console.log(`websocket closed ${closeEvent.wasClean?'cleanly':'uncleanly'} due to ${text}`);
+    console.log(`websocket closed ${closeEvent.wasClean?'cleanly':'uncleanly'} due to '${text}'`);
 }
 
 // Handle websocket's error event's event
@@ -2034,9 +2034,9 @@ function wsOpen(event) {
 function wsConnect() {
     let url = "";
     if (document.location.hostname == "localhost")
-        url = `ws://localhost:3000/${id}`;
+        url = `ws://localhost:3000`;
     else
-        url = `wss://${document.location.hostname}/ws/${id}`;
+        url = `wss://${document.location.hostname}/ws`;
     websocket = new WebSocket(url);
     websocket.onopen = wsOpen;
     websocket.onerror = wsError;
