@@ -32,7 +32,7 @@ function hsListening() {
 }
 
 // initialize http server
-const hs = createServer(hsRequest);                             // adds hsRequest to http server's request event listener
+const hs = createServer(hsRequest);
 hs.listen(hsPort, hsListening);
 
 //--------------------- websocket server -----------------------
@@ -60,15 +60,14 @@ const errorReason = [
     'TLS handshake'
 ];
 
-
 const websocket = [];                                           // websocket[id] is the websocket for websocket id
 
 // Handle a websocket's close event
 function wsClose(closeEvent) {
-    const code = closeEvent.code;
-    const ws = closeEvent.target;
-    const id = ws.id;
-    let reason = code.toString();
+    const code = closeEvent.code;                               // recall close code
+    const ws = closeEvent.target;                               // recall websocket
+    const id = ws.id;                                           // recall websocket id
+    let reason = code.toString();                               // translate code to reason
     if (code>=normalClosure && code<=tlsHandshake)
         reason = errorReason[code - normalClosure];
     console.log(`websocket ${id} closed due to '${reason}'${websocket[id]==null?" while closed":""}`);
@@ -80,8 +79,8 @@ function wsClose(closeEvent) {
 // Handle a websocket's message event
 function wsMessage(messageEvent) {
     const msg = JSON.parse(messageEvent.data);                  // parse msg from data
-    const ws = messageEvent.target;
-    const id = ws.id;
+    const ws = messageEvent.target;                             // recall websocket
+    const id = ws.id;                                           // recall websocket id
     if (websocket[id] == null)
         console.log(`websocket ${id} rxed message '${msg}' while closed`);
     if (msg.id != id)                                           // if wrong id, log error
@@ -93,13 +92,15 @@ function wsMessage(messageEvent) {
 }
 
 // Handle the websocket server's connection event
-function wssConnection(ws, req) {
-    let id = websocket.length;
-    websocket[id] = ws;                                         // assign this websocket to this id
-    ws.id = id;
-    ws.onclose = wsClose;
+function wssConnection(ws) {
+    let id = 0;                                                 // find first available id (may be at end)
+    while (websocket[id])
+        id++;
+    websocket[id] = ws;                                         // save id's websocket
+    ws.id = id;                                                 // save id
+    ws.onclose = wsClose;                                       // prepare callbacks
     ws.onmessage = wsMessage;
-    ws.send(`{"op":"assign", "id":"${id}"}`);
+    ws.send(`{"op":"assign", "id":"${id}"}`);                   // inform client of their new(?) id
     console.log(`websocket ${id} assigned`);
 }
 
