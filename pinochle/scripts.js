@@ -2011,7 +2011,7 @@ function wsMessage(messageEvent) {
     const message = JSON.parse(messageEvent.data);              // parse the message
     switch (message.op) {
         case "pong":                                            // if op:"pong",
-            //console.log(`websocket ponged`);                      // ignore
+            console.log(`websocket ponged`);                        // ignore
             break;
         case "id":                                              // if op:"id", id:id,
             console.log(`websocket received id ${message.id}`); // log new id
