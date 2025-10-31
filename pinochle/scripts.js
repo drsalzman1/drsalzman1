@@ -1977,6 +1977,10 @@ let wsIntervalID = null;                                        // websocket int
 
 // Handle websocket connect calls and websocket reconnect timer
 function wsConnect() {
+    if (!navigator.onLine) {                                    // if client is offline,
+        console.log(`websocket is offline`);                        // try again in a second
+        return;
+    }
     let url = "";
     if (document.location.hostname == "localhost")
         url = `ws://localhost:3000`;
