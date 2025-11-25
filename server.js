@@ -31,170 +31,117 @@ function hsListening() {
 const hs = createServer(hsRequest);
 hs.listen(hsPort, hsListening);
 
-// Websocket server
+// ------------------------------------Websocket server---------------------------------------
 //
-// Message:                                         Reply:                                              Members:
-//     (connect)                                        op:"id", id:id
-//     (close)                                          (none)                                              group reply
-//     op:"ping"                                        op:"pong" 
-//     op:"groups"                                      op:"groups", app:[""], group:[""], expire:[Date]
-//     op:"group", gx:gx                                op:"group", gx:gx, member:[""] 
-//     op:"create", app:"", group:"", expire:Date       op:"gx", gx:gx
-//     op:"delete", gx:gx                               op:"delete", gx:gx                                  delete reply
-//     op:"join", gx:gx, member:""                      op:"group", gx:gx, member:[""]                      group reply
-//     op:"leave", gx:gx                                (none)                                              group reply
-//     op:"update", gx:gx, json:""                      op:"json", gx:gx, json:""                           json reply
-//     op:"recall", gx:gx                               op:"json", gx:gx, json:""
+//  From Sender                     To Sender                       To Affected Players
+//  ===========                     =========                       ===================
+//  (connect)                       (none)                          (none)
+//  op:"ping"                       op:"pong"                       (none)
+//  (close)                         (none)                          op:"offline", player:p$
+//  op:"login", player:p$           (none)                          op:"online", player:p$
+//  op:"open", game:g$, data:d$     (none)                          (none)
+//  op:"join", game:g$              (none)                          op:"online", player:p$
+//  op:"put", game:g$, data:d$      op:"data", game:g$, data:d$     op:"data", game:g$, data:d$
+//  op:"get", game:g$               op:"data", game:g$, data:d$     (none)
+//  op:"inplay"                     op:"inplay", inplay:i$          (none)
+//
+//  Opener: connect, login, open, [online], [put/get]
+//  Joiner: connect, login, inplay, join, [online], [put/get]
 
-const wsPort = 3000;    // websocket server port = 3000
-let id = 0;             // websocket identifier increments with each new websocket connection
-const group = [];       // group[gx] = {app:"", group:"", expire:Date, member:[""], websocket:[websocket], json:""}
+const wsPort = 3000;    // websocket server port
+const online = {};      // online players and their websockets      {p1:ws, ...}
+const inplay = {};      // inplay games, players, and data          {g1:{player:[p$], data:d$}, ...}
 
 // Handle a websocket server's connection event
-function wsConnect(websocket) {
-    websocket.id = id;                                          // save websocket id
-    websocket.onclose = wsClose;                                // prepare callbacks
-    websocket.onmessage = wsMessage;
-    websocket.send(JSON.stringify({                             // send id message to connector
-        op:"id",
-        id:id
-    }));
-    console.log(`websocket ${id} opened`);
-    id++;                                                       // increment websocket id
+function wsConnect(ws) {
+    ws.onclose = wsClose;                                       // prepare callbacks
+    ws.onmessage = wsMessage;
+    console.log(`undefined opened a websocket`);
 }
 
 // Handle a websocket's close event
 function wsClose(closeEvent) {
-    const websocket = closeEvent.target;                        // recall this websocket
-    const id = websocket.id;                                    // recall this websocket id
-    for (let gx = 0; gx < group.length; gx++)                   // for each member of each group,
-    for (let mx = 0; mx < group[gx].member.length; mx++)
-        if (group[gx].websocket[mx] == websocket) {                 // if their websocket is this websocket,
-            group[gx].websocket[mx] = null;                             // leave a hole in place of their websocket
-            for (let websocket of group[gx].websocket)                  // send group reply to remaining members
-                if (websocket)
-                    websocket.send(JSON.stringify({
-                        op:"group", 
-                        gx:gx, 
-                        member:group[gx].member
-                    }));
-            break;
-        }
-    console.log(`websocket ${id} closed with code '${closeEvent.code}'`);
+    const ws = closeEvent.target;                               // recall this websocket
+    const p$ = Object.keys(online).find(p$=>online[p$]==ws);    // find player, if any, assigned to this websocket
+    if (p$) {                                                   // if player found,
+        delete online[p$];                                          // delete player from online list
+        for (const g$ in inplay)                                    // send "offline" reply to affected players
+            if (inplay[g$].player.includes(p$))
+                for (const a$ of inplay[g$].player)
+                    if (online[a$])
+                        online[a$].send(JSON.stringify({
+                            op: "offline",
+                            player: p$
+                        }));
+    }
+    console.log(`${p$} closed their websocket`);
 }
 
 // Handle a websocket's message event
 function wsMessage(messageEvent) {
-    const message = JSON.parse(messageEvent.data);              // parse message from message event
-    const websocket = messageEvent.target;                      // recall this websocket
-    const id = websocket.id;                                    // recall this websocket id
-    let gx = message.gx;                                        // extract group index, if any, from message
-    let mx = 0;                                                 // define member index
-    switch (message.op) {
+    const ws = messageEvent.target;                             // recall sender's websocket
+    const msg = JSON.parse(messageEvent.data);                  // parse message from message event data
+    const p$ = Object.keys(online).find(p$=>online[p$]==ws);    // find player, if any, assigned to this websocket
+    switch (msg.op) {
         case "ping":                                            // if op:"ping",
-            websocket.send(JSON.stringify({                         // send pong reply to sender
-                op:"pong"
+            ws.send(JSON.stringify({                                // send "pong" reply to sender
+                op: "pong",
             }));
-            //console.log(`websocket ${id} requested pong`);
+            console.log(`${p$} requested a pong`);
             break;
-        case "groups":                                          // if op:"groups",
-            websocket.send(JSON.stringify({                         // send groups reply to sender
-                op:"groups",
-                app:group.app,
-                group:group.group,
-                expire:group.expire
-            }));
-            console.log(`websocket ${id} requested groups`);
+        case "login":                                           // if op:"login", player:p$,
+            for (const g$ in inplay)                                // send "online" message to affected players
+                if (inplay[g$].player.includes(msg.player))
+                    for (const a$ of inplay[g$].player)
+                        if (online[a$])
+                            online[a$].send(JSON.stringify({
+                                op: "online",
+                                player: msg.player
+                            }));
+            online[msg.player] = ws;                                // assign player to this websocket
+            console.log(`${msg.player} logged in`);
             break;
-        case "group":                                           // if op:"group", gx:gx,
-            websocket.send(JSON.stringify({                         // send group reply to sender
-                op:"group",
-                gx:gx,
-                member:group[gx].member
-            }));
-            console.log(`websocket ${id} requested group ${gx}`);
+        case "open":                                            // if op:"open", game:g$, data:d$
+            inplay[msg.game] = {player:[p$], data:msg.data};        // create or replace inplay object
+            console.log(`${p$} opened game ${msg.game}`);
             break;
-        case "create":                                          // if op:"create", app:"", group:"", expire:Date,
-            gx = 0;                                                 // find first available group index (may be at end)
-            while (group[gx] && Date.now()<group[gx].expire)
-                gx++;
-            group[gx] = {                                           // replace (or add) group record
-                app:       message.app, 
-                group:     message.group, 
-                expire:    message.expire,
-                member:    [],
-                websocket: [],
-                json:      ""
-            };
-            websocket.send(JSON.stringify({                         // send gx reply to sender
-                op:"gx", 
-                gx:gx
-            }));
-            console.log(`websocket ${id} created group ${gx}`);
-            break;
-        case "delete":                                          // if op:"delete", gx:gx,
-            for (let websocket of group[gx].websocket)              // send delete reply to members
-                if (websocket)
-                    websocket[id].send(JSON.stringify({
-                        op:"delete",
-                        gx:gx
+        case "join":                                            // if op:"join", game:g$
+            for (const a$ of inplay[msg.game].player)               // send "online" message to affected players
+                if (online[a$])
+                    online[a$].send(JSON.stringify({
+                        op: "online",
+                        player: p$
                     }));
-            group[gx] = null;                                       // delete group record
-            console.log(`websocket ${id} deleted group ${gx}`);
+            inplay[msg.game].player.push(p$);                       // add player to game's player array
+            console.log(`${p$} joined game ${msg.game}`);
             break;
-        case "join":                                            // if op:"join", gx:gx, member:"",
-            mx = 0;                                                 // find first hole (end?) or matching member
-            while (group[gx].member[mx] && group[gx].member[mx]!=message.member)
-                mx++;
-            group[gx].member[mx] = message.member;                  // add member to group
-            group[gx].websocket[mx] = websocket;                    // add websocket to group
-            for (let websocket of group[gx].websocket)              // send group reply to members
-                if (websocket)
-                    websocket.send(JSON.stringify({
-                        op:"group", 
-                        gx:gx, 
-                        member:group[gx].member
+        case "put":                                             // if op:"put", game:g$, data:d$,
+            inplay[msg.game].data = msg.data;                       // save game data
+            for (const a$ of inplay[msg.game].player)               // send "data" message to affected players
+                if (online[a$])
+                    online[a$].send(JSON.stringify({
+                        op: "data",
+                        game: msg.game,
+                        data: inplay[msg.game].data
                     }));
-            console.log(`websocket ${id} joined group ${gx}`);
+            console.log(`${p$} put data to game ${msg.game}`);
             break;
-        case "leave":                                           // if op:"leave", gx:gx
-            mx = 0;                                                 // find end or first matching websocket
-            while (mx<group[gx].websocket.length && group[gx].websocket[mx]!=websocket)
-                mx++;
-            if (mx == group[gx].websocket.length)                   // if at end, quit
-                return;
-            group[gx].member[mx] = null;                            // delete member from group
-            group[gx].websocket[mx] = null;                         // delete websocket from group
-            for (let websocket of group[gx].websocket)              // send group reply to members
-                if (websocket)
-                    websocket.send(JSON.stringify({
-                        op:"group", 
-                        gx:gx, 
-                        member:group[gx].member
-                    }));
-            console.log(`websocket ${id} left group ${gx}`);
-            break;
-        case "update":                                          // if op:"update", gx:gx, json:"",
-            group[gx].json = message.json;                          // save new json
-            for (let websocket of group[gx].websocket)              // send json reply to members
-                if (websocket)
-                    websocket.send(JSON.stringify({
-                        op:"json", 
-                        gx:gx, 
-                        json:group[gx].json
-                    }));
-            console.log(`websocket ${id} updated group ${gx} json`);
-            break;
-        case "recall":                                          // if op:"recall", gx:gx
-            websocket.send(JSON.stringify({                         // send json reply to sender
-                op:"json", 
-                gx:gx, 
-                json:group[gx].json
+        case "get":                                             // if op:"get", game:g$,
+            ws.send(JSON.stringify({                                // send "data" message to sender
+                op: "data",
+                game: msg.game,
+                data: inplay[msg.game].data
             }));
-            console.log(`websocket ${id} recalled group ${gx} json`);
+            console.log(`${p$} got data from game ${msg.game}`);
             break;
-        default:                                                // if op is unrecognized, log message
-            console.log(`websocket ${id} received unrecognized message '${message}'`);
+        case "inplay":                                          // if op:"games",
+            ws.send(JSON.stringify({                                // send "games" message to sender
+                op: "inplay",
+                inplay: JSON.stringify(inplay)
+            }));
+            break;
+        default:                                                // if op is unrecognized, log msg
+            console.log(`${p$} received message '${msg}'`);
     }
 }
 

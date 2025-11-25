@@ -8,11 +8,10 @@ const east     = 2;
 const south    = 3;
 const players  = 4;
 const player$  = ["West", "North", "East", "South"];
-const human    = [false,  false,   false,  true   ];
 const next     = [north,  east,    south,  west   ];
 const us       = [false,  true,    false,  true   ];
 const them     = [true,   false,   true,   false  ];
-
+const bot      = [true,   true,    true,   false  ];
 
 // Suit values (or none)
 const diamonds = 0;
@@ -195,61 +194,70 @@ const barSrc = [
     ["",              "",              "",              "",              "icons/4-4.svg"]
 ];
 
+// Checkbox source images
+const checkedSrc = "icons/checked.svg";
+const uncheckedSrc = "icons/unchecked.svg";
+
 // Page elements
-const docBody   = document.getElementById("docBody");
-const docCanvas = document.getElementById("docCanvas");
-const context   = docCanvas.getContext("2d");
-const bidText   = document.getElementById("bidText");
-const meldSpan  = document.querySelectorAll("#meldColumn span");
-const bidBox    = document.querySelectorAll("#bidBoxes div");
-const hintBox   = document.querySelectorAll("#hintBoxes div");
-const hintImg   = document.querySelectorAll("#hintBoxes div img");
-const bidBtn    = document.querySelectorAll("#bidText input");
-const trumpText = document.getElementById("trumpText");
-const trumpBtn  = document.querySelectorAll("#trumpText input");
-const playText  = document.getElementById("playText");
-const playPara  = document.querySelectorAll("#playText div");
-const showBtn   = document.getElementById("showBtn");
-const playBtn   = document.getElementById("playBtn");
-const tossBtn   = document.getElementById("tossBtn");
-const okayBtn   = document.getElementById("okayBtn");
-const handText  = document.getElementById("handText");
-const usOld     = document.getElementById("usOld");
-const usBid     = document.getElementById("usBid");
-const usMeld    = document.getElementById("usMeld");
-const usTake    = document.getElementById("usTake");
-const usNew     = document.getElementById("usNew");
-const themOld   = document.getElementById("themOld");
-const themBid   = document.getElementById("themBid");
-const themMeld  = document.getElementById("themMeld");
-const themTake  = document.getElementById("themTake");
-const themNew   = document.getElementById("themNew");
-const nextDiv   = document.getElementById("nextDiv");
-const overDiv   = document.getElementById("overDiv");
-const overText  = document.getElementById("overText");
-const menuIcon  = document.getElementById("menuIcon");
-const trmpIcon  = document.getElementById("trmpIcon");
-const nTrump    = document.getElementById("nTrump");
-const menuText  = document.getElementById("menuText");
-const spadesT   = document.getElementById("spadesT");
-const heartsT   = document.getElementById("heartsT");
-const clubsT    = document.getElementById("clubsT");
-const diamondsT = document.getElementById("diamondsT");
-const setText   = document.getElementById("setText");
-const setInput  = document.querySelectorAll("#setForm input");
-const tutorText = document.getElementById("tutorText");
-const tutorPage = document.querySelectorAll("#tutorText div");
-const aboutText = document.getElementById("aboutText");
-const vsText    = document.getElementById("vsText");
-const iText     = document.getElementById("iText");
-const iTrump    = document.getElementById("iTrump");
-const iOut      = document.getElementById("iOut");
-const iTake     = document.getElementById("iTake");
-const wGrid     = document.getElementById("wGrid");
-const nGrid     = document.getElementById("nGrid");
-const eGrid     = document.getElementById("eGrid");
-const count     = document.querySelectorAll(".count");
-const cardSize  = document.getElementById("cardSize");
+const body       = document.getElementById("body");
+const canvas     = document.getElementById("canvas");
+const context    = canvas.getContext("2d");
+const loadPage   = document.getElementById("loadPage");
+const joinBtn    = document.getElementById("joinBtn");
+const startPage  = document.getElementById("startPage");
+const startInput = document.querySelectorAll("#startFields input");
+const startUl    = document.querySelectorAll("#startFields ul");
+const startBtn   = document.getElementById("startBtn");
+const gamePage   = document.getElementById("gamePage");
+const bidText    = document.getElementById("bidText");
+const meldSpan   = document.querySelectorAll("#meldColumn span");
+const infoAreas  = document.getElementById("infoAreas");
+const infoText   = document.querySelectorAll(".infoText");
+const infoIcons  = document.querySelectorAll(".infoIcons");
+const infoIcon   = document.querySelectorAll(".infoIcons img");
+const bidBtn     = document.querySelectorAll("#bidText input");
+const trumpText  = document.getElementById("trumpText");
+const trumpBtn   = document.querySelectorAll("#trumpText input");
+const playText   = document.getElementById("playText");
+const playPara   = document.querySelectorAll("#playText div");
+const showBtn    = document.getElementById("showBtn");
+const playBtn    = document.getElementById("playBtn");
+const tossBtn    = document.getElementById("tossBtn");
+const okayBtn    = document.getElementById("okayBtn");
+const handText   = document.getElementById("handText");
+const usOld      = document.getElementById("usOld");
+const usBid      = document.getElementById("usBid");
+const usMeld     = document.getElementById("usMeld");
+const usTake     = document.getElementById("usTake");
+const usNew      = document.getElementById("usNew");
+const themOld    = document.getElementById("themOld");
+const themBid    = document.getElementById("themBid");
+const themMeld   = document.getElementById("themMeld");
+const themTake   = document.getElementById("themTake");
+const themNew    = document.getElementById("themNew");
+const nextDiv    = document.getElementById("nextDiv");
+const overDiv    = document.getElementById("overDiv");
+const overText   = document.getElementById("overText");
+const menuIcon   = document.getElementById("menuIcon");
+const trmpIcon   = document.getElementById("trmpIcon");
+const nTrump     = document.getElementById("nTrump");
+const menuText   = document.getElementById("menuText");
+const spadesT    = document.getElementById("spadesT");
+const heartsT    = document.getElementById("heartsT");
+const clubsT     = document.getElementById("clubsT");
+const diamondsT  = document.getElementById("diamondsT");
+const tutorText  = document.getElementById("tutorText");
+const tutorPage  = document.querySelectorAll("#tutorText div");
+const aboutText  = document.getElementById("aboutText");
+const vsText     = document.getElementById("vsText");
+const iText      = document.getElementById("iText");
+const iTrump     = document.getElementById("iTrump");
+const iOut       = document.getElementById("iOut");
+const iTake      = document.getElementById("iTake");
+const wGrid      = document.getElementById("wGrid");
+const nGrid      = document.getElementById("nGrid");
+const eGrid      = document.getElementById("eGrid");
+const count      = document.querySelectorAll(".count");
 
 // Communication channel with service worker
 const channel = new BroadcastChannel("Pinochle");
@@ -258,6 +266,29 @@ const channel = new BroadcastChannel("Pinochle");
 const fastDeal  = 2000;             // fast (2 second) deal
 const slowDeal  = 20000;            // slow (10 second) deal
 let dealTime    = fastDeal;         // milliseconds to deal all cards
+
+// Game flags
+let showTrump   = true;             // show trump icon
+let showCount   = true;             // show trump count
+let showSummary = true;             // show card count icons
+let showDetail  = false;            // show card count detail
+let showHand    = false;            // show player hands
+let solo        = true;             // creator is only human player
+let game$       = "South";          // name of this game
+
+// Data is the state of the pinochle game from the creator's perspective
+let data = {
+    player:         ["West", "North", "East", "South"],
+    bot:            [true,   true,    true,   false  ],
+    showTrump:      true,
+    showCount:      true,
+    showSummary:    true,
+    showDetail:     false,
+    showHand:       false,
+}
+
+// List[l] = list l of favorite west(0), north(1), east(2), south(3) and bot(4) names
+let list = [[], [], [], [], []];
 
 // Global variables
 let ondone      = "";               // event to invoke after animation completes
@@ -283,13 +314,6 @@ let tossHand    = false;            // true if bidder decides to toss in the han
 let tutorialPg  = none;             // tutorial page (or none)
 let playZ       = -1000;            // z-index for played card (auto-increments)
 
-// Settings
-let showTrump   = true;             // true if trump suit icon is displayed
-let showCount   = true;             // true if trump count is displayed 
-let showSummary = true;             // true if card count summary icons are displayed
-let showDetail  = false;            // true if card count detail tables are displayed
-let openHand    = false;            // true if faces for all hands are displayed
-
 // Dynamic sizes
 let vw0         = 0;                // previous view width
 let vh0         = 0;                // previous view height
@@ -307,7 +331,7 @@ let vpitch      = 0;                // vertical card pitch for east and west han
 
 // Log debugText on console (comment out when done debugging)
 function log(debugText = "") {
-    //console.log(debugText);
+    console.log(debugText);
 }
 
 // Return number of cards of value v in player p's hand
@@ -675,26 +699,26 @@ function updateHints() {
     } else
         nTrump.textContent = "";
     if (showSummary && player!=none) {
+        infoIcons[west].style.display = infoIcons[north].style.display = infoIcons[east].style.display = "inline";
         let i = 0;
         for (let p of [west, north, east])
             for (let s of [spades, hearts, clubs, diamonds])
                 if (minCards[p][ace+s])
-                    hintImg[i++].style.opacity = "100%";
+                    infoIcon[i++].style.opacity = "100%";
                 else if (capMaxCards(p,ace+s,south)>0)
-                    hintImg[i++].style.opacity = "66%";
+                    infoIcon[i++].style.opacity = "66%";
                 else if (capMaxCards(p,ten+s,south)>0)
-                    hintImg[i++].style.opacity = "33%";
+                    infoIcon[i++].style.opacity = "33%";
                 else if (capMaxCards(p,king+s,south)>0)
-                    hintImg[i++].style.opacity = "33%";
+                    infoIcon[i++].style.opacity = "33%";
                 else if (capMaxCards(p,queen+s,south)>0)
-                    hintImg[i++].style.opacity = "33%";
+                    infoIcon[i++].style.opacity = "33%";
                 else if (capMaxCards(p,jack+s,south)>0)
-                    hintImg[i++].style.opacity = "33%";
+                    infoIcon[i++].style.opacity = "33%";
                 else
-                    hintImg[i++].style.opacity = "0%";
+                    infoIcon[i++].style.opacity = "0%";
     } else
-        for (let i = 0; i < hintImg.length; i++)
-            hintImg[i].style.opacity = "0%";
+        infoIcons[west].style.display = infoIcons[north].style.display = infoIcons[east].style.display = "none";
     if (showDetail && player!=none) {
         let i = 0;
         for (let p of [west, north, east])
@@ -906,11 +930,13 @@ function nCards(p) {
 // Locate east and west info boxes based on east and west hands
 function locateInfo() {
     if (card[0].g == heap) {
-        bidBox[west].style.top  = hintBox[west].style.top  = vh/2 - cardw*1.4 + "px";
-        bidBox[east].style.top  = hintBox[east].style.top  = vh/2 - cardw*1.4 + "px";
+        infoText[west].style.top  = infoText[east].style.top  = vh/2 - cardw*1.4 + "px";
+        infoIcons[west].style.top = infoIcons[east].style.top = vh/2 + cardw*1.4 + "px";
     } else {
-        bidBox[west].style.top  = hintBox[west].style.top  = vh/2 - cardw*0.70 - nCards(west)*vpitch/2 + "px";
-        bidBox[east].style.top  = hintBox[east].style.top  = vh/2 - cardw*0.70 - nCards(east)*vpitch/2 + "px";
+        infoText[west].style.top  = vh/2 - cardw*0.70 - nCards(west)*vpitch/2 + "px";
+        infoText[east].style.top  = vh/2 - cardw*0.70 - nCards(east)*vpitch/2 + "px";
+        infoIcons[west].style.top = vh/2 + cardw*0.42 + nCards(west)*vpitch/2 + "px";
+        infoIcons[east].style.top = vh/2 + cardw*0.42 + nCards(east)*vpitch/2 + "px";
     }
 }
 
@@ -970,16 +996,17 @@ function moveCard(c, g0, t0, g1, z1, f1, t1, c0, c1) {
     card[c].fnsh.t = t0 + t1;
 }
 
-// Initialize the global variables based on the size of docBody
+// Initialize the global variables based on the size of body
 function setSizes() {
-    vw = Number.parseFloat(getComputedStyle(docBody).width);
-    vh = Number.parseFloat(getComputedStyle(docBody).height);
-    cardw = Number.parseFloat(getComputedStyle(cardSize).width);
-    cardh = Number.parseFloat(getComputedStyle(cardSize).height);
-    iconw = Number.parseFloat(getComputedStyle(menuIcon).width);
-    iconh = Number.parseFloat(getComputedStyle(menuIcon).height);
-    pad   = Number.parseFloat(getComputedStyle(menuIcon).marginLeft);
-    if (vw < vh) {
+    vw = Number.parseFloat(getComputedStyle(body).width);
+    vh = Number.parseFloat(getComputedStyle(body).height);
+    const em = Number.parseFloat(getComputedStyle(body).fontSize);
+    cardw = 4 * em;
+    cardh = 5.6 * em;
+    iconw = 1.32 * em;
+    iconh = 1.32 * em;
+    pad   = 0.4 * em;
+    if (vw <= vh) {
         hpad = pad;
         vpad = iconh + pad;
         hpitch = cardw/4;
@@ -990,8 +1017,8 @@ function setSizes() {
         hpitch = cardw/4;
         vpitch = Math.min(cardw/4, (vh - iconw*2 - pad*2 - cardw) / 19);
     }
-    docCanvas.width  = vw;
-    docCanvas.height = vh;
+    canvas.width  = vw;
+    canvas.height = vh;
 }
 
 // Return card number of top south card (or undefined) at x,y coordinates 
@@ -1071,7 +1098,7 @@ function frameEvent() {
 function nextClicked() {
     log("--> nextClicked");
     handText.style.display = "none";
-    setTimeout(loaded);
+    setTimeout(dealCards);
 }
 
 // Again button clicked: reload app
@@ -1091,8 +1118,8 @@ function handEnded() {
     log("--> handEnded");
     trmpIcon.style.display = "none";
     nTrump.textContent = "";
-    for (let i = 0; i < hintImg.length; i++)
-        hintImg[i].style.opacity = "0%";
+    for (let i = 0; i < infoIcon.length; i++)
+        infoIcon[i].style.opacity = "0%";
     usOld.textContent = ourScore;
     themOld.textContent = theirScore;
     log(`bidder:${bidder}, us[bidder]:${us[bidder]}, tossHand:${tossHand}, ourMeld:${ourMeld}, theirMeld:${theirMeld}, ourTake:${ourTake}, theirTake:${theirTake}`)
@@ -1182,6 +1209,7 @@ function trickViewed() {
             ourTake += 2;
         else
             theirTake += 2;
+        infoAreas.style.display = "none";
         animate(handEnded);
     }
 }
@@ -1270,6 +1298,7 @@ function cardChosen() {
     log(`${player$[player]} chose ${value$[card[chosen].v]}, msg:${msg}`);
 
     // animate card play
+    infoText[south].style.animation = "none";
     moveCard(chosen, card[chosen].g, now, play, card[chosen].z, true, dealTime/10);
     animate(cardPlayed);
 }
@@ -1310,10 +1339,10 @@ function mousePressed(e) {
         }
         if (card[c].g==bump && card[c].p==player && legal(c, leadCard, highCard)) {
             chosen = c; 
-            docBody.onmousemove = "";
-            docBody.onmousedown = "";
-            docBody.ontouchstart = "";
-            docBody.ontouchmove = "";
+            body.onmousemove = "";
+            body.onmousedown = "";
+            body.ontouchstart = "";
+            body.ontouchmove = "";
             setTimeout(cardChosen);
         }
     }
@@ -1322,14 +1351,14 @@ function mousePressed(e) {
 // Touch started: if legal bump card, choose it; if isn't bump card, unbump cards; if hand legal, bump it 
 function touchStarted(e) {
     log("--> touchStarted");
-    docBody.onmousedown = "";
-    docBody.onmousemove = "";
+    body.onmousedown = "";
+    body.onmousemove = "";
     const now = performance.now();
     const c = xy2c(e.touches[0].clientX, e.touches[0].clientY);
     if (c!=undefined && card[c].g==bump && card[c].p==player && legal(c, leadCard, highCard)) {
         chosen = c; 
-        docBody.ontouchstart = "";
-        docBody.ontouchmove = "";
+        body.ontouchstart = "";
+        body.ontouchmove = "";
         setTimeout(cardChosen);
         return;
     }
@@ -1371,10 +1400,11 @@ function handsRefanned() {
     log("--> handsRefanned");
     updateHints();
     if (player == south) {
-        docBody.onmousemove = mouseMoved;
-        docBody.onmousedown = mousePressed;
-        docBody.ontouchstart = touchStarted;
-        docBody.ontouchmove = touchMoved;
+        body.onmousemove = mouseMoved;
+        body.onmousedown = mousePressed;
+        body.ontouchstart = touchStarted;
+        body.ontouchmove = touchMoved;
+        infoText[south].style.animation = "blink 1s ease-in-out 5s infinite";
     } else {
         chosen = autoSelect();
         setTimeout (cardChosen, 0);
@@ -1390,7 +1420,7 @@ function meldGathered() {
     locateCards();
     locateInfo();
     for (let c = 0; c < cards; c++)
-        if (openHand || card[c].p==south)
+        if (showHand || card[c].p==south)
             moveCard(c, gone, now, hand, c, true, dealTime/10);
         else
             moveCard(c, gone, now, hand, -c, false, dealTime/10);
@@ -1479,8 +1509,8 @@ function meldFanned() {
             theyNeed = Math.max(20, bid[bidder] - theirMeld);
     ourBid = bid[north] > bid[south] ? bid[north] : bid[south];
     theirBid = bid[west] > bid[east] ? bid[west] : bid[east];
-    playPara[0].textContent = `${player$[bidder]} picked ${suit$[trump]}.`;
-    playPara[1].textContent = `Our meld is ${ourMeld < 20 ? "<20" : ourMeld}. Their meld is ${theirMeld < 20 ? "<20" : theirMeld}.`;
+    playPara[0].textContent = `${player$[bidder]} (${suit$[trump]})`;
+    playPara[1].textContent = `Our meld is ${ourMeld<20?"<20":ourMeld}. Their meld is ${theirMeld<20?"<20":theirMeld}.`;
     if (mustToss) {
         playPara[2].textContent = `${player$[bidder]} must toss this hand.`;
         showBtn.style.display = playBtn.style.display = tossBtn.style.display = "none";
@@ -1598,21 +1628,25 @@ function suitClicked(s) {
 // Bid won: if south bid, await suitClicked; else, pick trump & trigger trumpPicked
 function biddingDone() {
     log("--> biddingDone");
-    bidBox[west].textContent = bidBox[north].textContent = bidBox[east].textContent = bidBox[south].textContent ="";
+    for (let p of [west, north, east, south])
+        infoText[p].textContent = player$[p];
     for (bidder of [west, north, east, south])
         if (bid[bidder] > pass)
             break;
     if (bidder == south) {
         trumpBtn[0].disabled = marriages(south, spades) == 0;
+        trumpBtn[0].value = `Spades (${meld(south, spades)})`;
         trumpBtn[1].disabled = marriages(south, hearts) == 0;
+        trumpBtn[1].value = `Hearts (${meld(south, hearts)})`;
         trumpBtn[2].disabled = marriages(south, clubs) == 0;
+        trumpBtn[2].value = `Clubs (${meld(south, clubs)})`;
         trumpBtn[3].disabled = marriages(south, diamonds) == 0;
+        trumpBtn[3].value = `Diamonds (${meld(south, diamonds)})`;
         if (noMarriages(bidder))
             trumpBtn[0].disabled = trumpBtn[1].disabled = trumpBtn[2].disabled = trumpBtn[3].disabled = false;
         trumpText.style.display = "flex";
     } else {
         trump = autoPick();
-        trumpText.style.display = "none";
         setTimeout(trumpPicked);
     }
 }
@@ -1622,6 +1656,7 @@ function bidClicked(n) {
     log("--> bidClicked");
     const value = bidBtn[n].value;
     const highBid = Math.max(...bid);
+    infoText[south].style.animation = "none";
     if (value == ">") {
         if (highBid < 60)
             bidBtn[1].value = Number(bidBtn[1].value) + 1;
@@ -1642,25 +1677,25 @@ function bidClicked(n) {
     logBid(value, "No reason");
     if (value == "Pass") {
         bid[south] = pass;
-        bidBox[south].textContent = "Pass";
+        infoText[south].textContent = "Pass";
     } else {
         if (bid[south]==none && Number(value)>51 && Number(value)<60)
             est[south] = (Number(value) - Math.max(50, ...bid)) * 10;
         bid[south] = Number(value);
-        bidBox[south].textContent = value;
+        infoText[south].textContent = value;
     }
-    for (let b = 0; b < bidBtn.length; b++)
-        bidBtn[b].disabled = true;
+    bidText.style.display = "none";
     bidder = next[bidder];
     if (nPass() == 3) {
         if (bid[bidder] == none) {
             logBid(50, "Dropped");
             bid[bidder] = 50;
         }
-        bidText.style.display = "none";
         setTimeout(biddingDone, dealTime / 4);
-    } else
+    } else {
+        infoText[bidder].textContent = bid[bidder]==pass? "Pass" : player$[bidder];
         setTimeout(handsFanned, dealTime / 4);
+    }
 }
 
 // Hands fanned: await bidClicked or autoBid and retrigger handsFanned or trigger biddingDone
@@ -1669,35 +1704,36 @@ function handsFanned() {
     while (bid[bidder] == pass) 
         bidder = next[bidder];
     if (bidder == south && bid[bidder] == none) {
+    }
+    if (bidder == south) {
         meldSpan[0].textContent = meld(south, spades);
         meldSpan[1].textContent = meld(south, hearts);
         meldSpan[2].textContent = meld(south, clubs);
         meldSpan[3].textContent = meld(south, diamonds);
-        bidText.style.display = "flex";
-    }
-    if (bidder == south) {
         bidBtn[0].value = "Pass";
         bidBtn[1].value = nextBid();
         bidBtn[2].value = ">";
-        for (let b = 0; b < bidBtn.length; b++)
-            bidBtn[b].disabled = false;
+        bidText.style.display = "flex";
+        infoText[south].textContent = player$[south];
+        infoText[south].style.animation = "blink 1s ease-in-out 5s infinite";
     } else {
         bid[bidder] = autoBid();
         if (bid[bidder] == pass)
-            bidBox[bidder].textContent = "Pass";
+            infoText[bidder].textContent = "Pass";
         else
-            bidBox[bidder].textContent = bid[bidder];
+            infoText[bidder].textContent = bid[bidder];
         bidder = next[bidder];
         if (nPass()==3) {
             if (bid[bidder] == none) {
                 logBid(50, "Dropped");
                 bid[bidder] = 50;
             }
-            bidText.style.display = "none";
             setTimeout(biddingDone, dealTime / 4);
         }
-        else 
+        else {
+            infoText[bidder].textContent = bid[bidder]==pass? "Pass" : player$[bidder];
             setTimeout(handsFanned, dealTime / 4);
+        }
     }
 }
 
@@ -1710,14 +1746,14 @@ function handsGathered() {
     locateCards();
     locateInfo();
     for (let c = 0; c < cards; c++)
-        if (openHand || card[c].p==south)
+        if (showHand || card[c].p==south)
             moveCard(c, gone, now, hand, c, true, dealTime/10);
         else
             moveCard(c, gone, now, hand, -c, false, dealTime/10);
     bidder = next[dealer];
     bid[west] = bid[north] = bid[east] = bid[south] = none;
     est[west] = est[north] = est[east] = est[south] = typical;
-    bidBox[west].textContent = bidBox[north].textContent = bidBox[east].textContent = bidBox[south].textContent = "";
+    infoText[west].textContent = infoText[north].textContent = infoText[east].textContent = infoText[south].textContent = "";
     logHands();
     animate(handsFanned);
 }
@@ -1749,6 +1785,59 @@ function resized() {
     }
 }
 
+// Start button clicked
+function dealCards() {
+    const deck = Array.from(new Array(cards), (v, k) => k % cardsPerPlayer);
+    let sort = [];
+    for (let v = 0; v < values; v++)
+        faceImg[v].src = faceSrc[v];
+    backImg.src = backSrc;
+    menuIcon.draggable = false;
+    shuffleArray(deck, cards);
+    for (let p of [west, north, east, south]) {
+        sort = sort.concat(deck.slice(minC[p],maxC[p]+1).sort((a,b)=>b-a));
+        minCards[p].fill(0);
+        maxCards[p].fill(4);
+        infoText[p].textContent = player$[p];
+    }
+    remaining.fill(4);
+    for (let c = 0; c < cards; c++) {
+        card[c].c = c; 
+        card[c].p = plyr[c];
+        card[c].u = us[card[c].p];
+        card[c].v = sort[c];
+        card[c].s = suit[card[c].v];
+        card[c].r = rank[card[c].v];
+        card[c].t = high[card[c].v];
+        card[c].g = gone;
+        card[c].m = false;
+        card[c].z = 0;
+        card[c].f = false;
+        card[c].k = false;
+    }
+    trump = none;
+    trmp.fill(false);
+    setSizes();
+    vh0 = vh;
+    vw0 = vw;
+    dealer = next[dealer];
+    player = none;
+    locateCards();
+    let t0 = performance.now();
+    let p = next[dealer];
+    for (let z = 0; z < cards; z++) {
+        const c = minC[p] + Math.floor(z/players);
+        moveCard(c, gone, t0, heap, z, false, dealTime/20, minC[dealer], c);
+        t0 = t0 + (dealTime - dealTime / 20) / cards;
+        p = next[p];
+    }
+    playZ = -1000;
+    locateInfo();
+    onresize = resized;
+    updateHints();
+    animate(deckDealt);
+}
+
 // Menu icon clicked: display the menu
 function menuIconClicked() {
     log("--> menuIconClicked");
@@ -1759,47 +1848,6 @@ function menuIconClicked() {
 function menuCloseClicked() {
     log("--> menuCloseClicked");
     menuText.style.display = "none";
-}
-
-// Settings menu item clicked: close menu, then open settings
-function settingsClicked() {
-    log("--> settingsClicked");
-    menuText.style.display = "none";
-    setText.style.display = "block";
-}
-
-// Settings close icon clicked: close settings
-function settingsCloseClicked() {
-    log("--> settingsCloseClicked");
-    setText.style.display = "none";
-}
-
-// Settings save button clicked: save and act on new settings
-function settingsSaveClicked() {
-    log("--> settingsSaveClicked");
-    const now = performance.now();
-    localStorage.setItem("southPlayer", player$[south] = setInput[0].value);
-    localStorage.setItem("southHuman",  human[south]   = setInput[1].checked);
-    localStorage.setItem("westPlayer",  player$[west]  = setInput[2].value);
-    localStorage.setItem("westHuman",   human[west]    = setInput[3].checked);
-    localStorage.setItem("northPlayer", player$[north] = setInput[4].value);
-    localStorage.setItem("southHuman",  human[north]   = setInput[5].checked);
-    localStorage.setItem("eastPlayer",  player$[east]  = setInput[6].value);
-    localStorage.setItem("southHuman",  human[east]    = setInput[7].checked);
-    localStorage.setItem("showTrump",   showTrump      = setInput[8].checked);
-    localStorage.setItem("showCount",   showCount      = setInput[9].checked);
-    localStorage.setItem("showSummary", showSummary    = setInput[10].checked);
-    localStorage.setItem("showDetail",  showDetail     = setInput[11].checked);
-    localStorage.setItem("openHand",    openHand       = setInput[12].checked);
-    updateHints();
-    for (let c = 0; c < cards; c++)
-        if (card[c].p!=south && card[c].g==hand) {
-            card[c].f = openHand;
-            card[c].z = openHand ? c : -c;
-            card[c].strt.t = now;
-            card[c].fnsh.t = now;
-        }
-    requestAnimationFrame(frameEvent);
 }
 
 // Reload app menu item clicked: restart the app
@@ -1886,92 +1934,249 @@ function iCloseClicked() {
     iText.style.display = "none";
 }
 
-// Load event: initialize app, deal cards, sort cards, disable resize events, then trigger deckDealt
-function loaded() {
-    //console.clear();
-    log("--> loaded ");
-    if (localStorage.length == 0) {
-        localStorage.setItem("southPlayer", player$[south]);
-        localStorage.setItem("southHuman",  human[south]);
-        localStorage.setItem("westPlayer",  player$[west]);
-        localStorage.setItem("westHuman",   human[west]);
-        localStorage.setItem("northPlayer", player$[north]);
-        localStorage.setItem("northHuman",  human[north]);
-        localStorage.setItem("eastPlayer",  player$[east]);
-        localStorage.setItem("eastHuman",   human[east]);
-        localStorage.setItem("showTrump",   showTrump);
-        localStorage.setItem("showCount",   showCount);
-        localStorage.setItem("showSummary", showSummary);
-        localStorage.setItem("showDetail",  showDetail);
-        localStorage.setItem("openHand",    openHand);
-    }
-    player$[south] = setInput[0].value    = localStorage.getItem("southPlayer");
-    human[south]   = setInput[1].checked  = localStorage.getItem("southHuman" ) == "true";
-    player$[west]  = setInput[2].value    = localStorage.getItem("westPlayer" );
-    human[west]    = setInput[3].checked  = localStorage.getItem("westHuman"  ) == "true";
-    player$[north] = setInput[4].value    = localStorage.getItem("northPlayer");
-    human[north]   = setInput[5].checked  = localStorage.getItem("northHuman" ) == "true";
-    player$[east]  = setInput[6].value    = localStorage.getItem("eastPlayer" );
-    human[east]    = setInput[7].checked  = localStorage.getItem("eastHuman"  ) == "true";
-    showTrump      = setInput[8].checked  = localStorage.getItem("showTrump"  ) == "true";
-    showCount      = setInput[9].checked  = localStorage.getItem("showCount"  ) == "true";
-    showSummary    = setInput[10].checked = localStorage.getItem("showSummary") == "true";
-    showDetail     = setInput[11].checked = localStorage.getItem("showDetail" ) == "true";
-    openHand       = setInput[12].checked = localStorage.getItem("openHand"   ) == "true";
-    const deck = Array.from(new Array(cards), (v, k) => k % cardsPerPlayer);
-    let sort = [];
-    for (let v = 0; v < values; v++)
-        faceImg[v].src = faceSrc[v];
-    backImg.src = backSrc;
-    menuIcon.draggable = false;
-    shuffleArray(deck, cards);
-    for (let p of [west, north, east, south]) {
-        sort = sort.concat(deck.slice(minC[p],maxC[p]+1).sort((a,b)=>b-a));
-        minCards[p].fill(0);
-        maxCards[p].fill(4);
-        bidBox[p].textContent = player$[p];
-    }
-    remaining.fill(4);
-    for (let c = 0; c < cards; c++) {
-        card[c].c = c; 
-        card[c].p = plyr[c];
-        card[c].u = us[card[c].p];
-        card[c].v = sort[c];
-        card[c].s = suit[card[c].v];
-        card[c].r = rank[card[c].v];
-        card[c].t = high[card[c].v];
-        card[c].g = gone;
-        card[c].m = false;
-        card[c].z = 0;
-        card[c].f = false;
-        card[c].k = false;
-    }
-    trump = none;
-    trmp.fill(false);
-    setSizes();
-    vh0 = vh;
-    vw0 = vw;
-    dealer = next[dealer];
-    player = none;
-    locateCards();
-    let t0 = performance.now();
-    let p = next[dealer];
-    for (let z = 0; z < cards; z++) {
-        const c = minC[p] + Math.floor(z/players);
-        moveCard(c, gone, t0, heap, z, false, dealTime/20, minC[dealer], c);
-        t0 = t0 + (dealTime - dealTime / 20) / cards;
-        p = next[p];
-    }
-    playZ = -1000;
-    locateInfo();
-    onresize = resized;
-    updateHints();
-    animate(deckDealt);
+// Set name input i attributes for player p
+function setNam(i, p) {
+    startInput[i].value = player$[p];
+    startInput[i].setAttribute("list", p==south? "aliases" : ((bot[p] || !websocket)? "bots" : "friends"));
+    startInput[i].disabled = false;
 }
 
-// Set function to be invoked after app is loaded and rendered
-onload = loaded;
+// Set bot input i attributes for player p
+function setBot(i, p) {
+    startInput[i].src = (p != south && (bot[p] || !websocket))? checkedSrc : uncheckedSrc;
+    startInput[i].checked = p!=south && (bot[p] || !websocket);
+    startInput[i].disabled = p==south || !websocket;
+}
 
+// Set option input i attributes based on flag f
+function setOpt(i, f) {
+    startInput[i].src = f? checkedSrc : uncheckedSrc;
+    startInput[i].checked = f;
+    startInput[i].disabled = false;
+}
+
+// Create button clicked: close load page, apply game settings and open start page
+function createClicked() {
+    log(`--> create clicked`);
+    setNam(0, west);
+    setBot(1, west);
+    setNam(2, north);
+    setBot(3, north);
+    setNam(4, east);
+    setBot(5, east);
+    setNam(6, south);
+    setBot(7, south);
+    setOpt(8, showTrump)
+    setOpt(9, showCount);
+    setOpt(10, showSummary);
+    setOpt(11, showDetail);
+    setOpt(12, showHand);
+    startBtn.value = "Play";
+    startBtn.disabled = false;
+    loadPage.style.display = "none";
+    startPage.style.display = "flex";
+}
+
+// Join button clicked: close load page, apply game settings and open start page
+function joinClicked() {
+    log(`--> join clicked`);
+    for (let i = 0; i < startInput.length; i++) {
+        startInput[i].value = "";
+        startInput[i].disabled = true;
+        startInput[i].checked = false;
+        startInput[i].src = uncheckedSrc;
+    }
+    startInput[6].value = player$[south];
+    startInput[6].disabled = false;
+    startInput[6].setAttribute("list", "aliases");
+    setNam(0, west);
+    setBot(1, west);
+    setNam(2, north);
+    setBot(3, north);
+    setNam(4, east);
+    setBot(5, east);
+    setNam(6, south);
+    setBot(7, south);
+    setOpt(8, showTrump)
+    setOpt(9, showCount);
+    setOpt(10, showSummary);
+    setOpt(11, showDetail);
+    setOpt(12, showHand);
+    loadPage.style.display = "none";
+    startPage.style.display = "flex";
+}
+
+// Start close icon clicked
+function startCloseClicked() {
+    log("--> start close clicked");
+    startPage.style.display = "none";
+    loadPage.style.display = "flex";
+}
+
+let selectedItem = none;
+
+// Start input i keyed (i=0,2,4,6 for wName, nName, eName, sName)
+function iKeyed(event, i) {
+    log(`--> start input ${i} keyed '${event.key}'`);
+    const listItems = startUl[i/2].querySelectorAll('li');
+    switch (event.key) {
+        case "ArrowDown":
+            event.preventDefault();
+            selectedItem = selectedItem+1<listItems.length? selectedItem+1 : selectedItem;
+            listItems.forEach(item => item.classList.remove('selected'));
+            if (selectedItem != none)
+                listItems[selectedItem].classList.add('selected');
+            break;
+        case "ArrowUp":
+            event.preventDefault();
+            selectedItem = selectedItem>0? selectedItem-1 : selectedItem;
+            listItems.forEach(item => item.classList.remove('selected'));
+            if (selectedItem != none)
+                listItems[selectedItem].classList.add('selected');
+            break;
+        case "Enter":
+            event.preventDefault();
+            if (selectedItem !== none) {
+                startInput[i].value = listItems[selectedItem].textContent;
+                startUl[i/2].style.display = 'none';
+            }
+            startInput[i+2].focus();
+            break;
+        case "Escape":
+            event.preventDefault();
+            startUl[i/2].style.display = "none";
+            break;
+    }
+}
+
+// Start input i clicked (i=1,3,5,7,8,9,10,11,12 for wBot, nBot, eBot, sBot, tsBox, tcBox, ccsBox, ccdBox, ohBox)
+function iClicked(i) {
+    log(`--> start input ${i} clicked`);
+    for (let p of [west, north, east, south])
+        startUl[p].style.display = "none";
+    startInput[i].checked = !startInput[i].checked;
+    startInput[i].src = startInput[i].checked? checkedSrc : uncheckedSrc;
+}
+
+// Start input i focused (i=0,2,4,6 for wName, nName, eName, sName)
+function iFocused(i) {
+    log(`--> start input ${i} focused`);
+    const l = startInput[i+1].checked? 4 : i/2;
+    for (let p of [west, north, east, south])
+        startUl[p].style.display = "none";
+    startUl[i/2].innerHTML = "";
+    for (let name of list[l]) {
+        const li = document.createElement("li");
+        li.innerText = name;
+        startUl[i/2].appendChild(li);
+    }
+    startUl[i/2].style.display = list[l].length==0? "none" : "block";
+    selectedItem = none;
+}
+
+// Start input i blurred (i=0,2,4,6 for wName, nName, eName, sName)
+function iBlurred(i) {
+    setTimeout(() => {
+        log(`--> start input ${i} blurred`);
+        startUl[i/2].style.display = "none";
+    }, 200);
+}
+
+// pList clicked (p=0,1,2,3 for wList, nList, eList, sList)
+function lClicked(event, p) {
+    log(`--> start ul ${p} clicked ${event.target.textContent}`);
+    startInput[p*2].value = event.target.textContent;
+    for (let p of [west, north, east, south])
+        startUl[p].style.display = "none";
+}
+
+// pList contexted (p=0,1,2,3 for wList, nList, eList, sList)
+function lContexted(event, p) {
+    log(`--> start ul ${p} contexted ${event.target.textContent}`);
+    const l = startInput[p*2+1].checked? 4 : p;
+    event.preventDefault();
+    if (confirm(`Delete ${event.target.textContent} from this list?`)) {
+        list[l].splice(list[l].indexOf(event.target.textContent), 1);
+        localStorage.setItem("list", JSON.stringify(list));
+        startInput[p*2].value = list[l][0]? list[l][0] : ""; 
+    }
+}
+
+// Start play button clicked
+function startPlayClicked() {
+    log("--> start play clicked");
+
+    // Use start page to update game settings and to update lists
+    let i = 0;
+    for (let p of [west, north, east, south]) {
+        startInput[i].value = startInput[i].value==""? player$[p] : startInput[i].value;
+        data.player[p] = player$[p] = startInput[i++].value;
+        data.bot[p] = bot[p] =  startInput[i++].checked;
+        const l = bot[p]? 4 : p;
+        if (list[l].includes(player$[p]))
+            continue;
+        list[l].push(player$[p]);
+        list[l].sort();
+    }
+    localStorage.setItem("list", JSON.stringify(list));
+    data.showTrump = showTrump = startInput[8].checked;
+    data.showCount = showCount = startInput[9].checked;
+    data.showSummary = showSummary = startInput[10].checked;
+    data.showDetail = showDetail = startInput[11].checked;
+    data.showHand = showHand = startInput[12].checked;
+    solo = bot[west] && bot[north] && bot[east];
+    game$ = player$[south];
+    localStorage.setItem("data", JSON.stringify(data));
+
+    // If solo game, deal the cards
+    if (solo) {
+        startPage.style.display = "none";
+        infoAreas.style.display = "block";
+        gamePage.style.display = "block";
+        setTimeout(dealCards);
+        return;
+    }
+
+    // Create a multiplayer game
+    for (const p of [west, north, east]) {                      // gray out humans until online
+        startInput[p*2].disabled = !bot[p];
+        infoText[p].disabled = !bot[p];
+    }
+    websocket.send(JSON.stringify({                             // log in to server
+        op: "login", 
+        player: player$[south]
+    }));
+    websocket.send(JSON.stringify({                             // create or replace self-named game with me as player
+        op: "open",
+        game: player$[south],
+        data: JSON.stringify(data)
+    }));
+}
+
+// Handle online message
+function onlineMsg(p$) {
+    for (const p of [west, north, east])                        // enable matching player names
+        if (player[p] == p$) {
+            startInput[p*2].disabled = false;
+            infoText[p].disabled = false;
+        }
+}
+
+// Handle offline message
+function offlineMsg(p$) {
+    for (const p of [west, north, east])                        // disable matching player names
+        if (player[p] == p$) {
+            startInput[p*2].disabled = true;
+            infoText[p].disabled = true;
+        }
+}
+
+// Handle data message
+function dataMsg(g$, d$) {
+    data = JSON.parse(d$);
+}
+
+// Websocket code
 let websocket = null;                                           // websocket object (or null)
 let wsIntervalID = null;                                        // websocket interval timer identifier
 
@@ -1987,7 +2192,7 @@ function wsConnect() {
     else
         url = `wss://${document.location.hostname}/ws`;
     websocket = new WebSocket(url);                             // try to create a new websocket
-    websocket.onopen = wsOpen;                                  // prepare for call backs
+    websocket.onopen = wsOpen;                                  // prepare for callbacks
     websocket.onerror = wsError;
     websocket.onmessage = wsMessage;
     websocket.onclose = wsClose;
@@ -1998,6 +2203,7 @@ function wsConnect() {
 
 // Handle the websocket's open event
 function wsOpen(event) {
+    joinBtn.disabled = false;
     console.log(`websocket opened`);
 }
 
@@ -2008,22 +2214,32 @@ function wsError(event) {
 
 // Handle the websocket's message event
 function wsMessage(messageEvent) {
-    const message = JSON.parse(messageEvent.data);              // parse the message
-    switch (message.op) {
+    const msg = JSON.parse(messageEvent.data);                  // parse the message
+    switch (msg.op) {
         case "pong":                                            // if op:"pong",
-            console.log(`websocket ponged`);                        // ignore
+            console.log(`websocket ponged`);
             break;
-        case "id":                                              // if op:"id", id:id,
-            console.log(`websocket received id ${message.id}`); // log new id
+        case "offline":                                         // if op:"offline", player:p$,
+            offlineMsg(msg.player);
+            console.log(`${msg.player} is offline`);
+            break;
+        case "online":                                          // if op:"online", player:p$,
+            onlineMsg(msg.player);
+            console.log(`${msg.player} is online`);
+            break;
+        case "data":                                            // if op:"data", game:g$, data:d$,
+            dataMsg(msg.game, msg.data)
+            console.log(`game ${msg.game} got data`);
             break;
         default:                                                // if unrecognized, log message
-            console.log(`websocket received unrecognized message '${message}'`);
+            console.log(`websocket received unrecognized message '${msg}'`);
     }
 }
 
 // Handle the websocket's close event
 function wsClose(closeEvent) {
-    console.log(`websocket closed with code '${closeEvent.code}'`);
+    joinBtn.disabled = true;
+    console.log(`websocket closed`);
     clearInterval(wsIntervalID);                                // stop websocket timer, if any
     wsIntervalID = setInterval(wsConnect, 1000);                // start websocket reconnect timer
 }
@@ -2043,7 +2259,6 @@ function wsCheck() {
             break;
         case WebSocket.OPEN:                                    // if websocket open, ping server
             websocket.send(`{"op":"ping"}`);
-            //console.log(`websocket open`);
             break;
         case WebSocket.CLOSING:                                 // if websocket closing, log state
             console.log(`websocket closing`);
@@ -2060,6 +2275,26 @@ function wsCheck() {
 if (document.location.hostname) {
     wsConnect();                                                // connect to websocket server
 }
+
+// Recall (or initialize) game settings
+console.clear();
+log("--> loaded");
+if (localStorage.getItem("data")) {                             // if settings stored, overwrite default settings
+    data = JSON.parse(localStorage.getItem("data"));
+    for (const p of [west, north, east, south]) {
+        player$[p] = data.player[p];
+        bot[p] = data.bot[p];
+    }
+    showTrump = data.showTrump;
+    showCount = data.showCount;
+    showSummary = data.showSummary;
+    showDetail = data.showDetail;
+    showHand = data.showHand;
+}
+
+// Recall (or initialize) game lists and initialize HTML
+if (localStorage.getItem("list"))                               // if lists saved, overwrite default lists
+    list = JSON.parse(localStorage.getItem("list"));
 
 /*
 // Implement proxy server for web fetches when app is offline

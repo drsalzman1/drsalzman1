@@ -1,108 +1,279 @@
 @media (orientation: portrait) {
     :root {
-        --cardw:        min(17svw, 10.2svh);
-        --west-top:     calc(050svh - var(--cardw)*3.20);
-        --west-left:    calc(000svw + var(--cardw)*0.10);
-        --north-top:    calc(000svh + var(--cardw)*0.11);
-        --north-left:   calc(050svw - var(--cardw)*0.70);
-        --east-top:     calc(050svh - var(--cardw)*3.20);
-        --east-left:    calc(100svw - var(--cardw)*1.50);
-        --south-top:    calc(100svh - var(--cardw)*0.41);
-        --south-left:   calc(050svw - var(--cardw)*0.70);
-        --wgrid-left:   calc(000svw + var(--cardw)*0.11);
-        --wgrid-top:    calc(050svh - var(--cardw)*0.70);
-        --ngrid-left:   calc(050svw - var(--cardw)*0.70);
-        --ngrid-top:    calc(000svh + var(--cardw)*0.45);
-        --egrid-left:   calc(100svw - var(--cardw)*1.48);
-        --egrid-top:    calc(050svh - var(--cardw)*0.70);
-        --ntrump-left:  calc(100svw - var(--cardw)*0.74);
-        --ntrump-top:   calc(000svh + var(--cardw)*0.11);
-        --ntrump-width: calc(000svh + var(--cardw)*0.35);
-        --ntrump-align: right;
+        font-size:      min(4.25svw, 2.55svh);
+        --list-height:  21em;
+        --wInfo-left:   0.4em;
+        --eInfo-left:   calc(100svw - 6em);
+        --wgrid-left:   0.44em;
+        --egrid-left:   calc(100svw - 5.92em);
+        --number-left:  calc(100svw - 2.96em);
+        --number-top:   0.44em;
+        --number-align: right;
+        --ass-width:    21em;
     }
 }
 
 @media (orientation: landscape) {
     :root {
-        --cardw:        min(17svh, 10.3svw);
-        --west-top:     calc(050svh - var(--cardw)*3.20);
-        --west-left:    calc(000svw + var(--cardw)*0.54);
-        --north-top:    calc(000svh + var(--cardw)*0.11);
-        --north-left:   calc(050svw - var(--cardw)*0.70);
-        --east-top:     calc(050svh - var(--cardw)*3.20);
-        --east-left:    calc(100svw - var(--cardw)*1.93);
-        --south-top:    calc(100svh - var(--cardw)*0.41);
-        --south-left:   calc(050svw - var(--cardw)*0.70);
-        --wgrid-left:   calc(000svw + var(--cardw)*0.54);
-        --wgrid-top:    calc(050svh - var(--cardw)*0.70);
-        --ngrid-left:   calc(050svw - var(--cardw)*0.70);
-        --ngrid-top:    calc(000svh + var(--cardw)*0.44);
-        --egrid-left:   calc(100svw - var(--cardw)*1.92);
-        --egrid-top:    calc(050svh - var(--cardw)*0.70);
-        --ntrump-left:  calc(100svw - var(--cardw)*0.41);
-        --ntrump-top:   calc(000svh + var(--cardw)*0.40);
-        --ntrump-width: calc(000svh + var(--cardw)*0.35);
-        --ntrump-align: center;
+        font-size:      min(4.25svh, 2.575svw);
+        --list-height:  7em;
+        --wInfo-left:   2.12em;
+        --eInfo-left:   calc(100svw - 7.72em);
+        --wgrid-left:   2.16em;
+        --egrid-left:   calc(100svw - 7.68em);
+        --number-left:  calc(100svw - 1.84em);
+        --number-top:   1.6em;
+        --number-align: center;
+        --ass-width:    100%;
    }
 }
 
-:root {
-    --cardh:            calc(var(--cardw) * 1.40);
-    --font-size:        calc(var(--cardw) * 0.25);
-    --pad:              calc(var(--cardw) * 0.10);
-    --icon:             calc(var(--cardw) * 0.33);
-    --menu-width:       calc(var(--cardw) * 4.00);
-    --text-width:       calc(var(--cardw) * 2.75);
-    --text-height:      calc(var(--cardw) * 2.14);
-    --box-width:        calc(var(--cardw) * 0.70);
-    --box-height:       calc(var(--cardw) * 0.31);
-    --pick-width:       calc(var(--cardw) * 1.30);
-    --set-width:        calc(100svw - var(--pad) * 2);
-    --field-width:      calc(var(--cardw) * 4.00);
-    --field-height:     calc(var(--cardw) * 2.80);
-    --tutor-width:      calc(100svw - var(--pad) * 2);
-    --tutor-height:     calc(100svh - var(--pad) * 2);
-    --grid-size:        calc(var(--cardh) * 0.98);
-    --grid-row1:        calc(var(--cardh) * 0.18);
-    --grid-row2:        calc(var(--cardh) * 0.20);
-}
-
-input {
-    width: var(--box-width);
-    height: var(--box-height);
-    padding: 0px;
-    margin: 0px;
-    border: none;
-    background-color: powderblue;
+* {
     font-family: sans-serif;
-    font-size: var(--font-size);
+    font-size: 1em;
+    box-sizing: border-box;
+    margin: 0em;
+    padding: 0em;
 }
 
-#docBody {
+body {
     position: relative;
-    box-sizing: border-box;
     width: 100svw;
     height: 100svh;
-    margin: 0px;
     background-color: darkgreen;
     color: white;
-    font-family: sans-serif;
-    font-size: var(--font-size);
     -webkit-user-select: none;
     user-select: none;
     touch-action: pan-y;
+    overflow: hidden;
 }
 
-#docCanvas {
+#canvas {
     position: absolute;
+}
+
+#loadPage {
+    position: absolute;
+    width: 100svw;
+    height: 100svh;
+    padding: 0.4em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+#loadPage input {
+    width: 8em;
+    height: 1.3em;
+    border: none;
+    background-color: white;
+}
+
+#startPage {
+    height: 100svh;
+    width: 100svw;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.pageTitle {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    padding: 0.4em;
+    text-align: left;
+    font-weight: bold;
+}
+
+.whiteClose {
+    position: absolute;
+    top: 0.26em;
+    right: 0.26em;
+    height: 1.32em;
+    filter: invert(100%);
+}
+
+#startFields {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    flex-wrap: wrap;
+}
+
+#startFields input[type="image"], #startFields img {
+    position: relative;
+    top: -0.25em;
+    height: 1.8em;
+    filter: invert(100%);
+}
+
+#startFields input[type="image"]:disabled {
+    filter: invert(60%);
+}
+
+#startFields input[type="text"] {
+    width: 100%;
+    height: 1.3em;
+    border: none;
+    padding: 0em 0em 0em 0.4em;
+    text-align: left;
+    background-color: white;
+}
+
+#startFields input[type="text"]:disabled{
+    filter: brightness(60%);
+}
+
+#startFields fieldset {
+    height: 11.8em;
+    margin: 0.4em;
+    padding: 0em 0.4em 0em 0.4em;
+    border: 1px solid;
+    text-align: left;
+}
+
+#playersGrid {
+    margin-top: 0.4em;
+    width: 21em;
+    display: grid;
+    grid-template-columns: repeat(19, 1fr);
+    grid-template-rows: 1.3em 2.0em 1.3em 2.0em 1.3em 2.1em;
+    justify-content: center;
+}
+
+#wTag1  {grid-area: 03/01/03/09; text-align: left}
+#wBlock {grid-area: 04/01/04/09; text-align: left}
+#wTag2  {grid-area: 03/09/03/10; text-align: center}
+#wBot   {grid-area: 04/09/04/10}
+#nTag1  {grid-area: 01/06/01/14; text-align: left}
+#nBlock {grid-area: 02/06/02/14; text-align: left}
+#nTag2  {grid-area: 01/14/01/15; text-align: center}
+#nBot   {grid-area: 02/14/02/15}
+#eTag1  {grid-area: 03/11/03/19; text-align: left}
+#eBlock {grid-area: 04/11/04/19; text-align: left}
+#eTag2  {grid-area: 03/19/03/20; text-align: center}
+#eBot   {grid-area: 04/19/04/20}
+#sTag1  {grid-area: 05/06/05/14; text-align: left}
+#sBlock {grid-area: 06/06/06/14; text-align: left}
+#sTag2  {grid-area: 05/14/05/15; text-align: center}
+#sBot   {grid-area: 06/14/06/15}
+
+#wList, #nList, #eList, #sList {
+    position: relative;
+    width: 100%;
+    min-height: 100%;
+    max-height: var(--list-height);
+    overflow-y: auto;
+    overflow-x: hidden;
+    color: black;
+    background-color:white;
+    border: none;
+    border-top: 2px solid darkgreen;
+    display: none;
+    z-index: 100;
+}
+
+#playersGrid li {
+    margin: 0.8em 0em 0.8em 0.4em;
+}
+
+#playersGrid li:hover, #playersGrid li.selected {
+    background-color: lightgray;
+}
+
+#assistanceGrid {
+    margin-top: 0.4em;
+    width: var(--ass-width);
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    grid-template-rows: repeat(5, 2em);
+    justify-content: center;
+    column-gap: 0.5em;;
+    text-align: right;
+}
+
+.tip {
+    position: relative;
+}
+
+.tip img {
+    position: relative;
+    bottom: 0.1em;
+    height: 1.3em;
+    filter: invert(100%);
+}
+
+.tiptext {
+    padding: 0.4em;
+    visibility: hidden;
+    position: absolute;
+    width: 18.2em;
+    bottom: 2.2em;
+    right: -2.7em;
+    color: black;
+    background-color: white;
+    text-align: left;
+}
+
+.tip:hover .tiptext {
+    visibility: visible;
+}
+
+#startBtn {
+    width: 4em;
+    height: 1.3em;
+    margin: 0.8em 0em 0em 0em;
+    border: none;
+    background-color: white;
+    text-align: center;
+}
+
+#gamePage {
+    position: absolute;
+    width: 100svw;
+    height: 100svh;
+    display: none;
+}
+
+#menuIcon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 1.32em;
+    filter: invert(100%);
+    margin: 0.4em;
+}
+
+#trmpIcon {
+    position: relative;
+    float: right;
+    margin: 0.4em;
+    height: 1em;
+    filter: invert();
+    display: none;
+}
+
+#nTrump {
+    position: absolute;
+    top: var(--number-top);
+    left: var(--number-left);
+    width: 1.4em;
+    text-align: var(--number-align);
 }
 
 #textArea {
     position: absolute;
-    top: calc(50svh - var(--text-height)/2);
-    left: calc(50svw - var(--text-width)/2);
-    width: var(--text-width);
-    height: var(--text-height);
+    top: calc(50svh - 4.28em);
+    left: calc(50svw - 5.52em);
+    width: 11.04em;
+    height: 8.56em;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -126,22 +297,24 @@ input {
     text-align: center;
 }
 
-#trumpColumn {
-    margin-right: var(--pad);
-}
-
 #trumpColumn img {
-    height: calc(var(--font-size) * 0.8);
+    height: 0.8em;
     filter: invert();
 }
 
 #bidButtons {
     width: 100%;
-    margin-top: var(--pad);
+    margin-top: 0.4em;
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
     justify-content: space-around;
+}
+
+#bidButtons input {
+    width: 3em;
+    height: 1.3em;
+    border: none;
+    background-color: white;
 }
 
 #trumpText {
@@ -155,7 +328,10 @@ input {
 }
 
 #trumpText input {
-    width: var(--pick-width);
+    width: 8em;
+    height: 1.3em;
+    border: none;
+    background-color: white;
 }
 
 #playText {
@@ -164,7 +340,7 @@ input {
     display: none;
     flex-direction: column;
     justify-content: space-around;
-    text-align: left;
+    text-align: center;
 }
 
 #playBtns {
@@ -173,6 +349,13 @@ input {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: space-around;
+}
+
+#playBtns input {
+    width: 3em;
+    height: 1.3em;
+    border: none;
+    background-color: white;
 }
 
 #handText {
@@ -185,36 +368,49 @@ input {
     width: 100%;
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: space-around;
     text-align: center;
 }
 
-#nextDiv, #overDiv, #playBtns {
+#nextDiv, #overDiv {
     width: 100%;
     text-align: center;
+}
+
+#nextDiv input, #overDiv input {
+    width: 3em;
+    height: 1.3em;
+    border: none;
+    background-color: white;
 }
 
 #iText {
-    box-sizing: border-box;
     position: absolute;
     width: 100%;
     height: 100%;
-    padding: var(--pad);
+    padding: 0.4em;
     display: none;
     flex-direction: column;
     justify-content: space-between;
-    text-align: left;
+    text-align: center;
     color: black;
     background-color: white;
 }
 
+.blackClose {
+    position: absolute;
+    top: 0.26em;
+    right: 0.26em;
+    height: 1.32em;
+}
+
 #wGrid, #nGrid, #eGrid {
     position: absolute;
-    width: var(--grid-size);
-    height: var(--grid-size);
+    width: 5.488em;
+    height: 5.488em;
     display: none;
     grid-template-columns: auto auto auto auto auto auto;
-    grid-template-rows: var(--grid-row1) var(--grid-row2) var(--grid-row2) var(--grid-row2) var(--grid-row2);
+    grid-template-rows: 1.008em 1.12em 1.12em 1.12em 1.12em;
     justify-content: space-around;
     text-align: center;
     color: black;
@@ -222,229 +418,120 @@ input {
 }
 
 #wGrid {
-    top: var(--wgrid-top);
+    top: calc(050svh - 2.8em);
     left: var(--wgrid-left);
 }
 
 #nGrid {
-    top: var(--ngrid-top);
-    left: var(--ngrid-left);
+    top: 1.76em;
+    left: calc(050svw - 2.8em);
 }
 
 #eGrid {
-    top: var(--egrid-top);
+    top: calc(050svh - 2.8em);
     left: var(--egrid-left);
 }
 
 .gIcon {
-    height: calc(var(--font-size) * 0.8);
+    height: 0.8em;
 }
 
 .count {
-    height: var(--font-size);
+    height: 1em;
 }
 
-#iBot {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    text-align: center;
-}
-
-#iBot img {
-    height: var(--font-size);
-}
-
-#bidBoxes div {
+#infoAreas {
     position: absolute;
-    width: var(--cardh);
-    text-align: center;
-    color: white;
-    z-index: -100;
-}
-
-#bidBoxes :nth-child(1) {top: var(--west-top);  left: var(--west-left); }
-#bidBoxes :nth-child(2) {top: var(--north-top); left: var(--north-left);}
-#bidBoxes :nth-child(3) {top: var(--east-top);  left: var(--east-left); }
-#bidBoxes :nth-child(4) {top: var(--south-top); left: var(--south-left);}
-
-#hintBoxes div {
-    position: absolute;
-    width: var(--cardh);
+    width: 100svw;
+    height: 100svh;
     text-align: center;
     z-index: -100;
 }
 
-#hintBoxes :nth-child(1) {top: var(--west-top);  left: var(--west-left); }
-#hintBoxes :nth-child(2) {top: var(--north-top); left: var(--north-left);}
-#hintBoxes :nth-child(3) {top: var(--east-top);  left: var(--east-left); }
-#hintBoxes :nth-child(4) {top: var(--south-top); left: var(--south-left);}
+.infoText {
+    display: inline;
+}
 
-#hintBoxes div img {
-    height: var(--font-size);
+.infoIcons {
+    display: none;
+}
+
+#wInfo .infoText {
+    position: absolute;
+    top: 0.44em;
+    left: var(--wInfo-left);
+    width: 5.6em;
+}
+
+#wInfo .infoIcons {
+    position: absolute;
+    top: calc(100svh - 1.6em);
+    left: var(--wInfo-left);
+    width: 5.6em;
+}
+
+#nInfo {
+    position: absolute;
+    top: 0.44em;
+    width: 100%;
+    margin: auto;
+}
+
+#eInfo .infoText {
+    position: absolute;
+    top: 0.44em;
+    left: var(--eInfo-left);
+    width: 5.6em;
+}
+
+#eInfo .infoIcons {
+    position: absolute;
+    top: calc(100svh - 1.6em);
+    left: var(--eInfo-left);
+    width: 5.6em;
+}
+
+#sInfo {
+    position: absolute;
+    top: calc(100svh - 1.6em);
+    width: 100%;
+    margin: auto;
+    animation: none;
+}
+
+@keyframes blink {
+    0% {opacity:1}
+    50% {opacity:0}
+    100% {opacity:1}
+}
+
+.infoIcons img {
+    height: 0.75em;
     filter: invert();
-    opacity: 0%;
-}
-
-#hintBoxes div :nth-child(2) {color:black}
-#hintBoxes div :nth-child(4) {color:hsl(0, 100%, 33%)}
-#hintBoxes div :nth-child(6) {color:black}
-#hintBoxes div :nth-child(8) {color:hsl(0, 100%, 33%)}
-
-#menuIcon {
-    position: absolute;
-    height: var(--icon);
-    filter: invert(100%);
-    margin: var(--pad);
-}
-
-.closeIcon {
-    position: absolute;
-    top: calc(var(--pad) * 0.65);
-    right: calc(var(--pad) * 0.65);
-    height: var(--icon);
+    opacity: 100%;
 }
 
 #menuText {
     position: absolute;
-    width: var(--menu-width);
-    padding: var(--pad);
+    width: 16em;
+    padding: 0.4em;
     color: black;
     background-color: white;
     display: none;
-}
-
-#setText {
-    position: absolute;
-    width: var(--set-width);
-    padding: var(--pad);
-    color: black;
-    background-color: white;
-    display: none;
-}
-
-#setForm {
-    text-align: center;
-}
-
-#setForm fieldset {
-    display: inline;
-    width: var(--field-width);
-    height: var(--field-height);
-    border: 1px solid;
-    padding: var(--pad);
-    margin: var(--pad) 0 0 0;
-    text-align: left;
-}
-
-#setForm legend {
-    font-weight: bold;
-}
-
-#playersGrid {
-    display: grid;
-    margin-top: var(--pad);
-    grid-template-columns: auto calc(var(--font-size)*6) auto;
-    grid-template-rows: repeat(5, calc(var(--font-size)*2));
-    justify-content: center;
-    text-align: center;
-}
-
-#playersGrid input[type="text"] {
-    width: 100%;
-    padding: var(--pad);
-    margin-bottom: var(--pad);
-    box-sizing: border-box;
-    border: 1px solid;
-    text-align: center;
-}
-
-#assistanceGrid {
-    display: grid;
-    margin-top: var(--pad);
-    grid-template-columns: auto auto auto;
-    grid-template-rows: repeat(5, calc(var(--font-size)*2));
-    justify-content: center;
-    text-align: right;
-}
-
-.tip {
-    position: relative;
-}
-
-.tip img {
-    width: var(--icon);
-}
-
-.tiptext {
-    visibility: hidden;
-    position: absolute;
-    width: 1170%;
-    bottom: 110%;
-    right: -100%;
-    color: white;
-    background-color: black;
-    padding: var(--pad);
-    text-align: left;
-}
-
-.tip:hover .tiptext {
-    visibility: visible;
-}
-
-#setText input[type="button"] {
-    margin-top: calc(var(--pad)*2);
-    margin-bottom: var(--pad);
 }
 
 .menuIcon {
     position: relative;
-    top: calc(var(--font-size) * 0.3);
-    height: var(--icon);
-}
-
-#trmpIcon {
-    position: relative;
-    float: right;
-    margin: var(--pad);
-    height: var(--font-size);
-    filter: invert();
-    display: none;
-}
-
-#nTrump {
-    position: absolute;
-    top: var(--ntrump-top);
-    left: var(--ntrump-left);
-    width: var(--ntrump-width);
-    text-align: var(--ntrump-align);
-}
-
-#spadesT, #heartsT, #clubsT, #diamondsT {
-    display: flex;
-    flex-direction: row;
-    text-align: center;
-}
-
-#heartsT, #diamondsT {
-    margin-left: calc(var(--font-size) * 1.8);
-}
-
-.statColumn {
-    margin-left: calc(var(--pad) * 1.55);
-}
-
-#closeDiv {
-    width: 100%;
-    text-align: center;
+    top: 0.3em;
+    height: 1.32em;
 }
 
 #tutorText {
     position: absolute;
-    padding: var(--pad);
-    width: var(--tutor-width);
-    height: var(--tutor-height);
-    line-height: var(--font-size);
+    padding: 0.4em;
+    width: 100svw;
+    height: 100svh;
+    line-height: 1em;
     color: black;
     background-color: white;
     display: none;
@@ -454,47 +541,29 @@ input {
     display: none;
 }
 
-#tGrid {
-    display: grid;
-    width: calc(var(--icon) * 6);
-    margin: auto;
-    grid-template-columns: repeat(6, var(--icon));
-    text-align: center;
-}
-
 .backIcon {
     position: absolute;
-    bottom: var(--pad);
-    left: var(--pad);
-    height: var(--icon);
+    bottom: 0.4em;
+    left: 0.4em;
+    height: 1.32em;
 }
 
 .nextIcon {
     position: absolute;
-    bottom: calc(var(--pad)*1);
-    right: calc(var(--pad)*1);
-    height: var(--icon);
+    bottom: 0.4em;
+    right: 0.4em;
+    height: 1.32em;
 }
 
 #tutorText ul {
-    padding: 0;
-    margin: 0;
-    margin-left: calc(var(--pad) * 4);
+    margin-left: 1.6em;
 }
 
 #aboutText {
     position: absolute;
-    padding: var(--pad);
-    width: var(--menu-width);
+    padding: 0.4em;
+    width: 16em;
     color: black;
     background-color: white;
-    display: none;
-}
-
-#cardSize {
-    width: var(--cardw);
-    height: var(--cardh);
-    margin-left: var(--);
-    position: absolute;
     display: none;
 }
