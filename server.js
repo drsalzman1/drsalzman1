@@ -31,117 +31,80 @@ function hsListening() {
 const hs = createServer(hsRequest);
 hs.listen(hsPort, hsListening);
 
-// ------------------------------------Websocket server---------------------------------------
+// ------------------------------------------Websocket server------------------------------------------------
+//                                                                  
+// Event               Actions
+// =====               =======
+// wsConnect(ws)       set ws.onclose and ws.onmessage
+// wsMessage("ping")   send("pong") to ws
+// wsMessage(data)     if s$ unregged, reg s$, send queued data to s$; send/queue data to regged/unreggrg dsts
+// wsClose()           dereg ws
 //
-//  From Sender                     To Sender                       To Affected Players
-//  ===========                     =========                       ===================
-//  (connect)                       (none)                          (none)
-//  op:"ping"                       op:"pong"                       (none)
-//  (close)                         (none)                          op:"offline", player:p$
-//  op:"login", player:p$           (none)                          op:"online", player:p$
-//  op:"open", game:g$, data:d$     (none)                          (none)
-//  op:"join", game:g$              (none)                          op:"online", player:p$
-//  op:"put", game:g$, data:d$      op:"data", game:g$, data:d$     op:"data", game:g$, data:d$
-//  op:"get", game:g$               op:"data", game:g$, data:d$     (none)
-//  op:"inplay"                     op:"inplay", inplay:i$          (none)
+// data = JSON.stringify({src:s$, dst:[d$], msg:m$})
+// s$ = source name (e.g. "South")
+// [d$] = destination names (e.g. ["West", "North", "East"])
+// m$ = JSON.stringify(m) (e.g. JSON.stringify({op:"join", joiner:p}))
+// m = {op:"invite", player:[p0$..p3$], type[t0..t3], showTrump:f, showCount:f, showSummary:f, showDetail:f, showHand:f}
+// m = {op:"join", joiner:p}
+// m = {op:"deal", dealer:p, cardV[c0..c79]}
+// m = {op:"bid",  bidder:p, bid[b0..b3]}
+// m = {op:"pick", picker:p, trump:s}
+// m = {op:"toss", tosser:p}
+// m = {op:"play", player:p, card:c}
+// m = {op:"quit", quitter:p}
+// p = player value (e.g. south)
+// t = type value (e.g. offline)
+// f = flag value (e.g. false)
+// c = card value (e.g. jack+diamonds)
+// b = bid value (e.g. pass)
+// s = suit value (e.g. diamonds)
 //
-//  Opener: connect, login, open, [online], [put/get]
-//  Joiner: connect, login, inplay, join, [online], [put/get]
+//  Creator: wsConnect, [wsMessage], wsClose
+//  Joiner:  wsConnect, [wsMessage], wsClose
 
 const wsPort = 3000;    // websocket server port
-const online = {};      // online players and their websockets      {p1:ws, ...}
-const inplay = {};      // inplay games, players, and data          {g1:{player:[p$], data:d$}, ...}
+const socket = {};      // src/dst name and websocket   {n1:ws, ...}
+const mQueue = {};      // dst name and message queue   {d1:[messageEvent.data], ... }
 
 // Handle a websocket server's connection event
 function wsConnect(ws) {
     ws.onclose = wsClose;                                       // prepare callbacks
     ws.onmessage = wsMessage;
-    console.log(`undefined opened a websocket`);
+    console.log(`websocket connected`);
 }
 
 // Handle a websocket's close event
 function wsClose(closeEvent) {
     const ws = closeEvent.target;                               // recall this websocket
-    const p$ = Object.keys(online).find(p$=>online[p$]==ws);    // find player, if any, assigned to this websocket
-    if (p$) {                                                   // if player found,
-        delete online[p$];                                          // delete player from online list
-        for (const g$ in inplay)                                    // send "offline" reply to affected players
-            if (inplay[g$].player.includes(p$))
-                for (const a$ of inplay[g$].player)
-                    if (online[a$])
-                        online[a$].send(JSON.stringify({
-                            op: "offline",
-                            player: p$
-                        }));
-    }
-    console.log(`${p$} closed their websocket`);
+    const n$ = Object.keys(socket).find(n$=>socket[n$]==ws);    // find name, if any, assigned to this websocket
+    if (n$)                                                     // if name found,
+        delete socket[n$];                                          // delete name and its socket from list
+    console.log(`${n$}'s websocket closed`);
 }
 
 // Handle a websocket's message event
 function wsMessage(messageEvent) {
-    const ws = messageEvent.target;                             // recall sender's websocket
-    const msg = JSON.parse(messageEvent.data);                  // parse message from message event data
-    const p$ = Object.keys(online).find(p$=>online[p$]==ws);    // find player, if any, assigned to this websocket
-    switch (msg.op) {
-        case "ping":                                            // if op:"ping",
-            ws.send(JSON.stringify({                                // send "pong" reply to sender
-                op: "pong",
-            }));
-            console.log(`${p$} requested a pong`);
-            break;
-        case "login":                                           // if op:"login", player:p$,
-            for (const g$ in inplay)                                // send "online" message to affected players
-                if (inplay[g$].player.includes(msg.player))
-                    for (const a$ of inplay[g$].player)
-                        if (online[a$])
-                            online[a$].send(JSON.stringify({
-                                op: "online",
-                                player: msg.player
-                            }));
-            online[msg.player] = ws;                                // assign player to this websocket
-            console.log(`${msg.player} logged in`);
-            break;
-        case "open":                                            // if op:"open", game:g$, data:d$
-            inplay[msg.game] = {player:[p$], data:msg.data};        // create or replace inplay object
-            console.log(`${p$} opened game ${msg.game}`);
-            break;
-        case "join":                                            // if op:"join", game:g$
-            for (const a$ of inplay[msg.game].player)               // send "online" message to affected players
-                if (online[a$])
-                    online[a$].send(JSON.stringify({
-                        op: "online",
-                        player: p$
-                    }));
-            inplay[msg.game].player.push(p$);                       // add player to game's player array
-            console.log(`${p$} joined game ${msg.game}`);
-            break;
-        case "put":                                             // if op:"put", game:g$, data:d$,
-            inplay[msg.game].data = msg.data;                       // save game data
-            for (const a$ of inplay[msg.game].player)               // send "data" message to affected players
-                if (online[a$])
-                    online[a$].send(JSON.stringify({
-                        op: "data",
-                        game: msg.game,
-                        data: inplay[msg.game].data
-                    }));
-            console.log(`${p$} put data to game ${msg.game}`);
-            break;
-        case "get":                                             // if op:"get", game:g$,
-            ws.send(JSON.stringify({                                // send "data" message to sender
-                op: "data",
-                game: msg.game,
-                data: inplay[msg.game].data
-            }));
-            console.log(`${p$} got data from game ${msg.game}`);
-            break;
-        case "inplay":                                          // if op:"games",
-            ws.send(JSON.stringify({                                // send "games" message to sender
-                op: "inplay",
-                inplay: JSON.stringify(inplay)
-            }));
-            break;
-        default:                                                // if op is unrecognized, log msg
-            console.log(`${p$} received message '${msg}'`);
+    const ws = messageEvent.target;                             // recall this websocket
+    if (messageEvent.data == "ping")                            // if message event data is "ping",
+        ws.send("pong")                                             // respond with "pong"
+    else {                                                      // otherwise,
+        const data = JSON.parse(messageEvent.data);                 // parse message event data
+        if (!socket[data.src]) {                                    // if src is unregistered,
+            socket[data.src] = ws;                                      // register src
+            if (mQueue[data.src])                                       // if src has queued messages,
+                for (const med of mQueue[data.src])                         // for each queued message,
+                    socket[data.src].send(med);                                 // respond with the queued message
+            delete mQueue[data.src];                                    // delete src's message queue, if any
+        }
+        for (const dst of data.dst)                                 // for each dst,
+            if (socket[dst])                                            // if dst is registered,
+                socket[dst].send(messageEvent.data);                        // forward message to dst
+            else                                                      // otherwise,
+                if (!mQueue[dst])                                           // if dst doen't have a message queue
+                    mQueue[dst] = [messageEvent.data];                          // create one
+                else                                                        // otherwise,
+                    mQueue[dst].push(messageEvent.data);                        // add message to the queue
+        console.log(`src:${data.src}, dst:${data.dst}, msg:${data.msg}`);
     }
 }
 

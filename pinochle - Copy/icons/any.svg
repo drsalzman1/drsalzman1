@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   class="card"
+   face="JD"
+   height="2.0999999in"
+   preserveAspectRatio="none"
+   viewBox="-120 -168 201.59999 201.59999"
+   width="2.0999999in"
+   version="1.1"
+   id="svg5"
+   sodipodi:docname="any.svg"
+   inkscape:version="1.4.2 (f4327f4, 2025-05-13)"
+   inkscape:export-filename="any.png"
+   inkscape:export-xdpi="243.80954"
+   inkscape:export-ydpi="243.80954"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview5"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="in"
+     inkscape:zoom="2.5243506"
+     inkscape:cx="228.57364"
+     inkscape:cy="76.653378"
+     inkscape:window-width="2560"
+     inkscape:window-height="1411"
+     inkscape:window-x="-9"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg5"
+     inkscape:export-bgcolor="#ffffff00" />
+  <defs
+     id="defs2">
+    <symbol
+       id="SDJ"
+       viewBox="-600 -600 1200 1200"
+       preserveAspectRatio="xMinYMid">
+      <path
+         d="M -400,0 C -350,0 0,-450 0,-500 0,-450 350,0 400,0 350,0 0,450 0,500 0,450 -350,0 -400,0 Z"
+         fill="#ff0000"
+         id="path1" />
+    </symbol>
+    <symbol
+       id="VDJ"
+       viewBox="-500 -500 1000 1000"
+       preserveAspectRatio="xMinYMid">
+      <path
+         d="m 50,-460 h 200 m -100,0 v 710 a 200,200 0 0 1 -400,0 v -30"
+         stroke="#ff0000"
+         stroke-width="80"
+         stroke-linecap="square"
+         stroke-miterlimit="1.5"
+         fill="none"
+         id="path2" />
+    </symbol>
+    <mask
+       maskUnits="userSpaceOnUse"
+       id="mask9">
+      <rect
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-dasharray:none"
+         id="rect10"
+         width="134.39999"
+         height="201.60001"
+         x="-42"
+         y="-112"
+         mask="none" />
+    </mask>
+  </defs>
+  <g
+     id="g1"
+     transform="translate(-44.4,-56)"
+     mask="url(#mask9)">
+    <g
+       id="g12"
+       transform="translate(80.38,58.38)">
+      <rect
+         width="239"
+         height="335"
+         x="-119.5"
+         y="-167.5"
+         rx="12"
+         ry="12"
+         fill="#ffffff"
+         stroke="#000000"
+         id="rect2"
+         style="stroke-width:5.76;stroke-dasharray:none" />
+      <use
+         xlink:href="#VDJ"
+         height="70"
+         width="70"
+         x="-122"
+         y="-156"
+         id="use2" />
+      <use
+         xlink:href="#SDJ"
+         height="58.557999"
+         width="58.557999"
+         x="-116.279"
+         y="-81"
+         id="use3" />
+      <g
+         transform="scale(-1)"
+         id="g5">
+        <use
+           xlink:href="#VDJ"
+           height="70"
+           width="70"
+           x="-122"
+           y="-156"
+           id="use4" />
+        <use
+           xlink:href="#SDJ"
+           height="58.557999"
+           width="58.557999"
+           x="-116.279"
+           y="-81"
+           id="use5" />
+      </g>
+    </g>
+    <g
+       id="g11"
+       transform="translate(82.80213,41.883769)">
+      <rect
+         width="239"
+         height="335"
+         x="-54.72213"
+         y="-103.00377"
+         rx="12"
+         ry="12"
+         fill="#ffffff"
+         stroke="#000000"
+         id="rect2-4"
+         style="stroke-width:5.76;stroke-dasharray:none" />
+      <g
+         id="use2-8"
+         transform="matrix(0.07,0,0,0.07,-22.222129,-56.503772)">
+        <path
+           d="m -260,100 c 300,0 220,360 520,360 M -175,0 v -285 a 175,175 0 0 1 350,0 v 570 a 175,175 0 0 1 -350,0 z"
+           stroke="#000000"
+           stroke-width="80"
+           stroke-linecap="square"
+           stroke-miterlimit="1.5"
+           fill="none"
+           id="path8" />
+      </g>
+      <g
+         id="use3-8"
+         transform="matrix(0.04879833,0,0,0.04879833,-22.222129,12.775227)">
+        <path
+           d="m 0,-500 c 100,250 355,400 355,685 a 150,150 0 0 1 -300,0 10,10 0 0 0 -20,0 c 0,200 50,215 95,315 h -260 c 45,-100 95,-115 95,-315 a 10,10 0 0 0 -20,0 150,150 0 0 1 -300,0 c 0,-285 255,-435 355,-685 z"
+           fill="#000000"
+           id="path10" />
+      </g>
+      <g
+         transform="rotate(180,32.388936,32.248114)"
+         id="g5-2">
+        <g
+           id="use4-4"
+           transform="matrix(0.07,0,0,0.07,-87,-121)">
+          <path
+             d="m -260,100 c 300,0 220,360 520,360 M -175,0 v -285 a 175,175 0 0 1 350,0 v 570 a 175,175 0 0 1 -350,0 z"
+             stroke="#000000"
+             stroke-width="80"
+             stroke-linecap="square"
+             stroke-miterlimit="1.5"
+             fill="none"
+             id="path9" />
+        </g>
+        <g
+           id="use5-5"
+           transform="matrix(0.04879833,0,0,0.04879833,-87,-51.721001)">
+          <path
+             d="m 0,-500 c 100,250 355,400 355,685 a 150,150 0 0 1 -300,0 10,10 0 0 0 -20,0 c 0,200 50,215 95,315 h -260 c 45,-100 95,-115 95,-315 a 10,10 0 0 0 -20,0 150,150 0 0 1 -300,0 c 0,-285 255,-435 355,-685 z"
+             fill="#000000"
+             id="path11" />
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
