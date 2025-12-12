@@ -284,13 +284,15 @@ let card        = [                                     // card[c] = deck card c
     new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,
     new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C
 ];
-let cardImg     = [                                     // cardImg[v] = card value v image 
+let cardImg     = [                                     // cardImg[v] = card value v's image 
     new Image, new Image, new Image, new Image, new Image, 
     new Image, new Image, new Image, new Image, new Image, 
     new Image, new Image, new Image, new Image, new Image, 
     new Image, new Image, new Image, new Image, new Image, 
     new Image
 ];
+let cardCanvas  = [];                                   // cardCanvas[v] = card value v's offscreen canvas
+let cardContext = [];                                   // cardContext[v] = card value v's offscreen canvas context
 let bidder      = none;                                 // the player who is bidding or won the bid
 let bid         = [none, none, none, none];             // bid[p] = player p's bid (or none or pass)
 let est         = [typical, typical, typical, typical]; // est[p] = player p's estimated meld based on jump bids
@@ -1054,6 +1056,12 @@ function setSizes() {
     }
     canvas.width  = vw;
     canvas.height = vh;
+    for (let v = 0; v < cardSrc.length; v++) {
+        cardCanvas[v] = new OffscreenCanvas(cardw, cardh);
+        cardContext[v] = cardCanvas[v].getContext("2d");
+        cardContext[v].clearRect(0, 0, cardw, cardh);
+        cardContext[v].drawImage(cardImg[v], -cardw/2, -cardh/2, cardw, cardh);
+    }
 }
 
 // Return card number of top south card (or undefined) at x,y coordinates 
@@ -1091,7 +1099,7 @@ function frameEvent() {
     card.sort((a,b)=>a.z-b.z);
     context.clearRect(0, 0, vw, vh);
     for (let c = 0; c < deckCards; c++) {
-        const img = card[c].f? cardImg[card[c].v] : cardImg[back];
+        const img = card[c].f? cardCanvas[card[c].v] : cardCanvas[back];
         if (card[c].d)
             context.filter = "brightness(0.7)";
         if (now < card[c].fnsh.t)
