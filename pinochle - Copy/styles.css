@@ -244,7 +244,7 @@ body {
     float: right;
     margin: 0.4em;
     height: 1em;
-    filter: invert();
+    filter: invert(100%);
     display: none;
 }
 
@@ -287,7 +287,7 @@ body {
 
 #trumpColumn img {
     height: 0.8em;
-    filter: invert();
+    filter: invert(100%);
 }
 
 #bidButtons {
@@ -339,7 +339,7 @@ body {
     justify-content: space-around;
 }
 
-#playBtns input {
+#playBtn, #tossBtn {
     width: 4em;
     height: 1.3em;
     border: none;
@@ -349,25 +349,16 @@ body {
 #handText {
     width: 100%;
     display: none;
-    text-align: left;
-}
-
-#handTable {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
     text-align: center;
 }
 
-#nextDiv, #overDiv {
-    width: 100%;
-    margin: 0.2em;
-    text-align: center;
+#handText p {
+    margin-bottom: 0.8em;
 }
 
-#nextDiv input, #overDiv input {
-    width: 3em;
+#handBtn {
+    width: 4em;
+    margin-top: 0.4em;
     height: 1.3em;
     border: none;
     background-color: white;
@@ -434,6 +425,7 @@ body {
     width: 100svw;
     height: 100svh;
     text-align: center;
+    display: none;
     z-index: -100;
 }
 
@@ -496,7 +488,7 @@ body {
 
 .infoIcons img {
     height: 0.75em;
-    filter: invert();
+    filter: invert(100%);
     opacity: 100%;
 }
 

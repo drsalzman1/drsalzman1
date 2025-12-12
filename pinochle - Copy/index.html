@@ -145,51 +145,20 @@
                     <div><input type="button" value="Diamonds (9)" onclick="suitClicked(0) "></div>
                 </div>
                 <div id="playText">
-                    <div></div>
-                    <div></div>
-                    <div></div>
+                    <p></p>
+                    <p></p>
+                    <p></p>
                     <div id="playBtns">
-                        <input type="button" value="Play" onclick="playClicked(event)">
-                        <input type="button" value="Toss" onclick="playClicked(event)">
+                        <input id="playBtn" type="button" value="OK" onclick="playClicked()">
+                        <input id="tossBtn" type="button" value="Toss" onclick="tossClicked()">
                     </div>
                 </div>
                 <div id="handText">
-                    <div id="handTable">
-                        <div>
-                            <br>
-                            Old<br>
-                            Bid<br>
-                            Meld<br>
-                            Take<br>
-                            New
-                        </div>
-                        <div>
-                            <u>Us</u><br>
-                            <span id="usOld"></span><br>
-                            <span id="usBid"></span><br>
-                            <span id="usMeld"></span><br>
-                            <u><span id="usTake"></span></u><br>
-                            <span id="usNew"></span>
-                        </div>
-                        <div>
-                            <u>Them</u><br>
-                            <span id="themOld"></span><br>
-                            <span id="themBid"></span><br>
-                            <span id="themMeld"></span><br>
-                            <u><span id="themTake"></span></u><br>
-                            <span id="themNew"></span>
-                        </div>
-                    </div>
-                    <div id="nextDiv">
-                        <input type="button" value="Next" onclick="nextClicked()">
-                    </div>
-                    <div id="overDiv">
-                        <br>
-                        <span id="overText"></span><br>
-                        <br>
-                        <input type="button" value="Again" onclick="againClicked()">
-                        <input type="button" value="Quit" onclick="quitClicked()">
-                    </div>
+                    <p></p>
+                    <p></p>
+                    <p></p>
+                    <p></p>
+                    <input id="handBtn" type="button" value="OK" onclick="handClicked()">
                 </div>
                 <div id="iText">
                     <img class="blackClose" src="icons/close.svg" alt="close" onclick="iCloseClicked()">
@@ -198,355 +167,378 @@
                     <div id="iTake">Our take's 15 of 20 and their take's 15 of 20.</div>
                 </div>
             </div>
-            <div id="wGrid">
-                <div></div>
-                <div><img class="gIcon" src="ranks/ace.svg"     alt="ace">    </div>
-                <div><img class="gIcon" src="ranks/ten.svg"     alt="ten">    </div>
-                <div><img class="gIcon" src="ranks/king.svg"    alt="king">   </div>
-                <div><img class="gIcon" src="ranks/queen.svg"   alt="queen">  </div>
-                <div><img class="gIcon" src="ranks/jack.svg"    alt="jack">   </div>
-                <div><img class="gIcon" src="suits/spade.svg"   alt="spade">  </div>
-                <div><img class="count" src="icons/0-0.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/1-1.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/2-2.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/3-3.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/4-4.svg"     alt="count">  </div>
-                <div><img class="gIcon" src="suits/heart.svg"   alt="heart">  </div>
-                <div><img class="count" src="icons/0-0.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/1-1.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/2-2.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/3-3.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/4-4.svg"     alt="count">  </div>
-                <div><img class="gIcon" src="suits/club.svg"    alt="club">   </div>
-                <div><img class="count" src="icons/0-0.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/1-1.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/2-2.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/3-3.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/4-4.svg"     alt="count">  </div>
-                <div><img class="gIcon" src="suits/diamond.svg" alt="diamond"></div>
-                <div><img class="count" src="icons/0-0.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/1-1.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/2-2.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/3-3.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/4-4.svg"     alt="count">  </div>
-            </div>
-            <div id="nGrid">
-                <div></div>
-                <div><img class="gIcon" src="ranks/ace.svg"     alt="ace">    </div>
-                <div><img class="gIcon" src="ranks/ten.svg"     alt="ten">    </div>
-                <div><img class="gIcon" src="ranks/king.svg"    alt="king">   </div>
-                <div><img class="gIcon" src="ranks/queen.svg"   alt="queen">  </div>
-                <div><img class="gIcon" src="ranks/jack.svg"    alt="jack">   </div>
-                <div><img class="gIcon" src="suits/spade.svg"   alt="spade">  </div>
-                <div><img class="count" src="icons/0-0.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/1-1.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/2-2.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/3-3.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/4-4.svg"     alt="count">  </div>
-                <div><img class="gIcon" src="suits/heart.svg"   alt="heart">  </div>
-                <div><img class="count" src="icons/0-0.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/1-1.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/2-2.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/3-3.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/4-4.svg"     alt="count">  </div>
-                <div><img class="gIcon" src="suits/club.svg"    alt="club">   </div>
-                <div><img class="count" src="icons/0-0.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/1-1.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/2-2.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/3-3.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/4-4.svg"     alt="count">  </div>
-                <div><img class="gIcon" src="suits/diamond.svg" alt="diamond"></div>
-                <div><img class="count" src="icons/0-0.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/1-1.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/2-2.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/3-3.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/4-4.svg"     alt="count">  </div>
-            </div>
-            <div id="eGrid">
-                <div></div>
-                <div><img class="gIcon" src="ranks/ace.svg"     alt="ace">    </div>
-                <div><img class="gIcon" src="ranks/ten.svg"     alt="ten">    </div>
-                <div><img class="gIcon" src="ranks/king.svg"    alt="king">   </div>
-                <div><img class="gIcon" src="ranks/queen.svg"   alt="queen">  </div>
-                <div><img class="gIcon" src="ranks/jack.svg"    alt="jack">   </div>
-                <div><img class="gIcon" src="suits/spade.svg"   alt="spade">  </div>
-                <div><img class="count" src="icons/0-0.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/1-1.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/2-2.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/3-3.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/4-4.svg"     alt="count">  </div>
-                <div><img class="gIcon" src="suits/heart.svg"   alt="heart">  </div>
-                <div><img class="count" src="icons/0-0.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/1-1.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/2-2.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/3-3.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/4-4.svg"     alt="count">  </div>
-                <div><img class="gIcon" src="suits/club.svg"    alt="club">   </div>
-                <div><img class="count" src="icons/0-0.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/1-1.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/2-2.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/3-3.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/4-4.svg"     alt="count">  </div>
-                <div><img class="gIcon" src="suits/diamond.svg" alt="diamond"></div>
-                <div><img class="count" src="icons/0-0.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/1-1.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/2-2.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/3-3.svg"     alt="count">  </div>
-                <div><img class="count" src="icons/4-4.svg"     alt="count">  </div>
-            </div>
-            <div id="infoAreas">
-                <div id="wInfo">
-                    <div class="infoText">West</div>
-                    <div class="infoIcons">
-                        <img src="suits/spade.svg" alt="spade">
-                        <img src="suits/heart.svg" alt="heart">
-                        <img src="suits/club.svg" alt="club">
-                        <img src="suits/diamond.svg" alt="diamond">
-                    </div>
-                </div>
-                <div id="nInfo">
-                    <div class="infoText">North</div>
-                    <div class="infoIcons">
-                        <img src="suits/spade.svg" alt="spade">
-                        <img src="suits/heart.svg" alt="heart">
-                        <img src="suits/club.svg" alt="club">
-                        <img src="suits/diamond.svg" alt="diamond">
-                    </div>
-                </div>
-                <div id="eInfo">
-                    <div class="infoText">East</div>
-                    <div class="infoIcons">
-                        <img src="suits/spade.svg" alt="spade">
-                        <img src="suits/heart.svg" alt="heart">
-                        <img src="suits/club.svg" alt="club">
-                        <img src="suits/diamond.svg" alt="diamond">
-                    </div>
-                </div>
-                <div id="sInfo">
-                    <div class="infoText">South</div>
+        </div>
+        <div id="wGrid">
+            <div></div>
+            <div><img class="gIcon" src="ranks/ace.svg"     alt="ace">    </div>
+            <div><img class="gIcon" src="ranks/ten.svg"     alt="ten">    </div>
+            <div><img class="gIcon" src="ranks/king.svg"    alt="king">   </div>
+            <div><img class="gIcon" src="ranks/queen.svg"   alt="queen">  </div>
+            <div><img class="gIcon" src="ranks/jack.svg"    alt="jack">   </div>
+            <div><img class="gIcon" src="suits/spade.svg"   alt="spade">  </div>
+            <div><img class="count" src="icons/0-0.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/1-1.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/2-2.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/3-3.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/4-4.svg"     alt="count">  </div>
+            <div><img class="gIcon" src="suits/heart.svg"   alt="heart">  </div>
+            <div><img class="count" src="icons/0-0.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/1-1.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/2-2.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/3-3.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/4-4.svg"     alt="count">  </div>
+            <div><img class="gIcon" src="suits/club.svg"    alt="club">   </div>
+            <div><img class="count" src="icons/0-0.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/1-1.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/2-2.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/3-3.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/4-4.svg"     alt="count">  </div>
+            <div><img class="gIcon" src="suits/diamond.svg" alt="diamond"></div>
+            <div><img class="count" src="icons/0-0.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/1-1.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/2-2.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/3-3.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/4-4.svg"     alt="count">  </div>
+        </div>
+        <div id="nGrid">
+            <div></div>
+            <div><img class="gIcon" src="ranks/ace.svg"     alt="ace">    </div>
+            <div><img class="gIcon" src="ranks/ten.svg"     alt="ten">    </div>
+            <div><img class="gIcon" src="ranks/king.svg"    alt="king">   </div>
+            <div><img class="gIcon" src="ranks/queen.svg"   alt="queen">  </div>
+            <div><img class="gIcon" src="ranks/jack.svg"    alt="jack">   </div>
+            <div><img class="gIcon" src="suits/spade.svg"   alt="spade">  </div>
+            <div><img class="count" src="icons/0-0.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/1-1.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/2-2.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/3-3.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/4-4.svg"     alt="count">  </div>
+            <div><img class="gIcon" src="suits/heart.svg"   alt="heart">  </div>
+            <div><img class="count" src="icons/0-0.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/1-1.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/2-2.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/3-3.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/4-4.svg"     alt="count">  </div>
+            <div><img class="gIcon" src="suits/club.svg"    alt="club">   </div>
+            <div><img class="count" src="icons/0-0.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/1-1.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/2-2.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/3-3.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/4-4.svg"     alt="count">  </div>
+            <div><img class="gIcon" src="suits/diamond.svg" alt="diamond"></div>
+            <div><img class="count" src="icons/0-0.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/1-1.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/2-2.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/3-3.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/4-4.svg"     alt="count">  </div>
+        </div>
+        <div id="eGrid">
+            <div></div>
+            <div><img class="gIcon" src="ranks/ace.svg"     alt="ace">    </div>
+            <div><img class="gIcon" src="ranks/ten.svg"     alt="ten">    </div>
+            <div><img class="gIcon" src="ranks/king.svg"    alt="king">   </div>
+            <div><img class="gIcon" src="ranks/queen.svg"   alt="queen">  </div>
+            <div><img class="gIcon" src="ranks/jack.svg"    alt="jack">   </div>
+            <div><img class="gIcon" src="suits/spade.svg"   alt="spade">  </div>
+            <div><img class="count" src="icons/0-0.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/1-1.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/2-2.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/3-3.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/4-4.svg"     alt="count">  </div>
+            <div><img class="gIcon" src="suits/heart.svg"   alt="heart">  </div>
+            <div><img class="count" src="icons/0-0.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/1-1.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/2-2.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/3-3.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/4-4.svg"     alt="count">  </div>
+            <div><img class="gIcon" src="suits/club.svg"    alt="club">   </div>
+            <div><img class="count" src="icons/0-0.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/1-1.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/2-2.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/3-3.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/4-4.svg"     alt="count">  </div>
+            <div><img class="gIcon" src="suits/diamond.svg" alt="diamond"></div>
+            <div><img class="count" src="icons/0-0.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/1-1.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/2-2.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/3-3.svg"     alt="count">  </div>
+            <div><img class="count" src="icons/4-4.svg"     alt="count">  </div>
+        </div>
+        <div id="infoAreas">
+            <div id="wInfo">
+                <div class="infoText">West</div>
+                <div class="infoIcons">
+                    <img src="suits/spade.svg" alt="spade">
+                    <img src="suits/heart.svg" alt="heart">
+                    <img src="suits/club.svg" alt="club">
+                    <img src="suits/diamond.svg" alt="diamond">
                 </div>
             </div>
-            <div id="menuText">
-                <b>Double Deck Pinochle</b>
-                <img class="blackClose" src="icons/close.svg" alt="close" onclick="menuCloseClicked()"><br>
+            <div id="nInfo">
+                <div class="infoText">North</div>
+                <div class="infoIcons">
+                    <img src="suits/spade.svg" alt="spade">
+                    <img src="suits/heart.svg" alt="heart">
+                    <img src="suits/club.svg" alt="club">
+                    <img src="suits/diamond.svg" alt="diamond">
+                </div>
+            </div>
+            <div id="eInfo">
+                <div class="infoText">East</div>
+                <div class="infoIcons">
+                    <img src="suits/spade.svg" alt="spade">
+                    <img src="suits/heart.svg" alt="heart">
+                    <img src="suits/club.svg" alt="club">
+                    <img src="suits/diamond.svg" alt="diamond">
+                </div>
+            </div>
+            <div id="sInfo">
+                <div class="infoText">South</div>
+            </div>
+        </div>
+        <div id="menuText">
+            <b>Double Deck Pinochle</b>
+            <img class="blackClose" src="icons/close.svg" alt="close" onclick="menuCloseClicked()"><br>
+            <br>
+            <div onclick="reloadClicked()">
+                <img class="menuIcon" src="icons/refresh.svg" alt=""> Reload app
+            </div><br>
+            <div onclick="tutorClicked()">
+                <img class="menuIcon" src="icons/help.svg" alt=""> Show tutorial
+            </div><br>
+            <div onclick="aboutClicked()">
+                <img class="menuIcon" src="icons/info.svg" alt=""> Describe app
+            </div><br>
+            <div onclick="exitClicked()">
+                <img class="menuIcon" src="icons/exit.svg" alt=""> Exit app
+            </div><br>
+        </div>
+        <div id="tutorText">
+            <div>
+                <b>Double Deck Pinochle - Rules</b>
+                <img class="blackClose" src="icons/close.svg" alt="close" onclick="tutorCloseClicked()"><br>
                 <br>
-                <div onclick="reloadClicked()">
-                    <img class="menuIcon" src="icons/refresh.svg" alt=""> Reload app
-                </div><br>
-                <div onclick="tutorClicked()">
-                    <img class="menuIcon" src="icons/help.svg" alt=""> Show tutorial
-                </div><br>
-                <div onclick="aboutClicked()">
-                    <img class="menuIcon" src="icons/info.svg" alt=""> Describe app
-                </div><br>
-                <div onclick="exitClicked()">
-                    <img class="menuIcon" src="icons/exit.svg" alt=""> Exit app
-                </div><br>
-            </div>
-            <div id="tutorText">
-                <div>
-                    <b>Double Deck Pinochle - Rules</b>
-                    <img class="blackClose" src="icons/close.svg" alt="close" onclick="tutorCloseClicked()"><br>
-                    <br>
-                    The players are south (you), west (left opponent), north (partner across), and east (right opponent).
-                    The deck has 80 cards: 4 cards of each rank (ordered ace, ten, king, queen, jack) in each suit (spades, 
-                    hearts, clubs, diamonds).<br>
-                    <br>
-                    The dealer, initially chosen at random, deals the entire deck.
-                    The player to the left of dealer must bid at least 50 or pass.
-                    The next player to the left must bid higher (5 higher starting at 60) or pass. 
-                    Bidding continues until only one bidder remains.
-                    If the first three players pass, the fourth player (dealer) must bid at least 50.
-                    The final bidder picks a trump suit (which outranks the other suits) and plays first.<br>
-                    <br>
-                    The first player may lead any card.
-                    The next player to the left must follow the lead suit if possible, and if the lead's not been trumped, 
-                    must beat the high card in the lead suit if possible.
-                    If they can't follow the lead, they must play trump if possible, and beat any high trump if possible.
-                    If they can't follow the lead or play trump, they can play any card.
-                    Play continues until everyone's played a card.<br>
-                    <br>
-                    The winner then collects the trick, and if any cards remain in their hand, leads the next trick. 
-                    When the hand is over, the player to the left of dealer deals the next hand until the game is over.
-                    <br>
-                    <img class="nextIcon" src="icons/next.svg" alt="next" onclick="tutorNextClicked()">
-                </div>
-                <div>
-                    <b>Double Deck Pinochle - Meld</b>
-                    <img class="blackClose" src="icons/close.svg" alt="close" onclick="tutorCloseClicked()"><br>
-                    <br>
-                    Each player's meld comes from their hand:<br>
-                    <br><ul>
-                        <li>A (ace) in each suit (around):10; double:100</li>
-                        <li>K (king) in each suit:8; double:80</li>
-                        <li>Q (queen) in each suit:6; double:60</li>
-                        <li>J (jack) in each suit:4; double:40</li>
-                        <li>A, 10, K, Q, J (run) in trump:16; double:150</li>
-                        <li>Q of spades, J of diamonds:4; 2x:30; 3x:90</li>
-                        <li>K, Q in trump (not in run):4; double:8</li>
-                        <li>K, Q (marriage) in non-trump:2; double:4</li>
-                    </ul><br>
-                    For your convenience, the app displays your meld for each possible trump suit while you're bidding.<br>
-                    <br>
-                    A team's meld is the sum of each member's meld.
-                    If a team's meld is less than 20, their meld is 0.<br>
-                    <br>
-                    <img class="backIcon" src="icons/back.svg" alt="back" onclick="tutorBackClicked()">
-                    <img class="nextIcon" src="icons/next.svg" alt="next" onclick="tutorNextClicked()">
-                </div>
-                <div>
-                    <b>Double Deck Pinochle - Scoring</b>
-                    <img class="blackClose" src="icons/close.svg" alt="close" onclick="tutorCloseClicked()"><br>
-                    <br>
-                    After bidding, each player reveals their meld.
-                    Even if a player's team melds less than 20, the player must reveal if they have aces around.
-                    If a player wins the bid without a run or marriage in trump, they can't play (must toss) the hand.
-                    The bid winner may also choose to toss a hand.<br>
-                    <br>
-                    After each hand, each team counts their take.
-                    Each ace, ten and king is worth 1.
-                    Taking the last trick is worth 2.
-                    If a team's take is less than 20, their take is 0.<br>                 
-                    <br>
-                    Normally, each team's score increases by their meld plus take.
-                    However, if the bid-winning team's meld plus take is less than their bid, their score decreases by their bid.
-                    The first team to reach 500, wins.
-                    If both teams reach 500, the bid-winning team wins.<br>
-                    <br>
-                    <img class="backIcon" src="icons/back.svg" alt="back" onclick="tutorBackClicked()">
-                    <img class="nextIcon" src="icons/next.svg" alt="next" onclick="tutorNextClicked()">
-                </div>
-                <div>
-                    <b>Double Deck Pinochle - Communicating</b>
-                    <img class="blackClose" src="icons/close.svg" alt="close" onclick="tutorCloseClicked()"><br>
-                    <br>
-                    You're not allowed to directly communicate your cards or your strategy to your partner.
-                    This is called talking across the table.
-                    However, you can reveal certain information by the way you bid and play.<br>
-                    <br>
-                    This app uses jump bids.
-                    The app assumes you have typical meld (currently 14).
-                    If you start the bid at 52 or increase the bid by 2, the app assumes you have a marriage and 20 meld.
-                    If you start the bid at 53 or increase the bid by 3, the app assumes you have a marriage and 30 meld, etc.<br>
-                    <br>
-                    This app ignores indicators.
-                    If you play an ace on your partner's ace, the app assumes nothing.
-                    If you play a jack on your partner's ace, the app assumes nothing.<br>
-                    <br>
-                    This app offers a menu option to "reveal cards" to everyone.
-                    This allows you to <del>cheat</del> learn, but this app doesn't exploit the open hands.<br>
-                    <br>
-                    <img class="backIcon" src="icons/back.svg" alt="back" onclick="tutorBackClicked()">
-                    <img class="nextIcon" src="icons/next.svg" alt="next" onclick="tutorNextClicked()">
-                </div>
-                <div>
-                    <b>Double Deck Pinochle - Counts</b>
-                    <img class="blackClose" src="icons/close.svg" alt="close" onclick="tutorCloseClicked()"><br>
-                    <br>
-                    This app offers a menu option to "expose counts" of the minimum and maximum number of cards each player
-                    has revealed for each rank of each suit using rectangles:<br>
-                    <br><ul>
-                        <li>Black quadrants indicate the minimum number of cards in that player/rank/suit</li>
-                        <li>Black/gray quadrants indicate the maximum number of cards in that player/rank/suit</li>
-                        <li>Four white quadrants indicate there are no cards in that player/suit/rank</li>
-                    </ul><br>
-                    You know your own cards. 
-                    The other players reveal their cards when they lay down their meld, play a card,
-                    trump the lead suit, don't beat a high card, or don't follow the lead suit.<br>
-                    <br>
-                    You can see the number of trump cards remaining in the other players' hands and 
-                    a player's count summary by clicking on a player's hand. 
-                    The opacity of each suit icon indicates the player's cards:<br>
-                    <br><ul>
-                        <li>100% - definitely has an ace in that suit</li>
-                        <li>66% - may have an ace in that suit</li>
-                        <li>33% - doesn't have an ace in that suit</li>
-                        <li>0% - has no cards in that suit</li>
-                    </ul><br>
-                    <br>
-                    <img class="backIcon" src="icons/back.svg" alt="back" onclick="tutorBackClicked()">
-                    <img class="nextIcon" src="icons/next.svg" alt="next" onclick="tutorNextClicked()">
-                </div>
-                <div>
-                    <b>Double Deck Pinochle - Info</b>
-                    <img class="blackClose" src="icons/close.svg" alt="close" onclick="tutorCloseClicked()"><br>
-                    <br>
-                    During play, this app displays the trump suit as an icon in the upper right hand corner of the screen.<br>
-                    <br>
-                    You can tap this icon to display additional information such as:<br>
-                    <br><ul>
-                        <li>Trump suit</li>
-                        <li>Total cards per suit in other players' hands</li>
-                        <li>Points we've taken of the points we'll need</li>
-                        <li>Points they've taken of the points they'll need</li>
-                    </ul><br>
-                    <img class="backIcon" src="icons/back.svg" alt="back" onclick="tutorBackClicked()">
-                    <img class="nextIcon" src="icons/next.svg" alt="next" onclick="tutorNextClicked()">
-                </div>
-                <div>
-                    <b>Double Deck Pinochle - Strategy</b>
-                    <img class="blackClose" src="icons/close.svg" alt="close" onclick="tutorCloseClicked()"><br>
-                    <br>
-                    This app bids up to a limit based on its meld, its estimate of your meld (perhaps based on your jump bid),
-                    and its estimate of the strength of its playing hand.<br>
-                    <br>
-                    This app counts the cards that each player reveals as meld.
-                    For example, if you reveal a king of clubs but no queen of clubs, it knows you don't have any queens of clubs.
-                    This app also counts the cards that each player reveals during play.
-                    For example, if you play a jack of clubs on a king of clubs, it knows you don't have a ten or ace of clubs.
-                    This app offers a menu option to display such stats from your perspective without cheating.<br>
-                    <br>
-                    If the app estimates that its team can win the trick, it plays the card that it estimates will
-                    take the trick, 
-                    take the most points, 
-                    spend the fewest of its team's high and trump cards, and
-                    waste the most of its opponents' high and trump cards.
-                    If the app estimates that its team will lose the trick, it plays the card that it estimates will
-                    lose the fewest points, 
-                    waste the fewest of its team's high and trump cards, and
-                    waste the most of its opponents' high and trump cards.<br>
-                    <br>
-                    <img class="backIcon" src="icons/back.svg" alt="back" onclick="tutorBackClicked()">
-                    <img class="nextIcon" src="icons/next.svg" alt="next" onclick="tutorNextClicked()">
-                </div>
-                <div>
-                    <b>Double Deck Pinochle - Glossary</b>
-                    <img class="blackClose" src="icons/close.svg" alt="close" onclick="tutorCloseClicked()"><br>
-                    <br>
-                    <ul>
-                        <li>Players: south (you), west, north and east</li>
-                        <li>Teams: us (south, north) vs. them (east, west)</li>
-                        <li>Suit: spades, hearts, clubs, diamonds</li>
-                        <li>Rank: ace, ten, king, queen, jack (in that order)</li>
-                        <li>Deck: 80 cards - 4 of each rank in each suit</li>
-                        <li>Bid: compete for right to pick trump and lead</li>
-                        <li>Pass: withdraw from bidding</li>
-                        <li>Trump: the suit that outranks the other suits</li>
-                        <li>Play: place a card on the table</li>
-                        <li>Lead: the first card played</li>
-                        <li>Trick: the set of four played cards</li>
-                        <li>Meld: valuable sets of cards in a player's hand</li>
-                        <li>Around: one specific rank in each suit</li>
-                        <li>Marriage: king and queen in a suit</li>
-                        <li>Run: one of each rank in a suit</li>
-                        <li>Pinochle: queen of spades & jack of diamonds</li>
-                        <li>Take: points earned by the trick winner</li>
-                        <li>Toss: decide to not play a hand</li>
-                    </ul>
-                    <img class="backIcon" src="icons/back.svg" alt="back" onclick="tutorBackClicked()">
-                </div>
-            </div>
-            <div id="aboutText">
-                <b>Double Deck Pin <span id="vsText"></span></b>
+                The players are south (you), west (left opponent), north (partner across), and east (right opponent).
+                The deck has 80 cards: 4 cards of each rank (ordered ace, ten, king, queen, jack) in each suit (spades, 
+                hearts, clubs, diamonds).<br>
                 <br>
-                <img class="blackClose" src="icons/close.svg" alt="close" onclick="aboutCloseClicked()"><br>
-                This app was written by David Salzman based on the Salzman house rules.
-                You're welcome to enjoy this game, but not to reproduce it or modify it in any manner.<br>
+                The dealer, initially chosen at random, deals the entire deck.
+                The player to the left of dealer must bid at least 50 or pass.
+                The next player to the left must bid higher (5 higher starting at 60) or pass. 
+                Bidding continues until only one bidder remains.
+                If the first three players pass, the fourth player (dealer) must bid at least 50.
+                The final bidder picks a trump suit (which outranks the other suits) and plays first.<br>
                 <br>
-                If you have any comments or suggestions, please email me at salzman.apps@gmail.com.<br>
+                The first player may lead any card.
+                The next player to the left must follow the lead suit if possible, and if the lead's not been trumped, 
+                must beat the high card in the lead suit if possible.
+                If they can't follow the lead, they must play trump if possible, and beat any high trump if possible.
+                If they can't follow the lead or play trump, they can play any card.
+                Play continues until everyone's played a card.<br>
                 <br>
-                &copy; 2025 David Salzman
+                The winner then collects the trick, and if any cards remain in their hand, leads the next trick. 
+                When the hand is over, the player to the left of dealer deals the next hand until the game is over.
+                <br>
+                <img class="nextIcon" src="icons/next.svg" alt="next" onclick="tutorNextClicked()">
             </div>
+            <div>
+                <b>Double Deck Pinochle - Meld</b>
+                <img class="blackClose" src="icons/close.svg" alt="close" onclick="tutorCloseClicked()"><br>
+                <br>
+                Each player's meld comes from their hand:<br>
+                <br><ul>
+                    <li>A (ace) in each suit (around):10; double:100</li>
+                    <li>K (king) in each suit:8; double:80</li>
+                    <li>Q (queen) in each suit:6; double:60</li>
+                    <li>J (jack) in each suit:4; double:40</li>
+                    <li>A, 10, K, Q, J (run) in trump:16; double:150</li>
+                    <li>Q of spades, J of diamonds:4; 2x:30; 3x:90</li>
+                    <li>K, Q in trump (not in run):4; double:8</li>
+                    <li>K, Q (marriage) in non-trump:2; double:4</li>
+                </ul><br>
+                For your convenience, the app displays your meld for each possible trump suit while you're bidding.<br>
+                <br>
+                A team's meld is the sum of each member's meld.
+                If a team's meld is less than 20, their meld is 0.<br>
+                <br>
+                <img class="backIcon" src="icons/back.svg" alt="back" onclick="tutorBackClicked()">
+                <img class="nextIcon" src="icons/next.svg" alt="next" onclick="tutorNextClicked()">
+            </div>
+            <div>
+                <b>Double Deck Pinochle - Scoring</b>
+                <img class="blackClose" src="icons/close.svg" alt="close" onclick="tutorCloseClicked()"><br>
+                <br>
+                After bidding, each player reveals their meld.
+                Even if a player's team melds less than 20, the player must reveal if they have aces around.
+                If a player wins the bid without a run or marriage in trump, they can't play (must toss) the hand.
+                The bid winner may also choose to toss a hand.<br>
+                <br>
+                After each hand, each team counts their take.
+                Each ace, ten and king is worth 1.
+                Taking the last trick is worth 2.
+                If a team's take is less than 20, their take is 0.<br>                 
+                <br>
+                Normally, each team's score increases by their meld plus take.
+                However, if the bid-winning team's meld plus take is less than their bid, their score decreases by their bid.
+                The first team to reach 500, wins.
+                If both teams reach 500, the bid-winning team wins.<br>
+                <br>
+                <img class="backIcon" src="icons/back.svg" alt="back" onclick="tutorBackClicked()">
+                <img class="nextIcon" src="icons/next.svg" alt="next" onclick="tutorNextClicked()">
+            </div>
+            <div>
+                <b>Double Deck Pinochle - Communicating</b>
+                <img class="blackClose" src="icons/close.svg" alt="close" onclick="tutorCloseClicked()"><br>
+                <br>
+                You're not allowed to directly communicate your cards or your strategy to your partner.
+                This is called talking across the table.
+                However, you can reveal certain information by the way you bid and play.<br>
+                <br>
+                This app uses jump bids.
+                The app assumes you have typical meld (currently 14).
+                If you start the bid at 52 or increase the bid by 2, the app assumes you have a marriage and 20 meld.
+                If you start the bid at 53 or increase the bid by 3, the app assumes you have a marriage and 30 meld, etc.<br>
+                <br>
+                This app ignores indicators.
+                If you play an ace on your partner's ace, the app assumes nothing.
+                If you play a jack on your partner's ace, the app assumes nothing.<br>
+                <br>
+                This app offers a menu option to "reveal cards" to everyone.
+                This allows you to <del>cheat</del> learn, but this app doesn't exploit the open hands.<br>
+                <br>
+                <img class="backIcon" src="icons/back.svg" alt="back" onclick="tutorBackClicked()">
+                <img class="nextIcon" src="icons/next.svg" alt="next" onclick="tutorNextClicked()">
+            </div>
+            <div>
+                <b>Double Deck Pinochle - Counts</b>
+                <img class="blackClose" src="icons/close.svg" alt="close" onclick="tutorCloseClicked()"><br>
+                <br>
+                This app offers a menu option to "expose counts" of the minimum and maximum number of cards each player
+                has revealed for each rank of each suit using rectangles:<br>
+                <br><ul>
+                    <li>Black quadrants indicate the minimum number of cards in that player/rank/suit</li>
+                    <li>Black/gray quadrants indicate the maximum number of cards in that player/rank/suit</li>
+                    <li>Four white quadrants indicate there are no cards in that player/suit/rank</li>
+                </ul><br>
+                You know your own cards. 
+                The other players reveal their cards when they lay down their meld, play a card,
+                trump the lead suit, don't beat a high card, or don't follow the lead suit.<br>
+                <br>
+                You can see the number of trump cards remaining in the other players' hands and 
+                a player's count summary by clicking on a player's hand. 
+                The opacity of each suit icon indicates the player's cards:<br>
+                <br><ul>
+                    <li>100% - definitely has an ace in that suit</li>
+                    <li>66% - may have an ace in that suit</li>
+                    <li>33% - doesn't have an ace in that suit</li>
+                    <li>0% - has no cards in that suit</li>
+                </ul><br>
+                <br>
+                <img class="backIcon" src="icons/back.svg" alt="back" onclick="tutorBackClicked()">
+                <img class="nextIcon" src="icons/next.svg" alt="next" onclick="tutorNextClicked()">
+            </div>
+            <div>
+                <b>Double Deck Pinochle - Info</b>
+                <img class="blackClose" src="icons/close.svg" alt="close" onclick="tutorCloseClicked()"><br>
+                <br>
+                During play, this app displays the trump suit as an icon in the upper right hand corner of the screen.<br>
+                <br>
+                You can tap this icon to display additional information such as:<br>
+                <br><ul>
+                    <li>Trump suit</li>
+                    <li>Total cards per suit in other players' hands</li>
+                    <li>Points we've taken of the points we'll need</li>
+                    <li>Points they've taken of the points they'll need</li>
+                </ul><br>
+                <img class="backIcon" src="icons/back.svg" alt="back" onclick="tutorBackClicked()">
+                <img class="nextIcon" src="icons/next.svg" alt="next" onclick="tutorNextClicked()">
+            </div>
+            <div>
+                <b>Double Deck Pinochle - Strategy</b>
+                <img class="blackClose" src="icons/close.svg" alt="close" onclick="tutorCloseClicked()"><br>
+                <br>
+                This app bids up to a limit based on its meld, its estimate of your meld (perhaps based on your jump bid),
+                and its estimate of the strength of its playing hand.<br>
+                <br>
+                This app counts the cards that each player reveals as meld.
+                For example, if you reveal a king of clubs but no queen of clubs, it knows you don't have any queens of clubs.
+                This app also counts the cards that each player reveals during play.
+                For example, if you play a jack of clubs on a king of clubs, it knows you don't have a ten or ace of clubs.
+                This app offers a menu option to display such stats from your perspective without cheating.<br>
+                <br>
+                If the app estimates that its team can win the trick, it plays the card that it estimates will
+                take the trick, 
+                take the most points, 
+                spend the fewest of its team's high and trump cards, and
+                waste the most of its opponents' high and trump cards.
+                If the app estimates that its team will lose the trick, it plays the card that it estimates will
+                lose the fewest points, 
+                waste the fewest of its team's high and trump cards, and
+                waste the most of its opponents' high and trump cards.<br>
+                <br>
+                <img class="backIcon" src="icons/back.svg" alt="back" onclick="tutorBackClicked()">
+                <img class="nextIcon" src="icons/next.svg" alt="next" onclick="tutorNextClicked()">
+            </div>
+            <div>
+                <b>Double Deck Pinochle - Glossary</b>
+                <img class="blackClose" src="icons/close.svg" alt="close" onclick="tutorCloseClicked()"><br>
+                <br>
+                <ul>
+                    <li>Players: south (you), west, north and east</li>
+                    <li>Teams: us (south, north) vs. them (east, west)</li>
+                    <li>Suit: spades, hearts, clubs, diamonds</li>
+                    <li>Rank: ace, ten, king, queen, jack (in that order)</li>
+                    <li>Deck: 80 cards - 4 of each rank in each suit</li>
+                    <li>Bid: compete for right to pick trump and lead</li>
+                    <li>Pass: withdraw from bidding</li>
+                    <li>Trump: the suit that outranks the other suits</li>
+                    <li>Play: place a card on the table</li>
+                    <li>Lead: the first card played</li>
+                    <li>Trick: the set of four played cards</li>
+                    <li>Meld: valuable sets of cards in a player's hand</li>
+                    <li>Around: one specific rank in each suit</li>
+                    <li>Marriage: king and queen in a suit</li>
+                    <li>Run: one of each rank in a suit</li>
+                    <li>Pinochle: queen of spades & jack of diamonds</li>
+                    <li>Take: points earned by the trick winner</li>
+                    <li>Toss: decide to not play a hand</li>
+                </ul>
+                <img class="backIcon" src="icons/back.svg" alt="back" onclick="tutorBackClicked()">
+            </div>
+        </div>
+        <div id="aboutText">
+            <b>Double Deck Pin <span id="vsText"></span></b>
+            <br>
+            <img class="blackClose" src="icons/close.svg" alt="close" onclick="aboutCloseClicked()"><br>
+            This app was written by David Salzman based on the Salzman house rules.
+            You're welcome to enjoy this game, but not to reproduce it or modify it in any manner.<br>
+            <br>
+            If you have any comments or suggestions, please email me at salzman.apps@gmail.com.<br>
+            <br>
+            &copy; 2025 David Salzman
+        </div>
+        <div id="cardImages" style="display:none">
+            <img src="cards/jd.svg" alt="jack of diamonds">
+            <img src="cards/qd.svg" alt="queen of diamonds">
+            <img src="cards/kd.svg" alt="king of diamonds">
+            <img src="cards/td.svg" alt="ten of diamonds">
+            <img src="cards/ad.svg" alt="ace of diamonds">
+            <img src="cards/jc.svg" alt="jack of clubs">
+            <img src="cards/qc.svg" alt="queen of clubs">
+            <img src="cards/kc.svg" alt="king of clubs">
+            <img src="cards/tc.svg" alt="ten of clubs">
+            <img src="cards/ac.svg" alt="ace of clubs">
+            <img src="cards/jh.svg" alt="jack of hearts">
+            <img src="cards/qh.svg" alt="queen of hearts">
+            <img src="cards/kh.svg" alt="king of hearts">
+            <img src="cards/th.svg" alt="ten of hearts">
+            <img src="cards/ah.svg" alt="ace of hearts">
+            <img src="cards/js.svg" alt="jack of spades">
+            <img src="cards/qs.svg" alt="queen of spades">
+            <img src="cards/ks.svg" alt="king of spades">
+            <img src="cards/ts.svg" alt="ten of spades">
+            <img src="cards/as.svg" alt="ace of spades">
+            <img src="cards/gb.svg" alt="gray back">
         </div>
     </body>
 </html>

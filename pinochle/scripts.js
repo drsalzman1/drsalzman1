@@ -43,6 +43,14 @@ const value$    = ["J♦","Q♦","K♦","T♦","A♦","J♣","Q♣","K♣","T♣
 const deckCards = 80;
 const handCards = deckCards / players;
 
+// cardSrc[v] = card image source for card value v
+const cardSrc   = [
+    "cards/jd.svg", "cards/qd.svg", "cards/kd.svg", "cards/td.svg", "cards/ad.svg",
+    "cards/jc.svg", "cards/qc.svg", "cards/kc.svg", "cards/tc.svg", "cards/ac.svg",
+    "cards/jh.svg", "cards/qh.svg", "cards/kh.svg", "cards/th.svg", "cards/ah.svg",
+    "cards/js.svg", "cards/qs.svg", "cards/ks.svg", "cards/ts.svg", "cards/as.svg",
+    "cards/gb.svg"
+];
 
 // suit[v] = suit of card value v
 const suit      = [
@@ -211,7 +219,7 @@ const wGrid     = document.getElementById("wGrid");
 const nGrid     = document.getElementById("nGrid");
 const eGrid     = document.getElementById("eGrid");
 const count     = document.querySelectorAll(".count");
-const cardImg   = document.querySelectorAll("#cardImages img");
+//const cardImg   = document.querySelectorAll("#cardImages img");
 
 // Communication channel with service worker
 const channel = new BroadcastChannel("Pinochle");
@@ -275,6 +283,13 @@ let card        = [                                     // card[c] = deck card c
     new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,
     new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,
     new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C
+];
+let cardImg     = [                                     // cardImg[v] = card value v image 
+    new Image, new Image, new Image, new Image, new Image, 
+    new Image, new Image, new Image, new Image, new Image, 
+    new Image, new Image, new Image, new Image, new Image, 
+    new Image, new Image, new Image, new Image, new Image, 
+    new Image
 ];
 let bidder      = none;                                 // the player who is bidding or won the bid
 let bid         = [none, none, none, none];             // bid[p] = player p's bid (or none or pass)
@@ -1086,8 +1101,7 @@ function frameEvent() {
             context.rotate(card[c].strt.r);
             context.drawImage(img, -cardw/2, -cardh/2, cardw, cardh);
             context.resetTransform();
-        }
-        if (now >= card[c].fnsh.t) {
+        } else if (now >= card[c].fnsh.t) {
             context.translate(card[c].fnsh.x, card[c].fnsh.y);
             context.rotate(card[c].fnsh.r);
             context.drawImage(img, -cardw/2, -cardh/2, cardw, cardh);
@@ -1095,8 +1109,7 @@ function frameEvent() {
             card[c].strt.x = card[c].fnsh.x;
             card[c].strt.y = card[c].fnsh.y;
             card[c].strt.r = card[c].fnsh.r;
-        }
-        if (now > card[c].strt.t && now < card[c].fnsh.t) {
+        } else if (now > card[c].strt.t && now < card[c].fnsh.t) {
             const ps = (card[c].fnsh.t - now) / (card[c].fnsh.t - card[c].strt.t);
             const pf = (now - card[c].strt.t) / (card[c].fnsh.t - card[c].strt.t);
             const x = card[c].strt.x*ps + card[c].fnsh.x*pf;
@@ -1111,6 +1124,8 @@ function frameEvent() {
             context.filter = "brightness(1.0)";
     }
     card.sort((a,b)=>a.c-b.c);
+    if (performance.now()-now>2)
+        console.log(performance.now()-now);
     if (!done)
         requestAnimationFrame(frameEvent);
     else {
@@ -1145,10 +1160,10 @@ function handEnded() {
         handPara[0].innerHTML = `You lost your bid (${ourBid}) because ` + 
             (ourMeld<20? `your meld (${ourMeld}) was less than 20.` :
             (ourTake<20? `your take (${ourTake}) was less than 20.` :
-            `your meld (${ourMeld}) plus your take (${ourTake}) was less than your bid (${ourBid}).`));
+            `your meld (${ourMeld}) and take (${ourTake}) were less than your bid (${ourBid}).`));
     } else if (us[bidder]) {
         ourScore = ourScore + ourMeld + ourTake;
-        handPara[0].innerHTML = `You won your meld (${ourMeld}) plus your take (${ourTake}) because ` +
+        handPara[0].innerHTML = `You won your meld (${ourMeld}) and take (${ourTake}) because ` +
             `you made your bid (${ourBid}).`;
     } else if (them[bidder] && tossHand) {
         theirScore = theirScore - theirBid;
@@ -1159,10 +1174,10 @@ function handEnded() {
         handPara[0].innerHTML = `They lost their bid (${theirBid}) because ` + 
             (theirMeld<20? `their meld (${theirMeld}) was less than 20.` :
             (theirTake<20? `their take (${theirTake}) was less than 20.` :
-            `their meld (${theirMeld}) plus their take (${theirTake}) was less than their bid (${theirBid}).`));
+            `their meld (${theirMeld}) and their take (${theirTake}) were less than their bid (${theirBid}).`));
     } else if (them[bidder]) {
         theirScore = theirScore + theirMeld + theirTake;
-        handPara[0].innerHTML = `They won their meld (${theirMeld}) plus their take (${theirTake}) because ` +
+        handPara[0].innerHTML = `They won their meld (${theirMeld}) and take (${theirTake}) because ` +
             `they made their bid (${theirBid}).`;
     }
     if (us[bidder] && tossHand && theirMeld<20) {
@@ -1183,7 +1198,7 @@ function handEnded() {
             `they won their take (${theirTake}) because it was at least 20.`;
     } else if (us[bidder] && !tossHand && theirMeld>=20 && theirTake>=20) {
         theirScore = theirScore + theirMeld + theirTake;
-        handPara[1].innerHTML = `They won their meld (${theirMeld}) and their take (${theirTake}) because ` +
+        handPara[1].innerHTML = `They won their meld (${theirMeld}) and take (${theirTake}) because ` +
             `they were both at least 20.`;
     } else if (them[bidder] && tossHand && ourMeld<20) {
         ourScore = ourScore;
@@ -1203,7 +1218,7 @@ function handEnded() {
             `we won our take (${ourTake}) because it was at least 20.`;
     } else if (them[bidder] && !tossHand && ourMeld>=20 && ourTake>=20) {
         ourScore = ourScore + ourMeld + ourTake;
-        handPara[1].innerHTML = `We won our meld (${ourMeld}) and our take (${ourTake}) because ` +
+        handPara[1].innerHTML = `We won our meld (${ourMeld}) and take (${ourTake}) because ` +
             `they were both at least 20.`;
     }
     handPara[2].innerHTML = `Your score is now ${ourScore}.<br>Their score is now ${theirScore}.`;    
@@ -2343,6 +2358,8 @@ function loaded() {
     log("--> loaded");
 
     // Initialize constants
+    for (let v = 0; v < cardSrc.length; v++)
+        cardImg[v].src = cardSrc[v];
     menuIcon.draggable = false;
     setSizes();
     vh0 = vh;
