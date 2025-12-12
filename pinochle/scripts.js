@@ -1063,10 +1063,15 @@ function setSizes() {
     canvas.width  = vw;
     canvas.height = vh;
     for (let v = 0; v < cardSrc.length; v++) {
-        cardCanvas[v].width = cardw;
-        cardCanvas[v].height = cardh;
+        cardCanvas[v].width = Math.round(cardw)+1;
+        cardCanvas[v].height = Math.round(cardh)+1;
         cardContext[v] = cardCanvas[v].getContext("2d");
-        cardContext[v].drawImage(cardImg[v], 0, 0, cardw, cardh);
+        //cardContext[v].fillStyle = "white";
+        //cardContext[v].lineWidth = 1;
+        //cardContext[v].roundRect(0.5, 0.5, Math.round(cardw)-1, Math.round(cardh)-1, 0.4*em);
+        //cardContext[v].fill();
+        //cardContext[v].stroke();
+        cardContext[v].drawImage(cardImg[v], 0.5, 0.5, Math.round(cardw)+1, Math.round(cardh)+1);
     }
 }
 
@@ -1111,14 +1116,14 @@ function frameEvent() {
         if (now < card[c].fnsh.t)
             done = false;
         if (now <= card[c].strt.t) {
-            context.translate(card[c].strt.x, card[c].strt.y);
+            context.translate(Math.round(card[c].strt.x), Math.round(card[c].strt.y));
             context.rotate(card[c].strt.r);
-            context.drawImage(img, -cardw/2, -cardh/2, cardw, cardh);
+            context.drawImage(img, Math.round(-cardw/2), Math.round(-cardh/2));
             context.resetTransform();
         } else if (now >= card[c].fnsh.t) {
-            context.translate(card[c].fnsh.x, card[c].fnsh.y);
+            context.translate(Math.round(card[c].fnsh.x), Math.round(card[c].fnsh.y));
             context.rotate(card[c].fnsh.r);
-            context.drawImage(img, -cardw/2, -cardh/2, cardw, cardh);
+            context.drawImage(img, Math.round(-cardw/2), Math.round(-cardh/2));
             context.resetTransform();
             card[c].strt.x = card[c].fnsh.x;
             card[c].strt.y = card[c].fnsh.y;
@@ -1129,9 +1134,9 @@ function frameEvent() {
             const x = card[c].strt.x*ps + card[c].fnsh.x*pf;
             const y = card[c].strt.y*ps + card[c].fnsh.y*pf;
             const r = card[c].strt.r*ps + card[c].fnsh.r*pf;
-            context.translate(x, y);
+            context.translate(Math.round(x), Math.round(y));
             context.rotate(r);
-            context.drawImage(img, -cardw/2, -cardh/2, cardw, cardh);
+            context.drawImage(img, Math.round(-cardw/2), Math.round(-cardh/2));
             context.resetTransform();
         }
         if (card[c].d)
