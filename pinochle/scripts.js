@@ -291,7 +291,13 @@ let cardImg     = [                                     // cardImg[v] = card val
     new Image, new Image, new Image, new Image, new Image, 
     new Image
 ];
-let cardCanvas  = [];                                   // cardCanvas[v] = card value v's offscreen canvas
+let cardCanvas  = [                                     // cardCanvas[v] = card value v's offscreen canvas
+    new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), 
+    new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), 
+    new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), 
+    new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), 
+    new OffscreenCanvas(0,0), new OffscreenCanvas(0,0)
+];
 let cardContext = [];                                   // cardContext[v] = card value v's offscreen canvas context
 let bidder      = none;                                 // the player who is bidding or won the bid
 let bid         = [none, none, none, none];             // bid[p] = player p's bid (or none or pass)
@@ -1057,10 +1063,10 @@ function setSizes() {
     canvas.width  = vw;
     canvas.height = vh;
     for (let v = 0; v < cardSrc.length; v++) {
-        cardCanvas[v] = new OffscreenCanvas(cardw, cardh);
+        cardCanvas[v].width = cardw;
+        cardCanvas[v].height = cardh;
         cardContext[v] = cardCanvas[v].getContext("2d");
-        cardContext[v].clearRect(0, 0, cardw, cardh);
-        cardContext[v].drawImage(cardImg[v], -cardw/2, -cardh/2, cardw, cardh);
+        cardContext[v].drawImage(cardImg[v], 0, 0, cardw, cardh);
     }
 }
 
