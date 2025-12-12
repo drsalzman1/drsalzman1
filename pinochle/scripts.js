@@ -1063,10 +1063,10 @@ function setSizes() {
     canvas.width  = vw;
     canvas.height = vh;
     for (let v = 0; v < cardSrc.length; v++) {
-        cardCanvas[v].width = Math.round(cardw)+1;
-        cardCanvas[v].height = Math.round(cardh)+1;
+        cardCanvas[v].width = Math.round(cardw);
+        cardCanvas[v].height = Math.round(cardh);
         cardContext[v] = cardCanvas[v].getContext("2d");
-        cardContext[v].drawImage(cardImg[v], 0.5, 0.5, Math.round(cardw), Math.round(cardh));
+        cardContext[v].drawImage(cardImg[v], 0, 0, Math.round(cardw), Math.round(cardh));
     }
 }
 
