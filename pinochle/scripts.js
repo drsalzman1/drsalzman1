@@ -996,8 +996,8 @@ function locateCards() {
                 n = card[c].g==hand||card[c].g==bump? n+1 : n;
             v = 0;
         }
-        card[c].gone.x = [-cardh/2, vw/2, vw+cardh/2, vw/2][p];
-        card[c].gone.y = [vh/2, -cardh/2, vh/2, vh+cardh/2][p];
+        card[c].gone.x = [-cardh/2-1, vw/2, vw+cardh/2+1, vw/2][p];
+        card[c].gone.y = [vh/2, -cardh/2-1, vh/2, vh+cardh/2+1][p];
         card[c].gone.r = [rWest, rNorth, rEast, rSouth][p];
         card[c].heap.x = [cardw+hpad, vw/2, vw-cardw-hpad, vw/2][p] + (Math.random()-0.5)*cardw/2;
         card[c].heap.y = [vh/2, cardw+vpad, vh/2, vh-cardw-vpad][p] + (Math.random()-0.5)*cardw/2;
