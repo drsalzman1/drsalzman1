@@ -1077,7 +1077,8 @@ function frameEvent() {
     context.clearRect(0, 0, vw, vh);
     for (let c = 0; c < deckCards; c++) {
         const img = card[c].f? cardImg[card[c].v] : cardImg[back];
-        context.filter = card[c].d? "brightness(0.7)" : "brightness(1.0)";
+        if (card[c].d)
+            context.filter = "brightness(0.7)";
         if (now < card[c].fnsh.t)
             done = false;
         if (now <= card[c].strt.t) {
@@ -1106,6 +1107,8 @@ function frameEvent() {
             context.drawImage(img, -cardw/2, -cardh/2, cardw, cardh);
             context.resetTransform();
         }
+        if (card[c].d)
+            context.filter = "brightness(1.0)";
     }
     card.sort((a,b)=>a.c-b.c);
     if (!done)
