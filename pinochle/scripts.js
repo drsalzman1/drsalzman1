@@ -1066,12 +1066,7 @@ function setSizes() {
         cardCanvas[v].width = Math.round(cardw)+1;
         cardCanvas[v].height = Math.round(cardh)+1;
         cardContext[v] = cardCanvas[v].getContext("2d");
-        //cardContext[v].fillStyle = "white";
-        //cardContext[v].lineWidth = 1;
-        //cardContext[v].roundRect(0.5, 0.5, Math.round(cardw)-1, Math.round(cardh)-1, 0.4*em);
-        //cardContext[v].fill();
-        //cardContext[v].stroke();
-        cardContext[v].drawImage(cardImg[v], 0.5, 0.5, Math.round(cardw)+1, Math.round(cardh)+1);
+        cardContext[v].drawImage(cardImg[v], 0.5, 0.5, Math.round(cardw), Math.round(cardh));
     }
 }
 
@@ -1173,7 +1168,7 @@ function handEnded() {
     if (us[bidder] && tossHand) {
         ourScore = ourScore - ourBid;
         handPara[0].innerHTML = `You lost your bid (${ourBid}) because ` +
-            `${bidder==south?"You":player$[bidder]} tossed due to ${mustToss?"no trump marriage":"insufficient meld"}.`;
+            `${bidder==south?"You":player$[bidder]} tossed due to ${mustToss?`no trump marriage`:`insufficient meld (${ourMeld})`}.`;
     } else if (us[bidder] && (ourMeld<20 || ourTake<20 || ourMeld+ourTake<ourBid)) {
         ourScore = ourScore - ourBid;
         handPara[0].innerHTML = `You lost your bid (${ourBid}) because ` + 
@@ -1187,7 +1182,7 @@ function handEnded() {
     } else if (them[bidder] && tossHand) {
         theirScore = theirScore - theirBid;
         handPara[0].innerHTML = `They lost their bid (${theirBid}) because ` +
-            `${player$[bidder]} tossed in the hand due to ${mustToss?"no trump marriage":"insufficient meld"}.`;
+            `${player$[bidder]} tossed in the hand due to ${mustToss?`no trump marriage`:`insufficient meld (${theirMeld})`}.`;
     } else if (them[bidder] && (theirMeld<20 || theirTake<20 || theirMeld+theirTake<theirBid)) {
         theirScore = theirScore - theirBid;
         handPara[0].innerHTML = `They lost their bid (${theirBid}) because ` + 
@@ -1218,7 +1213,7 @@ function handEnded() {
     } else if (us[bidder] && !tossHand && theirMeld>=20 && theirTake>=20) {
         theirScore = theirScore + theirMeld + theirTake;
         handPara[1].innerHTML = `They won their meld (${theirMeld}) and take (${theirTake}) because ` +
-            `they were both at least 20.`;
+            `they were at least 20.`;
     } else if (them[bidder] && tossHand && ourMeld<20) {
         ourScore = ourScore;
         handPara[1].innerHTML = `We didn't win our meld (${ourMeld}) because ` +
@@ -1238,7 +1233,7 @@ function handEnded() {
     } else if (them[bidder] && !tossHand && ourMeld>=20 && ourTake>=20) {
         ourScore = ourScore + ourMeld + ourTake;
         handPara[1].innerHTML = `We won our meld (${ourMeld}) and take (${ourTake}) because ` +
-            `they were both at least 20.`;
+            `they were at least 20.`;
     }
     handPara[2].innerHTML = `Your score is now ${ourScore}.<br>Their score is now ${theirScore}.`;    
     dealer = next[dealer];
