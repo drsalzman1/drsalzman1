@@ -318,7 +318,7 @@ let vpitch      = 0;                                    // vertical card pitch f
 
 // Log debugText on console (comment out when done debugging)
 function log(debugText = "") {
-    console.log(debugText);
+    // console.log(debugText);
 }
 
 // Return value(s) of player x, array x, or NodeList x offset by "left" players
@@ -1135,41 +1135,41 @@ function handEnded() {
     infoAreas.style.display = "none";
     if (us[bidder] && tossHand) {
         ourScore = ourScore - ourBid;
-        handPara[0].innerHTML = `You lost your bid ${ourBid} because ` +
+        handPara[0].innerHTML = `You lost your bid (${ourBid}) because ` +
             `${bidder==south?"You":player$[bidder]} tossed due to ${mustToss?"no trump marriage":"insufficient meld"}.`;
     } else if (us[bidder] && (ourMeld<20 || ourTake<20 || ourMeld+ourTake<ourBid)) {
         ourScore = ourScore - ourBid;
-        handPara[0].innerHTML = `You lost your bid ${ourBid} because ` + 
+        handPara[0].innerHTML = `You lost your bid (${ourBid}) because ` + 
             (ourMeld<20? `your meld (${ourMeld}) was less than 20.` :
             (ourTake<20? `your take (${ourTake}) was less than 20.` :
             `your meld (${ourMeld}) plus your take (${ourTake}) was less than your bid (${ourBid}).`));
     } else if (us[bidder]) {
         ourScore = ourScore + ourMeld + ourTake;
-        handPara[0].innerHTML = `You won your meld ${ourMeld} plus your take ${ourTake} because ` +
-            `they totaled ${ourMeld+ourTake} at least your bid (${ourBid}).`;
+        handPara[0].innerHTML = `You won your meld (${ourMeld}) plus your take (${ourTake}) because ` +
+            `you made your bid (${ourBid}).`;
     } else if (them[bidder] && tossHand) {
         theirScore = theirScore - theirBid;
-        handPara[0].innerHTML = `They lost their bid ${theirBid} because ` +
+        handPara[0].innerHTML = `They lost their bid (${theirBid}) because ` +
             `${player$[bidder]} tossed in the hand due to ${mustToss?"no trump marriage":"insufficient meld"}.`;
     } else if (them[bidder] && (theirMeld<20 || theirTake<20 || theirMeld+theirTake<theirBid)) {
         theirScore = theirScore - theirBid;
-        handPara[0].innerHTML = `They lost their bid ${theirBid} because ` + 
+        handPara[0].innerHTML = `They lost their bid (${theirBid}) because ` + 
             (theirMeld<20? `their meld (${theirMeld}) was less than 20.` :
             (theirTake<20? `their take (${theirTake}) was less than 20.` :
             `their meld (${theirMeld}) plus their take (${theirTake}) was less than their bid (${theirBid}).`));
     } else if (them[bidder]) {
         theirScore = theirScore + theirMeld + theirTake;
-        handPara[0].innerHTML = `They won their meld ${theirMeld} plus their take ${theirTake} because ` +
-            `they totaled ${theirMeld+theirTake} least their bid (${theirBid}).`;
+        handPara[0].innerHTML = `They won their meld (${theirMeld}) plus their take (${theirTake}) because ` +
+            `they made their bid (${theirBid}).`;
     }
     if (us[bidder] && tossHand && theirMeld<20) {
         theirScore = theirScore;
         handPara[1].innerHTML = `They didn't win their meld (${theirMeld}) because `+
-            `it was less than 20, and they didn't win any take.`;
+            `it was less than 20.`;
     } else if (us[bidder] && tossHand && theirMeld>=20) {
         theirScore = theirScore + theirMeld;
         handPara[1].innerHTML = `They won their meld (${theirMeld}) because ` +
-            `it was at least 20, but they didn't win any take.`;
+            `it was at least 20.`;
     } else if (us[bidder] && !tossHand && theirTake<20) {
         theirScore = theirScore;
         handPara[1].innerHTML = `They didn't win their meld (${theirMeld}) or take (${theirTake}) because ` +
@@ -1185,11 +1185,11 @@ function handEnded() {
     } else if (them[bidder] && tossHand && ourMeld<20) {
         ourScore = ourScore;
         handPara[1].innerHTML = `We didn't win our meld (${ourMeld}) because ` +
-            `our meld was less than 20.`;
+            `it was less than 20.`;
     } else if (them[bidder] && tossHand && ourMeld>=20) {
         ourScore = ourScore + ourMeld;
         handPara[1].innerHTML = `We won our meld (${ourMeld}) because ` +
-            `they tossed and our meld was at least 20.`;
+            `it was at least 20.`;
     } else if (them[bidder] && !tossHand && ourTake<20) {
         ourScore = ourScore;
         handPara[1].innerHTML = `We didn't win our meld (${ourMeld}) or take (${ourTake}) because ` +
