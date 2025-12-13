@@ -536,6 +536,19 @@ body {
     height: 1.32em;
 }
 
+#tutorGrid {
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    grid-template-rows: 1.3em repeat(8, auto);
+    column-gap: 0.5em;
+    justify-content: center;
+    text-align: center;
+}
+
+#tutorText img {
+    height: 0.8em;
+}
+
 #tutorText ul {
     margin-left: 1.6em;
 }

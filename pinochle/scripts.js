@@ -12,9 +12,10 @@ const p1        = 1;
 const p2        = 2;
 const p3        = 3;
 const players   = 4;
-const next      = [p1,    p2,    p3,    p0   ];             // next player to the left
-const teamO     = [false, true,  false, true ];             // odd players (p1, p3)
-const teamE     = [true,  false, true,  false];             // even players
+const pArray    = [p0, p1, p2, p3];
+const next      = [p1, p2, p3, p0];                         // next player to the left
+const teamO     = [false, true, false, true];               // odd players (p1, p3)
+const teamE     = [true, false, true, false];               // even players
 
 // Suit values (or none)
 const diamonds  = 0;
@@ -22,6 +23,7 @@ const clubs     = 5;
 const hearts    = 10;
 const spades    = 15;
 const suits     = 4;
+const sArray    = [diamonds, clubs, hearts, spades];
 const suit$     = ["diamonds",,,,,"clubs",,,,,"hearts",,,,,"spades"];
 const suitSrc   = ["suits/diamond.svg",,,,,"suits/club.svg",,,,,"suits/heart.svg",,,,,"suits/spade.svg"];
 
@@ -32,6 +34,7 @@ const king      = 2;
 const ten       = 3;
 const ace       = 4;
 const ranks     = 5;
+const rArray    = [jack, queen, king, ten, ace];
 const rank$     = ["jack", "queen", "king", "ten", "ace"];
 const rankSrc   = ["ranks/jack.svg", "ranks/queen.svg", "ranks/king.svg", "ranks/ten.svg", "suits/ace.svg"];
 
@@ -199,7 +202,7 @@ const heartsT   = document.getElementById("heartsT");
 const clubsT    = document.getElementById("clubsT");
 const diamondsT = document.getElementById("diamondsT");
 const tutorText = document.getElementById("tutorText");
-const tutorPage = document.querySelectorAll("#tutorText div");
+const tutorPage = document.querySelectorAll("#tutorText > div");
 const aboutText = document.getElementById("aboutText");
 const iText     = document.getElementById("iText");
 const iTrump    = document.getElementById("iTrump");
@@ -394,7 +397,7 @@ function nShort(p) {
 // Return number of rank r arounds in player p's hand
 function arounds(p, r) {
     let n = 4;
-    for (let s of [spades, hearts, clubs, diamonds])
+    for (const s of sArray)
         n = Math.min(n, nValue(p, r+s));
     return n;
 }
@@ -402,7 +405,7 @@ function arounds(p, r) {
 // Return number of suit s runs in the player p's hand
 function runs(p, s) {
     let n = 4;
-    for (let r of [jack, queen, king, ten, ace])
+    for (const r of rArray)
         n = Math.min(n, nValue(p, r+s));
     return n;
 }
@@ -426,7 +429,7 @@ function meld(p, t) {
     m += [0,    4,    40,    500,    500][arounds  (p, jack )];
     m += [0, 16-4, 150-8, 500-12, 500-16][runs     (p, t    )];
     m += [0,    4,    30,     90,    500][pinochles(p       )];
-    for (let s of [diamonds, clubs, hearts, spades])
+    for (const s of sArray)
         m += marriages(p,s) * (s==t?4:2);
     return m;
 }
@@ -434,7 +437,7 @@ function meld(p, t) {
 // Return minimum meld in player p's hand
 function minMeld(p) {
     let min = 999;
-    for (let s of [spades, hearts, clubs, diamonds])
+    for (const s of sArray)
         min = Math.min(meld(p, s), min);
     return min;
 }
@@ -442,14 +445,14 @@ function minMeld(p) {
 // Return maximum meld in bidder's hand
 function maxMeld(p) {
     let max = 0;
-    for (let s of [spades, hearts, clubs, diamonds])
+    for (const s of sArray)
         max = Math.max(meld(p, s), max);
     return max;
 }
 
 // Return suit with maximum meld in player p's hand
 function maxSuit(p) {
-    for (let s of [spades, hearts, clubs, diamonds])
+    for (const s of sArray)
         if (meld(p, s) == maxMeld(p))
             return s;
 }
@@ -465,23 +468,23 @@ function tagCards(p, v, n) {
 
 // Tag meld in each player's hand
 function tagMeld() {
-    for (let p of [p0, p1, p2, p3])                             // for each player,
+    for (const p of pArray)                                     // for each player,
         if ((teamO[p] && meldO<20) || (teamE[p] && meldE<20)) {     // if player's team can't keep their meld,
             if (p == bidder)                                            // if player won the bid,
-                for (let r of [queen, king])                                // tag one trump marriage (if possible, to allow play)
+                for (const r of [queen, king])                              // tag one trump marriage (if possible, to allow play)
                     tagCards(p, r+trump, Math.min(marriages(p, trump)), 1);
-            for (let s of [diamonds, clubs, hearts, spades])            // show any aces around (house rule?)
+            for (const s of sArray)                                     // show any aces around (house rule?)
                 tagCards(p, ace+s, arounds(p, ace));
         } else {                                                    // if player's team may be able to keep their meld,
-            for (let r of [jack, queen, king, ace])                     // tag arounds
-                for (let s of [diamonds, clubs, hearts, spades])
+            for (const r of [jack, queen, king, ace])                   // tag arounds
+                for (const s of sArray)
                     tagCards(p, r+s, arounds(p, r));
-            for (let r of [jack, queen, king, ten, ace])                // tag runs in trump
+            for (const r of rArray)                                     // tag runs in trump
                 tagCards(p, r+trump, runs(p, trump));
             tagCards(p, jack+diamonds, pinochles(p));                   // tag pinochles
             tagCards(p, queen+spades, pinochles(p));
-            for (let r of [queen, king])                                // tag marriages
-                for (let s of [diamonds, clubs, hearts, spades])
+            for (const r of [queen, king])                              // tag marriages
+                for (const s of sArray)
                     tagCards(p, r+s, marriages(p, s));
         }
 }
@@ -578,7 +581,7 @@ function autoPick() {
     const partner = next[next[bidder]];
     let n = 0, t;
     if (nRank(bidder,king) + nRank(bidder,queen) == 0)          // no kings or queens
-        for (let s of [spades, hearts, clubs, diamonds]) {
+        for (const s of sArray) {
             if (nValue(bidder, ace+s) > n) {
                 n = nValue(bidder, ace+s);
                 t = s;
@@ -593,7 +596,7 @@ function autoPick() {
             }
         }
     else if (noMarriages(bidder))                               // no marriages
-        for (let s of [spades, hearts, clubs, diamonds]) {
+        for (const s of sArray) {
             if (nValue(bidder, king+s) > n) {
                 n = nValue(bidder, king+s);
                 t = s;
@@ -606,7 +609,7 @@ function autoPick() {
     else if (bid[bidder]>maxMeld(bidder)+est[partner]+20 && run(bidder))    // stretching w/ run
         t = maxSuit(bidder);
     else                                                        // all other cases
-        for (let s of [spades, hearts, clubs, diamonds]) {
+        for (const s of sArray) {
             if (marriages(bidder,s)>0 && nSuit(bidder,s)+nValue(bidder,ace+s)>n) {
                 n = nSuit(bidder,s) + nValue(bidder, ace+s);
                 t = s;
@@ -672,7 +675,7 @@ function shuffleArray(a, n) {
 // Log hands on console
 function logHands() {
     let t = "";
-    for (let p of [p0, p1, p2, p3]) {
+    for (const p of pArray) {
         t = `${player$[p][0]}:`;
         for (let c = minC[p]; c <= maxC[p]; c++)
             t += card[c].g==hand? ` ${value$[card[c].v]}` : ` --`;
@@ -684,7 +687,7 @@ function logHands() {
 function logStats() {
     let t = "";
     log("   J♦ Q♦ K♦ T♦ A♦ J♣ Q♣ K♣ T♣ A♣ J♥ Q♥ K♥ T♥ A♥ J♠ Q♠ K♠ T♠ A♠");
-    for (let p of [p0, p1, p2, p3]) {
+    for (const p of pArray) {
         t = `${player$[p][0]}:`;
         for (let v = 0; v < values; v++)
             t += ` ${minCards[p][v]}${maxCards[p][v]}`;
@@ -709,7 +712,7 @@ function updateHints() {
         trmpIcon.style.display = "none";
     if (showCount && trump!=none) {
         let q = 0;
-        for (let r of [ace, ten, king, queen, jack])
+        for (const r of rArray)
             q += remaining[r+trump] - nValue(p3,r+trump);
         nTrump.textContent = q;
     } else
@@ -717,8 +720,8 @@ function updateHints() {
     if (showSummary && player!=none) {
         infoIcons[p0].style.display = infoIcons[p1].style.display = infoIcons[p2].style.display = "inline";
         let i = 0;
-        for (let p of [p0, p1, p2])
-            for (let s of [spades, hearts, clubs, diamonds])
+        for (const p of [p0, p1, p2])
+            for (const s of sArray)
                 if (minCards[p][ace+s])
                     infoIcon[i++].style.opacity = "100%";
                 else if (capMaxCards(p,ace+s,p3)>0)
@@ -737,9 +740,9 @@ function updateHints() {
         infoIcons[p0].style.display = infoIcons[p1].style.display = infoIcons[p2].style.display = "none";
     if (showDetail && player!=none) {
         let i = 0;
-        for (let p of [p0, p1, p2])
-            for (let s of [spades, hearts, clubs, diamonds])
-                for (let r of [ace, ten, king, queen, jack])
+        for (const p of [p0, p1, p2])
+            for (const s of sArray)
+                for (const r of rArray)
                     count[i++].src = barSrc[minCards[p][r+s]][capMaxCards(p,r+s,p3)];
         wGrid.style.display = nGrid.style.display = eGrid.style.display = "grid";
     } else
@@ -750,7 +753,7 @@ function updateHints() {
 function getPlausible(cardV) {
 
     // Cap known cards based on minCards (in case a known card was chosen rather than an unknown card)
-    for (let p of [p0, p1, p2, p0])
+    for (const p of pArray)
         for (let v = 0; v < values; v++) {
             let nMin = minCards[p][v];
             for (let c = minC[p]; c <= maxC[p]; c++)
@@ -777,7 +780,7 @@ function getPlausible(cardV) {
                 cardV[c] = unknown[u++];
             else
                 cardV[c] = card[c].g==gone? absent : card[c].v;
-        for (let p of [p0, p1, p2, p3])
+        for (const p of pArray)
             for (let v = 0; v < values; v++) {
                 let nV = 0;
                 for (let c = minC[p]; c <= maxC[p]; c++)
@@ -1216,7 +1219,7 @@ function handEnded() {
     handPara[2].innerHTML = `Your score is now ${scoreO}.<br>Their score is now ${scoreE}.`;    
     dealer = next[dealer];
     shuffleCards();
-    for (const p of [p0, p1, p2, p3])
+    for (const p of pArray)
         ready[p] = robot[p];
     if (takeE==50 || (scoreE>=500 && scoreO<500) || (scoreO>=500 && scoreE>=500 && teamE[bidder]))
         handPara[3].innerHTML = `Boohoo! We lost!`;
@@ -1226,7 +1229,7 @@ function handEnded() {
         handPara[3].innerHTML = `${player$[dealer]} deals next.`;
     handBtn.disabled = false;
     handText.style.display = "block";
-    for (const p of [p0, p1, p2, p3])
+    for (const p of pArray)
         ready[p] = robot[p];
     onready = takeO<50 && takeE<50 && scoreO<500 && scoreE<500? dealCards : loaded;
 }
@@ -1294,7 +1297,7 @@ function cardChosen() {
     // if chosen card is in high suit and doesn't beat non-ace high card, player must not have any cards that can beat the high card 
     if (highCard!=none && card[chosen].s==card[highCard].s && card[highCard].r!=ace && card[chosen].r<=card[highCard].r) {
         msg = `Can't beat ${value$[card[highCard].v]}`;
-        for (let v=card[highCard].v+1; v<=ace+card[highCard].s; v++)
+        for (let v = card[highCard].v+1; v<=ace+card[highCard].s; v++)
             maxCards[player][v] = 0;
     }
     // if no lead card, chosen card must be the lead card and the high card
@@ -1321,16 +1324,16 @@ function cardChosen() {
     // if chosen card doesn't follow the lead and isn't trump, player must be out of lead suit and trump
     if (card[chosen].s!=card[leadCard].s && !card[chosen].m) {
         msg = `Out of ${suit$[card[leadCard].s]} and out of trump.`;
-        for (let r of [jack, queen, king, ten, ace])
+        for (const r of rArray)
             maxCards[player][r+card[leadCard].s] = maxCards[player][r+trump] = 0;
     }
     // Update stats based on chosen card
     remaining[card[chosen].v]--;
     minCards[player][card[chosen].v] = Math.max(minCards[player][card[chosen].v] - 1, 0);
     let loose = remaining[card[chosen].v]
-    for (let p of [p0, p1, p2, p3])
+    for (const p of pArray)
         loose -= minCards[p][card[chosen].v];
-    for (let p of [p0, p1, p2, p3])
+    for (const p of pArray)
         maxCards[p][card[chosen].v] = Math.min(maxCards[p][card[chosen].v], minCards[p][card[chosen].v] + loose);
     updateHints();
 
@@ -1522,7 +1525,7 @@ function meldFanned() {
         playPara[2].innerHTML = `You need ${needO} points.<br>They need ${needE} points.`;
     playBtn.disabled = bidder==p3? mustToss : false;
     tossBtn.style.display = bidder==p3? "inline" : "none";
-    for (const p of [p0, p1, p2, p3])
+    for (const p of pArray)
         ready[p] = robot[p];
     playText.style.display = "flex";
     onready = biddingComplete;
@@ -1541,16 +1544,16 @@ function handsRegathered() {
     logHands();
 
     // Adjust minCards and maxCards based on meld cards
-    for (let p of [p0, p1, p2, p3]) {
+    for (const p of pArray) {
         // Adjust minCards based on revealed cards
         for (let v = 0; v < values; v++)
             minCards[p][v] = nValue(p, v);
         // if #A/K/Q/J in other suits > #A/K/Q/J in this suit, max = #A/K/Q/J in this suit
-        for (let r of [ace, king, queen, jack]) {
+        for (const r of [ace, king, queen, jack]) {
             let minCount = 5;
             let minSuit = none;
             let minHits = 0;
-            for (let s of [diamonds, clubs, hearts, spades])
+            for (const s of sArray)
                 if (nValue(p,r+s) < minCount) {
                     minCount = nValue(p,r+s);
                     minSuit = s;
@@ -1561,7 +1564,7 @@ function handsRegathered() {
                 maxCards[p][r+minSuit] = minCount;
         }
         // if #Q/K < #K/Q in suit, max = #Q/K in suit
-        for (let s of [diamonds, clubs, hearts, spades])
+        for (const s of sArray)
             if (nValue(p,queen+s) < nValue(p,king+s))
                 maxCards[p][queen+s] = nValue(p,queen+s);
             else if (nValue(p,king+s) < nValue(p,queen+s))
@@ -1573,14 +1576,14 @@ function handsRegathered() {
             maxCards[p][queen+spades] = nValue(p,queen+spades);
         // if #T < min(#A,#K,#Q,#J) in trump, max = #T
         let minOther = 5;
-        for (let r of [ace, king, queen, jack])
+        for (const r of [ace, king, queen, jack])
             if (nValue(p,r+trump) < minOther)
                 minOther = nValue(p,r+trump);
         if (nValue(p,ten+trump) < minOther)
             maxCards[p][ten+trump] = nValue(p,ten+trump);
     }
     // reduce maxCards based on minCards
-    for (let p of [p0, p1, p2, p3])
+    for (const p of pArray)
         for (let v = 0; v < values; v++) {
             const loose = 4 - minCards[p0][v] - minCards[p1][v] - minCards[p2][v] - minCards[p3][v];
             maxCards[p][v] = Math.min(maxCards[p][v], minCards[p][v] + loose);
@@ -1631,9 +1634,9 @@ function suitClicked(s) {
 // Bid won: await suitClicked (p3), autoPick (robot) or picked message (remote human)
 function bidDone() {
     log("--> bidDone");
-    for (let p of [p0, p1, p2, p3])                             // reset infoText
+    for (const p of pArray)                                     // reset infoText
         infoText[p].textContent = player$[p];
-    for (bidder of [p0, p1, p2, p3])                            // find winning bidder
+    for (bidder of pArray)                                      // find winning bidder
         if (bid[bidder] > pass)
             break;
     if (bidder == p3) {                                         // if I won the bid,
@@ -1796,7 +1799,7 @@ function dealCards() {
     handText.style.display = "none";
     gamePage.style.display = "block";
     infoAreas.style.display = "block";
-    for (let p of [p0, p1, p2, p3]) {
+    for (const p of pArray) {
         minCards[p].fill(0);
         maxCards[p].fill(4);
         infoText[p].textContent = player$[p];
@@ -1923,9 +1926,9 @@ function trmpIconClicked() {
     log("--> trmpIconClicked");
     iTrump.textContent = `Trump is ${suit$[trump]}.`;
     let t = "";
-    for (let s of [spades, hearts, clubs, diamonds]) {
+    for (const s of sArray) {
         let q = 0;
-        for (let r of [ace, ten, king, queen, jack])
+        for (const r of rArray)
             q += remaining[r+s] - nValue(p3,r+s);
         t += `${q} ${suit$[s]}`;
         if (s==spades || s==hearts || s==clubs)
@@ -1947,7 +1950,7 @@ function iCloseClicked() {
 // Create button clicked: close load page, apply game settings and open start page
 function createClicked() {
     log(`--> create clicked`);
-    for (let p of [p0, p1, p2, p3]) {
+    for (const p of pArray) {
         playerNam[p].value = player$[p];
         playerNam[p].disabled = false;
         playerIco[p].src = robot[p]? robotSrc : (online[p]? humanSrc : cloudSrc);
@@ -2027,7 +2030,7 @@ function nKeyed(event, p) {
 // Start name for player p focused
 function nFocused(p) {
     log(`--> start name ${p} focused`);
-    for (let p of [p0, p1, p2, p3])
+    for (const p of pArray)
         playerLst[p].style.display = "none";
     playerLst[p].innerHTML = "";
     for (const name of favorites) {
@@ -2052,7 +2055,7 @@ function nBlurred(p) {
 function lClicked(event, p) {
     log(`--> start list ${p} clicked ${event.target.textContent}`);
     playerNam[p].value = event.target.textContent;
-    for (let p of [p0, p1, p2, p3])
+    for (const p of pArray)
         playerLst[p].style.display = "none";
 }
 
@@ -2070,7 +2073,7 @@ function lContexted(event, p) {
 // Start icon for player p clicked
 function iClicked(p) {
     log(`--> start icon ${p} clicked`);
-    for (let p of [p0, p1, p2, p3])
+    for (const p of pArray)
         playerLst[p].style.display = "none";
     robot[p] = !robot[p];
     online[p] = robot[p];
@@ -2080,7 +2083,7 @@ function iClicked(p) {
 // Start box b clicked (b=0,1,2,3,4 for ts,tc,ccs,ccd,ohBox)
 function bClicked(b) {
     log(`--> start box ${b} clicked`);
-    for (let p of [p0, p1, p2, p3])
+    for (const p of pArray)
         playerLst[p].style.display = "none";
     switch (b) {
         case 0:
@@ -2109,7 +2112,7 @@ function bClicked(b) {
 // Update game storage
 function store() {
     sessionStorage.setItem("left", JSON.stringify(left));
-    for (const p of [p0, p1, p2, p3]) {                         // update favorites
+    for (const p of pArray) {                                   // update favorites
         if (favorites.includes(playerNam[p].value))
             continue;
         favorites.push(playerNam[p].value);
@@ -2133,7 +2136,7 @@ function startBtnClicked() {
 
     switch (startBtn.value) {
     case "Create":                                              // If attempting to create,
-        for (const p of [p0, p1, p2, p3])                           // copy player names from start page
+        for (const p of pArray)                                     // copy player names from start page
             player$[p] = playerNam[p].value
         left = 0;                                                   // I'm this game's creator
         solo = robot[p0] && robot[p1] && robot[p2];                 // solo game if other players are all robots
@@ -2230,7 +2233,7 @@ function wsMessage(messageEvent) {
         showSummary = msg.showSummary;
         showDetail = msg.showDetail;
         showHand = msg.showHand;
-        for (let p of [p0, p1, p2]) {                               // initialize start page
+        for (const p of [p0, p1, p2]) {                             // initialize start page
             playerNam[p].value = player$[p];
             playerIco[p].src = robot[p]? robotSrc : (online[p]? humanSrc : cloudSrc);
         }
@@ -2272,7 +2275,7 @@ function wsMessage(messageEvent) {
         bidder = pOff(msg.bidder);
         infoText[bidder].style.animation = "none";
         bid = pOff(msg.bid);
-        for (const p of [p0, p1, p2, p3])
+        for (const p of pArray)
             infoText[p].textContent = bid[p]==none? "" : (bid[p]==pass? "Pass" : bid[p]);
         bidder = next[bidder];
         if (nPass()==3) {
