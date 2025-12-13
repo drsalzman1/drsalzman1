@@ -170,6 +170,7 @@ const canvas    = document.getElementById("canvas");
 const context   = canvas.getContext("2d");
 const loadPage  = document.getElementById("loadPage");
 const joinBtn   = document.getElementById("joinBtn");
+const loginPage = document.getElementById("loginPage");
 const startPage = document.getElementById("startPage");
 const playerNam = document.querySelectorAll("#playersGrid input[type='text']");
 const playerIco = document.querySelectorAll("#playersGrid input[type='image']");
@@ -201,8 +202,7 @@ const spadesT   = document.getElementById("spadesT");
 const heartsT   = document.getElementById("heartsT");
 const clubsT    = document.getElementById("clubsT");
 const diamondsT = document.getElementById("diamondsT");
-const tutorText = document.getElementById("tutorText");
-const tutorPage = document.querySelectorAll("#tutorText > div");
+const tutorPage = document.querySelectorAll(".tutorPage");
 const aboutText = document.getElementById("aboutText");
 const iText     = document.getElementById("iText");
 const iTrump    = document.getElementById("iTrump");
@@ -1873,8 +1873,7 @@ function reloadClicked() {
 // Tutor menu item clicked: close menu and display first page of tutorial
 function tutorClicked() {
     log("--> tutorClicked");
-    menuText.style.display = "none";
-    tutorText.style.display = "block";
+    loadPage.style.display = "none";
     tutorialPg = 0;
     tutorPage[tutorialPg].style.display = "block";
 }
@@ -1882,24 +1881,36 @@ function tutorClicked() {
 // Tutor back icon clicked: close current page and display previous page
 function tutorBackClicked() {
     log("--> tutorBackClicked");
-    tutorPage[tutorialPg].style.display = "none";
-    tutorialPg--;
+    tutorPage[tutorialPg--].style.display = "none";
     tutorPage[tutorialPg].style.display = "block";
 }
 
 // Tutor next icon clicked: close current page and display next page
 function tutorNextClicked() {
     log("--> tutorNextClicked");
-    tutorPage[tutorialPg].style.display = "none";
-    tutorialPg++;
+    tutorPage[tutorialPg++].style.display = "none";
     tutorPage[tutorialPg].style.display = "block";
 }
 
 // Tutor close icon clicked: close the tutor display
 function tutorCloseClicked() {
     log("--> tutorCloseClicked");
-    tutorialPg = none;
-    tutorText.style.display = "none";
+    tutorPage[tutorialPg].style.display = "none";
+    loadPage.style.display = "flex";
+}
+
+// Login button clicked: close menu and display first page of tutorial
+function loginClicked() {
+    log("--> loginClicked");
+    loadPage.style.display = "none";
+    loginPage.style.display = "flex";
+}
+
+// Login page close icon clicked: close the login display
+function loginCloseClicked() {
+    log("--> loginCloseClicked");
+    loginPage.style.display = "none";
+    loadPage.style.display = "flex";
 }
 
 // About app menu item clicked: close the app

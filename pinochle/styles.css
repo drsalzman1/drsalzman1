@@ -65,7 +65,92 @@ body {
 }
 
 #loadPage input {
-    width: 8em;
+    width: 6em;
+    height: 1.3em;
+    border: none;
+    background-color: white;
+}
+
+.tutorPage {
+    position: absolute;
+    width: 100svw;
+    height: 100svh;
+    padding: 0.4em;
+    display: none;
+}
+
+.tutorPage .backIcon {
+    position: absolute;
+    bottom: 0.4em;
+    left: 0.4em;
+    height: 1.32em;
+}
+
+.tutorPage .nextIcon {
+    position: absolute;
+    bottom: 0.4em;
+    right: 0.4em;
+    height: 1.32em;
+}
+
+#tutorGrid {
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    grid-template-rows: 1.3em repeat(8, auto);
+    column-gap: 0.5em;
+    justify-content: center;
+    text-align: center;
+}
+
+.tutorPage img {
+    height: 0.8em;
+    filter: invert(100%);
+}
+
+.tutorPage ul {
+    margin-top: 0.5em;
+    margin-left: 1.6em;
+}
+
+#loginPage {
+    height: 100svh;
+    width: 100svw;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+#loginPage div {
+    margin: 0.5em;
+}
+
+#username, #password, #retype {
+    height: 1.3em;
+    border: none;
+    padding-left: 0.4em;
+    background-color: white;
+}
+
+#loginMsg {
+    visibility: hidden; /*visible; /*hidden;*/
+}
+
+.register {
+    visibility: hidden; /*visible; /*hidden;*/
+}
+
+#loginBtn {
+    width: 5em;
+    height: 1.3em;
+    margin-top: 0.5em;
+    border: none;
+    background-color: white;
+}
+
+#registerBtn {
+    width: 5em;
     height: 1.3em;
     border: none;
     background-color: white;
@@ -90,7 +175,7 @@ body {
     font-weight: bold;
 }
 
-.whiteClose {
+.tutorPage .whiteClose, .whiteClose {
     position: absolute;
     top: 0.26em;
     right: 0.26em;
@@ -505,52 +590,6 @@ body {
     position: relative;
     top: 0.3em;
     height: 1.32em;
-}
-
-#tutorText {
-    position: absolute;
-    padding: 0.4em;
-    width: 100svw;
-    height: 100svh;
-    line-height: 1em;
-    color: black;
-    background-color: white;
-    display: none;
-}
-
-#tutorText div {
-    display: none;
-}
-
-.backIcon {
-    position: absolute;
-    bottom: 0.4em;
-    left: 0.4em;
-    height: 1.32em;
-}
-
-.nextIcon {
-    position: absolute;
-    bottom: 0.4em;
-    right: 0.4em;
-    height: 1.32em;
-}
-
-#tutorGrid {
-    display: grid;
-    grid-template-columns: repeat(4, auto);
-    grid-template-rows: 1.3em repeat(8, auto);
-    column-gap: 0.5em;
-    justify-content: center;
-    text-align: center;
-}
-
-#tutorText img {
-    height: 0.8em;
-}
-
-#tutorText ul {
-    margin-left: 1.6em;
 }
 
 #aboutText {
