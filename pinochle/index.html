@@ -14,6 +14,8 @@
         <div id=loadPage>
             Welcome to Grampy's Double Deck Pinochle!<br>
             <br>
+            <input type="button" value="Show Tutorial" onclick="tutorClicked()">
+            <br>
             <input type="button" value="Create Game" onclick="createClicked()">
             <br>
             <input id="joinBtn" type="button" value="Join Game" onclick="joinClicked()" disabled>
@@ -164,7 +166,7 @@
                     <img class="blackClose" src="icons/close.svg" alt="close" onclick="iCloseClicked()">
                     <div id="iTrump">Trump is diamonds.</div>
                     <div id="iOut">15 spades, 17 hearts, 10 clubs and 16 diamonds are out.</div>
-                    <div id="iTake">Our take's 15 of 20 and their take's 15 of 20.</div>
+                    <div id="iTake">You've takeen 15 of 20 and they've taken 15 of 20.</div>
                 </div>
             </div>
         </div>
@@ -315,14 +317,30 @@
         </div>
         <div id="tutorText">
             <div>
+                <b>Double Deck Pinochle - Set Up</b>
+                <img class="blackClose" src="icons/close.svg" alt="close" onclick="tutorCloseClicked()"><br>
+                <br>
+                A player creates a game by naming themself, the player to their left, the player across, and the player to their right.
+                If the creator and server are online, the creator can choose if each player is a remote player or a local robot.
+                The creator can also choose whether to show the trump suit, trump count, card count summary, card count detail, and/or open hand.
+                Players can learn more by clicking on the information icons.<br>
+                <br>
+                Once the creator names the players and makes their choices, they click their Create button and wait for others to join.<br>
+                <br>
+                Remote players join by naming themselves, clicking their Join buttons, and waiting for others to join.<br>
+                <br>
+                After everyone joins, the creator will shuffle and deal the cards, and the game will begin.
+                <br>
+                <img class="nextIcon" src="icons/next.svg" alt="next" onclick="tutorNextClicked()">
+            </div>
+            <div>
                 <b>Double Deck Pinochle - Rules</b>
                 <img class="blackClose" src="icons/close.svg" alt="close" onclick="tutorCloseClicked()"><br>
                 <br>
-                The players are south (you), west (left opponent), north (partner across), and east (right opponent).
                 The deck has 80 cards: 4 cards of each rank (ordered ace, ten, king, queen, jack) in each suit (spades, 
                 hearts, clubs, diamonds).<br>
                 <br>
-                The dealer, initially chosen at random, deals the entire deck.
+                The dealer deals the entire deck.
                 The player to the left of dealer must bid at least 50 or pass.
                 The next player to the left must bid higher (5 higher starting at 60) or pass. 
                 Bidding continues until only one bidder remains.
@@ -339,6 +357,7 @@
                 The winner then collects the trick, and if any cards remain in their hand, leads the next trick. 
                 When the hand is over, the player to the left of dealer deals the next hand until the game is over.
                 <br>
+                <img class="backIcon" src="icons/back.svg" alt="back" onclick="tutorBackClicked()">
                 <img class="nextIcon" src="icons/next.svg" alt="next" onclick="tutorNextClicked()">
             </div>
             <div>
@@ -361,7 +380,6 @@
                 A team's meld is the sum of each member's meld.
                 If a team's meld is less than 20, their meld is 0.<br>
                 <br>
-                <img class="backIcon" src="icons/back.svg" alt="back" onclick="tutorBackClicked()">
                 <img class="nextIcon" src="icons/next.svg" alt="next" onclick="tutorNextClicked()">
             </div>
             <div>
@@ -390,21 +408,20 @@
                 <b>Double Deck Pinochle - Communicating</b>
                 <img class="blackClose" src="icons/close.svg" alt="close" onclick="tutorCloseClicked()"><br>
                 <br>
-                You're not allowed to directly communicate your cards or your strategy to your partner.
+                Players are not allowed to directly communicate their cards or strategy to their partner.
                 This is called talking across the table.
-                However, you can reveal certain information by the way you bid and play.<br>
+                However, they can reveal certain information by the way they bid and play.<br>
                 <br>
-                This app uses jump bids.
-                The app assumes you have typical meld (currently 14).
-                If you start the bid at 52 or increase the bid by 2, the app assumes you have a marriage and 20 meld.
-                If you start the bid at 53 or increase the bid by 3, the app assumes you have a marriage and 30 meld, etc.<br>
+                Robots use jump bids.
+                Robots assume players have typical meld (currently 14) unless they learn otherwise.
+                If a player starts the bid at 52 or increases the bid by 2, the robot assumes they have a marriage and 20 meld.
+                If a player starts the bid at 53 or increases the bid by 3, the robot assumes they have a marriage and 30 meld, etc.<br>
                 <br>
-                This app ignores indicators.
-                If you play an ace on your partner's ace, the app assumes nothing.
-                If you play a jack on your partner's ace, the app assumes nothing.<br>
+                Robots ignore indicators.
+                If a player plays an ace or jack on their partner's ace, robots assume nothing.<br>
                 <br>
-                This app offers a menu option to "reveal cards" to everyone.
-                This allows you to <del>cheat</del> learn, but this app doesn't exploit the open hands.<br>
+                The game creator can choose an "open hand" game that reveals everyone's cards.
+                This allows players to <del>cheat</del> learn, but robots don't exploit open hands.<br>
                 <br>
                 <img class="backIcon" src="icons/back.svg" alt="back" onclick="tutorBackClicked()">
                 <img class="nextIcon" src="icons/next.svg" alt="next" onclick="tutorNextClicked()">
@@ -413,25 +430,25 @@
                 <b>Double Deck Pinochle - Counts</b>
                 <img class="blackClose" src="icons/close.svg" alt="close" onclick="tutorCloseClicked()"><br>
                 <br>
-                This app offers a menu option to "expose counts" of the minimum and maximum number of cards each player
-                has revealed for each rank of each suit using rectangles:<br>
-                <br><ul>
-                    <li>Black quadrants indicate the minimum number of cards in that player/rank/suit</li>
-                    <li>Black/gray quadrants indicate the maximum number of cards in that player/rank/suit</li>
-                    <li>Four white quadrants indicate there are no cards in that player/suit/rank</li>
-                </ul><br>
-                You know your own cards. 
+                Players know their own cards. 
                 The other players reveal their cards when they lay down their meld, play a card,
                 trump the lead suit, don't beat a high card, or don't follow the lead suit.<br>
                 <br>
-                You can see the number of trump cards remaining in the other players' hands and 
-                a player's count summary by clicking on a player's hand. 
+                The game creator can choose to show a "card count summary" for each player.
                 The opacity of each suit icon indicates the player's cards:<br>
                 <br><ul>
                     <li>100% - definitely has an ace in that suit</li>
                     <li>66% - may have an ace in that suit</li>
                     <li>33% - doesn't have an ace in that suit</li>
                     <li>0% - has no cards in that suit</li>
+                </ul><br>
+                The game creator can also choose to show a "card count detail" for each player.
+                The table shows the minimum and maximum number of cards each player
+                has revealed for each rank of each suit using rectangles:<br>
+                <br><ul>
+                    <li>Black quadrants indicate the minimum number of cards in that player/rank/suit</li>
+                    <li>Black/gray quadrants indicate the maximum number of cards in that player/rank/suit</li>
+                    <li>Four white quadrants indicate there are no cards in that player/suit/rank</li>
                 </ul><br>
                 <br>
                 <img class="backIcon" src="icons/back.svg" alt="back" onclick="tutorBackClicked()">
@@ -441,13 +458,14 @@
                 <b>Double Deck Pinochle - Info</b>
                 <img class="blackClose" src="icons/close.svg" alt="close" onclick="tutorCloseClicked()"><br>
                 <br>
-                During play, this app displays the trump suit as an icon in the upper right hand corner of the screen.<br>
+                The game creator can choose to display the trump suit as an icon in the upper-right corner.
+                The game creator can also choose to display a count of how many trump cards remain in other players' hands. <br>
                 <br>
-                You can tap this icon to display additional information such as:<br>
+                You can tap the trump suit icon to display additional information such as:<br>
                 <br><ul>
                     <li>Trump suit</li>
                     <li>Total cards per suit in other players' hands</li>
-                    <li>Points we've taken of the points we'll need</li>
+                    <li>Points you've taken of the points you'll need</li>
                     <li>Points they've taken of the points they'll need</li>
                 </ul><br>
                 <img class="backIcon" src="icons/back.svg" alt="back" onclick="tutorBackClicked()">
@@ -457,21 +475,21 @@
                 <b>Double Deck Pinochle - Strategy</b>
                 <img class="blackClose" src="icons/close.svg" alt="close" onclick="tutorCloseClicked()"><br>
                 <br>
-                This app bids up to a limit based on its meld, its estimate of your meld (perhaps based on your jump bid),
-                and its estimate of the strength of its playing hand.<br>
+                The robots bid up to a limit based on their meld, their estimate of their partner's meld (perhaps based on a jump bid),
+                and their estimate of the strength of their playing hand.<br>
                 <br>
-                This app counts the cards that each player reveals as meld.
-                For example, if you reveal a king of clubs but no queen of clubs, it knows you don't have any queens of clubs.
-                This app also counts the cards that each player reveals during play.
+                The robots count the cards that each player reveals as meld.
+                For example, if you reveal a king of clubs but no queen of clubs, the robot knows you don't have a queen of clubs.
+                The robot also counts the cards that each player reveals during play.
                 For example, if you play a jack of clubs on a king of clubs, it knows you don't have a ten or ace of clubs.
                 This app offers a menu option to display such stats from your perspective without cheating.<br>
                 <br>
-                If the app estimates that its team can win the trick, it plays the card that it estimates will
+                If a robot estimates that its team can win the trick, it plays the card that it estimates will
                 take the trick, 
                 take the most points, 
                 spend the fewest of its team's high and trump cards, and
                 waste the most of its opponents' high and trump cards.
-                If the app estimates that its team will lose the trick, it plays the card that it estimates will
+                If the robot estimates that its team will lose the trick, it plays the card that it estimates will
                 lose the fewest points, 
                 waste the fewest of its team's high and trump cards, and
                 waste the most of its opponents' high and trump cards.<br>
@@ -484,8 +502,8 @@
                 <img class="blackClose" src="icons/close.svg" alt="close" onclick="tutorCloseClicked()"><br>
                 <br>
                 <ul>
-                    <li>Players: south (you), west, north and east</li>
-                    <li>Teams: us (south, north) vs. them (east, west)</li>
+                    <li>Players: four named players</li>
+                    <li>Teams: you and your partner vs. them</li>
                     <li>Suit: spades, hearts, clubs, diamonds</li>
                     <li>Rank: ace, ten, king, queen, jack (in that order)</li>
                     <li>Deck: 80 cards - 4 of each rank in each suit</li>
@@ -507,7 +525,7 @@
             </div>
         </div>
         <div id="aboutText">
-            <b>Double Deck Pin <span id="vsText"></span></b>
+            <b>Double Deck Pinochle v2.0</b>
             <br>
             <img class="blackClose" src="icons/close.svg" alt="close" onclick="aboutCloseClicked()"><br>
             This app was written by David Salzman based on the Salzman house rules.

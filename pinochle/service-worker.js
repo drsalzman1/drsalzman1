@@ -66,15 +66,3 @@ self.addEventListener("fetch", (event) => {
         })()
     );
 });
-
-const channel = new BroadcastChannel("Pinochle");
-
-// Message received from client: if requested, post version
-function messageRxed(e) {
-    console.log("--> messageRxed by service-worker.js");
-    console.log(`e.data:"${e.data}"`)
-    if (e.data == "get version")
-        channel.postMessage(version);
-}
-
-channel.onmessage = messageRxed;

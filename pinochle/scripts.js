@@ -7,14 +7,14 @@ const robotSrc  = "icons/robot.svg";
 
 // Player values (or none)
 const none      = -1;
-const west      = 0;
-const north     = 1;
-const east      = 2;
-const south     = 3;
+const p0        = 0;
+const p1        = 1;
+const p2        = 2;
+const p3        = 3;
 const players   = 4;
-const next      = [north, east,  south, west ];
-const us        = [false, true,  false, true ];
-const them      = [true,  false, true,  false];
+const next      = [p1,    p2,    p3,    p0   ];             // next player to the left
+const teamO     = [false, true,  false, true ];             // odd players (p1, p3)
+const teamE     = [true,  false, true,  false];             // even players
 
 // Suit values (or none)
 const diamonds  = 0;
@@ -43,21 +43,12 @@ const value$    = ["J♦","Q♦","K♦","T♦","A♦","J♣","Q♣","K♣","T♣
 const deckCards = 80;
 const handCards = deckCards / players;
 
-// cardSrc[v] = card image source for card value v
-const cardSrc   = [
-    "cards/jd.svg", "cards/qd.svg", "cards/kd.svg", "cards/td.svg", "cards/ad.svg",
-    "cards/jc.svg", "cards/qc.svg", "cards/kc.svg", "cards/tc.svg", "cards/ac.svg",
-    "cards/jh.svg", "cards/qh.svg", "cards/kh.svg", "cards/th.svg", "cards/ah.svg",
-    "cards/js.svg", "cards/qs.svg", "cards/ks.svg", "cards/ts.svg", "cards/as.svg",
-    "cards/gb.svg"
-];
-
 // suit[v] = suit of card value v
 const suit      = [
     diamonds, diamonds, diamonds, diamonds, diamonds,
-    clubs, clubs, clubs, clubs, clubs, 
-    hearts, hearts, hearts, hearts, hearts, 
-    spades, spades, spades, spades, spades,
+    clubs,    clubs,    clubs,    clubs,    clubs, 
+    hearts,   hearts,   hearts,   hearts,   hearts, 
+    spades,   spades,   spades,   spades,   spades,
     none
 ];
 
@@ -113,7 +104,7 @@ class C {
     constructor() {
         this.c    = 0;                                  // card number
         this.p    = 0;                                  // player value
-        this.u    = false;                              // player is us (north or south)
+        this.o    = false;                              // player is team O (p1 or p3)
         this.v    = 0;                                  // card value
         this.s    = 0;                                  // card suit
         this.r    = 0;                                  // card rank
@@ -136,10 +127,10 @@ class C {
 
 // plyr[c] = player assigned card c
 const plyr      = [
-    west, west, west, west, west, west, west, west, west, west, west, west, west, west, west, west, west, west, west, west,
-    north,north,north,north,north,north,north,north,north,north,north,north,north,north,north,north,north,north,north,north,
-    east, east, east, east, east, east, east, east, east, east, east, east, east, east, east, east, east, east, east, east, 
-    south,south,south,south,south,south,south,south,south,south,south,south,south,south,south,south,south,south,south,south,
+    p0, p0, p0, p0, p0, p0, p0, p0, p0, p0, p0, p0, p0, p0, p0, p0, p0, p0, p0, p0,
+    p1, p1, p1, p1, p1, p1, p1, p1, p1, p1, p1, p1, p1, p1, p1, p1, p1, p1, p1, p1,
+    p2, p2, p2, p2, p2, p2, p2, p2, p2, p2, p2, p2, p2, p2, p2, p2, p2, p2, p2, p2, 
+    p3, p3, p3, p3, p3, p3, p3, p3, p3, p3, p3, p3, p3, p3, p3, p3, p3, p3, p3, p3,
 ];
 
 // minC[p] = minimum card number assigned to player p
@@ -210,7 +201,6 @@ const diamondsT = document.getElementById("diamondsT");
 const tutorText = document.getElementById("tutorText");
 const tutorPage = document.querySelectorAll("#tutorText div");
 const aboutText = document.getElementById("aboutText");
-const vsText    = document.getElementById("vsText");
 const iText     = document.getElementById("iText");
 const iTrump    = document.getElementById("iTrump");
 const iOut      = document.getElementById("iOut");
@@ -219,10 +209,7 @@ const wGrid     = document.getElementById("wGrid");
 const nGrid     = document.getElementById("nGrid");
 const eGrid     = document.getElementById("eGrid");
 const count     = document.querySelectorAll(".count");
-//const cardImg   = document.querySelectorAll("#cardImages img");
-
-// Communication channel with service worker
-const channel = new BroadcastChannel("Pinochle");
+const cardImg   = document.querySelectorAll("#cardImages img");
 
 // Animation constants
 const dealTime  = 2000;                                 // milliseconds to deal all cards
@@ -250,7 +237,7 @@ const blink     = "blink 1s ease-in-out 5s infinite";   // slow blink animation
 // m    = {op:"ready", player:p}
 // m    = {op:"play", card:c}
 // p$   = player name
-// p    = player value (e.g. south)
+// p    = player value (e.g. p3)
 // f    = flag value (e.g. false)
 // c    = card number in deck (e.g. 0)
 // b    = bid value (e.g. pass)
@@ -265,38 +252,31 @@ let wsIntervlID = null;                                 // websocket interval ti
 // Game variables from this player's perspective
 let solo        = true;                                 // creator is only human player
 let left        = 0;                                    // number of players left of creator
-let src         = "South";                              // source for all websocket messages
+let src         = "P0";                                 // source for all websocket messages
 let dst         = [];                                   // destination for all websocket messages
-let favorites   = ["East", "North", "South", "West" ];  // favorite player names (sorted)
-let player$     = ["West", "North", "East",  "South"];  // player name
-let robot       = [true,   true,    true,    false  ];  // player is a robot
-let online      = [true,   true,    true,    true   ];  // player is online (robots are always online)
-let ready       = [true,   true,    true,    true   ];  // player is ready to play
+let favorites   = ["P0",   "P1",    "P2",    "P3" ];    // favorite player names (sorted)
+let player$     = ["P0",   "P1",    "P2",    "P3" ];    // player name
+let robot       = [true,   true,    true,    false];    // player is a robot
+let online      = [true,   true,    true,    true ];    // player is online (robots are always online)
+let ready       = [true,   true,    true,    true ];    // player is ready to play
 let showTrump   = true;                                 // show trump icon
 let showCount   = true;                                 // show trump count
 let showSummary = true;                                 // show card count summary
 let showDetail  = false;                                // show card count detail
 let showHand    = false;                                // show player hands
-let dealer      = south;                                // the player who is dealing or last dealt
+let dealer      = p3;                                   // the player who is dealing or last dealt
 let card        = [                                     // card[c] = deck card c
     new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,
     new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,
     new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,
     new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C
 ];
-let cardImg     = [                                     // cardImg[v] = card value v's image 
-    new Image, new Image, new Image, new Image, new Image, 
-    new Image, new Image, new Image, new Image, new Image, 
-    new Image, new Image, new Image, new Image, new Image, 
-    new Image, new Image, new Image, new Image, new Image, 
-    new Image
-];
 let cardCanvas  = [                                     // cardCanvas[v] = card value v's offscreen canvas
     new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), 
     new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), 
     new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), 
     new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), 
-    new OffscreenCanvas(0,0), new OffscreenCanvas(0,0)
+    new OffscreenCanvas(0,0)
 ];
 let cardContext = [];                                   // cardContext[v] = card value v's offscreen canvas context
 let bidder      = none;                                 // the player who is bidding or won the bid
@@ -309,16 +289,16 @@ let player      = none;                                 // the player who is cho
 let chosen      = none;                                 // the card number that was chosen
 let leadCard    = none;                                 // the card number that was lead
 let highCard    = none;                                 // the card number of the highest card so far
-let ourBid      = none;                                 // our bid if we win the bid (or none)
-let theirBid    = none;                                 // their bid if they win the bid (or none)
-let ourMeld     = 0;                                    // total of north and south meld for this hand
-let theirMeld   = 0;                                    // total of west and east meld for this hand
-let weNeed      = 0;                                    // take north and south need to save
-let theyNeed    = 0;                                    // take west and east need to save
-let ourTake     = 0;                                    // total of north and south points so far in hand
-let theirTake   = 0;                                    // total of west and east points so far in hand
-let ourScore    = 0;                                    // total of north and south points so far in game
-let theirScore  = 0;                                    // total of west and east points so far in game
+let bidO        = none;                                 // team O's bid if they win the bid (or none)
+let bidE        = none;                                 // team E's bid if they win the bid (or none)
+let meldO       = 0;                                    // team O's meld for this hand
+let meldE       = 0;                                    // team E's meld for this hand
+let needO       = 0;                                    // points team O needs to take to save
+let needE       = 0;                                    // points team E meeds to take to save
+let takeO       = 0;                                    // points team O has taken so far in hand
+let takeE       = 0;                                    // points team E has taken so far in hand
+let scoreO      = 0;                                    // team O's total points so far in game
+let scoreE      = 0;                                    // team E's total points so far in game
 let tossHand    = false;                                // true if bidder tosses in the hand
 let mustToss    = false;                                // true if bidder lacks a marriage in trump
 let tutorialPg  = none;                                 // tutorial page (or none)
@@ -334,10 +314,10 @@ let cardh       = 0;                                    // card height
 let iconw       = 0;                                    // icon width
 let iconh       = 0;                                    // icon height
 let pad         = 0;                                    // padding around display elements
-let hpad        = 0;                                    // horizontal padding for east and west hands
-let vpad        = 0;                                    // vertical padding for north and south hands
-let hpitch      = 0;                                    // horizontal card pitch for north and south hands
-let vpitch      = 0;                                    // vertical card pitch for east and west hands
+let hpad        = 0;                                    // horizontal padding for p2 and p0 hands
+let vpad        = 0;                                    // vertical padding for p1 and p3 hands
+let hpitch      = 0;                                    // horizontal card pitch for p1 and p3 hands
+let vpitch      = 0;                                    // vertical card pitch for p2 and p0 hands
 
 // Log debugText on console (comment out when done debugging)
 function log(debugText = "") {
@@ -485,8 +465,8 @@ function tagCards(p, v, n) {
 
 // Tag meld in each player's hand
 function tagMeld() {
-    for (let p of [west, north, east, south])                   // for each player,
-        if ((us[p] && ourMeld<20) || (them[p] && theirMeld<20)) {   // if player's team can't keep their meld,
+    for (let p of [p0, p1, p2, p3])                             // for each player,
+        if ((teamO[p] && meldO<20) || (teamE[p] && meldE<20)) {     // if player's team can't keep their meld,
             if (p == bidder)                                            // if player won the bid,
                 for (let r of [queen, king])                                // tag one trump marriage (if possible, to allow play)
                     tagCards(p, r+trump, Math.min(marriages(p, trump)), 1);
@@ -540,7 +520,7 @@ function logBid(bid, reason) {
 
 // Return number of players who passed
 function nPass() {
-    return (bid[west]==pass?1:0) + (bid[north]==pass?1:0) + (bid[east]==pass?1:0) + (bid[south]==pass?1:0);
+    return (bid[p0]==pass?1:0) + (bid[p1]==pass?1:0) + (bid[p2]==pass?1:0) + (bid[p3]==pass?1:0);
 }
 
 // Return computer bidder's bid
@@ -692,7 +672,7 @@ function shuffleArray(a, n) {
 // Log hands on console
 function logHands() {
     let t = "";
-    for (let p of [west, north, east, south]) {
+    for (let p of [p0, p1, p2, p3]) {
         t = `${player$[p][0]}:`;
         for (let c = minC[p]; c <= maxC[p]; c++)
             t += card[c].g==hand? ` ${value$[card[c].v]}` : ` --`;
@@ -704,7 +684,7 @@ function logHands() {
 function logStats() {
     let t = "";
     log("   J♦ Q♦ K♦ T♦ A♦ J♣ Q♣ K♣ T♣ A♣ J♥ Q♥ K♥ T♥ A♥ J♠ Q♠ K♠ T♠ A♠");
-    for (let p of [west, north, east, south]) {
+    for (let p of [p0, p1, p2, p3]) {
         t = `${player$[p][0]}:`;
         for (let v = 0; v < values; v++)
             t += ` ${minCards[p][v]}${maxCards[p][v]}`;
@@ -730,37 +710,37 @@ function updateHints() {
     if (showCount && trump!=none) {
         let q = 0;
         for (let r of [ace, ten, king, queen, jack])
-            q += remaining[r+trump] - nValue(south,r+trump);
+            q += remaining[r+trump] - nValue(p3,r+trump);
         nTrump.textContent = q;
     } else
         nTrump.textContent = "";
     if (showSummary && player!=none) {
-        infoIcons[west].style.display = infoIcons[north].style.display = infoIcons[east].style.display = "inline";
+        infoIcons[p0].style.display = infoIcons[p1].style.display = infoIcons[p2].style.display = "inline";
         let i = 0;
-        for (let p of [west, north, east])
+        for (let p of [p0, p1, p2])
             for (let s of [spades, hearts, clubs, diamonds])
                 if (minCards[p][ace+s])
                     infoIcon[i++].style.opacity = "100%";
-                else if (capMaxCards(p,ace+s,south)>0)
+                else if (capMaxCards(p,ace+s,p3)>0)
                     infoIcon[i++].style.opacity = "66%";
-                else if (capMaxCards(p,ten+s,south)>0)
+                else if (capMaxCards(p,ten+s,p3)>0)
                     infoIcon[i++].style.opacity = "33%";
-                else if (capMaxCards(p,king+s,south)>0)
+                else if (capMaxCards(p,king+s,p3)>0)
                     infoIcon[i++].style.opacity = "33%";
-                else if (capMaxCards(p,queen+s,south)>0)
+                else if (capMaxCards(p,queen+s,p3)>0)
                     infoIcon[i++].style.opacity = "33%";
-                else if (capMaxCards(p,jack+s,south)>0)
+                else if (capMaxCards(p,jack+s,p3)>0)
                     infoIcon[i++].style.opacity = "33%";
                 else
                     infoIcon[i++].style.opacity = "0%";
     } else
-        infoIcons[west].style.display = infoIcons[north].style.display = infoIcons[east].style.display = "none";
+        infoIcons[p0].style.display = infoIcons[p1].style.display = infoIcons[p2].style.display = "none";
     if (showDetail && player!=none) {
         let i = 0;
-        for (let p of [west, north, east])
+        for (let p of [p0, p1, p2])
             for (let s of [spades, hearts, clubs, diamonds])
                 for (let r of [ace, ten, king, queen, jack])
-                    count[i++].src = barSrc[minCards[p][r+s]][capMaxCards(p,r+s,south)];
+                    count[i++].src = barSrc[minCards[p][r+s]][capMaxCards(p,r+s,p3)];
         wGrid.style.display = nGrid.style.display = eGrid.style.display = "grid";
     } else
         wGrid.style.display = nGrid.style.display = eGrid.style.display = "none";
@@ -770,7 +750,7 @@ function updateHints() {
 function getPlausible(cardV) {
 
     // Cap known cards based on minCards (in case a known card was chosen rather than an unknown card)
-    for (let p of [west, north, east, west])
+    for (let p of [p0, p1, p2, p0])
         for (let v = 0; v < values; v++) {
             let nMin = minCards[p][v];
             for (let c = minC[p]; c <= maxC[p]; c++)
@@ -797,7 +777,7 @@ function getPlausible(cardV) {
                 cardV[c] = unknown[u++];
             else
                 cardV[c] = card[c].g==gone? absent : card[c].v;
-        for (let p of [west, north, east, south])
+        for (let p of [p0, p1, p2, p3])
             for (let v = 0; v < values; v++) {
                 let nV = 0;
                 for (let c = minC[p]; c <= maxC[p]; c++)
@@ -819,54 +799,54 @@ function trmp(v) {
     return suit[v]==trump;
 }
 
-// Find player p's best legal move bestC[p] given card values v and played cards playC[west..south]
+// Find player p's best legal move bestC[p] given card values v and played cards playC[p0..p3]
 function bestMerit(v, bestC, playC, p, leadCard0, highCard0, nPlayed) {
     let l = leadCard0;
     let h = highCard0;
     let merit = 0;
     let bestM = -100;
-    nextC: for (let c = minC[p]; c <= maxC[p]; c++) {       // For all of player p's cards,
-        if (v[c] != absent) {                                   // if card is in hand,
-            if (l == none)                                          // if no lead card,
-                l = h = c;                                              // lead and high cards are now this card
-            else {                                                  // otherwise,
+    nextC: for (let c = minC[p]; c <= maxC[p]; c++) {           // For all of player p's cards,
+        if (v[c] != absent) {                                       // if card is in hand,
+            if (l == none)                                              // if no lead card,
+                l = h = c;                                                  // lead and high cards are now this card
+            else {                                                      // otherwise,
                 const vc=v[c],     vl=v[l],     vh=v[h];
                 const sc=suit[vc], sl=suit[vl], sh=suit[vh];
                 const rc=rank[vc], rl=rank[vl], rh=rank[vh];
                 const tc=trmp(vc), tl=trmp(vl), th=trmp(vh);
-                if (!tl && th) {                                        // if lead suit isn't trump and high suit is trump, 
-                    if (sc != sl) {                                         // if c doesn't follow the lead,
-                        for (let c = minC[p]; c <= maxC[p]; c++)                // if p can follow the lead, c's no good
+                if (!tl && th) {                                            // if lead suit isn't trump and high suit is trump, 
+                    if (sc != sl) {                                             // if c doesn't follow the lead,
+                        for (let c = minC[p]; c <= maxC[p]; c++)                    // if p can follow the lead, c's no good
                             if (suit[v[c]] == sl)
                                 continue nextC;
-                        if (!tc || rc<=rh) {                                    // if c doesn't overtrump,
-                            for (let c = minC[p]; c <= maxC[p]; c++)                // if p can overtrump, c's no good
+                        if (!tc || rc<=rh) {                                        // if c doesn't overtrump,
+                            for (let c = minC[p]; c <= maxC[p]; c++)                    // if p can overtrump, c's no good
                                 if (trmp(v[c]) && v[c]>vh)
                                     continue nextC;
-                            if (!tc)                                                // if c's not trump,
-                                for (let c = minC[p]; c <= maxC[p]; c++)                // if p can trump, c's no good
+                            if (!tc)                                                    // if c's not trump,
+                                for (let c = minC[p]; c <= maxC[p]; c++)                    // if p can trump, c's no good
                                     if (trmp(v[c]))
                                         continue nextC;
                         }
                     }
-                } else {                                                // if lead suit is trump or high suit isn't trump,
-                    if (sc!=sl || rc<=rh) {                                 // if c doesn't follow lead or doesn't beats high,
-                        for (let c = minC[p]; c <= maxC[p]; c++)                // if p can follow lead & beat high, c's no good
+                } else {                                                    // if lead suit is trump or high suit isn't trump,
+                    if (sc!=sl || rc<=rh) {                                     // if c doesn't follow lead or doesn't beats high,
+                        for (let c = minC[p]; c <= maxC[p]; c++)                    // if p can follow lead & beat high, c's no good
                             if (suit[v[c]]==sl && v[c]>vh)
                                 continue nextC;
-                        if (sc != sl) {                                         // if c doesn't follow lead,
-                            for (let c = minC[p]; c <= maxC[p]; c++)                // if p can follow lead, c's no good
+                        if (sc != sl) {                                             // if c doesn't follow lead,
+                            for (let c = minC[p]; c <= maxC[p]; c++)                    // if p can follow lead, c's no good
                                 if (suit[v[c]] == sl)
                                     continue nextC;
-                            if (!tc)                                                // if c's not trump,
-                                for (let c = minC[p]; c <= maxC[p]; c++)                 // if p cam trump, c's no good
+                            if (!tc)                                                    // if c's not trump,
+                                for (let c = minC[p]; c <= maxC[p]; c++)                    // if p cam trump, c's no good
                                     if (trmp(v[c]))
                                         continue nextC;
                         }
                     }
                 }
-                if (sc==sh && rc>rh || tc&&!th)                         // if c beats h or c's trump and h's not,
-                    h = c;                                                  // new high card.
+                if (sc==sh && rc>rh || tc&&!th)                             // if c beats h or c's trump and h's not,
+                    h = c;                                                      // new high card.
             }
             // Legal card: play it
             playC[p] = c;
@@ -875,26 +855,26 @@ function bestMerit(v, bestC, playC, p, leadCard0, highCard0, nPlayed) {
                 merit = -bestMerit(v, bestC, playC, next[p], l, h, nPlayed+1);
             } else {
                 // Play complete: calculate merit
-                const w=v[playC[west]], n=v[playC[north]], e=v[playC[east]], s=v[playC[south]];
-                if (us[p] && us[plyr[h]]) {
+                const w=v[playC[p0]], n=v[playC[p1]], e=v[playC[p2]], s=v[playC[p3]];
+                if (teamO[p] && teamO[plyr[h]]) {
                     // NS is last player and NS won
                     merit =  +trckMerit;
                     merit += (+high[w] + high[n] + high[e] + high[s]) * highMerit;
                     merit += (+rank[w] - rank[n] + rank[e] - rank[s]) * rankMerit;
                     merit += (+trmp(w) - trmp(n) + trmp(e) - trmp(s)) * trmpMerit;
-                } else if (!us[p] && !us[plyr[h]]) {
+                } else if (!teamO[p] && !teamO[plyr[h]]) {
                     // EW is last player and EW won
                     merit =  +trckMerit;
                     merit += (+high[w] + high[n] + high[e] + high[s]) * highMerit;
                     merit += (-rank[w] + rank[n] - rank[e] + rank[s]) * rankMerit;
                     merit += (-trmp(w) + trmp(n) - trmp(e) + trmp(s)) * trmpMerit;
-                } else if (us[p] && !us[plyr[h]]) {
+                } else if (teamO[p] && !teamO[plyr[h]]) {
                     // NS is last player and NS lost
                     merit =  -trckMerit;
                     merit += (-high[w] - high[n] - high[e] - high[s]) * highMerit;
                     merit += (+rank[w] - rank[n] + rank[e] - rank[s]) * rankMerit;
                     merit += (+trmp(w) - trmp(n) + trmp(e) - trmp(s)) * trmpMerit;
-                } else if (!us[p] && us[plyr[h]]) {
+                } else if (!teamO[p] && teamO[plyr[h]]) {
                     // EW is last player and EW lost
                     merit =  -trckMerit;
                     merit += (-high[w] - high[n] - high[e] - high[s]) * highMerit;
@@ -968,16 +948,16 @@ function nCards(p) {
     return n;
 }
 
-// Locate east and west info boxes based on east and west hands
+// Locate p2 and p0 info boxes based on p2 and p0 hands
 function locateInfo() {
     if (card[0].g == heap) {
-        infoText[west].style.top  = infoText[east].style.top  = vh/2 - cardw*1.4 + "px";
-        infoIcons[west].style.top = infoIcons[east].style.top = vh/2 + cardw*1.4 + "px";
+        infoText[p0].style.top  = infoText[p2].style.top  = vh/2 - cardw*1.4 + "px";
+        infoIcons[p0].style.top = infoIcons[p2].style.top = vh/2 + cardw*1.4 + "px";
     } else {
-        infoText[west].style.top  = vh/2 - cardw*0.70 - nCards(west)*vpitch/2 + "px";
-        infoText[east].style.top  = vh/2 - cardw*0.70 - nCards(east)*vpitch/2 + "px";
-        infoIcons[west].style.top = vh/2 + cardw*0.42 + nCards(west)*vpitch/2 + "px";
-        infoIcons[east].style.top = vh/2 + cardw*0.42 + nCards(east)*vpitch/2 + "px";
+        infoText[p0].style.top  = vh/2 - cardw*0.70 - nCards(p0)*vpitch/2 + "px";
+        infoText[p2].style.top  = vh/2 - cardw*0.70 - nCards(p2)*vpitch/2 + "px";
+        infoIcons[p0].style.top = vh/2 + cardw*0.42 + nCards(p0)*vpitch/2 + "px";
+        infoIcons[p2].style.top = vh/2 + cardw*0.42 + nCards(p2)*vpitch/2 + "px";
     }
 }
 
@@ -1062,7 +1042,7 @@ function setSizes() {
     }
     canvas.width  = vw;
     canvas.height = vh;
-    for (let v = 0; v < cardSrc.length; v++) {
+    for (let v = 0; v < cardImg.length; v++) {
         cardCanvas[v].width = Math.round(cardw);
         cardCanvas[v].height = Math.round(cardh);
         cardContext[v] = cardCanvas[v].getContext("2d");
@@ -1070,7 +1050,7 @@ function setSizes() {
     }
 }
 
-// Return card number of top south card (or undefined) at x,y coordinates 
+// Return card number of top p3 card (or undefined) at x,y coordinates 
 function xy2c(x, y) {
     let topC;
     card.sort((a,b)=>a.z-b.z);
@@ -1138,8 +1118,6 @@ function frameEvent() {
             context.filter = "brightness(1.0)";
     }
     card.sort((a,b)=>a.c-b.c);
-    if (performance.now()-now>2)
-        console.log(performance.now()-now);
     if (!done)
         requestAnimationFrame(frameEvent);
     else {
@@ -1148,109 +1126,109 @@ function frameEvent() {
     }
 }
 
-// Hand button clicked: note south is ready, notify others, and await all ready
+// Hand button clicked: note p3 is ready, notify others, and await all ready
 function handClicked() {
     log("--> handClicked");
     handBtn.disabled = true;
-    ready[south] = true;
-    notify({op:"ready", player:pOff(south)});
-    if (left==0 && ready[west] && ready[north] && ready[east])
+    ready[p3] = true;
+    notify({op:"ready", player:pOff(p3)});
+    if (left==0 && ready[p0] && ready[p1] && ready[p2])
         setTimeout(onready);
 }
 
 // Hand ended: display stats, await all ready, then deal next hand or start new game
 function handEnded() {
     log("--> handEnded");
-    log(`bidder:${bidder}, us[bidder]:${us[bidder]}, tossHand:${tossHand}, ourMeld:${ourMeld}, theirMeld:${theirMeld}, ourTake:${ourTake}, theirTake:${theirTake}`)
+    log(`bidder:${bidder}, teamO[bidder]:${teamO[bidder]}, tossHand:${tossHand}, meldO:${meldO}, meldE:${meldE}, takeO:${takeO}, takeE:${takeE}`)
     trmpIcon.style.display = "none";
     nTrump.textContent = "";
     infoAreas.style.display = "none";
-    if (us[bidder] && tossHand) {
-        ourScore = ourScore - ourBid;
-        handPara[0].innerHTML = `You lost your bid (${ourBid}) because ` +
-            `${bidder==south?"You":player$[bidder]} tossed due to ${mustToss?`no trump marriage`:`insufficient meld (${ourMeld})`}.`;
-    } else if (us[bidder] && (ourMeld<20 || ourTake<20 || ourMeld+ourTake<ourBid)) {
-        ourScore = ourScore - ourBid;
-        handPara[0].innerHTML = `You lost your bid (${ourBid}) because ` + 
-            (ourMeld<20? `your meld (${ourMeld}) was less than 20.` :
-            (ourTake<20? `your take (${ourTake}) was less than 20.` :
-            `your meld (${ourMeld}) and take (${ourTake}) were less than your bid (${ourBid}).`));
-    } else if (us[bidder]) {
-        ourScore = ourScore + ourMeld + ourTake;
-        handPara[0].innerHTML = `You won your meld (${ourMeld}) and take (${ourTake}) because ` +
-            `you made your bid (${ourBid}).`;
-    } else if (them[bidder] && tossHand) {
-        theirScore = theirScore - theirBid;
-        handPara[0].innerHTML = `They lost their bid (${theirBid}) because ` +
-            `${player$[bidder]} tossed in the hand due to ${mustToss?`no trump marriage`:`insufficient meld (${theirMeld})`}.`;
-    } else if (them[bidder] && (theirMeld<20 || theirTake<20 || theirMeld+theirTake<theirBid)) {
-        theirScore = theirScore - theirBid;
-        handPara[0].innerHTML = `They lost their bid (${theirBid}) because ` + 
-            (theirMeld<20? `their meld (${theirMeld}) was less than 20.` :
-            (theirTake<20? `their take (${theirTake}) was less than 20.` :
-            `their meld (${theirMeld}) and their take (${theirTake}) were less than their bid (${theirBid}).`));
-    } else if (them[bidder]) {
-        theirScore = theirScore + theirMeld + theirTake;
-        handPara[0].innerHTML = `They won their meld (${theirMeld}) and take (${theirTake}) because ` +
-            `they made their bid (${theirBid}).`;
+    if (teamO[bidder] && tossHand) {
+        scoreO = scoreO - bidO;
+        handPara[0].innerHTML = `You lost your bid (${bidO}) because ` +
+            `${bidder==p3?"You":player$[bidder]} tossed due to ${mustToss?`no trump marriage`:`insufficient meld (${meldO})`}.`;
+    } else if (teamO[bidder] && (meldO<20 || takeO<20 || meldO+takeO<bidO)) {
+        scoreO = scoreO - bidO;
+        handPara[0].innerHTML = `You lost your bid (${bidO}) because ` + 
+            (meldO<20? `your meld (${meldO}) was less than 20.` :
+            (takeO<20? `your take (${takeO}) was less than 20.` :
+            `your meld (${meldO}) and take (${takeO}) were less than your bid (${bidO}).`));
+    } else if (teamO[bidder]) {
+        scoreO = scoreO + meldO + takeO;
+        handPara[0].innerHTML = `You won your meld (${meldO}) and take (${takeO}) because ` +
+            `you made your bid (${bidO}).`;
+    } else if (teamE[bidder] && tossHand) {
+        scoreE = scoreE - bidE;
+        handPara[0].innerHTML = `They lost their bid (${bidE}) because ` +
+            `${player$[bidder]} tossed in the hand due to ${mustToss?`no trump marriage`:`insufficient meld (${meldE})`}.`;
+    } else if (teamE[bidder] && (meldE<20 || takeE<20 || meldE+takeE<bidE)) {
+        scoreE = scoreE - bidE;
+        handPara[0].innerHTML = `They lost their bid (${bidE}) because ` + 
+            (meldE<20? `their meld (${meldE}) was less than 20.` :
+            (takeE<20? `their take (${takeE}) was less than 20.` :
+            `their meld (${meldE}) and their take (${takeE}) were less than their bid (${bidE}).`));
+    } else if (teamE[bidder]) {
+        scoreE = scoreE + meldE + takeE;
+        handPara[0].innerHTML = `They won their meld (${meldE}) and take (${takeE}) because ` +
+            `they made their bid (${bidE}).`;
     }
-    if (us[bidder] && tossHand && theirMeld<20) {
-        theirScore = theirScore;
-        handPara[1].innerHTML = `They didn't win their meld (${theirMeld}) because `+
+    if (teamO[bidder] && tossHand && meldE<20) {
+        scoreE = scoreE;
+        handPara[1].innerHTML = `They didn't win their meld (${meldE}) because `+
             `it was less than 20.`;
-    } else if (us[bidder] && tossHand && theirMeld>=20) {
-        theirScore = theirScore + theirMeld;
-        handPara[1].innerHTML = `They won their meld (${theirMeld}) because ` +
+    } else if (teamO[bidder] && tossHand && meldE>=20) {
+        scoreE = scoreE + meldE;
+        handPara[1].innerHTML = `They won their meld (${meldE}) because ` +
             `it was at least 20.`;
-    } else if (us[bidder] && !tossHand && theirTake<20) {
-        theirScore = theirScore;
-        handPara[1].innerHTML = `They didn't win their meld (${theirMeld}) or take (${theirTake}) because ` +
+    } else if (teamO[bidder] && !tossHand && takeE<20) {
+        scoreE = scoreE;
+        handPara[1].innerHTML = `They didn't win their meld (${meldE}) or take (${takeE}) because ` +
             `their take was less than 20.`;
-    } else if (us[bidder] && !tossHand && theirMeld<20 && theirTake>=20) {
-        theirScore = theirScore + theirTake;
-        handPara[1].innerHTML = `They didn't win their meld (${theirMeld}) because it was less than 20, but ` +
-            `they won their take (${theirTake}) because it was at least 20.`;
-    } else if (us[bidder] && !tossHand && theirMeld>=20 && theirTake>=20) {
-        theirScore = theirScore + theirMeld + theirTake;
-        handPara[1].innerHTML = `They won their meld (${theirMeld}) and take (${theirTake}) because ` +
+    } else if (teamO[bidder] && !tossHand && meldE<20 && takeE>=20) {
+        scoreE = scoreE + takeE;
+        handPara[1].innerHTML = `They didn't win their meld (${meldE}) because it was less than 20, but ` +
+            `they won their take (${takeE}) because it was at least 20.`;
+    } else if (teamO[bidder] && !tossHand && meldE>=20 && takeE>=20) {
+        scoreE = scoreE + meldE + takeE;
+        handPara[1].innerHTML = `They won their meld (${meldE}) and take (${takeE}) because ` +
             `they were at least 20.`;
-    } else if (them[bidder] && tossHand && ourMeld<20) {
-        ourScore = ourScore;
-        handPara[1].innerHTML = `We didn't win our meld (${ourMeld}) because ` +
+    } else if (teamE[bidder] && tossHand && meldO<20) {
+        scoreO = scoreO;
+        handPara[1].innerHTML = `We didn't win our meld (${meldO}) because ` +
             `it was less than 20.`;
-    } else if (them[bidder] && tossHand && ourMeld>=20) {
-        ourScore = ourScore + ourMeld;
-        handPara[1].innerHTML = `We won our meld (${ourMeld}) because ` +
+    } else if (teamE[bidder] && tossHand && meldO>=20) {
+        scoreO = scoreO + meldO;
+        handPara[1].innerHTML = `We won our meld (${meldO}) because ` +
             `it was at least 20.`;
-    } else if (them[bidder] && !tossHand && ourTake<20) {
-        ourScore = ourScore;
-        handPara[1].innerHTML = `We didn't win our meld (${ourMeld}) or take (${ourTake}) because ` +
+    } else if (teamE[bidder] && !tossHand && takeO<20) {
+        scoreO = scoreO;
+        handPara[1].innerHTML = `We didn't win our meld (${meldO}) or take (${takeO}) because ` +
             `our take was less than 20.`;
-    } else if (them[bidder] && !tossHand && ourMeld<20 && ourTake>=20) {
-        ourScore = ourScore + ourTake;
-        handPara[1].innerHTML = `We didn't win our meld (${ourMeld}) because it was less than 20, but ` +
-            `we won our take (${ourTake}) because it was at least 20.`;
-    } else if (them[bidder] && !tossHand && ourMeld>=20 && ourTake>=20) {
-        ourScore = ourScore + ourMeld + ourTake;
-        handPara[1].innerHTML = `We won our meld (${ourMeld}) and take (${ourTake}) because ` +
+    } else if (teamE[bidder] && !tossHand && meldO<20 && takeO>=20) {
+        scoreO = scoreO + takeO;
+        handPara[1].innerHTML = `We didn't win our meld (${meldO}) because it was less than 20, but ` +
+            `we won our take (${takeO}) because it was at least 20.`;
+    } else if (teamE[bidder] && !tossHand && meldO>=20 && takeO>=20) {
+        scoreO = scoreO + meldO + takeO;
+        handPara[1].innerHTML = `We won our meld (${meldO}) and take (${takeO}) because ` +
             `they were at least 20.`;
     }
-    handPara[2].innerHTML = `Your score is now ${ourScore}.<br>Their score is now ${theirScore}.`;    
+    handPara[2].innerHTML = `Your score is now ${scoreO}.<br>Their score is now ${scoreE}.`;    
     dealer = next[dealer];
     shuffleCards();
-    for (const p of [west, north, east, south])
+    for (const p of [p0, p1, p2, p3])
         ready[p] = robot[p];
-    if (theirTake==50 || (theirScore>=500 && ourScore<500) || (ourScore>=500 && theirScore>=500 && them[bidder]))
+    if (takeE==50 || (scoreE>=500 && scoreO<500) || (scoreO>=500 && scoreE>=500 && teamE[bidder]))
         handPara[3].innerHTML = `Boohoo! We lost!`;
-    else if (ourTake==50 || (ourScore>=500 && theirScore<500) || (ourScore>=500 && theirScore>=500 && us[bidder]))
+    else if (takeO==50 || (scoreO>=500 && scoreE<500) || (scoreO>=500 && scoreE>=500 && teamO[bidder]))
         handPara[3].innerHTML = `Woohoo! We win!`;
     else
         handPara[3].innerHTML = `${player$[dealer]} deals next.`;
     handBtn.disabled = false;
     handText.style.display = "block";
-    for (const p of [west, north, east, south])
+    for (const p of [p0, p1, p2, p3])
         ready[p] = robot[p];
-    onready = ourTake<50 && theirTake<50 && ourScore<500 && theirScore<500? dealCards : loaded;
+    onready = takeO<50 && takeE<50 && scoreO<500 && scoreE<500? dealCards : loaded;
 }
 
 // Trick viewed: pull trick, then retrigger handsRefanned or trigger handEnded
@@ -1267,10 +1245,10 @@ function trickViewed() {
     } else {
         player = none;
         updateHints();
-        if (card[highCard].u)
-            ourTake += 2;
+        if (card[highCard].o)
+            takeO += 2;
         else
-            theirTake += 2;
+            takeE += 2;
         infoAreas.style.display = "none";
         animate(handEnded);
     }
@@ -1283,10 +1261,10 @@ function trickPlayed() {
     for (let c = 0; c < deckCards; c++)
         if (card[c].g == play) {
             if (card[c].r==ace || card[c].r==ten || card[c].r==king)
-                if (card[highCard].u)
-                    ourTake += 1;
+                if (card[highCard].o)
+                    takeO += 1;
                 else
-                    theirTake += 1;
+                    takeE += 1;
             moveCard(c, play, now, play, card[c].z, true, dealTime/4);
         }
     animate(trickViewed);
@@ -1350,9 +1328,9 @@ function cardChosen() {
     remaining[card[chosen].v]--;
     minCards[player][card[chosen].v] = Math.max(minCards[player][card[chosen].v] - 1, 0);
     let loose = remaining[card[chosen].v]
-    for (let p of [west, north, east, south])
+    for (let p of [p0, p1, p2, p3])
         loose -= minCards[p][card[chosen].v];
-    for (let p of [west, north, east, south])
+    for (let p of [p0, p1, p2, p3])
         maxCards[p][card[chosen].v] = Math.min(maxCards[p][card[chosen].v], minCards[p][card[chosen].v] + loose);
     updateHints();
 
@@ -1360,7 +1338,7 @@ function cardChosen() {
     log(`${player$[player]} chose ${value$[card[chosen].v]}, msg:${msg}`);
 
     // animate card play
-    infoText[south].style.animation = "none";
+    infoText[p3].style.animation = "none";
     moveCard(chosen, card[chosen].g, now, play, card[chosen].z, true, dealTime/10);
     animate(cardPlayed);
 }
@@ -1459,16 +1437,16 @@ function touchMoved(e) {
     }
 }
 
-// Hands re-fanned: wait for south or robot to choose a card
+// Hands re-fanned: wait for p3 or robot to choose a card
 function handsRefanned() {
     log("--> handsRefanned");
     updateHints();
-    if (player == south) {
+    if (player == p3) {
         body.onmousemove = mouseMoved;
         body.onmousedown = mousePressed;
         body.ontouchstart = touchStarted;
         body.ontouchmove = touchMoved;
-        infoText[south].style.animation = blink;
+        infoText[p3].style.animation = blink;
     } else if (left==0 && robot[player]) {
         chosen = autoSelect();
         notify({op:"play", card:cOff(chosen)});
@@ -1485,7 +1463,7 @@ function meldGathered() {
     locateCards();
     locateInfo();
     for (let c = 0; c < deckCards; c++)
-        if (showHand || card[c].p==south)
+        if (showHand || card[c].p==p3)
             moveCard(c, gone, now, hand, c, true, dealTime/10);
         else
             moveCard(c, gone, now, hand, -c, false, dealTime/10);
@@ -1512,11 +1490,11 @@ function biddingComplete() {
 // Play button clicked: notify others then await all ready
 function playClicked() {
     log(`--> playBtn clicked`);
-    notify({op:"ready", player:pOff(south)});
+    notify({op:"ready", player:pOff(p3)});
     playBtn.disabled = true;
     tossBtn.disabled = true;
-    ready[south] = true;
-    if (ready[west] && ready[north] && ready[east] && ready[south])
+    ready[p3] = true;
+    if (ready[p0] && ready[p1] && ready[p2] && ready[p3])
         setTimeout(onready);
 }
 
@@ -1527,24 +1505,24 @@ function tossClicked() {
     notify({op:"toss"});
     playBtn.disabled = true;
     tossBtn.disabled = true;
-    ready[south] = true;
-    if (ready[west] && ready[north] && ready[east] && ready[south])
+    ready[p3] = true;
+    if (ready[p0] && ready[p1] && ready[p2] && ready[p3])
         setTimeout(onready);
 }
 
 // Meld fanned: display information then await all ready
 function meldFanned() {
     log("--> meldFanned");
-    playPara[0].innerHTML = `${bidder==south?"You":player$[bidder]} picked ${suit$[trump]}.`;
-    playPara[1].innerHTML = `Your meld is ${ourMeld<20?"<20":ourMeld}.<br>`;
-    playPara[1].innerHTML += `Their meld is ${theirMeld<20?"<20":theirMeld}.`;
+    playPara[0].innerHTML = `${bidder==p3?"You":player$[bidder]} picked ${suit$[trump]}.`;
+    playPara[1].innerHTML = `Your meld is ${meldO<20?"<20":meldO}.<br>`;
+    playPara[1].innerHTML += `Their meld is ${meldE<20?"<20":meldE}.`;
     if (mustToss)
-        playPara[2].innerHTML = `${bidder==south?"You":player$[bidder]} must toss due to no trump marriage.`;
+        playPara[2].innerHTML = `${bidder==p3?"You":player$[bidder]} must toss due to no trump marriage.`;
     else
-        playPara[2].innerHTML = `You need ${weNeed} points.<br>They need ${theyNeed} points.`;
-    playBtn.disabled = bidder==south? mustToss : false;
-    tossBtn.style.display = bidder==south? "inline" : "none";
-    for (const p of [west, north, east, south])
+        playPara[2].innerHTML = `You need ${needO} points.<br>They need ${needE} points.`;
+    playBtn.disabled = bidder==p3? mustToss : false;
+    tossBtn.style.display = bidder==p3? "inline" : "none";
+    for (const p of [p0, p1, p2, p3])
         ready[p] = robot[p];
     playText.style.display = "flex";
     onready = biddingComplete;
@@ -1555,15 +1533,15 @@ function handsRegathered() {
     log("--> handsRegathered");
     const now = performance.now();
 
-    // move south and known (meld) cards into hands
+    // move p3 and known (meld) cards into hands
     for (let c = 0; c < deckCards; c++) {                       // for all cards,
-        card[c].d = card[c].p==south && !card[c].k;                 // dim southern, known cards
-        card[c].g = card[c].p==south || card[c].k? hand : gone;     // put southern and known cards in their hands
+        card[c].d = card[c].p==p3 && !card[c].k;                    // dim p3, known cards
+        card[c].g = card[c].p==p3 || card[c].k? hand : gone;        // put p3 and known cards in their hands
     }
     logHands();
 
     // Adjust minCards and maxCards based on meld cards
-    for (let p of [west, north, east, south]) {
+    for (let p of [p0, p1, p2, p3]) {
         // Adjust minCards based on revealed cards
         for (let v = 0; v < values; v++)
             minCards[p][v] = nValue(p, v);
@@ -1602,9 +1580,9 @@ function handsRegathered() {
             maxCards[p][ten+trump] = nValue(p,ten+trump);
     }
     // reduce maxCards based on minCards
-    for (let p of [west, north, east, south])
+    for (let p of [p0, p1, p2, p3])
         for (let v = 0; v < values; v++) {
-            const loose = 4 - minCards[west][v] - minCards[north][v] - minCards[east][v] - minCards[south][v];
+            const loose = 4 - minCards[p0][v] - minCards[p1][v] - minCards[p2][v] - minCards[p3][v];
             maxCards[p][v] = Math.min(maxCards[p][v], minCards[p][v] + loose);
         }
     logStats();
@@ -1625,14 +1603,14 @@ function trumpPicked() {
     log(`${player$[bidder]} picks ${suit$[trump]}`);
     const now = performance.now();
     infoText[bidder].style.animation = "none";
-    ourBid     = Math.max(bid[north], bid[south]);
-    theirBid   = Math.max(bid[west],  bid[east]);
-    ourMeld    = meld(north, trump) + meld(south, trump);
-    theirMeld  = meld(west, trump)  + meld(east, trump);
-    weNeed     = them[bidder]? 20 : (ourMeld<20?   bid[bidder] : Math.max(20,bid[bidder]-ourMeld));
-    theyNeed   = us[bidder]?   20 : (theirMeld<20? bid[bidder] : Math.max(20,bid[bidder]-theirMeld));
+    bidO     = Math.max(bid[p1], bid[p3]);
+    bidE   = Math.max(bid[p0],  bid[p2]);
+    meldO    = meld(p1, trump) + meld(p3, trump);
+    meldE  = meld(p0, trump)  + meld(p2, trump);
+    needO     = teamE[bidder]? 20 : (meldO<20?   bid[bidder] : Math.max(20,bid[bidder]-meldO));
+    needE   = teamO[bidder]?   20 : (meldE<20? bid[bidder] : Math.max(20,bid[bidder]-meldE));
     mustToss   = marriages(bidder, trump) == 0;
-    tossHand   = mustToss || (robot[bidder] && (us[bidder]&&weNeed>30 || them[bidder]&&theyNeed>30));
+    tossHand   = mustToss || (robot[bidder] && (teamO[bidder]&&needO>30 || teamE[bidder]&&needE>30));
     tagMeld();
     for (let c = 0; c < deckCards; c++) {
         card[c].m = card[c].s==trump;
@@ -1650,23 +1628,23 @@ function suitClicked(s) {
     setTimeout(trumpPicked);
 }
 
-// Bid won: await suitClicked (south), autoPick (robot) or picked message (remote human)
+// Bid won: await suitClicked (p3), autoPick (robot) or picked message (remote human)
 function bidDone() {
     log("--> bidDone");
-    for (let p of [west, north, east, south])                   // reset infoText
+    for (let p of [p0, p1, p2, p3])                             // reset infoText
         infoText[p].textContent = player$[p];
-    for (bidder of [west, north, east, south])                  // find winning bidder
+    for (bidder of [p0, p1, p2, p3])                            // find winning bidder
         if (bid[bidder] > pass)
             break;
-    if (bidder == south) {                                      // if I won the bid,
-        trumpBtn[0].disabled = marriages(south, spades) == 0;       // await my suit pick
-        trumpBtn[0].value = `Spades (${meld(south, spades)})`;
-        trumpBtn[1].disabled = marriages(south, hearts) == 0;
-        trumpBtn[1].value = `Hearts (${meld(south, hearts)})`;
-        trumpBtn[2].disabled = marriages(south, clubs) == 0;
-        trumpBtn[2].value = `Clubs (${meld(south, clubs)})`;
-        trumpBtn[3].disabled = marriages(south, diamonds) == 0;
-        trumpBtn[3].value = `Diamonds (${meld(south, diamonds)})`;
+    if (bidder == p3) {                                         // if I won the bid,
+        trumpBtn[0].disabled = marriages(p3, spades) == 0;          // await my suit pick
+        trumpBtn[0].value = `Spades (${meld(p3, spades)})`;
+        trumpBtn[1].disabled = marriages(p3, hearts) == 0;
+        trumpBtn[1].value = `Hearts (${meld(p3, hearts)})`;
+        trumpBtn[2].disabled = marriages(p3, clubs) == 0;
+        trumpBtn[2].value = `Clubs (${meld(p3, clubs)})`;
+        trumpBtn[3].disabled = marriages(p3, diamonds) == 0;
+        trumpBtn[3].value = `Diamonds (${meld(p3, diamonds)})`;
         if (noMarriages(bidder))
             trumpBtn[0].disabled = trumpBtn[1].disabled = trumpBtn[2].disabled = trumpBtn[3].disabled = false;
         trumpText.style.display = "flex";
@@ -1686,7 +1664,7 @@ function bidClicked(n) {
     log("--> bidClicked");
     const value = bidBtn[n].value;
     const highBid = Math.max(...bid);
-    infoText[south].style.animation = "none";
+    infoText[p3].style.animation = "none";
     if (value == ">") {
         if (highBid < 60)
             bidBtn[1].value = Number(bidBtn[1].value) + 1;
@@ -1706,16 +1684,16 @@ function bidClicked(n) {
     }
     logBid(value, "No reason");
     if (value == "Pass") {
-        bid[south] = pass;
-        infoText[south].textContent = "Pass";
+        bid[p3] = pass;
+        infoText[p3].textContent = "Pass";
     } else {
-        if (bid[south]==none && Number(value)>51 && Number(value)<60)
-            est[south] = (Number(value) - Math.max(50, ...bid)) * 10;
-        bid[south] = Number(value);
-        infoText[south].textContent = value;
+        if (bid[p3]==none && Number(value)>51 && Number(value)<60)
+            est[p3] = (Number(value) - Math.max(50, ...bid)) * 10;
+        bid[p3] = Number(value);
+        infoText[p3].textContent = value;
     }
-    notify({op:"bid", bidder:pOff(bidder), bid:pOff(bid)})  // notify others of my bid
-    bidder = next[bidder];                                      // advance to next bidder
+    notify({op:"bid", bidder:pOff(bidder), bid:pOff(bid)})      // notify others of my bid
+    bidder = next[bidder];                                          // advance to next bidder
     bidText.style.display = "none";
     infoText[bidder].textContent = bid[bidder]==pass? "Pass" : player$[bidder];
     setTimeout(handsFanned, dealTime / 4);
@@ -1731,21 +1709,21 @@ function handsFanned() {
             logBid(50, "Dropped");                                      // they must bid 50
             bid[bidder] = 50;
         }
-        notify({op:"bid", bidder:pOff(bidder), bid:pOff(bid)}); // notify others of their bid
-        setTimeout(bidDone, dealTime / 4);                      // advance to bidding done
+        notify({op:"bid", bidder:pOff(bidder), bid:pOff(bid)});     // notify others of their bid
+        setTimeout(bidDone, dealTime / 4);                          // advance to bidding done
         return;
     }
-    if (bidder == south) {                                      // if bidder is south,
-        meldSpan[0].textContent = meld(south, spades);              // await bidClicked
-        meldSpan[1].textContent = meld(south, hearts);
-        meldSpan[2].textContent = meld(south, clubs);
-        meldSpan[3].textContent = meld(south, diamonds);
+    if (bidder == p3) {                                         // if bidder is p3,
+        meldSpan[0].textContent = meld(p3, spades);                 // await bidClicked
+        meldSpan[1].textContent = meld(p3, hearts);
+        meldSpan[2].textContent = meld(p3, clubs);
+        meldSpan[3].textContent = meld(p3, diamonds);
         bidBtn[0].value = "Pass";
         bidBtn[1].value = nextBid();
         bidBtn[2].value = ">";
         bidText.style.display = "flex";
-        infoText[south].textContent = player$[south];
-        infoText[south].style.animation = blink;
+        infoText[p3].textContent = player$[p3];
+        infoText[p3].style.animation = blink;
         return;
     }
     if (left==0 && robot[bidder]) {                             // if my robot is the bidder,
@@ -1770,16 +1748,16 @@ function handsGathered() {
     locateCards();
     locateInfo();
     for (let c = 0; c < deckCards; c++)
-        if (showHand || card[c].p==south)
+        if (showHand || card[c].p==p3)
             moveCard(c, gone, now, hand, c, true, dealTime/10);
         else
             moveCard(c, gone, now, hand, -c, false, dealTime/10);
     bidder = next[dealer];
     tossHand = false;
-    bid[west] = bid[north] = bid[east] = bid[south] = none;
-    est[west] = est[north] = est[east] = est[south] = typical;
-    ourTake  = theirTake = 0;
-    infoText[west].textContent = infoText[north].textContent = infoText[east].textContent = infoText[south].textContent = "";
+    bid[p0] = bid[p1] = bid[p2] = bid[p3] = none;
+    est[p0] = est[p1] = est[p2] = est[p3] = typical;
+    takeO  = takeE = 0;
+    infoText[p0].textContent = infoText[p1].textContent = infoText[p2].textContent = infoText[p3].textContent = "";
     logHands();
     animate(handsFanned);
 }
@@ -1818,7 +1796,7 @@ function dealCards() {
     handText.style.display = "none";
     gamePage.style.display = "block";
     infoAreas.style.display = "block";
-    for (let p of [west, north, east, south]) {
+    for (let p of [p0, p1, p2, p3]) {
         minCards[p].fill(0);
         maxCards[p].fill(4);
         infoText[p].textContent = player$[p];
@@ -1855,7 +1833,7 @@ function shuffleCards() {
         for (let i = 0; i < handCards; i++) {
             card[c].c = c; 
             card[c].p = plyr[c];
-            card[c].u = us[card[c].p];
+            card[c].o = teamO[card[c].p];
             card[c].v = hand[i];
             card[c].s = suit[hand[i]];
             card[c].r = rank[hand[i]];
@@ -1924,7 +1902,6 @@ function tutorCloseClicked() {
 // About app menu item clicked: close the app
 function aboutClicked() {
     log("--> aboutClicked");
-    channel.postMessage("get version");
     menuText.style.display = "none";
     aboutText.style.display = "block"
 }
@@ -1949,7 +1926,7 @@ function trmpIconClicked() {
     for (let s of [spades, hearts, clubs, diamonds]) {
         let q = 0;
         for (let r of [ace, ten, king, queen, jack])
-            q += remaining[r+s] - nValue(south,r+s);
+            q += remaining[r+s] - nValue(p3,r+s);
         t += `${q} ${suit$[s]}`;
         if (s==spades || s==hearts || s==clubs)
             t += ", ";
@@ -1957,7 +1934,7 @@ function trmpIconClicked() {
             t += " are in other hands.";
     }
     iOut.textContent = t;
-    iTake.textContent = `Our take is ${ourTake} of ${weNeed}. Their take is ${theirTake} of ${theyNeed}.`;
+    iTake.textContent = `You've taken ${takeO} of ${needO}. They've taken ${takeE} of ${needE}.`;
     iText.style.display = "flex";
 }
 
@@ -1970,11 +1947,11 @@ function iCloseClicked() {
 // Create button clicked: close load page, apply game settings and open start page
 function createClicked() {
     log(`--> create clicked`);
-    for (let p of [west, north, east, south]) {
+    for (let p of [p0, p1, p2, p3]) {
         playerNam[p].value = player$[p];
         playerNam[p].disabled = false;
         playerIco[p].src = robot[p]? robotSrc : (online[p]? humanSrc : cloudSrc);
-        playerIco[p].disabled = p==south || !websocket;
+        playerIco[p].disabled = p==p3 || !websocket;
     }
     for (let i = 0; i < assistIco.length; i++) {
         assistIco[i].src = [showTrump, showCount, showSummary, showDetail, showHand][i]? checked : unchecked;
@@ -1988,16 +1965,16 @@ function createClicked() {
 // Join button clicked: close load page, apply game settings and open start page
 function joinClicked() {
     log(`--> join clicked`);
-    robot[west] = robot[north] = robot[east] = false;
-    online[west] = online[north] = online[east] = false;
-    playerNam[west].value = playerNam[north].value = playerNam[east].value = "";
-    playerNam[west].disabled = playerNam[north].disabled = playerNam[east].disabled = true;
-    playerIco[west].src = playerIco[north].src = playerIco[east].src = cloudSrc;
-    playerIco[west].disabled = playerIco[north].disabled = playerIco[east].disabled = true;
-    playerNam[south].value = player$[south];
-    playerNam[south].disabled = false;
-    playerIco[south].src = humanSrc;
-    playerIco[south].disabled = true;
+    robot[p0] = robot[p1] = robot[p2] = false;
+    online[p0] = online[p1] = online[p2] = false;
+    playerNam[p0].value = playerNam[p1].value = playerNam[p2].value = "";
+    playerNam[p0].disabled = playerNam[p1].disabled = playerNam[p2].disabled = true;
+    playerIco[p0].src = playerIco[p1].src = playerIco[p2].src = cloudSrc;
+    playerIco[p0].disabled = playerIco[p1].disabled = playerIco[p2].disabled = true;
+    playerNam[p3].value = player$[p3];
+    playerNam[p3].disabled = false;
+    playerIco[p3].src = humanSrc;
+    playerIco[p3].disabled = true;
     assistIco[0].src = assistIco[1].src = assistIco[2].src = assistIco[3].src = assistIco[4].src = unchecked;
     assistIco[0].disabled = assistIco[1].disabled = assistIco[2].disabled = assistIco[3].disabled = assistIco[4].disabled = true;
     loadPage.style.display = "none";
@@ -2050,7 +2027,7 @@ function nKeyed(event, p) {
 // Start name for player p focused
 function nFocused(p) {
     log(`--> start name ${p} focused`);
-    for (let p of [west, north, east, south])
+    for (let p of [p0, p1, p2, p3])
         playerLst[p].style.display = "none";
     playerLst[p].innerHTML = "";
     for (const name of favorites) {
@@ -2075,7 +2052,7 @@ function nBlurred(p) {
 function lClicked(event, p) {
     log(`--> start list ${p} clicked ${event.target.textContent}`);
     playerNam[p].value = event.target.textContent;
-    for (let p of [west, north, east, south])
+    for (let p of [p0, p1, p2, p3])
         playerLst[p].style.display = "none";
 }
 
@@ -2093,7 +2070,7 @@ function lContexted(event, p) {
 // Start icon for player p clicked
 function iClicked(p) {
     log(`--> start icon ${p} clicked`);
-    for (let p of [west, north, east, south])
+    for (let p of [p0, p1, p2, p3])
         playerLst[p].style.display = "none";
     robot[p] = !robot[p];
     online[p] = robot[p];
@@ -2103,7 +2080,7 @@ function iClicked(p) {
 // Start box b clicked (b=0,1,2,3,4 for ts,tc,ccs,ccd,ohBox)
 function bClicked(b) {
     log(`--> start box ${b} clicked`);
-    for (let p of [west, north, east, south])
+    for (let p of [p0, p1, p2, p3])
         playerLst[p].style.display = "none";
     switch (b) {
         case 0:
@@ -2132,7 +2109,7 @@ function bClicked(b) {
 // Update game storage
 function store() {
     sessionStorage.setItem("left", JSON.stringify(left));
-    for (const p of [west, north, east, south]) {               // update favorites
+    for (const p of [p0, p1, p2, p3]) {                         // update favorites
         if (favorites.includes(playerNam[p].value))
             continue;
         favorites.push(playerNam[p].value);
@@ -2156,18 +2133,18 @@ function startBtnClicked() {
 
     switch (startBtn.value) {
     case "Create":                                              // If attempting to create,
-        for (const p of [west, north, east, south])                 // copy player names from start page
+        for (const p of [p0, p1, p2, p3])                           // copy player names from start page
             player$[p] = playerNam[p].value
         left = 0;                                                   // I'm this game's creator
-        solo = robot[west] && robot[north] && robot[east];          // solo game if other players are all robots
+        solo = robot[p0] && robot[p1] && robot[p2];                 // solo game if other players are all robots
         store();                                                    // save game settings
         shuffleCards();                                             // shuffle cards
         if (solo)                                                   // If solo game, deal the cards
             setTimeout(dealCards);
         else {                                                      // Otherwise, 
-            src = player$[south];                                       // initialize the source for my messages
+            src = player$[p3];                                          // initialize the source for my messages
             dst = [];                                                   // initialize the destination(s) for my messages
-            for (const p of [west, north, east])
+            for (const p of [p0, p1, p2])
                 if (!robot[p])
                     dst.push(player$[p]);
             notify({                                                    // invite others to join
@@ -2185,20 +2162,20 @@ function startBtnClicked() {
         break;
 
     case "Check":                                               // If checking for an invitation,
-        src = player$[south] = playerNam[south].value;              // copy player name from start page
+        src = player$[p3] = playerNam[p3].value;                    // copy player name from start page
         websocket.send(JSON.stringify({src:src, dst:[], msg:""}))   // register player with server
         startBtn.disabled = true;                                   // wait for invitation
         break;
 
     case "Join":                                                // If joining a game,
-        src = player$[south];                                       // initialize the source of my messages
+        src = player$[p3];                                          // initialize the source of my messages
         dst = [];                                                   // initialize the destination(s) for my messages
-        for (const p of [west, north, east])
+        for (const p of [p0, p1, p2])
             if (!robot[p])
                 dst.push(player$[p]);
         store();
         solo = false;
-        notify({op:"join", player:pOff(south)});                  // notify others that I've joined the game
+        notify({op:"join", player:pOff(p3)});                       // notify others that I've joined the game
         startBtn.disabled = true;                                   // wait for others to join and card to be dealt
     }
 }
@@ -2219,9 +2196,9 @@ function wsConnect() {
     websocket.onerror = wsError;
     websocket.onmessage = wsMessage;
     websocket.onclose = wsClose;
-    clearInterval(wsIntervlID);                                // clear websocket timer, if any
+    clearInterval(wsIntervlID);                                 // clear websocket timer, if any
     src = undefined;
-    wsIntervlID = setInterval(wsCheck, 1000);                  // check websocket status every second
+    wsIntervlID = setInterval(wsCheck, 1000);                   // check websocket status every second
     log(`websocket connecting...`);
 }
 
@@ -2246,14 +2223,14 @@ function wsMessage(messageEvent) {
     case "invite":                                              // if msg {op:"invite", player:[p$], robot:[f], showX:fX},
         const i = msg.player.indexOf(src);                          // player[i] = my name
         left = i + 1;                                               // I am i+1 players left of creator
-        player$ = pOff(msg.player);                               // copy players and flags
+        player$ = pOff(msg.player);                                 // copy players and flags
         robot = pOff(msg.robot);
         showTrump = msg.showTrump;
         showCount = msg.showCount;
         showSummary = msg.showSummary;
         showDetail = msg.showDetail;
         showHand = msg.showHand;
-        for (let p of [west, north, east]) {                        // initialize start page
+        for (let p of [p0, p1, p2]) {                               // initialize start page
             playerNam[p].value = player$[p];
             playerIco[p].src = robot[p]? robotSrc : (online[p]? humanSrc : cloudSrc);
         }
@@ -2266,10 +2243,10 @@ function wsMessage(messageEvent) {
         startBtn.disabled = false;
         break;
     case "join":                                                // if msg {op:"join", player:p},
-        online[pOff(msg.player)] = true;                          // mark player p online
+        online[pOff(msg.player)] = true;                            // mark player p online
         playerIco[pOff(msg.player)].src = humanSrc;
         log(`${player$[pOff(msg.player)]} is online`);
-        if (left==0&&online[west]&&online[north]&&online[east])     // if my game and all others are online,
+        if (left==0&&online[p0]&&online[p1]&&online[p2])            // if my game and all others are online,
             setTimeout(dealCards);                                      // deal the cards
         break;
     case "deal":                                                // if msg {op:"deal", dealer:p, cardV[v]}
@@ -2277,7 +2254,7 @@ function wsMessage(messageEvent) {
         for (let c = 0; c < deckCards; c++) {
             card[c].c = c;
             card[c].p = plyr[c];
-            card[c].u = us[card[c].p];
+            card[c].o = teamO[card[c].p];
             card[c].v = msg.cardV[cOff(c)];
             card[c].s = suit[card[c].v];
             card[c].r = rank[card[c].v];
@@ -2295,7 +2272,7 @@ function wsMessage(messageEvent) {
         bidder = pOff(msg.bidder);
         infoText[bidder].style.animation = "none";
         bid = pOff(msg.bid);
-        for (const p of [west, north, east, south])
+        for (const p of [p0, p1, p2, p3])
             infoText[p].textContent = bid[p]==none? "" : (bid[p]==pass? "Pass" : bid[p]);
         bidder = next[bidder];
         if (nPass()==3) {
@@ -2314,12 +2291,12 @@ function wsMessage(messageEvent) {
     case "toss":                                                // if msg {op:"toss"}
         tossHand = true;
         ready[bidder] = true;
-        if (ready[west] && ready[north] && ready[east] && ready[south])
+        if (ready[p0] && ready[p1] && ready[p2] && ready[p3])
             setTimeout(onready);
         break;
     case "ready":                                               // if msg {op:"ready", player:p}
         ready[pOff(msg.player)] = true;
-        if (ready[west] && ready[north] && ready[east] && ready[south])
+        if (ready[p0] && ready[p1] && ready[p2] && ready[p3])
             setTimeout(onready);
         break;
     case "play":                                                // if msg {op:"play", card:c}
@@ -2372,8 +2349,6 @@ function loaded() {
     log("--> loaded");
 
     // Initialize constants
-    for (let v = 0; v < cardSrc.length; v++)
-        cardImg[v].src = cardSrc[v];
     menuIcon.draggable = false;
     setSizes();
     vh0 = vh;
@@ -2403,10 +2378,8 @@ function loaded() {
 
     /*
     // Implement proxy server for web fetches when app is offline
-    if ("serviceWorker" in navigator && window.location.origin != "file://") {
+    if ("serviceWorker" in navigator && window.location.origin != "file://")
         navigator.serviceWorker.register("service-worker.js", {updateViaCache: "none"});
-        channel.onmessage = messageRxed;
-    }
     */
 }
 
