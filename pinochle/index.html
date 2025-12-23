@@ -16,8 +16,6 @@
             <br>
             <input type=button value="Tutorial" onclick=tutorClicked()>
             <br>
-            <input type=button value="Login" onclick=loginClicked()>
-            <br>
             <input type=button value="Create" onclick=createClicked()>
             <br>
             <input id=joinBtn type=button value="Join" onclick=joinClicked() disabled>
@@ -133,7 +131,7 @@
             Robots ignore indicators.
             If a player plays an ace or jack on their partner's ace, robots assume nothing.<br>
             <br>
-            The game creator can choose an open hand game that reveals everyone's cards.
+            The game creator can choose an open hands game that reveals everyone's cards.
             This allows players to <del>cheat</del> learn, but robots don't exploit open hands.<br>
             <br>
             <img class=backIcon src=icons/back.svg alt=back onclick=tutorBackClicked()>
@@ -233,54 +231,44 @@
             </ul>
             <img class=backIcon src=icons/back.svg alt=back onclick=tutorBackClicked()>
         </div>
-        <div id=loginPage>
-            <span class=pageTitle>Double Deck Pinochle - Login</span>
-            <img class=whiteClose src=icons/close.svg alt=close onclick=loginCloseClicked()><br>
-            <div>Username:<br><input id=userInput type=text></div>
-            <div>Password:<br><input id=passInput type=password></div>
-            <div><input id=loginBtn type=button value=Login></div>
-            <div id=loginMsg>Error message</div>
-            <div class=register>Retype Password:<br><input id=retype type=password></div>
-            <div class=register><input id=registerBtn type=button value=Register></div>
-        </div>
-        <div id=startPage>
-            <div class=pageTitle>Double Deck Pinochle - Start Game</div>
-            <img class=whiteClose src=icons/close.svg alt=close onclick=startCloseClicked()><br>
-            <div id=startFields>
+        <div id=createPg>
+            <img class=whiteClose src=icons/close.svg alt=close onclick=createCloseClicked()>
+            <div id=createHdg class=pageTitle>Double Deck Pinochle - Create Game</div>
+            <form id=createForm onsubmit=createSubmitted(event)>
                 <fieldset>
-                    <legend>Players</legend>
+                    <legend id=pLegend>Players Waiting: 0</legend>
                     <div id=playersGrid>
-                        <div id=wTag>Left name:</div>
-                        <div id=wBlock>
-                            <input id=wName type=text onkeydown=nKeyed(event,0) onfocus=nFocused(0) onblur=nBlurred(0)>
-                            <ul id=wList onclick=lClicked(event,0) oncontextmenu=lContexted(event,0)></ul>
+                        <div class=pLabl>Left name:</div>
+                        <div class=pBlck>
+                            <input class=pName type=text onkeydown=nKeyed(event,0) onfocus=nFocused(0) onblur=nBlurred(0)>
+                            <ul class=pList onclick=lClicked(event,0) oncontextmenu=lContexted(event,0)></ul>
                         </div>
-                        <input id=wIcon type=image alt=wIcon onclick=iClicked(0)>
-                        <div id=nTag>Across name:</div>
-                        <div id=nBlock>
-                            <input id=nName type=text onkeydown=nKeyed(event,1) onfocus=nFocused(1) onblur=nBlurred(1)>
-                            <ul id=nList onclick=lClicked(event,1) oncontextmenu=lContexted(event,1)></ul>
+                        <input class=pIcon type=image alt=wIcon onclick=iClicked(event,0)>
+                        <div class=pLabl>Across name:</div>
+                        <div class=pBlck>
+                            <input class=pName type=text onkeydown=nKeyed(event,1) onfocus=nFocused(1) onblur=nBlurred(1)>
+                            <ul class=pList onclick=lClicked(event,1) oncontextmenu=lContexted(event,1)></ul>
                         </div>
-                        <input id=nIcon type=image alt=nIcon onclick=iClicked(1)>
-                        <div id=eTag>Right name:</div>
-                        <div id=eBlock>
-                            <input id=eName type=text onkeydown=nKeyed(event,2) onfocus=nFocused(2) onblur=nBlurred(2)>
-                            <ul id=eList onclick=lClicked(event,2) oncontextmenu=lContexted(event,2)></ul>
+                        <input class=pIcon type=image alt=nIcon onclick=iClicked(event,1)>
+                        <div class=pLabl>Right name:</div>
+                        <div class=pBlck>
+                            <input class=pName type=text onkeydown=nKeyed(event,2) onfocus=nFocused(2) onblur=nBlurred(2)>
+                            <ul class=pList onclick=lClicked(event,2) oncontextmenu=lContexted(event,2)></ul>
                         </div>
-                        <input id=eIcon type=image alt=eIcon onclick=iClicked(2)>
-                        <div id=sTag>Your name:</div>
-                        <div id=sBlock>
-                            <input id=sName type=text onkeydown=nKeyed(event,3) onfocus=nFocused(3) onblur=nBlurred(3)>
-                            <ul id=sList onclick=lClicked(event,3) oncontextmenu=lContexted(event,3)></ul>
+                        <input class=pIcon type=image alt=eIcon onclick=iClicked(event,2)>
+                        <div class=pLabl>Your name:</div>
+                        <div class=pBlck>
+                            <input class=pName type=text onkeydown=nKeyed(event,3) onfocus=nFocused(3) onblur=nBlurred(3)>
+                            <ul class=pList onclick=lClicked(event,3) oncontextmenu=lContexted(event,3)></ul>
                         </div>
-                        <input id=sIcon type=image alt=sIcon onclick=iClicked(3)>
+                        <input class=pIcon type=image alt=sIcon onclick=iClicked(event,3)>
                     </div>
                 </fieldset>
                 <fieldset>
                     <legend>Assistance</legend>
                     <div id=assistanceGrid>
                         <div>Trump suit:</div>
-                        <input id=tsBox type=image alt=tsBox onclick=bClicked(0)>
+                        <input class=aBox type=image alt=tsBox onclick=bClicked(event,0)>
                         <div class=tip>
                             <img src=icons/info.svg alt=info>
                             <div class=tiptext>
@@ -288,7 +276,7 @@
                             </div>
                         </div>
                         <div>Trump count:</div>
-                        <input id=tcBox type=image alt=tcBox onclick=bClicked(1)>
+                        <input class=aBox type=image alt=tcBox onclick=bClicked(event,1)>
                         <div class=tip>
                             <img src=icons/info.svg alt=info>
                             <div class=tiptext>
@@ -296,7 +284,7 @@
                             </div>
                         </div>
                         <div>Card count summary:</div>
-                        <input id=ccsBox type=image alt=ccsBox onclick=bClicked(2)>
+                        <input class=aBox type=image alt=ccsBox onclick=bClicked(event,2)>
                         <div class=tip>
                             <img src=icons/info.svg alt=info>
                             <div class=tiptext>
@@ -308,7 +296,7 @@
                             </div>
                         </div>
                         <div>Card count detail:</div>
-                        <input id=ccdBox type=image alt=ccdBox onclick=bClicked(3)>
+                        <input class=aBox type=image alt=ccdBox onclick=bClicked(event,3)>
                         <div class=tip>
                             <img src=icons/info.svg alt=info>
                             <div class=tiptext>
@@ -319,8 +307,8 @@
                                     &nbsp; - 4 white quads = no cards
                             </div>
                         </div>
-                        <div>Open hand:</div>
-                        <input id=ohBox type=image alt=ohBox onclick=bClicked(4)>
+                        <div>Open hands:</div>
+                        <input class=aBox type=image alt=ohBox onclick=bClicked(event,4)>
                         <div class=tip>
                             <img src=icons/info.svg alt=info>
                             <div class=tiptext>
@@ -329,8 +317,27 @@
                         </div>
                     </div>
                 </fieldset>
-            </div>
-            <input id=startBtn type=button value=Play onclick=startBtnClicked()>
+                <div style=width:100%>
+                    <button id=createSub>Start</button>
+                </div>
+            </form>
+        </div>
+        <div id=joinPage>
+            <img class=whiteClose src=icons/close.svg alt=close onclick=joinCloseClicked()>
+            <div class=pageTitle>Double Deck Pinochle - Join Game</div>
+            <form onsubmit=joinSubmitted(event)>
+                Your Name:<br>
+                <input class=pName type=text onkeydown=nKeyed(event,4) onfocus=nFocused(4) onblur=nBlurred(4)><br>
+                <ul class=pList onclick=lClicked(event,4) oncontextmenu=lContexted(event,4)></ul>
+                <br>
+                Game Number:<br>
+                <input id=jGame type=number onfocus="this.value=''" onBlur=jBlurred() required><br>
+                <br>
+                <br>
+                <div id=joinBtns>
+                    <button id=joinSub>Join</button>
+                </div>
+            </form>
         </div>
         <div id=gamePage>
             <canvas id=canvas></canvas>
@@ -345,7 +352,7 @@
                             <img src=suits/spade.svg alt=spade><br>
                             <img src=suits/heart.svg alt=heart><br>
                             <img src=suits/club.svg alt=club><br>
-                            <img src=suits/diamond.svg alt=diamond>
+                            <img src=suits/diamond.svg>
                         </div>
                         <div id=meldColumn>
                             Meld<br>
@@ -381,7 +388,7 @@
                     <p></p>
                     <p></p>
                     <p></p>
-                    <input id=handBtn type=button value=OK onclick=handClicked()>
+                    <input id=handBtn type=button value=OK onclick=okClicked()>
                 </div>
                 <div id=iText>
                     <img class=blackClose src=icons/close.svg alt=close onclick=iCloseClicked()>
@@ -393,104 +400,105 @@
         </div>
         <div id=wGrid>
             <div></div>
-            <div><img class=gIcon src=ranks/ace.svg     alt=ace>    </div>
-            <div><img class=gIcon src=ranks/ten.svg     alt=ten>    </div>
-            <div><img class=gIcon src=ranks/king.svg    alt=king>   </div>
-            <div><img class=gIcon src=ranks/queen.svg   alt=queen>  </div>
-            <div><img class=gIcon src=ranks/jack.svg    alt=jack>   </div>
-            <div><img class=gIcon src=suits/spade.svg   alt=spade>  </div>
-            <div><img class=count src=icons/0-0.svg     alt=count>  </div>
-            <div><img class=count src=icons/1-1.svg     alt=count>  </div>
-            <div><img class=count src=icons/2-2.svg     alt=count>  </div>
-            <div><img class=count src=icons/3-3.svg     alt=count>  </div>
-            <div><img class=count src=icons/4-4.svg     alt=count>  </div>
-            <div><img class=gIcon src=suits/heart.svg   alt=heart>  </div>
-            <div><img class=count src=icons/0-0.svg     alt=count>  </div>
-            <div><img class=count src=icons/1-1.svg     alt=count>  </div>
-            <div><img class=count src=icons/2-2.svg     alt=count>  </div>
-            <div><img class=count src=icons/3-3.svg     alt=count>  </div>
-            <div><img class=count src=icons/4-4.svg     alt=count>  </div>
-            <div><img class=gIcon src=suits/club.svg    alt=club>   </div>
-            <div><img class=count src=icons/0-0.svg     alt=count>  </div>
-            <div><img class=count src=icons/1-1.svg     alt=count>  </div>
-            <div><img class=count src=icons/2-2.svg     alt=count>  </div>
-            <div><img class=count src=icons/3-3.svg     alt=count>  </div>
-            <div><img class=count src=icons/4-4.svg     alt=count>  </div>
-            <div><img class=gIcon src=suits/diamond.svg alt=diamond></div>
-            <div><img class=count src=icons/0-0.svg     alt=count>  </div>
-            <div><img class=count src=icons/1-1.svg     alt=count>  </div>
-            <div><img class=count src=icons/2-2.svg     alt=count>  </div>
-            <div><img class=count src=icons/3-3.svg     alt=count>  </div>
-            <div><img class=count src=icons/4-4.svg     alt=count>  </div>
+            <div><img class=gIcon src=ranks/ace.svg></div>
+            <div><img class=gIcon src=ranks/ten.svg></div>
+            <div><img class=gIcon src=ranks/king.svg></div>
+            <div><img class=gIcon src=ranks/queen.svg></div>
+            <div><img class=gIcon src=ranks/jack.svg></div>
+            <div><img class=gIcon src=suits/spade.svg></div>
+            <div><img class=cIcon src=icons/0-0.svg></div>
+            <div><img class=cIcon src=icons/1-1.svg></div>
+            <div><img class=cIcon src=icons/2-2.svg></div>
+            <div><img class=cIcon src=icons/3-3.svg></div>
+            <div><img class=cIcon src=icons/4-4.svg></div>
+            <div><img class=gIcon src=suits/heart.svg></div>
+            <div><img class=cIcon src=icons/0-0.svg></div>
+            <div><img class=cIcon src=icons/1-1.svg></div>
+            <div><img class=cIcon src=icons/2-2.svg></div>
+            <div><img class=cIcon src=icons/3-3.svg></div>
+            <div><img class=cIcon src=icons/4-4.svg></div>
+            <div><img class=gIcon src=suits/club.svg></div>
+            <div><img class=cIcon src=icons/0-0.svg></div>
+            <div><img class=cIcon src=icons/1-1.svg></div>
+            <div><img class=cIcon src=icons/2-2.svg></div>
+            <div><img class=cIcon src=icons/3-3.svg></div>
+            <div><img class=cIcon src=icons/4-4.svg></div>
+            <div><img class=gIcon src=suits/diamond.svg></div>
+            <div><img class=cIcon src=icons/0-0.svg></div>
+            <div><img class=cIcon src=icons/1-1.svg></div>
+            <div><img class=cIcon src=icons/2-2.svg></div>
+            <div><img class=cIcon src=icons/3-3.svg></div>
+            <div><img class=cIcon src=icons/4-4.svg></div>
         </div>
         <div id=nGrid>
             <div></div>
-            <div><img class=gIcon src=ranks/ace.svg     alt=ace>    </div>
-            <div><img class=gIcon src=ranks/ten.svg     alt=ten>    </div>
-            <div><img class=gIcon src=ranks/king.svg    alt=king>   </div>
-            <div><img class=gIcon src=ranks/queen.svg   alt=queen>  </div>
-            <div><img class=gIcon src=ranks/jack.svg    alt=jack>   </div>
-            <div><img class=gIcon src=suits/spade.svg   alt=spade>  </div>
-            <div><img class=count src=icons/0-0.svg     alt=count>  </div>
-            <div><img class=count src=icons/1-1.svg     alt=count>  </div>
-            <div><img class=count src=icons/2-2.svg     alt=count>  </div>
-            <div><img class=count src=icons/3-3.svg     alt=count>  </div>
-            <div><img class=count src=icons/4-4.svg     alt=count>  </div>
-            <div><img class=gIcon src=suits/heart.svg   alt=heart>  </div>
-            <div><img class=count src=icons/0-0.svg     alt=count>  </div>
-            <div><img class=count src=icons/1-1.svg     alt=count>  </div>
-            <div><img class=count src=icons/2-2.svg     alt=count>  </div>
-            <div><img class=count src=icons/3-3.svg     alt=count>  </div>
-            <div><img class=count src=icons/4-4.svg     alt=count>  </div>
-            <div><img class=gIcon src=suits/club.svg    alt=club>   </div>
-            <div><img class=count src=icons/0-0.svg     alt=count>  </div>
-            <div><img class=count src=icons/1-1.svg     alt=count>  </div>
-            <div><img class=count src=icons/2-2.svg     alt=count>  </div>
-            <div><img class=count src=icons/3-3.svg     alt=count>  </div>
-            <div><img class=count src=icons/4-4.svg     alt=count>  </div>
-            <div><img class=gIcon src=suits/diamond.svg alt=diamond></div>
-            <div><img class=count src=icons/0-0.svg     alt=count>  </div>
-            <div><img class=count src=icons/1-1.svg     alt=count>  </div>
-            <div><img class=count src=icons/2-2.svg     alt=count>  </div>
-            <div><img class=count src=icons/3-3.svg     alt=count>  </div>
-            <div><img class=count src=icons/4-4.svg     alt=count>  </div>
+            <div><img class=gIcon src=ranks/ace.svg></div>
+            <div><img class=gIcon src=ranks/ten.svg></div>
+            <div><img class=gIcon src=ranks/king.svg></div>
+            <div><img class=gIcon src=ranks/queen.svg></div>
+            <div><img class=gIcon src=ranks/jack.svg></div>
+            <div><img class=gIcon src=suits/spade.svg></div>
+            <div><img class=cIcon src=icons/0-0.svg></div>
+            <div><img class=cIcon src=icons/1-1.svg></div>
+            <div><img class=cIcon src=icons/2-2.svg></div>
+            <div><img class=cIcon src=icons/3-3.svg></div>
+            <div><img class=cIcon src=icons/4-4.svg></div>
+            <div><img class=gIcon src=suits/heart.svg></div>
+            <div><img class=cIcon src=icons/0-0.svg></div>
+            <div><img class=cIcon src=icons/1-1.svg></div>
+            <div><img class=cIcon src=icons/2-2.svg></div>
+            <div><img class=cIcon src=icons/3-3.svg></div>
+            <div><img class=cIcon src=icons/4-4.svg></div>
+            <div><img class=gIcon src=suits/club.svg></div>
+            <div><img class=cIcon src=icons/0-0.svg></div>
+            <div><img class=cIcon src=icons/1-1.svg></div>
+            <div><img class=cIcon src=icons/2-2.svg></div>
+            <div><img class=cIcon src=icons/3-3.svg></div>
+            <div><img class=cIcon src=icons/4-4.svg></div>
+            <div><img class=gIcon src=suits/diamond.svg></div>
+            <div><img class=cIcon src=icons/0-0.svg></div>
+            <div><img class=cIcon src=icons/1-1.svg></div>
+            <div><img class=cIcon src=icons/2-2.svg></div>
+            <div><img class=cIcon src=icons/3-3.svg></div>
+            <div><img class=cIcon src=icons/4-4.svg></div>
         </div>
         <div id=eGrid>
             <div></div>
-            <div><img class=gIcon src=ranks/ace.svg     alt=ace>    </div>
-            <div><img class=gIcon src=ranks/ten.svg     alt=ten>    </div>
-            <div><img class=gIcon src=ranks/king.svg    alt=king>   </div>
-            <div><img class=gIcon src=ranks/queen.svg   alt=queen>  </div>
-            <div><img class=gIcon src=ranks/jack.svg    alt=jack>   </div>
-            <div><img class=gIcon src=suits/spade.svg   alt=spade>  </div>
-            <div><img class=count src=icons/0-0.svg     alt=count>  </div>
-            <div><img class=count src=icons/1-1.svg     alt=count>  </div>
-            <div><img class=count src=icons/2-2.svg     alt=count>  </div>
-            <div><img class=count src=icons/3-3.svg     alt=count>  </div>
-            <div><img class=count src=icons/4-4.svg     alt=count>  </div>
-            <div><img class=gIcon src=suits/heart.svg   alt=heart>  </div>
-            <div><img class=count src=icons/0-0.svg     alt=count>  </div>
-            <div><img class=count src=icons/1-1.svg     alt=count>  </div>
-            <div><img class=count src=icons/2-2.svg     alt=count>  </div>
-            <div><img class=count src=icons/3-3.svg     alt=count>  </div>
-            <div><img class=count src=icons/4-4.svg     alt=count>  </div>
-            <div><img class=gIcon src=suits/club.svg    alt=club>   </div>
-            <div><img class=count src=icons/0-0.svg     alt=count>  </div>
-            <div><img class=count src=icons/1-1.svg     alt=count>  </div>
-            <div><img class=count src=icons/2-2.svg     alt=count>  </div>
-            <div><img class=count src=icons/3-3.svg     alt=count>  </div>
-            <div><img class=count src=icons/4-4.svg     alt=count>  </div>
-            <div><img class=gIcon src=suits/diamond.svg alt=diamond></div>
-            <div><img class=count src=icons/0-0.svg     alt=count>  </div>
-            <div><img class=count src=icons/1-1.svg     alt=count>  </div>
-            <div><img class=count src=icons/2-2.svg     alt=count>  </div>
-            <div><img class=count src=icons/3-3.svg     alt=count>  </div>
-            <div><img class=count src=icons/4-4.svg     alt=count>  </div>
+            <div><img class=gIcon src=ranks/ace.svg></div>
+            <div><img class=gIcon src=ranks/ten.svg></div>
+            <div><img class=gIcon src=ranks/king.svg></div>
+            <div><img class=gIcon src=ranks/queen.svg></div>
+            <div><img class=gIcon src=ranks/jack.svg></div>
+            <div><img class=gIcon src=suits/spade.svg></div>
+            <div><img class=cIcon src=icons/0-0.svg></div>
+            <div><img class=cIcon src=icons/1-1.svg></div>
+            <div><img class=cIcon src=icons/2-2.svg></div>
+            <div><img class=cIcon src=icons/3-3.svg></div>
+            <div><img class=cIcon src=icons/4-4.svg></div>
+            <div><img class=gIcon src=suits/heart.svg></div>
+            <div><img class=cIcon src=icons/0-0.svg></div>
+            <div><img class=cIcon src=icons/1-1.svg></div>
+            <div><img class=cIcon src=icons/2-2.svg></div>
+            <div><img class=cIcon src=icons/3-3.svg></div>
+            <div><img class=cIcon src=icons/4-4.svg></div>
+            <div><img class=gIcon src=suits/club.svg></div>
+            <div><img class=cIcon src=icons/0-0.svg></div>
+            <div><img class=cIcon src=icons/1-1.svg></div>
+            <div><img class=cIcon src=icons/2-2.svg></div>
+            <div><img class=cIcon src=icons/3-3.svg></div>
+            <div><img class=cIcon src=icons/4-4.svg></div>
+            <div><img class=gIcon src=suits/diamond.svg></div>
+            <div><img class=cIcon src=icons/0-0.svg></div>
+            <div><img class=cIcon src=icons/1-1.svg></div>
+            <div><img class=cIcon src=icons/2-2.svg></div>
+            <div><img class=cIcon src=icons/3-3.svg></div>
+            <div><img class=cIcon src=icons/4-4.svg></div>
         </div>
         <div id=infoAreas>
             <div id=wInfo>
-                <div class=infoText>West</div>
-                <div class=infoIcons>
+                <div class=infoName>P0</div>
+                <div class=infoBid>Pass</div>
+                <div class=infoHint>
                     <img src=suits/spade.svg alt=spade>
                     <img src=suits/heart.svg alt=heart>
                     <img src=suits/club.svg alt=club>
@@ -498,8 +506,9 @@
                 </div>
             </div>
             <div id=nInfo>
-                <div class=infoText>North</div>
-                <div class=infoIcons>
+                <div class=infoName>P1</div>
+                <div class=infoBid>Pass</div>
+                <div class=infoHint>
                     <img src=suits/spade.svg alt=spade>
                     <img src=suits/heart.svg alt=heart>
                     <img src=suits/club.svg alt=club>
@@ -507,8 +516,9 @@
                 </div>
             </div>
             <div id=eInfo>
-                <div class=infoText>East</div>
-                <div class=infoIcons>
+                <div class=infoName>P2</div>
+                <div class=infoBid>Pass</div>
+                <div class=infoHint>
                     <img src=suits/spade.svg alt=spade>
                     <img src=suits/heart.svg alt=heart>
                     <img src=suits/club.svg alt=club>
@@ -516,7 +526,8 @@
                 </div>
             </div>
             <div id=sInfo>
-                <div class=infoText>South</div>
+                <div class=infoName>P3</div>
+                <div class=infoBid>Pass</div>
             </div>
         </div>
         <div id=menuText>
@@ -534,7 +545,7 @@
             </div><br>
         </div>
         <div id=aboutText>
-            <b>Double Deck Pinochle v2.0</b>
+            <b>Double Deck Pinochle v2.1</b>
             <br>
             <img class=blackClose src=icons/close.svg alt=close onclick=aboutCloseClicked()><br>
             This app was written by David Salzman based on the Salzman house rules.
