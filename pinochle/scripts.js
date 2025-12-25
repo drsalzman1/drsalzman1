@@ -1811,7 +1811,7 @@ function handsGathered() {
         maxCards[p].fill(4);
         bid[p] = none;
         est[p] = typical;
-        infoBid[p].textContent = bidString(bid[bidder]);
+        infoBid[p].textContent = bidString(bid[p]);
         infoBid[p].style.display = "inline";
     }
     remaining.fill(4);
@@ -2167,6 +2167,12 @@ function lContexted(event, p) {
         localStorage.robot = JSON.stringify(robot);
         pName[p].value = ""; 
     }
+}
+
+// Join game number keyed
+function jKeyed() {
+    log(`--> join game number keyed'`);
+    joinSub.disabled = pName[j].value=="" || jGame.value=="";   // enable join button if all data entered
 }
 
 // Join game number blurred
