@@ -2096,6 +2096,18 @@ function nKeyed(event, p) {
     }
 }
 
+// List item for player p, suggestion s clicked
+function liClicked(p, s) {
+    log(`--> list item ${s} clicked for player ${p}`);
+    pName[p].value = s;
+    for (const p of pArray)
+        pList[p].style.display = "none";
+    if (p==j)                                                   // if player is joiner, enable join button if all data entered
+        joinSub.disabled = pName[j].value=="" || jGame.value=="";
+    else                                                        // if bot or me, enable start button if all data entered
+        createSub.disabled = pName[p0].value=="" || pName[p1].value=="" || pName[p2].value=="" || pName[p3].value=="";
+}
+
 // Name for player p focused
 function nFocused(p) {
     log(`--> player name ${p} focused`);
@@ -2105,10 +2117,11 @@ function nFocused(p) {
     for (const p of pArray)                                     // turn off all player lists
         pList[p].style.display = "none";
     pList[p].innerHTML = "";                                    // clear this player list
-    for (const n of list) {                                     // for each suggestion in list,
+    for (const s of list) {                                     // for each suggestion in list,
         const li = document.createElement("li");                    // create a list item
-        li.innerText = n;                                           // put suggestion in list item
-        pList[p].appendChild(li);                                   // add list item to this player list
+        li.innerText = s;                                           // put suggestion in list item
+        li.setAttribute("onclick", `liClicked(${p}, "${s}")`);      // fire liClicked when this li is clicked
+        pList[p].appendChild(li);                                 // add list item to this player list
     }
     localStorage.alias = JSON.stringify(alias);                 // save favorites in case they changed
     localStorage.robot = JSON.stringify(robot);
