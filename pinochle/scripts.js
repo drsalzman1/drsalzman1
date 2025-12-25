@@ -23,7 +23,7 @@ const clubs     = 5;
 const hearts    = 10;
 const spades    = 15;
 const suits     = 4;
-const sArray    = [diamonds, clubs, hearts, spades];
+const sArray    = [spades, hearts, clubs, diamonds];
 const suit$     = ["diamonds",,,,,"clubs",,,,,"hearts",,,,,"spades"];
 const suitSrc   = ["suits/diamond.svg",,,,,"suits/club.svg",,,,,"suits/heart.svg",,,,,"suits/spade.svg"];
 
@@ -1804,12 +1804,17 @@ function handsGathered() {
     bidder = next[dealer];
     tossHand = false;
     takeO  = takeE = 0;
+    trump = none;
+    player = none;
     for (const p of pArray) {
+        minCards[p].fill(0);
+        maxCards[p].fill(4);
         bid[p] = none;
         est[p] = typical;
         infoBid[p].textContent = bidString(bid[bidder]);
         infoBid[p].style.display = "inline";
     }
+    remaining.fill(4);
     logHands();
     animate(handsFanned);
 }
@@ -1849,14 +1854,8 @@ function dealCards() {
     handText.style.display = "none";
     gamePage.style.display = "block";
     infoAreas.style.display = "block";
-    for (const p of pArray) {
-        minCards[p].fill(0);
-        maxCards[p].fill(4);
+    for (const p of pArray)
         infoName[p].textContent = name[p];
-    }
-    remaining.fill(4);
-    trump = none;
-    player = none;
     locateCards();
     let t0 = performance.now();
     let p = next[dealer];

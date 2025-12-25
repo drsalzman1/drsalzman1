@@ -202,7 +202,8 @@ body {
 }
 
 #createPg li, #joinPage li {
-    margin: 0.8em 0.4em 0.8em 0.4em;
+    margin: 0em 0.4em 0em 0.4em;
+    line-height: 3em;
 }
 
 .selected {
