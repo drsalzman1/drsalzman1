@@ -2095,18 +2095,6 @@ function nKeyed(event, p) {
     }
 }
 
-// List item for player p, suggestion s clicked
-function liClicked(p, s) {
-    log(`--> list item ${s} clicked for player ${p}`);
-    pName[p].value = s;
-    for (const p of pArray)
-        pList[p].style.display = "none";
-    if (p==j)                                                   // if player is joiner, enable join button if all data entered
-        joinSub.disabled = pName[j].value=="" || jGame.value=="";
-    else                                                        // if bot or me, enable start button if all data entered
-        createSub.disabled = pName[p0].value=="" || pName[p1].value=="" || pName[p2].value=="" || pName[p3].value=="";
-}
-
 // Name for player p focused
 function nFocused(p) {
     log(`--> player name ${p} focused`);
@@ -2120,7 +2108,8 @@ function nFocused(p) {
         const li = document.createElement("li");                    // create a list item
         li.innerText = s;                                           // put suggestion in list item
         li.setAttribute("onclick", `liClicked(${p}, "${s}")`);      // fire liClicked when this li is clicked
-        pList[p].appendChild(li);                                 // add list item to this player list
+        li.setAttribute("oncontextmenu", `liContexted(event, ${p}, "${s}")`);
+        pList[p].appendChild(li);                                   // add list item to this player list
     }
     localStorage.alias = JSON.stringify(alias);                 // save favorites in case they changed
     localStorage.robot = JSON.stringify(robot);
@@ -2138,31 +2127,27 @@ function nBlurred(p) {
     }, 200);
 }
 
-// List for player p clicked
-function lClicked(event, p) {
-    log(`--> player list ${p} clicked ${event.target.textContent}`);
-    pName[p].value = event.target.textContent;
+// List item for player p, suggestion s clicked
+function liClicked(p, s) {
+    log(`--> list item ${s} clicked for player ${p}`);
+    pName[p].value = s;
     for (const p of pArray)
         pList[p].style.display = "none";
-    if (p!=p3 && p!=j && !bot[p]) {                             // if remote human,
-        waiter.splice(waiter.indexOf(event.target.textContent), 1); // remove human from waiter list
-        pLegend.innerText = `Players Waiting: ${waiter.length}`;
-    }
     if (p==j)                                                   // if player is joiner, enable join button if all data entered
         joinSub.disabled = pName[j].value=="" || jGame.value=="";
     else                                                        // if bot or me, enable start button if all data entered
         createSub.disabled = pName[p0].value=="" || pName[p1].value=="" || pName[p2].value=="" || pName[p3].value=="";
 }
 
-// List for player p contexted (right click or long press)
-function lContexted(event, p) {
-    log(`--> player list ${p} contexted ${event.target.textContent}`);
+// List item for player p contexted (right click or long press)
+function liContexted(event, p, s) {
+    log(`--> list item ${s} contexted for player ${p}`);
     event.preventDefault();
-    if (confirm(`Delete ${event.target.textContent} from this list?`)) {
+    if (confirm(`Delete ${s} from this list?`)) {
         const alias = localStorage.alias? JSON.parse(localStorage.alias) : [];
         const robot = localStorage.robot? JSON.parse(localStorage.robot) : ["Bender", "Data", "Jarvis"];
         const list = bot[p]? robot : (p==p3||p==j? alias : waiter); 
-        list.splice(list.indexOf(event.target.textContent), 1);
+        list.splice(list.indexOf(s), 1);
         localStorage.alias = JSON.stringify(alias);
         localStorage.robot = JSON.stringify(robot);
         pName[p].value = ""; 
