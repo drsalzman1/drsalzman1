@@ -2041,7 +2041,7 @@ function joinClicked() {
     pName[j].value = localStorage.self? localStorage.self : "";
     jGame.value = "";
     joinSub.innerText = "Join";
-    joinSub.disabled = true;
+    joinSub.disabled = false; //true;
     loadPage.style.display = "none";
     joinPage.style.display = "grid";
 }
@@ -2084,7 +2084,7 @@ function nKeyed(event, p) {
             pLegend.innerText = `Players Waiting: ${waiter.length}`;
         }
         if (p==j)                                                   // if player is joiner, enable join button if all data entered
-            joinSub.disabled = pName[j].value=="" || jGame.value=="";
+            joinSub.disabled = false; //pName[j].value=="" || jGame.value=="";
         else                                                        // if bot or me, enable start button if all data entered
             createSub.disabled = pName[p0].value=="" || pName[p1].value=="" || pName[p2].value=="" || pName[p3].value=="";
         break;
@@ -2134,7 +2134,7 @@ function liClicked(p, s) {
     for (const p of pArray)
         pList[p].style.display = "none";
     if (p==j)                                                   // if player is joiner, enable join button if all data entered
-        joinSub.disabled = pName[j].value=="" || jGame.value=="";
+        joinSub.disabled = false; //pName[j].value=="" || jGame.value=="";
     else                                                        // if bot or me, enable start button if all data entered
         createSub.disabled = pName[p0].value=="" || pName[p1].value=="" || pName[p2].value=="" || pName[p3].value=="";
 }
@@ -2157,13 +2157,13 @@ function liContexted(event, p, s) {
 // Join game number keyed
 function jKeyed() {
     log(`--> join game number keyed'`);
-    joinSub.disabled = pName[j].value=="" || jGame.value=="";   // enable join button if all data entered
+    //joinSub.disabled = pName[j].value=="" || jGame.value=="";   // enable join button if all data entered
 }
 
 // Join game number blurred
 function jBlurred() {
     log(`--> Join game number blurred`);
-    joinSub.disabled = pName[j].value=="" || jGame.value=="";   // enable join button if all data entered
+    //joinSub.disabled = pName[j].value=="" || jGame.value=="";   // enable join button if all data entered
 }
 
 // Create icon for player p clicked
