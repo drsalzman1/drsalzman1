@@ -2238,7 +2238,7 @@ function joinSubmitted(event) {
 // Handle websocket connect calls and websocket reconnect timer
 function wsConnect() {
     if (!navigator.onLine) {                                    // if client is offline,
-        log(`websocket is offline`);                                // try again in a second
+        log(`wsConnect: navigator.onLine:${navigator.online}`);     // try again in a second
         return;
     }
     let url = "";
@@ -2253,43 +2253,45 @@ function wsConnect() {
     websocket.onclose = wsClose;
     clearInterval(wsIntervlID);                                 // clear websocket timer, if any
     wsIntervlID = setInterval(wsCheck, 1000);                   // check websocket status every second
-    log(`websocket connecting...`);
+    log(`wsConnect: url:${url}, returned:${websocket}`);
 }
 
 // Handle the websocket's open event
 function wsOpen(event) {
     joinBtn.disabled = false;
-    log(`websocket opened`);
+    log(`wsOpen:`);
 }
 
 // Handle the websocket's error event
 function wsError(event) {
-    log(`websocket erred`);
+    log(`wsError:`);
 }
 
 // Handle the websocket's message event
 function wsMessage(messageEvent) {
+    log(`wsMessage: messageEvent.data:${messageEvent.data}`);
     const msg = JSON.parse(messageEvent.data);                  // parse the message event data
+    log(`wsMessage: msg:${msg}`);
     switch (msg.op) {
     case "id":                                                  // if {op:"id", id:i},
-        log(`op:id, id:${msg.id}`);
+        log(`wsMessage: op:id, id:${msg.id}`);
         if (id == none)                                             // if first id,
             id = msg.id;                                                // save id
         else {                                                      // otherwise (back from outage),
             websocket.send(JSON.stringify({op:"id", id:id}));           // reclaim old id
-            log(`reclaimed id:${id}`);
+            log(`wsMessage: reclaimed id:${id}`);
         }
         break;
     case "pong":                                                // if {op:"pong"}, ignore
-        //log(`op:pong`);
+        log(`wsMessage: op:pong`);
         break;
     case "join":                                                // if {op:"join", name:n$}, (only received by creator)
-        log(`op:join, name:${msg.name}`);
+        log(`wsMessage: op:join, name:${msg.name}`);
         waiter.push(msg.name);                                      // add name to waiter list
         pLegend.innerText = `Players Waiting: ${waiter.length}`;    // update count on create page
         break;
     case "deal":                                                // if {op:"deal", player:p, value:[v], name:[n$], bot:[f], show:[f]}
-        log(`op:deal, player:${msg.player}, value:${msg.value}, name:${msg.name}, bot:${msg.bot}, show:${msg.show}`);
+        log(`wsMessage: op:deal, player:${msg.player}, value:${msg.value}, name:${msg.name}, bot:${msg.bot}, show:${msg.show}`);
         shift = (msg.name.indexOf(name[p3]) + 1) % players;     // Players from origin (0=origin, 1=left, 2=partner, 3=right)
         dealer = right(msg.player);                                 // get dealer (shifted to the right)
         for (let c = 0; c < deckCards; c++) {                       // initialize deck from [v], offset to my perspective
@@ -2313,7 +2315,7 @@ function wsMessage(messageEvent) {
         setTimeout(dealCards);                                      // deal the cards
         break;
     case "bid":                                                 // if {op:"bid", player:p, bid:b},
-        log(`op:bid, player:${msg.player}, bid:${msg.bid}`);
+        log(`wsMessage: op:bid, player:${msg.player}, bid:${msg.bid}`);
         bidder = right(msg.player);                                 // record bidder (shifted to the right)
         infoName[bidder].style.animation = "none";                  // stop bidder from blinking
         const bid0 = bid[bidder] == none;                           // note if bidder's first bid
@@ -2351,14 +2353,14 @@ function wsMessage(messageEvent) {
         setTimeout(cardChosen);                                     // advance to cardChosen
         break;
     default:                                                    // if unrecognized,
-        log(`websocket msg:${msg} unrecognized`);                   // log message
+        log(`wsMessage msg:${msg}`);                                // log message
     }
 }
 
 // Handle the websocket's close event
 function wsClose(closeEvent) {
     joinBtn.disabled = true;
-    log(`websocket closed`);
+    log(`wsClose`);
     clearInterval(wsIntervlID);                                 // stop websocket timer, if any
     wsIntervlID = setInterval(wsConnect, 1000);                 // start websocket reconnect timer
 }
@@ -2367,26 +2369,27 @@ function wsClose(closeEvent) {
 function wsDisconnect() {
     clearInterval(wsIntervlID);                                 // clear websocket timer, if any
     websocket.close();
-    log(`websocket disconnected`);
+    log(`wsDisconnect`);
 }
 
 // Handle websocket check timer
 function wsCheck() {
     switch (websocket.readyState) {
         case WebSocket.CONNECTING:                              // if websocket connecting, log state
-            log(`websocket connecting`);
+            log(`wsCheck: connecting`);
             break;
         case WebSocket.OPEN:                                    // if websocket open, ping server
+            log(`wsCheck: open`);
             websocket.send(JSON.stringify({op:"ping"}));
             break;
         case WebSocket.CLOSING:                                 // if websocket closing, log state
-            log(`websocket closing`);
+            log(`wsCheck: closing`);
             break;
         case WebSocket.CLOSED:                                  // if websocket closed, log state
-            log(`websocket closed`);
+            log(`wsCheck: closed`);
             break;
         default:                                                // if websocket in unknown state, log state
-            log(`websocket in unknown state '${websocket.readyState}'`);
+            log(`wsCheck: readyState:${websocket.readyState}`);
     }
 }
 

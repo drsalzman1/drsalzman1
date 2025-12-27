@@ -64,33 +64,27 @@ hs.listen(hsPort, hsListening);
 //  creator: >wsConnect <id [<join] [>deal [<>bid] <>pick <>toss/ready [<>play]] >solo >wsClose
 //  joiner:  >wsConnect <id  >join  [<deal [<>bid] <>pick <>toss/ready [<>play]] >solo >wsClose
 
-const wsPort = 3000;                                            // websocket server port
+const wssPort = 3000;                                           // websocket server port
 const none = -1;                                                // result if search fails
 const socket = [];                                              // socket[id] = id's websocket
 const message = [];                                             // message[id] = id's message array
 const group = [];                                               // group[id] = id's client array
 let nextId = 0;                                                 // next id if no old nulls
 
-// Handle a websocket server's connection event (if due to outage, assign a temporary id)
-function wsConnect(ws) {
-    let id = socket.indexOf(null);                              // id is first null socket (or none)
-    if (id==none || id+500>nextId)                              // if none or null is too recent,
-        id = nextId++;                                              // use nextId and increment nextId
-    socket[id] = ws;                                            // initialize client's websocket reference
-    message[id] = [];                                           // initialize client's message message
-    group[id] = [];                                             // initialize client's group array
-    ws.id = id;                                                 // save id in websocket object for quick reference
-    ws.onclose = wsClose;                                       // prepare callbacks
-    ws.onmessage = wsMessage;
-    ws.send(JSON.stringify({op:"id", id:id}));                  // notify connector of their, perhaps temporary, id
-    console.log(`opened id:${ws.id}`);
-}
+////////////////
+// Web Socket //
+////////////////
 
 // Handle a websocket's close event
 function wsClose(closeEvent) {
     const ws = closeEvent.target;                               // recall websocket
     socket[ws.id] = null;                                       // deref websocket, but not message or group in case of outage
-    console.log(`closed id:${ws.id}`);
+    console.log(`wsClose: id:${ws.id}`);
+}
+
+// Handle a websocket's error event
+function wsError() {
+    console.log(`wsError: id:${ws.id}`);
 }
 
 // Handle a websocket's message event
@@ -99,67 +93,118 @@ function wsMessage(messageEvent) {
     const msg = JSON.parse(messageEvent.data);                  // parse message data
     switch (msg.op) {
     case "ping":                                                // if {op:"ping"},
-        //console.log(`rxed op:ping from id:${ws.id}`);
+        console.log(`wsMessage: rxed op:ping from id:${ws.id}`);
         ws.send(JSON.stringify({op:"pong"}));                       // send {op:"pong"}
-        //console.log(`-- txed op:pong to id:${ws.id}`);
+        console.log(`wsMessage: txed op:pong to id:${ws.id}`);
         break;
     case "id":                                                  // if {op:"id", id:i}, (reclaim previous id due to outage)
-        console.log(`rxed op:id, id:${msg.id} from id:${ws.id}`);
+        console.log(`wsMessage: rxed op:id, id:${msg.id} from id:${ws.id}`);
         const tempId = ws.id;                                       // get temporary id assigned to this websocket
         ws.id = msg.id;                                             // store previous id in websocket for quick reference
         socket[ws.id] = ws;                                         // store id's new websocket reference (message/group ok)
         socket[tempId] = null;                                      // recycle temporary id
-        console.log(`-- reassigned tempId:${tempId} to id:${ws.id}`);
+        console.log(`wsMessage: reassigned tempId:${tempId} to id:${ws.id}`);
         message[ws.id] ??= [];                                      // keep server from crashing after server is restarted
         group[ws.id] ??= [];
         for (const m of message[ws.id]) {                           // send queued messages to this websocket
             ws.send(m);
-            console.log(`-- txed queued message:${m} to id:${ws.id}`);
+            console.log(`wsMessage: txed queued message:${m} to id:${ws.id}`);
         }
         message[ws.id].length = 0;                                  // clear this message message
         break;
     case "join":                                                // if {op:"join", name:p$, creator:i},
-        console.log(`rxed op:join, name:${msg.name}, creator:${msg.creator} from id:${ws.id}`);
+        console.log(`wsMessage: rxed op:join, name:${msg.name}, creator:${msg.creator} from id:${ws.id}`);
         group[ws.id].push(msg.creator, ...group[msg.creator]);      // add creator and creator's group to joiner's group
-        console.log(`-- group[${ws.id}]:${group[ws.id]}`);
+        console.log(`wsMessage: group[${ws.id}]:${group[ws.id]}`);
         for (const member of group[msg.creator]) {                  // for each member of creator's group,
             group[member].push(ws.id);                                  // add joiner to member's group
-            console.log(`-- group[${member}]:${group[member]}`);
+            console.log(`wsMessage: group[${member}]:${group[member]}`);
         }
         group[msg.creator].push(ws.id);                             // add joiner to creator's group
-        console.log(`-- group[${msg.creator}]:${group[msg.creator]}`);
+        console.log(`wsMessage: group[${msg.creator}]:${group[msg.creator]}`);
         if (socket[msg.creator]) {                                  // if creator is online, send notification to creator
             socket[msg.creator].send(JSON.stringify({op:"join", name:msg.name}));
-            console.log(`-- txed op:join, name:${msg.name} to id:${msg.creator}`);
+            console.log(`wsMessage: txed op:join, name:${msg.name} to id:${msg.creator}`);
         } else {                                                    // otherwise, queue notification for creator
             message[msg.creator].push(JSON.stringify({op:"join", name:msg.name}));
-            console.log(`-- queued op:join, name:${msg.name} to id:${msg.creator}`);
+            console.log(`wsMessage: queued op:join, name:${msg.name} to id:${msg.creator}`);
         }
         break;
     case "solo":                                                // if {op:"solo"},
-        console.log(`rxed op:solo from ${ws.id}`)
+        console.log(`wsMessage: rxed op:solo from ${ws.id}`)
         group[ws.id].length = 0;                                    // clear solo's group
-        console.log(`-- group[${ws.id}]:${group[ws.id]}`);
+        console.log(`wsMessage: group[${ws.id}]:${group[ws.id]}`);
         break
     default:                                                    // otherwise, send or queue message to sender's group
-        console.log(`rxed message:${messageEvent.data} from id:${ws.id}`);
+        console.log(`wsMessage: rxed message:${messageEvent.data} from id:${ws.id}`);
         for (const member of group[ws.id])
             if (socket[member]) {
                 socket[member].send(messageEvent.data);
-                console.log(`-- txed message:${messageEvent.data} to id:${member}`);
+                console.log(`wsMessage: txed message:${messageEvent.data} to id:${member}`);
             } else {
                 message[member].push(messageEvent.data);
-                console.log(`-- queued message:${messageEvent.data} for id:${member}`);
+                console.log(`wsMessage: queued message:${messageEvent.data} for id:${member}`);
             }
     }
 }
 
+// Handle a websocket's open event
+function wsOpen() {
+    console.log(`wsOpen: id:${ws.id}`);
+}
+
+
+///////////////////////
+// Web Socket Server //
+///////////////////////
+
+// Handle the websocket server's close event
+function wssClose() {
+    console.log(`wssClose:`);
+}
+
+// Handle a websocket server's connection event (if due to outage, assign a temporary id)
+function wssConnection(ws) {
+    let id = socket.indexOf(null);                              // id is first null socket (or none)
+    if (id==none || id+500>nextId)                              // if none or null is too recent,
+        id = nextId++;                                              // use nextId and increment nextId
+    socket[id] = ws;                                            // initialize client's websocket reference
+    message[id] = [];                                           // initialize client's message message
+    group[id] = [];                                             // initialize client's group array
+    ws.id = id;                                                 // save id in websocket object for quick reference
+    ws.onclose = wsClose;                                       // prepare callbacks
+    ws.onerror = wsError;
+    ws.onmessage = wsMessage;
+    ws.onopen = wsOpen;
+    ws.send(JSON.stringify({op:"id", id:id}));                  // notify connector of their, perhaps temporary, id
+    console.log(`wssConnection: ws:${ws}, id:${ws.id}`);
+}
+
+// Handle the websocket server's close event
+function wssError() {
+    console.log(`wssError:`);
+}
+
+// Handle the websocket server's headers event
+function wssHeaders() {
+    console.log(`wssHeaders:`);
+}
+
 // Handle the websocket server's listening event
-function wsListening() {
-    console.log(`listening to port ${wsPort}`);
+function wssListening() {
+    console.log(`wssListening: port:${wssPort}`);
+}
+
+// Handle the websocket server's wsClientError event
+function wssWsClientError() {
+    console.log(`wssWsClientError:`);
 }
 
 // Initialize websocket server
-const wsServer = new WebSocketServer({port:wsPort});
-wsServer.on('connection', wsConnect);
-wsServer.on('listening', wsListening);
+const wss = new WebSocketServer({port:wssPort});
+wss.on('close', wssClose);
+wss.on('connection', wssConnection);
+wss.on('error', wssError);
+wss.on('headers', wssHeaders);
+wss.on('listening', wssListening);
+wss.on('wsClientError', wssWsClientError);
