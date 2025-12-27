@@ -113,7 +113,7 @@ function wsMessage(messageEvent) {
         message[ws.id] ??= [];                                      // keep server from crashing after server is restarted
         group[ws.id] ??= [];
         for (const m of message[ws.id]) {                           // send queued messages to this websocket
-            ws.send(ws, m);
+            ws.send(m);
             console.log(`-- txed queued message:${m} to id:${ws.id}`);
         }
         message[ws.id].length = 0;                                  // clear this message message
