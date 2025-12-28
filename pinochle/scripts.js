@@ -248,10 +248,9 @@ const blink     = "blink 1s ease-in-out 5s infinite";   // slow blink animation
 //
 // From sender                                                      Server action
 // ===========                                                      =============
-// wsConnect(ws)                                                    set ws.id; reply {op:"id", id:i}
+// wsConnect(ws) (if reconnect, url basename is id)                 set ws.id; reply {op:"id", id:i}
 // wsClose(closeEvent)                                              socket[closeEvent.target.id]=null
 // {op:"ping"}                                                      reply {op:"pong"}
-// {op:"id", id:i}                                                  reclaim id following outage's close/connect
 // {op:"join", name:n$, creator:i}                                  fix groups; send {op:"join", name:n$} to creator
 // {op:"solo"}                                                      clear sender's group
 // {op:"deal", player:p, value:[v], name:[n$], bot:[f], show:[f]}   forward message to sender's group
@@ -2243,9 +2242,10 @@ function wsConnect() {
     }
     let url = "";
     if (document.location.hostname == "localhost")
-        url = `ws://localhost:3000`;
+        url = `ws://localhost:3000/`;
     else
-        url = `wss://${document.location.hostname}/ws`;
+        url = `wss://${document.location.hostname}/ws/`;
+    url = id==none? url : url+id;                               // if is exists, append id to url
     websocket = new WebSocket(url);                             // try to create a new websocket
     websocket.onopen = wsOpen;                                  // prepare for callbacks
     websocket.onerror = wsError;
@@ -2253,7 +2253,7 @@ function wsConnect() {
     websocket.onclose = wsClose;
     clearInterval(wsIntervlID);                                 // clear websocket timer, if any
     wsIntervlID = setInterval(wsCheck, 1000);                   // check websocket status every second
-    log(`wsConnect: url:${url}, returned:${websocket}`);
+    log(`wsConnect: url:${url}`);
 }
 
 // Handle the websocket's open event
@@ -2269,21 +2269,13 @@ function wsError(event) {
 
 // Handle the websocket's message event
 function wsMessage(messageEvent) {
-    log(`wsMessage: messageEvent.data:${messageEvent.data}`);
     const msg = JSON.parse(messageEvent.data);                  // parse the message event data
-    log(`wsMessage: msg:${msg}`);
     switch (msg.op) {
     case "id":                                                  // if {op:"id", id:i},
         log(`wsMessage: op:id, id:${msg.id}`);
-        if (id == none)                                             // if first id,
-            id = msg.id;                                                // save id
-        else {                                                      // otherwise (back from outage),
-            websocket.send(JSON.stringify({op:"id", id:id}));           // reclaim old id
-            log(`wsMessage: reclaimed id:${id}`);
-        }
+        id = msg.id;                                                // save id
         break;
     case "pong":                                                // if {op:"pong"}, ignore
-        log(`wsMessage: op:pong`);
         break;
     case "join":                                                // if {op:"join", name:n$}, (only received by creator)
         log(`wsMessage: op:join, name:${msg.name}`);
@@ -2379,7 +2371,6 @@ function wsCheck() {
             log(`wsCheck: connecting`);
             break;
         case WebSocket.OPEN:                                    // if websocket open, ping server
-            log(`wsCheck: open`);
             websocket.send(JSON.stringify({op:"ping"}));
             break;
         case WebSocket.CLOSING:                                 // if websocket closing, log state

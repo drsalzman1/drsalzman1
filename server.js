@@ -1,6 +1,6 @@
 import { createServer } from 'http';
 import { readFile } from 'fs';
-import { join } from 'path';
+import { join, basename } from 'path';
 import { lookup } from 'mime-types';
 import { WebSocketServer } from 'ws';
 
@@ -38,7 +38,6 @@ hs.listen(hsPort, hsListening);
 // wsConnect(ws)                                                    set ws.id; reply {op:"id", id:i}
 // wsClose(closeEvent)                                              socket[closeEvent.target.id]=null
 // {op:"ping"}                                                      reply {op:"pong"}
-// {op:"id", id:i}                                                  reclaim id following outage's close/connect
 // {op:"join", name:n$, creator:i}                                  fix groups; send {op:"join", name:n$} to creator
 // {op:"solo"}                                                      clear sender's group
 // {op:"deal", player:p, value:[v], name:[n$], bot:[f], show:[f]}   forward message to sender's group
@@ -93,24 +92,7 @@ function wsMessage(messageEvent) {
     const msg = JSON.parse(messageEvent.data);                  // parse message data
     switch (msg.op) {
     case "ping":                                                // if {op:"ping"},
-        console.log(`wsMessage: rxed op:ping from id:${ws.id}`);
         ws.send(JSON.stringify({op:"pong"}));                       // send {op:"pong"}
-        console.log(`wsMessage: txed op:pong to id:${ws.id}`);
-        break;
-    case "id":                                                  // if {op:"id", id:i}, (reclaim previous id due to outage)
-        console.log(`wsMessage: rxed op:id, id:${msg.id} from id:${ws.id}`);
-        const tempId = ws.id;                                       // get temporary id assigned to this websocket
-        ws.id = msg.id;                                             // store previous id in websocket for quick reference
-        socket[ws.id] = ws;                                         // store id's new websocket reference (message/group ok)
-        socket[tempId] = null;                                      // recycle temporary id
-        console.log(`wsMessage: reassigned tempId:${tempId} to id:${ws.id}`);
-        message[ws.id] ??= [];                                      // keep server from crashing after server is restarted
-        group[ws.id] ??= [];
-        for (const m of message[ws.id]) {                           // send queued messages to this websocket
-            ws.send(m);
-            console.log(`wsMessage: txed queued message:${m} to id:${ws.id}`);
-        }
-        message[ws.id].length = 0;                                  // clear this message message
         break;
     case "join":                                                // if {op:"join", name:p$, creator:i},
         console.log(`wsMessage: rxed op:join, name:${msg.name}, creator:${msg.creator} from id:${ws.id}`);
@@ -163,21 +145,35 @@ function wssClose() {
     console.log(`wssClose:`);
 }
 
-// Handle a websocket server's connection event (if due to outage, assign a temporary id)
-function wssConnection(ws) {
-    let id = socket.indexOf(null);                              // id is first null socket (or none)
-    if (id==none || id+500>nextId)                              // if none or null is too recent,
-        id = nextId++;                                              // use nextId and increment nextId
+// Handle a websocket server's connection event (url's basename, if any, is closed id)
+function wssConnection(ws, req) {
+    const bn = basename(req.url);                               // bn is the basename
+    let id = /^\d+$/.test(bn)? Number(bn) : none;               // id is from valid bn (or none)
+    if (id==none || socket[id]) {                               // if id invalid or id open, pick a new id
+        id = socket.indexOf(null);                                  // id is the first null socket
+        if (id==none || id+500>nextId) {                            // if none or too recent,
+            id = nextId++;                                              // id is the nextId, then increment nextId
+            while (socket[id])                                          // while id is open,
+                id = nextId++;                                              // skip this id, then increment nextId
+        }
+        message[id] = [];                                           // initialize client's message message
+        group[id] = [];                                             // initialize client's group array
+    }
+    message[id] ??= [];                                         // if server rebooted, don't crash
+    group[id] ??= [];
     socket[id] = ws;                                            // initialize client's websocket reference
-    message[id] = [];                                           // initialize client's message message
-    group[id] = [];                                             // initialize client's group array
     ws.id = id;                                                 // save id in websocket object for quick reference
     ws.onclose = wsClose;                                       // prepare callbacks
     ws.onerror = wsError;
     ws.onmessage = wsMessage;
     ws.onopen = wsOpen;
-    ws.send(JSON.stringify({op:"id", id:id}));                  // notify connector of their, perhaps temporary, id
-    console.log(`wssConnection: ws:${ws}, id:${ws.id}`);
+    ws.send(JSON.stringify({op:"id", id:id}));                  // notify connector of their id
+    console.log(`wssConnection: id:${id}`);
+    for (const m of message[id]) {                              // send queued messages to this websocket
+        ws.send(m);
+        console.log(`wsMessage: txed queued message:${m} to id:${id}`);
+    }
+    message[id].length = 0;                                     // clear this message message
 }
 
 // Handle the websocket server's close event
