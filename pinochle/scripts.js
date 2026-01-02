@@ -45,6 +45,13 @@ const absent    = 20;
 const value$    = ["J♦","Q♦","K♦","T♦","A♦","J♣","Q♣","K♣","T♣","A♣","J♥","Q♥","K♥","T♥","A♥","J♠","Q♠","K♠","T♠","A♠","--"];
 const deckCards = 80;
 const handCards = deckCards / players;
+const faceSrc   = [
+    "cards/jd.svg", "cards/qd.svg", "cards/kd.svg", "cards/td.svg", "cards/ad.svg",
+    "cards/jc.svg", "cards/qc.svg", "cards/kc.svg", "cards/tc.svg", "cards/ac.svg",
+    "cards/jh.svg", "cards/qh.svg", "cards/kh.svg", "cards/th.svg", "cards/ah.svg",
+    "cards/js.svg", "cards/qs.svg", "cards/ks.svg", "cards/ts.svg", "cards/as.svg"
+];
+const backSrc   = "cards/gb.svg";
 
 // Show values
 const trumpIcon  = 0;
@@ -228,6 +235,7 @@ const spadesT   = document.getElementById("spadesT");
 const heartsT   = document.getElementById("heartsT");
 const clubsT    = document.getElementById("clubsT");
 const diamondsT = document.getElementById("diamondsT");
+const crdImg    = document.querySelectorAll("#crdImg img");
 const tutorPage = document.querySelectorAll(".tutorPage");
 const aboutText = document.getElementById("aboutText");
 const iText     = document.getElementById("iText");
@@ -1042,6 +1050,30 @@ function moveCard(c, g0, t0, g1, z1, f1, t1, c0, c1) {
     c0 = c0 ?? c;
     c1 = c1 ?? c;
     card[c].g = g1;
+    if (card[c].z != z1)
+        crdImg[c].style.zIndex = z1;
+    card[c].z = z1;
+    if (card[c].f != f1)
+        crdImg[c].src = f1? faceSrc[card[c].v] : backSrc;
+    card[c].f = f1;
+    card[c].strt.x = [card[c0].gone.x, card[c0].heap.x, card[c0].hand.x, card[c0].bump.x, card[c0].play.x][g0];
+    card[c].strt.y = [card[c0].gone.y, card[c0].heap.y, card[c0].hand.y, card[c0].bump.y, card[c0].play.y][g0];
+    card[c].strt.r = [card[c0].gone.r, card[c0].heap.r, card[c0].hand.r, card[c0].bump.r, card[c0].play.r][g0];
+    card[c].strt.t = t0;
+    card[c].fnsh.x = [card[c1].gone.x, card[c1].heap.x, card[c1].hand.x, card[c1].bump.x, card[c1].play.x][g1];
+    card[c].fnsh.y = [card[c1].gone.y, card[c1].heap.y, card[c1].hand.y, card[c1].bump.y, card[c1].play.y][g1];
+    card[c].fnsh.r = [card[c1].gone.r, card[c1].heap.r, card[c1].hand.r, card[c1].bump.r, card[c1].play.r][g1];
+    card[c].fnsh.t = t0 + t1;
+    const strt =`translate(${card[c].strt.x}px,${card[c].strt.y}px) rotate(${card[c].strt.r}rad)`;
+    const fnsh =`translate(${card[c].fnsh.x}px,${card[c].fnsh.y}px) rotate(${card[c].fnsh.r}rad)`;
+    crdImg[c].animate([{transform:strt}, {transform:fnsh}], {duration:t1, delay:t0-performance.now(), fill:"forwards"});
+}
+
+// Move card c from c0(?), group g0 at time t0 to c1(?), group g1, zIndex z1, face f1 over time t1
+/*function moveCard(c, g0, t0, g1, z1, f1, t1, c0, c1) {
+    c0 = c0 ?? c;
+    c1 = c1 ?? c;
+    card[c].g = g1;
     card[c].z = z1;
     card[c].f = f1;
     card[c].strt.x = [card[c0].gone.x, card[c0].heap.x, card[c0].hand.x, card[c0].bump.x, card[c0].play.x][g0];
@@ -1052,7 +1084,7 @@ function moveCard(c, g0, t0, g1, z1, f1, t1, c0, c1) {
     card[c].fnsh.y = [card[c1].gone.y, card[c1].heap.y, card[c1].hand.y, card[c1].bump.y, card[c1].play.y][g1];
     card[c].fnsh.r = [card[c1].gone.r, card[c1].heap.r, card[c1].hand.r, card[c1].bump.r, card[c1].play.r][g1];
     card[c].fnsh.t = t0 + t1;
-}
+}*/
 
 // Initialize the global variables based on the size of body
 function setSizes() {
@@ -1105,9 +1137,17 @@ function xy2c(x, y) {
 
 // Request first animation frame and save animation complete event handler
 function animate(nextEventHandler) {
+    let tMax = 0;
+    for (let c=0; c<deckCards; c++)
+        tMax = Math.max(tMax, card[c].fnsh.t);
+    setTimeout(nextEventHandler, tMax-performance.now());
+}
+
+// Request first animation frame and save animation complete event handler
+/*function animate(nextEventHandler) {
     requestAnimationFrame(frameEvent);
     ondone = nextEventHandler;
-}
+}*/
 
 /////////////////////////////////////////////////////////////
 //                     EVENT HANDLERS                      //
@@ -1115,7 +1155,7 @@ function animate(nextEventHandler) {
 
 // Animation frame event: draw next frame, then retrigger frameEvent or trigger ondrawn
 function frameEvent() {
-    let done = true;
+    /*let done = true;
     const now = performance.now();
     card.sort((a,b)=>a.z-b.z);
     context.clearRect(0, 0, vw, vh);
@@ -1158,7 +1198,7 @@ function frameEvent() {
     else {
         setTimeout(ondone);
         ondone = "";
-    }
+    }*/
 }
 
 // Ok button clicked: note p3 is ready, notify others, and await all ready
@@ -1311,7 +1351,9 @@ function cardPlayed() {
     const now = performance.now();
     locateCards();
     locateInfo();
-    moveCard(chosen, play, now, play, playZ++, true, 0);
+    for (let c=minC[player]; c<=maxC[player]; c++)
+        moveCard(c, card[c].g, now, card[c].g, c==chosen?playZ++:card[c].z, card[c].f, 0);
+    //moveCard(chosen, play, now, play, playZ++, true, 0);
     if (nGroup(play) == players)
         animate(trickPlayed);
     else {
@@ -1845,8 +1887,9 @@ function resized() {
     }
 }
 
-// Deal cards: notify others, initialize variables, then notify others and deal cards
+// Deal cards: initialize variables, then deal cards and notify others
 function dealCards() {
+    log("--> dealCards");
     const cardV = Array.from(card, (c)=>c.v);
     createPg.style.display = "none";
     joinPage.style.display = "none";
@@ -1860,6 +1903,7 @@ function dealCards() {
     let p = next[dealer];
     for (let z = 0; z < deckCards; z++) {
         const c = minC[p] + Math.floor(z/players);
+        crdImg[c].src = backSrc;
         moveCard(c, gone, t0, heap, z, false, dealTime/20, minC[dealer], c);
         t0 = t0 + (dealTime - dealTime / 20) / deckCards;
         p = next[p];

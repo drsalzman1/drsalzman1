@@ -37,7 +37,7 @@
 }
 
 body {
-    position: absolute; /*relative;*/
+    position: absolute;
     width: 100svw;
     height: 100svh;
     background-color: darkgreen;
@@ -50,6 +50,13 @@ body {
 
 #canvas {
     position: absolute;
+}
+
+#crdImg img {
+    width: 4em;
+    height: 5.6em;
+    top: -2.8em;
+    left: -2em;
 }
 
 #loadPage {
@@ -329,6 +336,12 @@ body {
     left: var(--number-left);
     width: 1.4em;
     text-align: var(--number-align);
+}
+
+#crdImg img {
+    position: absolute;
+    width: 4em;
+    height: 5.6em;
 }
 
 #textArea {
