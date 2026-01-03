@@ -65,6 +65,7 @@ body {
     justify-content: center;
     align-items: center;
     text-align: center;
+    overflow: hidden;
 }
 
 #loadPage input {
@@ -80,6 +81,7 @@ body {
     height: 100svh;
     padding: 0.4em;
     display: none;
+    overflow: hidden;
 }
 
 .tutorPage .backIcon {
@@ -274,6 +276,7 @@ body {
     width: 100svw;
     display: none;
     place-items: center;
+    overflow: hidden;
 }
 
 #joinPage form {
@@ -306,6 +309,7 @@ body {
     width: 100svw;
     height: 100svh;
     display: none;
+    overflow: hidden;
 }
 
 #menuIcon {

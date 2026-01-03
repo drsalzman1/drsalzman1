@@ -1022,8 +1022,8 @@ function moveCard(c, g0, d, g1, z1, f1, t, c0, c1) {
     c0 = c0 ?? c;
     c1 = c1 ?? c;
     card[c].g = g1;
-    //if (card[c].z != z1)
-        crdImg[c].style.zIndex = z1;
+    crdImg[c].style.zIndex = z1;
+    crdImg[c].style.filter = card[c].d? "brightness(70%)" : "brightness(100%)";
     card[c].z = z1;
     if (card[c].f != f1)
         crdImg[c].src = f1? faceSrc[card[c].v] : backSrc;
@@ -1314,9 +1314,9 @@ function mouseMoved(e) {
     if (c == undefined || card[c].g != bump)
         for (let c2 = 0; c2 < deckCards; c2++)
             if (card[c2].g == bump)
-                moveCard(c2, bump, 0, hand, c2, true, 0);
+                moveCard(c2, bump, 0, hand, c2, true, dealTime/20);
     if (c!=undefined && card[c].g==hand && card[c].p==player && legal(c, leadCard, highCard))
-        moveCard(c, hand, 0, bump, c, true, 0);
+        moveCard(c, hand, 0, bump, c, true, dealTime/20);
 }
 
 // Mouse pressed: if hand/bump p3 card, unbump cards; if hand legal card, bump it; if legal, choose it
@@ -1325,9 +1325,9 @@ function mousePressed(e) {
     if (c != undefined) {
         for (let c2 = 0; c2 < deckCards; c2++)
             if (c2!=c && card[c2].g==bump)
-                moveCard(c2, bump, 0, hand, c2, true, 0);
+                moveCard(c2, bump, 0, hand, c2, true, dealTime/20);
         if (card[c].g==hand && card[c].p==player && legal(c, leadCard, highCard))
-            moveCard(c, hand, 0, bump, c, true, 0);
+            moveCard(c, hand, 0, bump, c, true, dealTime/20);
         if (card[c].g==bump && card[c].p==player && legal(c, leadCard, highCard)) {
             chosen = c; 
             body.onmousemove = "";
