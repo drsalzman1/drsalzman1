@@ -45,13 +45,6 @@ const absent    = 20;
 const value$    = ["J♦","Q♦","K♦","T♦","A♦","J♣","Q♣","K♣","T♣","A♣","J♥","Q♥","K♥","T♥","A♥","J♠","Q♠","K♠","T♠","A♠","--"];
 const deckCards = 80;
 const handCards = deckCards / players;
-const faceSrc   = [
-    "cards/jd.svg", "cards/qd.svg", "cards/kd.svg", "cards/td.svg", "cards/ad.svg",
-    "cards/jc.svg", "cards/qc.svg", "cards/kc.svg", "cards/tc.svg", "cards/ac.svg",
-    "cards/jh.svg", "cards/qh.svg", "cards/kh.svg", "cards/th.svg", "cards/ah.svg",
-    "cards/js.svg", "cards/qs.svg", "cards/ks.svg", "cards/ts.svg", "cards/as.svg"
-];
-const backSrc   = "cards/gb.svg";
 
 // Show values
 const trumpIcon  = 0;
@@ -222,7 +215,9 @@ const spadesT   = document.getElementById("spadesT");
 const heartsT   = document.getElementById("heartsT");
 const clubsT    = document.getElementById("clubsT");
 const diamondsT = document.getElementById("diamondsT");
-const crdImg    = document.querySelectorAll("#crdImg img");
+const cardImg   = document.querySelectorAll("#cardImg img");
+const faceImg   = document.querySelectorAll("#faceImg img");
+const backImg   = document.querySelectorAll("#backImg img");
 const tutorPage = document.querySelectorAll(".tutorPage");
 const aboutText = document.getElementById("aboutText");
 const iText     = document.getElementById("iText");
@@ -1022,11 +1017,11 @@ function moveCard(c, g0, d, g1, z1, f1, t, c0, c1) {
     c0 = c0 ?? c;
     c1 = c1 ?? c;
     card[c].g = g1;
-    crdImg[c].style.zIndex = z1;
-    crdImg[c].style.filter = card[c].d? "brightness(70%)" : "brightness(100%)";
+    cardImg[c].style.zIndex = z1;
+    cardImg[c].style.filter = card[c].d? "brightness(70%)" : "brightness(100%)";
     card[c].z = z1;
     if (card[c].f != f1)
-        crdImg[c].src = f1? faceSrc[card[c].v] : backSrc;
+        cardImg[c].src = f1? faceImg[card[c].v].src : backImg[0].src;
     card[c].f = f1;
     const x0 = [card[c0].gone.x, card[c0].heap.x, card[c0].hand.x, card[c0].bump.x, card[c0].play.x][g0];
     const y0 = [card[c0].gone.y, card[c0].heap.y, card[c0].hand.y, card[c0].bump.y, card[c0].play.y][g0];
@@ -1036,7 +1031,7 @@ function moveCard(c, g0, d, g1, z1, f1, t, c0, c1) {
     const r1 = [card[c1].gone.r, card[c1].heap.r, card[c1].hand.r, card[c1].bump.r, card[c1].play.r][g1];
     const strt =`translate(${x0}px,${y0}px) rotate(${r0}rad)`;
     const fnsh =`translate(${x1}px,${y1}px) rotate(${r1}rad)`;
-    crdImg[c].animate([{transform:strt}, {transform:fnsh}], {duration:t, delay:d, fill:"forwards"});
+    cardImg[c].animate([{transform:strt}, {transform:fnsh}], {duration:t, delay:d, fill:"forwards"});
 }
 
 // Initialize the global variables based on the size of body
@@ -2285,7 +2280,7 @@ function loaded() {
     // Initialize deck
     locateCards();
     for (let c=0; c<deckCards; c++) {
-        crdImg[c].src = backSrc;
+        cardImg[c].src = backImg[0].src;
         moveCard(c, gone, 0, gone, 0, false, 0, minC[p3], c);
     }
 
