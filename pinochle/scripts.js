@@ -984,20 +984,20 @@ function locateCards() {
                 n = card[c].g==hand||card[c].g==bump? n+1 : n;
             v = 0;
         }
-        card[c].gone.x = [-cardh/2-1, vw/2, vw+cardh/2+1, vw/2][p];
-        card[c].gone.y = [vh/2, -cardh/2-1, vh/2, vh+cardh/2+1][p];
+        card[c].gone.x = Math.round([-cardh/2-1, vw/2, vw+cardh/2+1, vw/2][p]);
+        card[c].gone.y = Math.round([vh/2, -cardh/2-1, vh/2, vh+cardh/2+1][p]);
         card[c].gone.r = [r0, r1, r2, r3][p];
-        card[c].heap.x = [cardw+hpad, vw/2, vw-cardw-hpad, vw/2][p] + (Math.random()-0.5)*cardw/2;
-        card[c].heap.y = [vh/2, cardw+vpad, vh/2, vh-cardw-vpad][p] + (Math.random()-0.5)*cardw/2;
+        card[c].heap.x = Math.round([cardw+hpad, vw/2, vw-cardw-hpad, vw/2][p] + (Math.random()-0.5)*cardw/2);
+        card[c].heap.y = Math.round([vh/2, cardw+vpad, vh/2, vh-cardw-vpad][p] + (Math.random()-0.5)*cardw/2);
         card[c].heap.r = [Math.PI/2, 0, -Math.PI/2, 0][dealer] + (Math.random()-0.5)*Math.PI/4;
-        card[c].hand.x = [cardh/2+hpad, vw/2-hpitch*(v-n/2), vw-cardh/2-hpad, vw/2+hpitch*(v-n/2)][p];
-        card[c].hand.y = [vh/2+vpitch*(v-n/2), cardh/2+vpad, vh/2-vpitch*(v-n/2), vh-cardh/2-vpad][p];
+        card[c].hand.x = Math.round([cardh/2+hpad, vw/2-hpitch*(v-n/2), vw-cardh/2-hpad, vw/2+hpitch*(v-n/2)][p]);
+        card[c].hand.y = Math.round([vh/2+vpitch*(v-n/2), cardh/2+vpad, vh/2-vpitch*(v-n/2), vh-cardh/2-vpad][p]);
         card[c].hand.r = [r0, r1, r2, r3][p];
-        card[c].bump.x = card[c].hand.x + [cardh*0.4, 0, -cardh*0.4, 0][p];
-        card[c].bump.y = card[c].hand.y + [0, cardh*0.4, 0, -cardh*0.4][p];
+        card[c].bump.x = Math.round(card[c].hand.x + [cardh*0.4, 0, -cardh*0.4, 0][p]);
+        card[c].bump.y = Math.round(card[c].hand.y + [0, cardh*0.4, 0, -cardh*0.4][p]);
         card[c].bump.r = [r0, r1, r2, r3][p];
-        card[c].play.x = vw/2 + [-cardw*0.38, 0, +cardw*0.38, 0][p];
-        card[c].play.y = vh/2 + [0, -cardw*0.38, 0, +cardw*0.38][p];
+        card[c].play.x = Math.round(vw/2 + [-cardw*0.38, 0, +cardw*0.38, 0][p]);
+        card[c].play.y = Math.round(vh/2 + [0, -cardw*0.38, 0, +cardw*0.38][p]);
         card[c].play.r = [r0, r1, r2, r3][p];
         if (card[c].g==hand || card[c].g==bump)
             v++;
