@@ -105,16 +105,6 @@ class P {
      }
 }
 
-// Animation class
-class A {
-    constructor() {
-        this.x = 0;                                     // x at card center
-        this.y = 0;                                     // y at card center
-        this.r = 0;                                     // rotation (0=portrait, pi/2=landscape)
-        this.t = 0;                                     // time to start or finish
-     }
-}
-
 // Results class
 class R {
     constructor(c) {
@@ -151,8 +141,6 @@ class C {
         this.hand = new P;                              // hand position
         this.bump = new P;                              // bump position
         this.play = new P;                              // play position
-        this.strt = new A;                              // start animation
-        this.fnsh = new A;                              // finish animation
     }
 }
 
@@ -194,8 +182,6 @@ const unchecked = "icons/unchecked.svg";
 
 // Page elements
 const body      = document.getElementById("body");
-const canvas    = document.getElementById("canvas");
-const context   = canvas.getContext("2d");
 const loadPage  = document.getElementById("loadPage");
 const joinBtn   = document.getElementById("joinBtn");
 const createPg  = document.getElementById("createPg");
@@ -226,6 +212,7 @@ const playBtn   = document.getElementById("playBtn");
 const tossBtn   = document.getElementById("tossBtn");
 const handText  = document.getElementById("handText");
 const handPara  = document.querySelectorAll("#handText p");
+const handCell  = document.querySelectorAll("#handGrid div");
 const handBtn   = document.getElementById("handBtn");
 const menuIcon  = document.getElementById("menuIcon");
 const trmpIcon  = document.getElementById("trmpIcon");
@@ -246,7 +233,6 @@ const wGrid     = document.getElementById("wGrid");
 const nGrid     = document.getElementById("nGrid");
 const eGrid     = document.getElementById("eGrid");
 const cIcon     = document.querySelectorAll(".cIcon");
-const cardImg   = document.querySelectorAll("#cardImages img");
 
 // Animation constants
 const dealTime  = 2000;                                 // milliseconds to deal all cards
@@ -303,14 +289,6 @@ let card        = [                                     // card[c] = deck card c
     new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,
     new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C
 ];
-let cardCanvas  = [                                     // cardCanvas[v] = card value v's offscreen canvas
-    new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), 
-    new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), 
-    new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), 
-    new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), new OffscreenCanvas(0,0), 
-    new OffscreenCanvas(0,0)
-];
-let cardContext = [];                                   // cardContext[v] = card value v's offscreen canvas context
 let bidder      = none;                                 // the player who is bidding or won the bid
 let bid         = [none, none, none, none];             // bid[p] = player p's bid (or none or pass)
 let est         = [typical, typical, typical, typical]; // est[p] = player p's estimated meld based on jump bids
@@ -331,7 +309,8 @@ let takeO       = 0;                                    // points team O has tak
 let takeE       = 0;                                    // points team E has taken so far in hand
 let scoreO      = 0;                                    // team O's total points so far in game
 let scoreE      = 0;                                    // team E's total points so far in game
-let tossHand    = false;                                // true if bidder tosses in the hand
+let tossO       = false;                                // true if team O tosses in the hand
+let tossE       = false;                                // true if team E tosses in the hand
 let mustToss    = false;                                // true if bidder lacks a marriage in trump
 let tutorialPg  = none;                                 // tutorial page (or none)
 let playZ       = -1000;                                // z-index for played card (auto-increments)
@@ -767,22 +746,29 @@ function capMaxCards(p1, v, p2) {
     return Math.min(maxCards[p1][v], minCards[p1][v] + loose);
 }
 
-// Update hint images based on minCards and capMaxCards
-function updateHints() {
+// Hide hints
+function hideHints() {
+    trmpIcon.style.display = "none";
+    nTrump.textContent = "";
+    infoHint[p0].style.display = infoHint[p1].style.display = infoHint[p2].style.display = "none";
+    wGrid.style.display = nGrid.style.display = eGrid.style.display = "none";
+}
+
+// Display enabled hints
+function displayHints() {
+    hideHints();
     if (show[trumpIcon] && trump!=none) {
         trmpIcon.src = suitSrc[trump];
         trmpIcon.style.display = "block";
-    } else
-        trmpIcon.style.display = "none";
+    }
     if (show[trmpCount] && trump!=none) {
         let q = 0;
         for (const r of rArray)
             q += remaining[r+trump] - nValue(p3,r+trump);
         nTrump.textContent = q;
-    } else
-        nTrump.textContent = "";
+    }
     let i = 0;
-    for (const p of [p0, p1, p2]) {
+    for (const p of [p0, p1, p2])
         if (show[cardSmmry] && player!=none && nCards(p)>0) {
             infoHint[p].style.display = "inline";
             for (const s of sArray)
@@ -801,11 +787,8 @@ function updateHints() {
                         infoIcon[i++].style.opacity = "10%";
                     else
                         infoIcon[i++].style.opacity = "0%";
-        } else {
-            infoHint[p].style.display = "none";
+        } else
             i += suits;
-        }
-    }
     if (show[crdDetail] && player!=none) {
         let i = 0;
         for (const p of [p0, p1, p2])
@@ -813,8 +796,7 @@ function updateHints() {
                 for (const r of rArray)
                     cIcon[i++].src = barSrc[minCards[p][r+s]][capMaxCards(p,r+s,p3)];
         wGrid.style.display = nGrid.style.display = eGrid.style.display = "grid";
-    } else
-        wGrid.style.display = nGrid.style.display = eGrid.style.display = "none";
+    }
 }
 
 // Get plausible card values cardV given other players' unknown cards
@@ -992,19 +974,7 @@ function autoSelect() {
     return results[0].c;
 }
 
-// Locate p2 and p0 info boxes based on p2 and p0 hands
-function locateInfo() {
-    if (card[0].g == heap)
-        infoName[p0].style.top  = infoName[p2].style.top  = vh/2 - cardw*1.4 + "px";
-    else {
-        infoName[p0].style.top = vh/2 - cardw*0.70 - nCards(p0)*vpitch/2 + "px";
-        infoName[p2].style.top = vh/2 - cardw*0.70 - nCards(p2)*vpitch/2 + "px";
-        infoBid[p0].style.top  = infoHint[p0].style.top = vh/2 - cardw*0.30 - nCards(p0)*vpitch/2 + "px";
-        infoBid[p2].style.top  = infoHint[p2].style.top = vh/2 - cardw*0.30 - nCards(p2)*vpitch/2 + "px";
-    }
-}
-
-// Locate all card positions (n = number of semi-exposed cards; v = visible card number)
+// Locate all card positions (n = number of semi-exposed cards; v = visible card number) and p0/p2 info boxes
 function locateCards() {
     const r0 = [+Math.PI/2, +Math.PI/2, -Math.PI/2, -Math.PI/2][dealer];
     const r1 = [0,          0,          0,          0         ][dealer];
@@ -1034,57 +1004,40 @@ function locateCards() {
         card[c].play.x = vw/2 + [-cardw*0.38, 0, +cardw*0.38, 0][p];
         card[c].play.y = vh/2 + [0, -cardw*0.38, 0, +cardw*0.38][p];
         card[c].play.r = [r0, r1, r2, r3][p];
-        card[c].strt.x = [card[c].gone.x, card[c].heap.x, card[c].hand.x, card[c].bump.x, card[c].play.x][card[c].g];
-        card[c].strt.y = [card[c].gone.y, card[c].heap.y, card[c].hand.y, card[c].bump.y, card[c].play.y][card[c].g];
-        card[c].strt.r = [r0, r1, r2, r3][p];
-        card[c].fnsh.x = [card[c].gone.x, card[c].heap.x, card[c].hand.x, card[c].bump.x, card[c].play.x][card[c].g];
-        card[c].fnsh.y = [card[c].gone.y, card[c].heap.y, card[c].hand.y, card[c].bump.y, card[c].play.y][card[c].g];
-        card[c].fnsh.r = [r0, r1, r2, r3][p];
         if (card[c].g==hand || card[c].g==bump)
             v++;
     }
+    if (card[0].g == heap)
+        infoName[p0].style.top  = infoName[p2].style.top  = vh/2 - cardw*1.4 + "px";
+    else {
+        infoName[p0].style.top = vh/2 - cardw*0.70 - nCards(p0)*vpitch/2 + "px";
+        infoName[p2].style.top = vh/2 - cardw*0.70 - nCards(p2)*vpitch/2 + "px";
+        infoBid[p0].style.top  = infoHint[p0].style.top = vh/2 - cardw*0.30 - nCards(p0)*vpitch/2 + "px";
+        infoBid[p2].style.top  = infoHint[p2].style.top = vh/2 - cardw*0.30 - nCards(p2)*vpitch/2 + "px";
+    }
 }
 
-// Move card c from c0(?), group g0 at time t0 to c1(?), group g1, zIndex z1, face f1 over time t1
-function moveCard(c, g0, t0, g1, z1, f1, t1, c0, c1) {
+// Move card c from c0(?), group g0 after delay d to c1(?), group g1, zIndex z1, face f1 over time t
+function moveCard(c, g0, d, g1, z1, f1, t, c0, c1) {
     c0 = c0 ?? c;
     c1 = c1 ?? c;
     card[c].g = g1;
-    if (card[c].z != z1)
+    //if (card[c].z != z1)
         crdImg[c].style.zIndex = z1;
     card[c].z = z1;
     if (card[c].f != f1)
         crdImg[c].src = f1? faceSrc[card[c].v] : backSrc;
     card[c].f = f1;
-    card[c].strt.x = [card[c0].gone.x, card[c0].heap.x, card[c0].hand.x, card[c0].bump.x, card[c0].play.x][g0];
-    card[c].strt.y = [card[c0].gone.y, card[c0].heap.y, card[c0].hand.y, card[c0].bump.y, card[c0].play.y][g0];
-    card[c].strt.r = [card[c0].gone.r, card[c0].heap.r, card[c0].hand.r, card[c0].bump.r, card[c0].play.r][g0];
-    card[c].strt.t = t0;
-    card[c].fnsh.x = [card[c1].gone.x, card[c1].heap.x, card[c1].hand.x, card[c1].bump.x, card[c1].play.x][g1];
-    card[c].fnsh.y = [card[c1].gone.y, card[c1].heap.y, card[c1].hand.y, card[c1].bump.y, card[c1].play.y][g1];
-    card[c].fnsh.r = [card[c1].gone.r, card[c1].heap.r, card[c1].hand.r, card[c1].bump.r, card[c1].play.r][g1];
-    card[c].fnsh.t = t0 + t1;
-    const strt =`translate(${card[c].strt.x}px,${card[c].strt.y}px) rotate(${card[c].strt.r}rad)`;
-    const fnsh =`translate(${card[c].fnsh.x}px,${card[c].fnsh.y}px) rotate(${card[c].fnsh.r}rad)`;
-    crdImg[c].animate([{transform:strt}, {transform:fnsh}], {duration:t1, delay:t0-performance.now(), fill:"forwards"});
+    const x0 = [card[c0].gone.x, card[c0].heap.x, card[c0].hand.x, card[c0].bump.x, card[c0].play.x][g0];
+    const y0 = [card[c0].gone.y, card[c0].heap.y, card[c0].hand.y, card[c0].bump.y, card[c0].play.y][g0];
+    const r0 = [card[c0].gone.r, card[c0].heap.r, card[c0].hand.r, card[c0].bump.r, card[c0].play.r][g0];
+    const x1 = [card[c1].gone.x, card[c1].heap.x, card[c1].hand.x, card[c1].bump.x, card[c1].play.x][g1];
+    const y1 = [card[c1].gone.y, card[c1].heap.y, card[c1].hand.y, card[c1].bump.y, card[c1].play.y][g1];
+    const r1 = [card[c1].gone.r, card[c1].heap.r, card[c1].hand.r, card[c1].bump.r, card[c1].play.r][g1];
+    const strt =`translate(${x0}px,${y0}px) rotate(${r0}rad)`;
+    const fnsh =`translate(${x1}px,${y1}px) rotate(${r1}rad)`;
+    crdImg[c].animate([{transform:strt}, {transform:fnsh}], {duration:t, delay:d, fill:"forwards"});
 }
-
-// Move card c from c0(?), group g0 at time t0 to c1(?), group g1, zIndex z1, face f1 over time t1
-/*function moveCard(c, g0, t0, g1, z1, f1, t1, c0, c1) {
-    c0 = c0 ?? c;
-    c1 = c1 ?? c;
-    card[c].g = g1;
-    card[c].z = z1;
-    card[c].f = f1;
-    card[c].strt.x = [card[c0].gone.x, card[c0].heap.x, card[c0].hand.x, card[c0].bump.x, card[c0].play.x][g0];
-    card[c].strt.y = [card[c0].gone.y, card[c0].heap.y, card[c0].hand.y, card[c0].bump.y, card[c0].play.y][g0];
-    card[c].strt.r = [card[c0].gone.r, card[c0].heap.r, card[c0].hand.r, card[c0].bump.r, card[c0].play.r][g0];
-    card[c].strt.t = t0;
-    card[c].fnsh.x = [card[c1].gone.x, card[c1].heap.x, card[c1].hand.x, card[c1].bump.x, card[c1].play.x][g1];
-    card[c].fnsh.y = [card[c1].gone.y, card[c1].heap.y, card[c1].hand.y, card[c1].bump.y, card[c1].play.y][g1];
-    card[c].fnsh.r = [card[c1].gone.r, card[c1].heap.r, card[c1].hand.r, card[c1].bump.r, card[c1].play.r][g1];
-    card[c].fnsh.t = t0 + t1;
-}*/
 
 // Initialize the global variables based on the size of body
 function setSizes() {
@@ -1107,14 +1060,6 @@ function setSizes() {
         hpitch = cardw/4;
         vpitch = Math.min(cardw/4, (vh - iconw*2 - pad*2 - cardw) / 19);
     }
-    canvas.width  = vw;
-    canvas.height = vh;
-    for (let v = 0; v < cardImg.length; v++) {
-        cardCanvas[v].width = Math.round(cardw);
-        cardCanvas[v].height = Math.round(cardh);
-        cardContext[v] = cardCanvas[v].getContext("2d");
-        cardContext[v].drawImage(cardImg[v], 0, 0, Math.round(cardw), Math.round(cardh));
-    }
 }
 
 // Return card number of top p3 card (or undefined) at x,y coordinates 
@@ -1135,70 +1080,16 @@ function xy2c(x, y) {
     return topC;
 }
 
-// Request first animation frame and save animation complete event handler
-function animate(nextEventHandler) {
-    let tMax = 0;
-    for (let c=0; c<deckCards; c++)
-        tMax = Math.max(tMax, card[c].fnsh.t);
-    setTimeout(nextEventHandler, tMax-performance.now());
-}
-
-// Request first animation frame and save animation complete event handler
-/*function animate(nextEventHandler) {
-    requestAnimationFrame(frameEvent);
-    ondone = nextEventHandler;
-}*/
-
 /////////////////////////////////////////////////////////////
 //                     EVENT HANDLERS                      //
 /////////////////////////////////////////////////////////////
 
-// Animation frame event: draw next frame, then retrigger frameEvent or trigger ondrawn
-function frameEvent() {
-    /*let done = true;
-    const now = performance.now();
-    card.sort((a,b)=>a.z-b.z);
-    context.clearRect(0, 0, vw, vh);
-    for (let c = 0; c < deckCards; c++) {
-        const img = card[c].f? cardCanvas[card[c].v] : cardCanvas[back];
-        if (card[c].d)
-            context.filter = "brightness(0.7)";
-        if (now < card[c].fnsh.t)
-            done = false;
-        if (now <= card[c].strt.t) {
-            context.translate(Math.round(card[c].strt.x), Math.round(card[c].strt.y));
-            context.rotate(card[c].strt.r);
-            context.drawImage(img, Math.round(-cardw/2), Math.round(-cardh/2));
-            context.resetTransform();
-        } else if (now >= card[c].fnsh.t) {
-            context.translate(Math.round(card[c].fnsh.x), Math.round(card[c].fnsh.y));
-            context.rotate(card[c].fnsh.r);
-            context.drawImage(img, Math.round(-cardw/2), Math.round(-cardh/2));
-            context.resetTransform();
-            card[c].strt.x = card[c].fnsh.x;
-            card[c].strt.y = card[c].fnsh.y;
-            card[c].strt.r = card[c].fnsh.r;
-        } else if (now > card[c].strt.t && now < card[c].fnsh.t) {
-            const ps = (card[c].fnsh.t - now) / (card[c].fnsh.t - card[c].strt.t);
-            const pf = (now - card[c].strt.t) / (card[c].fnsh.t - card[c].strt.t);
-            const x = card[c].strt.x*ps + card[c].fnsh.x*pf;
-            const y = card[c].strt.y*ps + card[c].fnsh.y*pf;
-            const r = card[c].strt.r*ps + card[c].fnsh.r*pf;
-            context.translate(Math.round(x), Math.round(y));
-            context.rotate(r);
-            context.drawImage(img, Math.round(-cardw/2), Math.round(-cardh/2));
-            context.resetTransform();
-        }
-        if (card[c].d)
-            context.filter = "brightness(1.0)";
-    }
-    card.sort((a,b)=>a.c-b.c);
-    if (!done)
-        requestAnimationFrame(frameEvent);
-    else {
-        setTimeout(ondone);
-        ondone = "";
-    }*/
+// Info icon clicked: reveal/hide handEnded paragraphs
+function infoClicked() {
+    if (handPara[0].style.display == "none")
+        handPara[0].style.display = handPara[1].style.display = handPara[2].style.display = "block";
+    else
+        handPara[0].style.display = handPara[1].style.display = handPara[2].style.display = "none";
 }
 
 // Ok button clicked: note p3 is ready, notify others, and await all ready
@@ -1214,81 +1105,82 @@ function okClicked() {
 // Hand ended: display stats, await all ready, then deal next hand or start new game
 function handEnded() {
     log("--> handEnded");
-    log(`bidder:${bidder}, teamO[bidder]:${teamO[bidder]}, tossHand:${tossHand}, meldO:${meldO}, meldE:${meldE}, takeO:${takeO}, takeE:${takeE}`)
     trmpIcon.style.display = "none";
     nTrump.textContent = "";
     infoAreas.style.display = "none";
-    if (teamO[bidder] && tossHand) {
+    handCell[4].innerHTML = scoreO;
+    handCell[5].innerHTML = scoreE;
+    handCell[7].innerHTML = teamO[bidder]? bidO : "Pass";
+    handCell[8].innerHTML = teamE[bidder]? bidE : "Pass";
+    handCell[10].innerHTML = meldO<20||(!tossE&&takeO<20)? `<s>&nbsp;${meldO}&nbsp;</s>` : meldO;
+    handCell[11].innerHTML = meldE<20||(!tossO&&takeE<20)? `<s>&nbsp;${meldE}&nbsp;</s>` : meldE;
+    handCell[13].innerHTML = takeO<20? `<u><s>&nbsp;${takeO}&nbsp;</s></u>` : `<u>${takeO}</u>`;
+    handCell[14].innerHTML = takeE<20? `<u><s>&nbsp;${takeE}&nbsp;</s></u>` : `<u>${takeE}</u>`;
+    if (tossO) {
         scoreO = scoreO - bidO;
-        handPara[0].innerHTML = `You lost your bid (${bidO}) because ` +
-            `${bidder==p3?"You":name[bidder]} tossed due to ${mustToss?`no trump marriage`:`insufficient meld (${meldO})`}.`;
+        handPara[0].innerHTML = `You lost your bid because ` +
+            `${bidder==p3?"you":name[bidder]} tossed due to ${mustToss?`no trump marriage`:`insufficient meld`}.`;
     } else if (teamO[bidder] && (meldO<20 || takeO<20 || meldO+takeO<bidO)) {
         scoreO = scoreO - bidO;
-        handPara[0].innerHTML = `You lost your bid (${bidO}) because ` + 
-            (meldO<20? `your meld (${meldO}) was less than 20.` :
-            (takeO<20? `your take (${takeO}) was less than 20.` :
-            `your meld (${meldO}) and take (${takeO}) were less than your bid (${bidO}).`));
+        handPara[0].innerHTML = `You lost your bid because ` + 
+            (meldO<20? `your meld was less than 20.` :
+            (takeO<20? `your take was less than 20.` :
+            `your meld plus take was less than your bid.`));
     } else if (teamO[bidder]) {
         scoreO = scoreO + meldO + takeO;
-        handPara[0].innerHTML = `You won your meld (${meldO}) and take (${takeO}) because ` +
-            `you made your bid (${bidO}).`;
-    } else if (teamE[bidder] && tossHand) {
+        handPara[0].innerHTML = `You won your meld plus take because ` +
+            `they were each at least 20 and your meld plus take was at least your bid.`;
+    } else if (tossE) {
         scoreE = scoreE - bidE;
-        handPara[0].innerHTML = `They lost their bid (${bidE}) because ` +
-            `${name[bidder]} tossed in the hand due to ${mustToss?`no trump marriage`:`insufficient meld (${meldE})`}.`;
+        handPara[0].innerHTML = `They lost their bid because ` +
+            `${name[bidder]} tossed in the hand due to ${mustToss?`no trump marriage`:`insufficient meld`}.`;
     } else if (teamE[bidder] && (meldE<20 || takeE<20 || meldE+takeE<bidE)) {
         scoreE = scoreE - bidE;
-        handPara[0].innerHTML = `They lost their bid (${bidE}) because ` + 
-            (meldE<20? `their meld (${meldE}) was less than 20.` :
-            (takeE<20? `their take (${takeE}) was less than 20.` :
-            `their meld (${meldE}) and their take (${takeE}) were less than their bid (${bidE}).`));
+        handPara[0].innerHTML = `They lost their bid because ` + 
+            (meldE<20? `their meld was less than 20.` :
+            (takeE<20? `their take was less than 20.` :
+            `their meld plus take was less than their bid.`));
     } else if (teamE[bidder]) {
         scoreE = scoreE + meldE + takeE;
-        handPara[0].innerHTML = `They won their meld (${meldE}) and take (${takeE}) because ` +
-            `they made their bid (${bidE}).`;
+        handPara[0].innerHTML = `They won their meld plus take because ` +
+            `they were each at least 20 and their meld plus take was at least their bid.`;
     }
-    if (teamO[bidder] && tossHand && meldE<20) {
+    if (tossO && meldE<20) {
         scoreE = scoreE;
-        handPara[1].innerHTML = `They didn't win their meld (${meldE}) because `+
-            `it was less than 20.`;
-    } else if (teamO[bidder] && tossHand && meldE>=20) {
+        handPara[1].innerHTML = `They didn't win their meld because it was less than 20.`;
+    } else if (tossO && meldE>=20) {
         scoreE = scoreE + meldE;
-        handPara[1].innerHTML = `They won their meld (${meldE}) because ` +
-            `it was at least 20.`;
-    } else if (teamO[bidder] && !tossHand && takeE<20) {
+        handPara[1].innerHTML = `They won their meld because it was at least 20.`;
+    } else if (teamO[bidder] && !tossO && takeE<20) {
         scoreE = scoreE;
-        handPara[1].innerHTML = `They didn't win their meld (${meldE}) or take (${takeE}) because ` +
-            `their take was less than 20.`;
-    } else if (teamO[bidder] && !tossHand && meldE<20 && takeE>=20) {
+        handPara[1].innerHTML = `They didn't win their meld or take because their take was less than 20.`;
+    } else if (teamO[bidder] && !tossO && meldE<20 && takeE>=20) {
         scoreE = scoreE + takeE;
-        handPara[1].innerHTML = `They didn't win their meld (${meldE}) because it was less than 20, but ` +
-            `they won their take (${takeE}) because it was at least 20.`;
-    } else if (teamO[bidder] && !tossHand && meldE>=20 && takeE>=20) {
+        handPara[1].innerHTML = `They didn't win their meld because it was less than 20, but ` +
+            `they won their take because it was at least 20.`;
+    } else if (teamO[bidder] && !tossO && meldE>=20 && takeE>=20) {
         scoreE = scoreE + meldE + takeE;
-        handPara[1].innerHTML = `They won their meld (${meldE}) and take (${takeE}) because ` +
-            `they were at least 20.`;
-    } else if (teamE[bidder] && tossHand && meldO<20) {
+        handPara[1].innerHTML = `They won their meld plus take because they were each at least 20.`;
+    } else if (tossE && meldO<20) {
         scoreO = scoreO;
-        handPara[1].innerHTML = `We didn't win our meld (${meldO}) because ` +
-            `it was less than 20.`;
-    } else if (teamE[bidder] && tossHand && meldO>=20) {
+        handPara[1].innerHTML = `We didn't win our meld because it was less than 20.`;
+    } else if (tossE && meldO>=20) {
         scoreO = scoreO + meldO;
-        handPara[1].innerHTML = `We won our meld (${meldO}) because ` +
-            `it was at least 20.`;
-    } else if (teamE[bidder] && !tossHand && takeO<20) {
+        handPara[1].innerHTML = `We won our meld because it was at least 20.`;
+    } else if (teamE[bidder] && !tossE && takeO<20) {
         scoreO = scoreO;
-        handPara[1].innerHTML = `We didn't win our meld (${meldO}) or take (${takeO}) because ` +
-            `our take was less than 20.`;
-    } else if (teamE[bidder] && !tossHand && meldO<20 && takeO>=20) {
+        handPara[1].innerHTML = `We didn't win our meld or take because our take was less than 20.`;
+    } else if (teamE[bidder] && !tossE && meldO<20 && takeO>=20) {
         scoreO = scoreO + takeO;
-        handPara[1].innerHTML = `We didn't win our meld (${meldO}) because it was less than 20, but ` +
-            `we won our take (${takeO}) because it was at least 20.`;
-    } else if (teamE[bidder] && !tossHand && meldO>=20 && takeO>=20) {
+        handPara[1].innerHTML = `We didn't win our meld because it was less than 20, but ` +
+            `we won our take because it was at least 20.`;
+    } else if (teamE[bidder] && !tossE && meldO>=20 && takeO>=20) {
         scoreO = scoreO + meldO + takeO;
-        handPara[1].innerHTML = `We won our meld (${meldO}) and take (${takeO}) because ` +
-            `they were at least 20.`;
+        handPara[1].innerHTML = `We won our meld plus take because they were each at least 20.`;
     }
     handPara[2].innerHTML = `Your score is now ${scoreO}.<br>Their score is now ${scoreE}.`;    
+    handCell[16].innerHTML = scoreO;
+    handCell[17].innerHTML = scoreE;
     dealer = next[dealer];
     shuffleCards();
     for (const p of pArray)
@@ -1300,6 +1192,7 @@ function handEnded() {
     else
         handPara[3].innerHTML = `${name[dealer]} deals next.`;
     handBtn.disabled = false;
+    handPara[0].style.display = handPara[1].style.display = handPara[2].style.display = "none";
     handText.style.display = "block";
     for (const p of pArray)
         ready[p] = bot[p];
@@ -1309,30 +1202,27 @@ function handEnded() {
 // Trick viewed: pull trick, then retrigger handsRefanned or trigger handEnded
 function trickViewed() {
     log("--> trickViewed");
-    const now = performance.now();
     for (let c = 0; c < deckCards; c++)
         if (card[c].g == play)
-            moveCard(c, play, now, gone, 100, false, dealTime/10, c, minC[card[highCard].p]);
+            moveCard(c, play, 0, gone, 100, false, dealTime/10, c, minC[card[highCard].p]);
     if (nGroup(hand) > 0) {
         player = card[highCard].p;
         chosen = leadCard = highCard = none;
-        animate(handsRefanned);
+        setTimeout(handsRefanned, dealTime/10);
     } else {
         player = none;
-        updateHints();
         if (card[highCard].o)
             takeO += 2;
         else
             takeE += 2;
         infoAreas.style.display = "none";
-        animate(handEnded);
+        setTimeout(handEnded, dealTime/10);
     }
 }
 
 // Trick played: pause a moment to view trick, then trigger trickViewed
 function trickPlayed() {
     log("--> trickPlayed");
-    const now = performance.now();
     for (let c = 0; c < deckCards; c++)
         if (card[c].g == play) {
             if (card[c].r==ace || card[c].r==ten || card[c].r==king)
@@ -1340,32 +1230,29 @@ function trickPlayed() {
                     takeO += 1;
                 else
                     takeE += 1;
-            moveCard(c, play, now, play, card[c].z, true, dealTime/4);
+            moveCard(c, play, 0, play, card[c].z, true, dealTime/4);
         }
-    animate(trickViewed);
+    setTimeout(trickViewed, dealTime/4);
 }
 
 // Card played: close hand, then trigger trickPlayed or handsRefanned  
 function cardPlayed() {
-    log("--> cardPlayed");
-    const now = performance.now();
+    log(`--> cardPlayed, playZ:${playZ}`);
     locateCards();
-    locateInfo();
     for (let c=minC[player]; c<=maxC[player]; c++)
-        moveCard(c, card[c].g, now, card[c].g, c==chosen?playZ++:card[c].z, card[c].f, 0);
-    //moveCard(chosen, play, now, play, playZ++, true, 0);
+        moveCard(c, card[c].g, 0, card[c].g, c==chosen?playZ++:card[c].z, card[c].f, 0);
     if (nGroup(play) == players)
-        animate(trickPlayed);
+        setTimeout(trickPlayed, 100);
     else {
         player = next[player];
-        animate(handsRefanned);
+        setTimeout(handsRefanned, 100);
     }
 }
 
 // Card chosen: update stats, play face, then trigger cardPlayed
 function cardChosen() {
     log("--> cardChosen");
-    const now = performance.now();
+    hideHints();
     let msg = "Best follow";
 
     // if chosen card is in high suit and doesn't beat non-ace high card, player must not have any cards that can beat the high card 
@@ -1409,53 +1296,38 @@ function cardChosen() {
         loose -= minCards[p][card[chosen].v];
     for (const p of pArray)
         maxCards[p][card[chosen].v] = Math.min(maxCards[p][card[chosen].v], minCards[p][card[chosen].v] + loose);
-    updateHints();
 
     // log this play
-    log(`${name[player]} chose ${value$[card[chosen].v]}, msg:${msg}`);
+    log(`${name[player]} chose ${value$[card[chosen].v]}, msg:${msg}, card[chosen].z:${card[chosen].z}`);
 
     // animate card play
     infoName[player].style.animation = "none";
-    moveCard(chosen, card[chosen].g, now, play, card[chosen].z, true, dealTime/10);
+    moveCard(chosen, card[chosen].g, 0, play, card[chosen].z, true, dealTime/10);
     if (player!=p3 && nCards(player)==0)
         infoHint[player].style.display = "none";
-    animate(cardPlayed);
+    setTimeout(cardPlayed, dealTime/10);
 }
 
 // Mouse moved: if off bump card, unbump cards; if moved to hand legal card, bump it
 function mouseMoved(e) {
-    //log("--> mouseMoved");
-    const now = performance.now();
     const c = xy2c(e.clientX, e.clientY);
     if (c == undefined || card[c].g != bump)
         for (let c2 = 0; c2 < deckCards; c2++)
-            if (card[c2].g == bump) {
-                moveCard(c2, bump, now, hand, c2, true, dealTime/20);
-                requestAnimationFrame(frameEvent);
-            }
-    if (c!=undefined && card[c].g==hand && card[c].p==player && legal(c, leadCard, highCard)) {
-        moveCard(c, hand, now, bump, c, true, dealTime/20);
-        requestAnimationFrame(frameEvent);
-    }
+            if (card[c2].g == bump)
+                moveCard(c2, bump, 0, hand, c2, true, 0);
+    if (c!=undefined && card[c].g==hand && card[c].p==player && legal(c, leadCard, highCard))
+        moveCard(c, hand, 0, bump, c, true, 0);
 }
 
 // Mouse pressed: if hand/bump p3 card, unbump cards; if hand legal card, bump it; if legal, choose it
 function mousePressed(e) {
-    log("--> mousePressed");
-    const now = performance.now();
     const c = xy2c(e.clientX, e.clientY);
     if (c != undefined) {
-        log(name[card[c].p]);
-        for (let c2 = 0; c2 < deckCards; c2++) {
-            if (c2!=c && card[c2].g==bump) {
-                moveCard(c2, bump, now, hand, c2, true, dealTime/20);
-                requestAnimationFrame(frameEvent);
-            }
-        }
-        if (card[c].g==hand && card[c].p==player && legal(c, leadCard, highCard)) {
-            moveCard(c, hand, now, bump, c, true, dealTime/20);
-            requestAnimationFrame(frameEvent);
-        }
+        for (let c2 = 0; c2 < deckCards; c2++)
+            if (c2!=c && card[c2].g==bump)
+                moveCard(c2, bump, 0, hand, c2, true, 0);
+        if (card[c].g==hand && card[c].p==player && legal(c, leadCard, highCard))
+            moveCard(c, hand, 0, bump, c, true, 0);
         if (card[c].g==bump && card[c].p==player && legal(c, leadCard, highCard)) {
             chosen = c; 
             body.onmousemove = "";
@@ -1463,17 +1335,15 @@ function mousePressed(e) {
             body.ontouchstart = "";
             body.ontouchmove = "";
             notify({op:"play", card:cardLeft(chosen)});
-            setTimeout(cardChosen);
+            setTimeout(cardChosen, 100);
         }
     }
 }
 
 // Touch started: if legal bump card, choose it; if isn't bump card, unbump cards; if hand legal, bump it 
 function touchStarted(e) {
-    log("--> touchStarted");
     body.onmousedown = "";
     body.onmousemove = "";
-    const now = performance.now();
     const c = xy2c(e.touches[0].clientX, e.touches[0].clientY);
     if (c!=undefined && card[c].g==bump && card[c].p==player && legal(c, leadCard, highCard)) {
         chosen = c; 
@@ -1483,87 +1353,70 @@ function touchStarted(e) {
         setTimeout(cardChosen);
         return;
     }
-    if (c==undefined || card[c].g!=bump) {
-        for (let c2 = 0; c2 < deckCards; c2++) {
-            if (card[c2].g == bump) {
-                moveCard(c2, bump, now, hand, c2, true, dealTime/20);
-                requestAnimationFrame(frameEvent);
-            }
-        }
-    }
-    if (c!=undefined && card[c].g==hand && card[c].p==player && legal(c, leadCard, highCard)) {
-        moveCard(c, hand, now, bump, c, true, dealTime/20);
-        requestAnimationFrame(frameEvent);
-    }
+    if (c==undefined || card[c].g!=bump)
+        for (let c2 = 0; c2 < deckCards; c2++)
+            if (card[c2].g == bump)
+                moveCard(c2, bump, 0, hand, c2, true, dealTime/20);
+    if (c!=undefined && card[c].g==hand && card[c].p==player && legal(c, leadCard, highCard))
+        moveCard(c, hand, 0, bump, c, true, dealTime/20);
 }
 
 // Touch moved: if off bump card, unbump cards; if hand legal card, bump it
 function touchMoved(e) {
-    //log("--> touchMoved");
-    const now = performance.now();
     const c = xy2c(e.touches[0].clientX, e.touches[0].clientY);
-    if (c==undefined || card[c].g!=bump) {
-        for (let c2 = 0; c2 < deckCards; c2++) {
-            if (card[c2].g == bump) {
-                moveCard(c2, bump, now, hand, c2, true, dealTime/20);
-                requestAnimationFrame(frameEvent);
-            }
-        }
-    }
-    if (c!=undefined && card[c].g==hand && card[c].p==player && legal(c, leadCard, highCard)) {
-        moveCard(c, hand, now, bump, c, true, dealTime/20);
-        requestAnimationFrame(frameEvent);
-    }
+    if (c==undefined || card[c].g!=bump)
+        for (let c2 = 0; c2 < deckCards; c2++)
+            if (card[c2].g == bump)
+                moveCard(c2, bump, 0, hand, c2, true, dealTime/20);
+    if (c!=undefined && card[c].g==hand && card[c].p==player && legal(c, leadCard, highCard))
+        moveCard(c, hand, 0, bump, c, true, dealTime/20);
 }
 
 // Hands re-fanned: wait for p3 or bot to choose a card
 function handsRefanned() {
     log("--> handsRefanned");
-    updateHints();
     if (player == p3) {
         body.onmousemove = mouseMoved;
         body.onmousedown = mousePressed;
         body.ontouchstart = touchStarted;
         body.ontouchmove = touchMoved;
+        displayHints();
         infoName[p3].style.animation = blink;
     } else if (shift==0 && bot[player]) {
         chosen = autoSelect();
         notify({op:"play", card:cardLeft(chosen)});
-        setTimeout (cardChosen, 0);
+        setTimeout (cardChosen);
     }
 }
 
 // Meld gathered: re-fan hands, then trigger handsRefanned
 function meldGathered() {
     log("--> meldGathered");
-    const now = performance.now();
     for (let c = 0; c < deckCards; c++)
         card[c].g = hand;
     locateCards();
-    locateInfo();
     for (let c = 0; c < deckCards; c++)
         if (show[openHands] || card[c].p==p3)
-            moveCard(c, gone, now, hand, c, true, dealTime/10);
+            moveCard(c, gone, 0, hand, c, true, dealTime/10);
         else
-            moveCard(c, gone, now, hand, -c, false, dealTime/10);
+            moveCard(c, gone, 0, hand, -c, false, dealTime/10);
     player = bidder;
     chosen = leadCard = highCard = none;
-    animate(handsRefanned);
+    setTimeout(handsRefanned, dealTime/10);
 }
 
 // Bidding is complete: gather meld, then trigger handEnded or meldGathered
 function biddingComplete() {
     log("--> biddingComplete");
-    const now = performance.now();
     playText.style.display = "none";
     for (let c = 0; c < deckCards; c++) {
         card[c].d = false;
-        moveCard(c, hand, now, gone, -c, false, dealTime/10);
+        moveCard(c, hand, 0, gone, -c, false, dealTime/10);
     }
-    if (tossHand)
-        animate(handEnded);
+    if (tossO || tossE)
+        setTimeout(handEnded, dealTime/10);
     else
-        animate(meldGathered);
+        setTimeout(meldGathered, dealTime/10);
 }
 
 // Play button clicked: notify others then await all ready
@@ -1581,7 +1434,7 @@ function playClicked() {
 // Toss button clicked: notify others then await all ready
 function tossClicked() {
     log(`--> tossBtn clicked`);
-    tossHand = true;
+    tossO = true;
     notify({op:"toss"});
     playBtn.disabled = true;
     tossBtn.disabled = true;
@@ -1603,6 +1456,7 @@ function meldFanned() {
         playPara[2].innerHTML = `You need ${needO} points.<br>They need ${needE} points.`;
     playBtn.disabled = bidder==p3? mustToss : false;
     tossBtn.style.display = bidder==p3? "inline" : "none";
+    tossBtn.disabled = false;
     infoName[p3].style.animation = blink;
     for (const p of pArray)
         ready[p] = bot[p];
@@ -1613,7 +1467,6 @@ function meldFanned() {
 // Hands regathered: fan out meld, then trigger meldFanned
 function handsRegathered() {
     log("--> handsRegathered");
-    const now = performance.now();
 
     // move p3 and known (meld) cards into hands
     for (let c = 0; c < deckCards; c++) {                       // for all cards,
@@ -1668,22 +1521,19 @@ function handsRegathered() {
             maxCards[p][v] = Math.min(maxCards[p][v], minCards[p][v] + loose);
         }
     logStats();
-    updateHints();
 
     // animate movement of meld cards to hand
     locateCards();
-    locateInfo();
     for (let c = 0; c < deckCards; c++)
         if (card[c].g==hand || card[c].g==bump)
-            moveCard(c, gone, now, card[c].g, c, true, dealTime/10);
-    animate(meldFanned);
+            moveCard(c, gone, 0, card[c].g, c, true, dealTime/10);
+    setTimeout(meldFanned, dealTime/10);
 }
 
 // Trump picked: regather hands, then trigger handsRegathered
 function trumpPicked() {
     log("--> trumpPicked");
     log(`${name[bidder]} picks ${suit$[trump]}`);
-    const now = performance.now();
     infoName[bidder].style.animation = "none";
     bidO  = Math.max(bid[p1], bid[p3]);
     bidE  = Math.max(bid[p0], bid[p2]);
@@ -1692,13 +1542,14 @@ function trumpPicked() {
     needO = teamE[bidder]? 20 : (meldO<20? bid[bidder] : Math.max(20,bid[bidder]-meldO));
     needE = teamO[bidder]? 20 : (meldE<20? bid[bidder] : Math.max(20,bid[bidder]-meldE));
     mustToss   = marriages(bidder, trump) == 0;
-    tossHand   = mustToss || (bot[bidder] && (teamO[bidder]&&needO>30 || teamE[bidder]&&needE>30));
+    tossO = teamO[bidder] && (mustToss || (bot[bidder] && needO>30));
+    tossE = teamE[bidder] && (mustToss || (bot[bidder] && needE>30));
     tagMeld();
     for (let c = 0; c < deckCards; c++) {
         card[c].m = card[c].s==trump;
-        moveCard(c, hand, now, gone, -c, false, dealTime/10);
+        moveCard(c, hand, 0, gone, -c, false, dealTime/10);
     }
-    animate(handsRegathered);
+    setTimeout(handsRegathered, dealTime/10);
 }
 
 // Suit s clicked: set trump, then trigger trumpPicked
@@ -1832,19 +1683,17 @@ function handsFanned() {
 // Hands gathered: fan hands, then trigger handsFanned
 function handsGathered() {
     log("--> handsGathered");
-    const now = performance.now();
     for (let c = 0; c < deckCards; c++)
         card[c].g = hand;
     locateCards();
-    locateInfo();
     for (let c = 0; c < deckCards; c++)
         if (show[openHands] || card[c].p==p3)
-            moveCard(c, gone, now, hand, c, true, dealTime/10);
+            moveCard(c, gone, 0, hand, c, true, dealTime/10);
         else
-            moveCard(c, gone, now, hand, -c, false, dealTime/10);
+            moveCard(c, gone, 0, hand, -c, false, dealTime/10);
     bidder = next[dealer];
-    tossHand = false;
-    takeO  = takeE = 0;
+    tossO = tossE = false;
+    takeO = takeE = 0;
     trump = none;
     player = none;
     for (const p of pArray) {
@@ -1857,33 +1706,27 @@ function handsGathered() {
     }
     remaining.fill(4);
     logHands();
-    animate(handsFanned);
+    setTimeout(handsFanned, dealTime/10);
 }
 
 // Deck dealt: gather hands, then trigger handsGathered
 function deckDealt() {
     log(`--> deckDealt by ${name[dealer]}`);
-    const now = performance.now();
     for (let c = 0; c < deckCards; c++)
-        moveCard(c, heap, now, gone, -c, false, dealTime/20);
-    animate(handsGathered);
+        moveCard(c, heap, 0, gone, -c, false, dealTime/20);
+    setTimeout(handsGathered, dealTime/20);
 }
 
 // Resize event: adjust dynamic sizes, then trigger immediate deck redraw
 function resized() {
     log("--> resized");
-    const now = performance.now();
     setSizes();
     if (vh!=vh0 || vw!=vw0) {
         vh0 = vh;
         vw0 = vw;
         locateCards();
-        locateInfo();
-        for (let c = 0; c < deckCards; c++) {
-            card[c].strt.t = now;
-            card[c].fnsh.t = now;
-        }
-        requestAnimationFrame(frameEvent);
+        for (let c=0; c<deckCards; c++)
+            moveCard(c, card[c].g, 0, card[c].g, card[c].z, card[c].f, 0);
     }
 }
 
@@ -1898,22 +1741,20 @@ function dealCards() {
     infoAreas.style.display = "block";
     for (const p of pArray)
         infoName[p].textContent = name[p];
+    card[0].g = heap;                                           // ensure infoName is not under heap
     locateCards();
-    let t0 = performance.now();
+    let d = 0;
     let p = next[dealer];
     for (let z = 0; z < deckCards; z++) {
         const c = minC[p] + Math.floor(z/players);
-        crdImg[c].src = backSrc;
-        moveCard(c, gone, t0, heap, z, false, dealTime/20, minC[dealer], c);
-        t0 = t0 + (dealTime - dealTime / 20) / deckCards;
+        moveCard(c, gone, d, heap, z, false, dealTime/20, minC[dealer], c);
+        d += (dealTime - dealTime / 20) / deckCards;
         p = next[p];
     }
     playZ = -1000;
-    locateInfo();
-    updateHints();
     if (shift == 0)
         notify({op:"deal", player:dealer, value:cardV, name:name, bot:bot, show:show});
-    animate(deckDealt);
+    setTimeout(deckDealt, dealTime);
 }
 
 // Shuffle cards returning sorted hands in card[]
@@ -2371,7 +2212,8 @@ function wsMessage(messageEvent) {
         break;
     case "toss":                                                // if {op:"toss"},
         log(`op:toss}`);
-        tossHand = true;                                            // note bidder tossed hand
+        tossO = teamO[bidder];                                      // note which team tossed hand
+        tossE = teamE[bidder];
         ready[bidder] = true;                                       // note bidder is ready
         if (ready[p0] && ready[p1] && ready[p2] && ready[p3])       // if everyone's ready,
             setTimeout(onready);                                        // advance to next state
@@ -2428,7 +2270,7 @@ function wsCheck() {
     }
 }
 
-// Handle document loaded
+// Handle document loaded (could be after game ends)
 function loaded() {
     console.clear();
     log("--> loaded");
@@ -2439,6 +2281,18 @@ function loaded() {
     vh0 = vh;
     vw0 = vw;
     onresize = resized;
+
+    // Initialize deck
+    locateCards();
+    for (let c=0; c<deckCards; c++) {
+        crdImg[c].src = backSrc;
+        moveCard(c, gone, 0, gone, 0, false, 0, minC[p3], c);
+    }
+
+    // Initialize display
+    gamePage.style.display = "none";
+    loadPage.style.display = "flex";
+    handEnded();
 
     // Initialize websocket if not running from WS Code debugger
     if (location.hostname) {

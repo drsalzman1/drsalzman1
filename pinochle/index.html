@@ -340,7 +340,6 @@
             </form>
         </div>
         <div id=gamePage>
-            <canvas id=canvas></canvas>
             <img id=menuIcon src=icons/menu.svg alt=menu onclick=menuIconClicked()>
             <img id=trmpIcon src=suits/club.svg alt=trump onclick=trmpIconClicked()>
             <div id=nTrump></div> 
@@ -387,7 +386,16 @@
                     <p></p>
                     <p></p>
                     <p></p>
+                    <div id=handGrid>
+                          <div></div>   <div><u>Your</u></div> <div><u>Their</u></div>
+                        <div>Old</div>       <div></div>           <div></div>
+                        <div>Bid</div>       <div></div>           <div></div>
+                        <div>Meld</div>      <div></div>           <div></div>
+                        <div>Take</div>      <div></div>           <div></div>
+                        <div>New</div>       <div></div>           <div></div>
+                    </div>
                     <p></p>
+                    <img src=icons/info.svg alt=info onclick=infoClicked()>
                     <input id=handBtn type=button value=OK onclick=okClicked()>
                 </div>
                 <div id=iText>
@@ -560,29 +568,6 @@
             If you have any comments or suggestions, please email me at salzman.apps@gmail.com.<br>
             <br>
             &copy; 2025 David Salzman
-        </div>
-        <div id=cardImages style=display:none>
-            <img src=cards/jd.svg alt="jack of diamonds">
-            <img src=cards/qd.svg alt="queen of diamonds">
-            <img src=cards/kd.svg alt="king of diamonds">
-            <img src=cards/td.svg alt="ten of diamonds">
-            <img src=cards/ad.svg alt="ace of diamonds">
-            <img src=cards/jc.svg alt="jack of clubs">
-            <img src=cards/qc.svg alt="queen of clubs">
-            <img src=cards/kc.svg alt="king of clubs">
-            <img src=cards/tc.svg alt="ten of clubs">
-            <img src=cards/ac.svg alt="ace of clubs">
-            <img src=cards/jh.svg alt="jack of hearts">
-            <img src=cards/qh.svg alt="queen of hearts">
-            <img src=cards/kh.svg alt="king of hearts">
-            <img src=cards/th.svg alt="ten of hearts">
-            <img src=cards/ah.svg alt="ace of hearts">
-            <img src=cards/js.svg alt="jack of spades">
-            <img src=cards/qs.svg alt="queen of spades">
-            <img src=cards/ks.svg alt="king of spades">
-            <img src=cards/ts.svg alt="ten of spades">
-            <img src=cards/as.svg alt="ace of spades">
-            <img src=cards/gb.svg alt="gray back">
         </div>
     </body>
 </html>

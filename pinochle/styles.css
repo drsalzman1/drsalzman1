@@ -48,10 +48,6 @@ body {
     overflow: hidden;
 }
 
-#canvas {
-    position: absolute;
-}
-
 #crdImg img {
     width: 4em;
     height: 5.6em;
@@ -435,13 +431,27 @@ body {
 }
 
 #handText {
-    width: 100%;
+    width: 80svw;
     display: none;
     text-align: center;
 }
 
 #handText p {
     margin-bottom: 0.8em;
+}
+
+#handGrid {
+    display: grid;
+    justify-content: center;
+    grid-template-columns: 3em 3em 3em;
+    margin-bottom: 0.8em;
+}
+
+#handText img {
+    position: relative;
+    top: 0.3em;
+    height: 1.3em;
+    filter: invert(100%);
 }
 
 #handBtn {
