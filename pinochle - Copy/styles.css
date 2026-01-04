@@ -37,7 +37,7 @@
 }
 
 body {
-    position: absolute; /*relative;*/
+    position: absolute;
     width: 100svw;
     height: 100svh;
     background-color: darkgreen;
@@ -46,10 +46,6 @@ body {
     user-select: none;
     touch-action: pan-y;
     overflow: hidden;
-}
-
-#canvas {
-    position: absolute;
 }
 
 #loadPage {
@@ -62,6 +58,7 @@ body {
     justify-content: center;
     align-items: center;
     text-align: center;
+    overflow: hidden;
 }
 
 #loadPage input {
@@ -77,6 +74,7 @@ body {
     height: 100svh;
     padding: 0.4em;
     display: none;
+    overflow: hidden;
 }
 
 .tutorPage .backIcon {
@@ -271,6 +269,7 @@ body {
     width: 100svw;
     display: none;
     place-items: center;
+    overflow: hidden;
 }
 
 #joinPage form {
@@ -303,6 +302,7 @@ body {
     width: 100svw;
     height: 100svh;
     display: none;
+    overflow: hidden;
 }
 
 #menuIcon {
@@ -329,6 +329,18 @@ body {
     left: var(--number-left);
     width: 1.4em;
     text-align: var(--number-align);
+}
+
+#cardImg img, #faceImg img, #backImg img {
+    position: absolute;
+    width: round(4em, 1px);
+    height: round(5.6em, 1px);
+    top: round(-2.8em, 1px);
+    left: round(-2em, 1px);
+}
+
+#faceImg, #backImg {
+    display: none;
 }
 
 #textArea {
@@ -422,13 +434,27 @@ body {
 }
 
 #handText {
-    width: 100%;
+    width: 80svw;
     display: none;
     text-align: center;
 }
 
 #handText p {
     margin-bottom: 0.8em;
+}
+
+#handGrid {
+    display: grid;
+    justify-content: center;
+    grid-template-columns: 3em 3em 3em;
+    margin-bottom: 0.8em;
+}
+
+#handText img {
+    position: relative;
+    top: 0.3em;
+    height: 1.3em;
+    filter: invert(100%);
 }
 
 #handBtn {
