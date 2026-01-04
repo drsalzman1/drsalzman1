@@ -1316,6 +1316,8 @@ function cardChosen() {
 function pointerDowned(event) {
     let pickX, pickY;
     event.preventDefault();
+    if (!event.isPrimary)
+        return;
     pickX = event.clientX;
     pickY = event.clientY;
     pickedC = xy2c(pickX, pickY)
@@ -1332,7 +1334,7 @@ function pointerDowned(event) {
 function pointerMoved(event) {
     let moveX, moveY;
     event.preventDefault();
-    if (pickedC && pickedE) {
+    if (pickedC && pickedE && event.isPrimary) {
         moveX = event.clientX;
         moveY = event.clientY;
         strt = fnsh;
@@ -1344,7 +1346,7 @@ function pointerMoved(event) {
 // Pointer up event
 function pointerUpped(event) {
     event.preventDefault();
-    if (pickedC && pickedE) {
+    if (pickedC && pickedE && event.isPrimary) {
         if (event.clientY-offsetY < card[pickedC].hand.y-cardh/2) {
             strt = fnsh;
             fnsh = `translate(${card[pickedC].play.x}px, ${card[pickedC].play.y}px)`;
