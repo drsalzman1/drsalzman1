@@ -110,8 +110,7 @@ class R {
 const gone = 0;                                         // gone (not yet dealt, hidden from view, or pulled)
 const heap = 1;                                         // heap of dealt cards
 const hand = 2;                                         // normal hand position
-const bump = 3;                                         // bump hand position
-const play = 4;                                         // play position
+const play = 3;                                         // play position
 
 // Card class
 class C {
@@ -128,11 +127,9 @@ class C {
         this.z    = 0;                                  // draw order
         this.f    = false;                              // display face if true
         this.k    = false;                              // card known to all players
-        this.d    = false;                              // card is dimmed
         this.gone = new P;                              // gone position
         this.heap = new P;                              // heap position
         this.hand = new P;                              // hand position
-        this.bump = new P;                              // bump position
         this.play = new P;                              // play position
     }
 }
@@ -187,6 +184,8 @@ const aBox      = document.querySelectorAll(".aBox");
 const createSub = document.getElementById("createSub");
 const joinPage  = document.getElementById("joinPage");
 const jGame     = document.getElementById("jGame");
+const joinBtns  = document.getElementById("joinBtns");
+const joinWait  = document.getElementById("joinWait");
 const joinSub   = document.getElementById("joinSub");
 const gamePage  = document.getElementById("gamePage");
 const bidText   = document.getElementById("bidText");
@@ -324,7 +323,8 @@ let iconh       = 0;                                    // icon height
 let pad         = 0;                                    // padding around display elements
 let hpad        = 0;                                    // horizontal padding for p2 and p0 hands
 let vpad        = 0;                                    // vertical padding for p1 and p3 hands
-let hpitch      = 0;                                    // horizontal card pitch for p1 and p3 hands
+let pitch1      = 0;                                    // horizontal card pitch for p1 hand
+let pitch3      = 0;                                    // horizontal card pitch for p3 hand
 let vpitch      = 0;                                    // vertical card pitch for p2 and p0 hands
 
 // Global drag and drop variables
@@ -549,9 +549,12 @@ function noMarriages(p) {
     return marriages(p,spades)==0 && marriages(p,hearts)==0 && marriages(p,clubs)==0 && marriages(p,diamonds)==0;
 }
 
-// Return bid b string
-function bidString (b) {
-    return `${b==none?"" : (b==pass? "Pass" : String(b))}`;
+// Return bid string for player p
+function bidString(p) {
+    if (bid[p] == none)
+        return "";
+    else
+        return `${teamO[p]? "&nbsp;-&nbsp;" : ""}${bid[p]==pass? "Pass" : String(bid[p])}`;
 }
 
 // Log bidder's bid (text or number), quality(bidder), minMeld(bidder), maxMeld(bidder), est[partner] and reason
@@ -666,7 +669,7 @@ function autoPick() {
 
 // Return true if card c can be chosen based on lead card l, high card h, and trump (disturbing nothing)
 function legal(c, l, h) {
-    if (card[c].g!=hand && card[c].g!=bump)                     // c's not in hand or bumped, c's illegal
+    if (card[c].g!=hand)                                        // c's not in hand, c's illegal
         return false;
     if (l == none)                                              // If no lead card (and no high card), c's legal
         return true;
@@ -758,7 +761,7 @@ function hideHints() {
 }
 
 // Display enabled hints
-function displayHints() {
+function showHints() {
     hideHints();
     if (show[trumpIcon] && trump!=none) {
         trmpIcon.src = suitSrc[trump];
@@ -775,21 +778,16 @@ function displayHints() {
         if (show[cardSmmry] && player!=none && nCards(p)>0) {
             infoHint[p].style.display = "inline";
             for (const s of sArray)
-                if (show[cardSmmry] && player!=none)
-                    if (minCards[p][ace+s] > 0)
-                        infoIcon[i++].style.opacity = "100%";
-                    else if (capMaxCards(p, ace+s, p3) > 0)
-                        infoIcon[i++].style.opacity = "50%";
-                    else if (capMaxCards(p, ten+s, p3) > 0)
-                        infoIcon[i++].style.opacity = "10%";
-                    else if (capMaxCards(p, king+s, p3) > 0)
-                        infoIcon[i++].style.opacity = "10%";
-                    else if (capMaxCards(p, queen+s, p3) > 0)
-                        infoIcon[i++].style.opacity = "10%";
-                    else if (capMaxCards(p, jack+s, p3) > 0)
-                        infoIcon[i++].style.opacity = "10%";
-                    else
-                        infoIcon[i++].style.opacity = "0%";
+                if (show[cardSmmry] && player!=none) {
+                    if (minCards[p][ace+s] > 0) {
+                        infoIcon[i].style.filter="invert(100%)";
+                    } else if (capMaxCards(p,ace+s,p3)+capMaxCards(p,ten+s,p3)+capMaxCards(p,king+s,p3)+capMaxCards(p,queen+s,p3)+capMaxCards(p,jack+s,p3)>0) {
+                        infoIcon[i].style.filter="invert(50%)";
+                    } else {
+                        infoIcon[i].style.filter="invert(0%)";
+                    }
+                    i++;
+                }
         } else
             i += suits;
     if (show[crdDetail] && player!=none) {
@@ -983,13 +981,27 @@ function locateCards() {
     const r1 = [0,          0,          0,          0         ][dealer];
     const r2 = [+Math.PI/2, -Math.PI/2, -Math.PI/2, +Math.PI/2][dealer];
     const r3 = [+Math.PI,   0,          -Math.PI,   0         ][dealer];
+    const maxY = [vh*0.475, 0, vh*0.475, 0];
     let n, v;
     for (let c = 0; c < deckCards; c++) {
         const p = card[c].p;
         if (c == minC[p]) {
             n = -1;
             for (let c = minC[p]; c <= maxC[p]; c++)
-                n = card[c].g==hand||card[c].g==bump? n+1 : n;
+                n = card[c].g==hand? n+1 : n;
+            if (vw <= vh) { // portrait
+                hpad = pad;
+                vpad = iconh + pad;
+                pitch1 = Math.min(cardw*1/4, (vw - pad*2 - cardw) / n);
+                pitch3 = Math.min(cardw*3/4, (vw - pad*2 - cardw) / n);
+                vpitch = Math.min(cardw*1/4, (vh - cardh*2 - iconh*4 - pad*3 - cardw) / n);
+            } else { // landscape
+                hpad = pad;
+                vpad = iconh + pad;
+                pitch1 = Math.min(cardw*1/4, (vw - pad*2 - cardw) / n);
+                pitch3 = Math.min(cardw*3/4, (vw - pad*4 - cardh*2 - cardw) / n);
+                vpitch = Math.min(cardw*1/4, (vh - iconh*3 - pad*1.5 - cardw) / n);
+            }
             v = 0;
         }
         card[c].gone.x = Math.round([-cardh/2-1, vw/2, vw+cardh/2+1, vw/2][p]);
@@ -998,26 +1010,28 @@ function locateCards() {
         card[c].heap.x = Math.round([cardw+hpad, vw/2, vw-cardw-hpad, vw/2][p] + (Math.random()-0.5)*cardw/2);
         card[c].heap.y = Math.round([vh/2, cardw+vpad, vh/2, vh-cardw-vpad][p] + (Math.random()-0.5)*cardw/2);
         card[c].heap.r = [Math.PI/2, 0, -Math.PI/2, 0][dealer] + (Math.random()-0.5)*Math.PI/4;
-        card[c].hand.x = Math.round([cardh/2+hpad, vw/2-hpitch*(v-n/2), vw-cardh/2-hpad, vw/2+hpitch*(v-n/2)][p]);
-        card[c].hand.y = Math.round([vh/2+vpitch*(v-n/2), cardh/2+vpad, vh/2-vpitch*(v-n/2), vh-cardh/2-vpad][p]);
+        card[c].hand.x = Math.round([cardh/2+hpad, vw/2-pitch1*(v-n/2), vw-cardh/2-hpad, vw/2+pitch3*(v-n/2)][p]);
+        card[c].hand.y = Math.round([vh*0.475+vpitch*(v-n/2), cardh/2+vpad, vh*0.475-vpitch*(v-n/2), vh-cardh/2-vpad][p]);
         card[c].hand.r = [r0, r1, r2, r3][p];
-        card[c].bump.x = Math.round(card[c].hand.x + [cardh*0.4, 0, -cardh*0.4, 0][p]);
-        card[c].bump.y = Math.round(card[c].hand.y + [0, cardh*0.4, 0, -cardh*0.4][p]);
-        card[c].bump.r = [r0, r1, r2, r3][p];
         card[c].play.x = Math.round(vw/2 + [-cardw*0.38, 0, +cardw*0.38, 0][p]);
         card[c].play.y = Math.round(vh/2 + [0, -cardw*0.38, 0, +cardw*0.38][p]);
         card[c].play.r = [r0, r1, r2, r3][p];
-        if (card[c].g==hand || card[c].g==bump)
+        if (card[c].g==hand) {
             v++;
+            maxY[p] = Math.max(maxY[p], card[c].hand.y);
+        }
     }
     if (card[0].g == heap)
         infoName[p0].style.top  = infoName[p2].style.top  = vh/2 - cardw*1.4 + "px";
     else {
-        infoName[p0].style.top = vh/2 - cardw*0.70 - nCards(p0)*vpitch/2 + "px";
-        infoName[p2].style.top = vh/2 - cardw*0.70 - nCards(p2)*vpitch/2 + "px";
-        infoBid[p0].style.top  = infoHint[p0].style.top = vh/2 - cardw*0.30 - nCards(p0)*vpitch/2 + "px";
-        infoBid[p2].style.top  = infoHint[p2].style.top = vh/2 - cardw*0.30 - nCards(p2)*vpitch/2 + "px";
+        infoName[p0].style.top = maxY[p0] + cardw*0.52 + "px";
+        infoName[p2].style.top = maxY[p2] + cardw*0.52 + "px";
+        infoBid[p0].style.top  = infoHint[p0].style.top = maxY[p0] + cardw*0.81 + "px";
+        infoBid[p2].style.top  = infoHint[p2].style.top = maxY[p2] + cardw*0.81 + "px";
     }
+    const a = [];
+    for (let c=minC[p0]; c<=maxC[p0]; c++)
+        log(`card[c].g:${card[c].g}, card[c].hand.y:${card[c].hand.y}`)
 }
 
 // Move card c from c0(?), group g0 after delay d to c1(?), group g1, zIndex z1, face f1 over time t
@@ -1026,17 +1040,16 @@ function moveCard(c, g0, d, g1, z1, f1, t, c0, c1) {
     c1 = c1 ?? c;
     card[c].g = g1;
     cardImg[c].style.zIndex = z1;
-    cardImg[c].style.filter = card[c].d? "brightness(70%)" : "brightness(100%)";
     card[c].z = z1;
     if (card[c].f != f1)
         cardImg[c].src = f1? faceImg[card[c].v].src : backImg[0].src;
     card[c].f = f1;
-    const x0 = [card[c0].gone.x, card[c0].heap.x, card[c0].hand.x, card[c0].bump.x, card[c0].play.x][g0];
-    const y0 = [card[c0].gone.y, card[c0].heap.y, card[c0].hand.y, card[c0].bump.y, card[c0].play.y][g0];
-    const r0 = [card[c0].gone.r, card[c0].heap.r, card[c0].hand.r, card[c0].bump.r, card[c0].play.r][g0];
-    const x1 = [card[c1].gone.x, card[c1].heap.x, card[c1].hand.x, card[c1].bump.x, card[c1].play.x][g1];
-    const y1 = [card[c1].gone.y, card[c1].heap.y, card[c1].hand.y, card[c1].bump.y, card[c1].play.y][g1];
-    const r1 = [card[c1].gone.r, card[c1].heap.r, card[c1].hand.r, card[c1].bump.r, card[c1].play.r][g1];
+    const x0 = [card[c0].gone.x, card[c0].heap.x, card[c0].hand.x, card[c0].play.x][g0];
+    const y0 = [card[c0].gone.y, card[c0].heap.y, card[c0].hand.y, card[c0].play.y][g0];
+    const r0 = [card[c0].gone.r, card[c0].heap.r, card[c0].hand.r, card[c0].play.r][g0];
+    const x1 = [card[c1].gone.x, card[c1].heap.x, card[c1].hand.x, card[c1].play.x][g1];
+    const y1 = [card[c1].gone.y, card[c1].heap.y, card[c1].hand.y, card[c1].play.y][g1];
+    const r1 = [card[c1].gone.r, card[c1].heap.r, card[c1].hand.r, card[c1].play.r][g1];
     const strt =`translate(${x0}px,${y0}px) rotate(${r0}rad)`;
     const fnsh =`translate(${x1}px,${y1}px) rotate(${r1}rad)`;
     cardImg[c].animate([{transform:strt}, {transform:fnsh}], {duration:t, delay:d, fill:"forwards"});
@@ -1052,17 +1065,6 @@ function setSizes() {
     iconw = 1.32 * em;
     iconh = 1.32 * em;
     pad   = 0.4 * em;
-    if (vw <= vh) {
-        hpad = pad;
-        vpad = iconh + pad;
-        hpitch = cardw/4;
-        vpitch = Math.min(cardw/4, (vh - cardh*2 - iconw*4 - pad*3 - cardw) / 19);
-    } else {
-        hpad = iconw + pad*2;
-        vpad = iconw + pad;
-        hpitch = cardw/4;
-        vpitch = Math.min(cardw/4, (vh - iconw*2 - pad*2 - cardw) / 19);
-    }
 }
 
 // Return card number of top p3 card (or undefined) at x,y coordinates 
@@ -1075,8 +1077,6 @@ function xy2c(x, y) {
         const t = card[c].hand.y - [cardw/2, cardh/2, cardw/2, cardh/2][card[c].p];
         const b = card[c].hand.y + [cardw/2, cardh/2, cardw/2, cardh/2][card[c].p];
         if (card[c].g==hand && x>=l && x<=r && y>=t && y<=b)
-            topC = card[c].c;
-        else if (card[c].g==bump && x>=l && x<=r && y>=t-cardh*0.4 && y<=b)
             topC = card[c].c;
     }
     card.sort((a,b)=>a.c-b.c);
@@ -1101,6 +1101,7 @@ function okClicked() {
     handBtn.disabled = true;
     ready[p3] = true;
     notify({op:"ready", player:left(p3)});
+    infoName[p3].style.animation = "none";
     if (shift==0 && ready[p0] && ready[p1] && ready[p2])
         setTimeout(onready);
 }
@@ -1108,9 +1109,6 @@ function okClicked() {
 // Hand ended: display stats, await all ready, then deal next hand or start new game
 function handEnded() {
     log("--> handEnded");
-    trmpIcon.style.display = "none";
-    nTrump.textContent = "";
-    infoAreas.style.display = "none";
     handCell[4].innerHTML = scoreO;
     handCell[5].innerHTML = scoreE;
     handCell[7].innerHTML = teamO[bidder]? bidO : "Pass";
@@ -1197,12 +1195,14 @@ function handEnded() {
     handBtn.disabled = false;
     handPara[0].style.display = handPara[1].style.display = handPara[2].style.display = "none";
     handText.style.display = "block";
-    for (const p of pArray)
+    for (const p of pArray) {
         ready[p] = bot[p];
+        infoName[p].style.animation = ready[p]? "none" : blink;
+    }
     onready = takeO<50 && takeE<50 && scoreO<500 && scoreE<500? dealCards : loaded;
 }
 
-// Trick viewed: pull trick, then retrigger handsRefanned or trigger handEnded
+// Trick viewed: pull trick, then retrigger awaitChoice or trigger handEnded
 function trickViewed() {
     log("--> trickViewed");
     for (let c = 0; c < deckCards; c++)
@@ -1211,14 +1211,15 @@ function trickViewed() {
     if (nGroup(hand) > 0) {
         player = card[highCard].p;
         chosen = leadCard = highCard = none;
-        setTimeout(handsRefanned, dealTime/10);
+        infoName[player].style.animation = blink;                   // wait for next player to choose a card
+        setTimeout(awaitChoice, dealTime/10);
     } else {
         player = none;
         if (card[highCard].o)
             takeO += 2;
         else
             takeE += 2;
-        infoAreas.style.display = "none";
+        hideHints();
         setTimeout(handEnded, dealTime/10);
     }
 }
@@ -1238,7 +1239,7 @@ function trickPlayed() {
     setTimeout(trickViewed, dealTime/4);
 }
 
-// Card played: close hand, then trigger trickPlayed or handsRefanned  
+// Card played: close hand, then trigger trickPlayed or awaitChoice and wait for player to bick a card 
 function cardPlayed() {
     log(`--> cardPlayed, playZ:${playZ}`);
     locateCards();
@@ -1248,14 +1249,14 @@ function cardPlayed() {
         setTimeout(trickPlayed, 100);
     else {
         player = next[player];
-        setTimeout(handsRefanned, 100);
+        infoName[player].style.animation = blink;                   // wait for next player to pick a card
+        setTimeout(awaitChoice, 100);
     }
 }
 
 // Card chosen: update stats, play face, then trigger cardPlayed
 function cardChosen() {
     log("--> cardChosen");
-    hideHints();
     let msg = "Best follow";
 
     // if chosen card is in high suit and doesn't beat non-ace high card, player must not have any cards that can beat the high card 
@@ -1304,11 +1305,8 @@ function cardChosen() {
     log(`${name[player]} chose ${value$[card[chosen].v]}, msg:${msg}, card[chosen].z:${card[chosen].z}`);
 
     // animate card play
-    infoName[player].style.animation = "none";
     if (player != p3)
         moveCard(chosen, card[chosen].g, 0, play, card[chosen].z, true, dealTime/10);
-    if (player!=p3 && nCards(player)==0)
-        infoHint[player].style.display = "none";
     setTimeout(cardPlayed, dealTime/10);
 }
 
@@ -1352,10 +1350,12 @@ function pointerUpped(event) {
             card[pickedC].g = play;
             chosen = pickedC; 
             notify({op:"play", card:cardLeft(chosen)});
+            infoName[p3].style.animation = "none";                      // stop waiting for me to pick a card
             for (let c=minC[p3]; c<=maxC[p3]; c++) {
                 cardImg[c].onpointerdown = "";
                 cardImg[c].onpointermove = "";
                 cardImg[c].onpointerup = "";
+                cardImg[c].style.filter = card[c].g==hand? "brightness(70%)" : "brightness(100%)";
             }
             setTimeout(cardChosen, dealTime/10);
         } else {
@@ -1367,30 +1367,35 @@ function pointerUpped(event) {
     }
 }
 
-// Hands re-fanned: wait for p3 or bot to choose a card
-function handsRefanned() {
-    log("--> handsRefanned");
-    if (player == p3) {
+// Hands re-fanned: wait for p3, bot or remote player to choose a card
+function awaitChoice() {
+    log("--> awaitChoice");
+    showHints();
+    if (player == p3)
         for (let c=minC[p3]; c<=maxC[p3]; c++)
             if (legal(c, leadCard, highCard)) {
+                cardImg[c].style.filter = "brightness(100%)";
                 cardImg[c].onpointerdown = pointerDowned;
                 cardImg[c].onpointermove = pointerMoved;
                 cardImg[c].onpointerup = pointerUpped;
-            }
-        displayHints();
-        infoName[p3].style.animation = blink;
-    } else if (shift==0 && bot[player]) {
+            } else
+                cardImg[c].style.filter = "brightness(70%)";
+
+    else if (shift==0 && bot[player]) {
         chosen = autoSelect();
         notify({op:"play", card:cardLeft(chosen)});
+        infoName[player].style.animation = "none";              // stop waiting for my bot to choose a card
         setTimeout (cardChosen);
     }
 }
 
-// Meld gathered: re-fan hands, then trigger handsRefanned
+// Meld gathered: re-fan hands, then await choice
 function meldGathered() {
     log("--> meldGathered");
-    for (let c = 0; c < deckCards; c++)
+    for (let c = 0; c < deckCards; c++) {
+        cardImg[c].style.filter = card[c].p==p3? "brightness(70%)" : "brightness(100%)";
         card[c].g = hand;
+    }
     locateCards();
     for (let c = 0; c < deckCards; c++)
         if (show[openHands] || card[c].p==p3)
@@ -1399,7 +1404,8 @@ function meldGathered() {
             moveCard(c, gone, 0, hand, -c, false, dealTime/10);
     player = bidder;
     chosen = leadCard = highCard = none;
-    setTimeout(handsRefanned, dealTime/10);
+    infoName[player].style.animation = blink;
+    setTimeout(awaitChoice, dealTime/10);                       // wait for player to choose a card
 }
 
 // Bidding is complete: gather meld, then trigger handEnded or meldGathered
@@ -1407,7 +1413,7 @@ function biddingComplete() {
     log("--> biddingComplete");
     playText.style.display = "none";
     for (let c = 0; c < deckCards; c++) {
-        card[c].d = false;
+        cardImg[c].style.filter = "brightness(70%)";
         moveCard(c, hand, 0, gone, -c, false, dealTime/10);
     }
     if (tossO || tossE)
@@ -1420,10 +1426,10 @@ function biddingComplete() {
 function playClicked() {
     log(`--> playBtn clicked`);
     notify({op:"ready", player:left(p3)});
+    infoName[p3].style.animation = "none";                      // stop waiting for me to be ready
     playBtn.disabled = true;
     tossBtn.disabled = true;
     ready[p3] = true;
-    infoName[p3].style.animation = "none";
     if (ready[p0] && ready[p1] && ready[p2] && ready[p3])
         setTimeout(onready);
 }
@@ -1433,10 +1439,10 @@ function tossClicked() {
     log(`--> tossBtn clicked`);
     tossO = true;
     notify({op:"toss"});
+    infoName[p3].style.animation = "none";                      // stop waiting for me to toss
     playBtn.disabled = true;
     tossBtn.disabled = true;
     ready[p3] = true;
-    infoName[p3].style.animation = "none";
     if (ready[p0] && ready[p1] && ready[p2] && ready[p3])
         setTimeout(onready);
 }
@@ -1454,9 +1460,10 @@ function meldFanned() {
     playBtn.disabled = bidder==p3? mustToss : false;
     tossBtn.style.display = bidder==p3? "inline" : "none";
     tossBtn.disabled = false;
-    infoName[p3].style.animation = blink;
-    for (const p of pArray)
+    for (const p of pArray) {
         ready[p] = bot[p];
+        infoName[p].style.animation = bot[p]? "none" : blink;       // wait for all ready
+    }
     playText.style.display = "flex";
     onready = biddingComplete;
 }
@@ -1465,10 +1472,10 @@ function meldFanned() {
 function handsRegathered() {
     log("--> handsRegathered");
 
-    // move p3 and known (meld) cards into hands
-    for (let c = 0; c < deckCards; c++) {                       // for all cards,
-        card[c].d = card[c].p==p3 && !card[c].k;                    // dim p3, known cards
-        card[c].g = card[c].p==p3 || card[c].k? hand : gone;        // put p3 and known cards in their hands
+    // brighten known (meld) cards, and move p3 and known cards into hands
+    for (let c = 0; c < deckCards; c++) {
+        cardImg[c].style.filter = card[c].k? "brightness(100%)" : "brightness(70%)";
+        card[c].g = card[c].p==p3 || card[c].k? hand : gone;
     }
     logHands();
 
@@ -1522,7 +1529,7 @@ function handsRegathered() {
     // animate movement of meld cards to hand
     locateCards();
     for (let c = 0; c < deckCards; c++)
-        if (card[c].g==hand || card[c].g==bump)
+        if (card[c].g==hand)
             moveCard(c, gone, 0, card[c].g, c, true, dealTime/10);
     setTimeout(meldFanned, dealTime/10);
 }
@@ -1531,7 +1538,6 @@ function handsRegathered() {
 function trumpPicked() {
     log("--> trumpPicked");
     log(`${name[bidder]} picks ${suit$[trump]}`);
-    infoName[bidder].style.animation = "none";
     bidO  = Math.max(bid[p1], bid[p3]);
     bidE  = Math.max(bid[p0], bid[p2]);
     meldO = meld(p1, trump) + meld(p3, trump);
@@ -1555,6 +1561,7 @@ function suitClicked(s) {
     trump = s;                                                  // note suit picked
     trumpText.style.display = "none";
     notify({op:"pick", suit:trump});                            // notify other players
+    infoName[bidder].style.animation = "none";                  // stop waiting for me to pick trump
     setTimeout(trumpPicked);
 }
 
@@ -1579,7 +1586,7 @@ function bidDone() {
         if (noMarriages(bidder))
             trumpBtn[0].disabled = trumpBtn[1].disabled = trumpBtn[2].disabled = trumpBtn[3].disabled = false;
         trumpText.style.display = "flex";
-        infoName[bidder].style.animation = blink;                   // await pick message
+        infoName[p3].style.animation = blink;                       // wait for me to pick trump
         return;
     }
     if (shift==0 && bot[bidder]) {                              // if my bot won the bid,
@@ -1588,10 +1595,9 @@ function bidDone() {
         setTimeout(trumpPicked);                                    // advance to trump picked
         return;
     }
-    infoName[bidder].style.animation = blink;                   // await pick message
 }
 
-// Bid button n clicked: handle button n and retrigger handsFanned or trigger bidDone
+// Bid button n clicked: handle button n and retrigger awaitBid or trigger bidDone
 function bidClicked(n) {
     log(`--> bid button ${n} Clicked`);
     const b = bidBtn[n].value;
@@ -1613,28 +1619,28 @@ function bidClicked(n) {
             bidBtn[0].value = "Pass";
         return;
     }
+    bidText.style.display = "none";
     logBid(b, "No reason");
-    infoName[p3].style.animation = "none";                      // stop me from blinking
     const bid0 = bid[p3] == none;                               // note if this is my first bid
     const max0 = Math.max(50, ...bid);                          // note highest bid, so far
     bid[p3] = b=="Pass"? pass : Number(b);                      // record my bid
     if (bid0 && bid[p3]>max0+1 && bid[p3]<60)                   // if I made a jump bid,
         est[p3] = (bid[p3] - max0) * 10;                            // update other's estimate of my hand
-    infoBid[p3].textContent = bidString(bid[p3]);               // display my bid
+    infoBid[p3].innerHTML = bidString(p3);                      // display my bid
     notify({op:"bid", player:left(p3), bid:bid[p3]});           // notify others of my bid
+    infoName[p3].style.animation = "none";                      // stop awaiting my bid
     bidder = next[bidder];                                      // advance to next bidder
-    infoName[bidder].style.animation = blink;                   // blink if they take too long
-    bidText.style.display = "none";
-    setTimeout(handsFanned, dealTime / 4);
+    infoName[bidder].style.animation = blink;                   // await next bidder
+    setTimeout(awaitBid, dealTime / 4);                         // await next bidder
 }
 
-// Hands fanned: await bidClicked, autoBid or data message then retrigger handsFanned or trigger bidDone
-function handsFanned() {
-    log(`--> handsFanned to ${name[bidder]} (${bid[bidder]})`);
+// Hands fanned: await bidClicked, autoBid or data message then retrigger awaitBid or trigger bidDone
+function awaitBid() {
+    log(`--> awaitBid to ${name[bidder]} (${bid[bidder]})`);
     while (bid[bidder] == pass) {                               // if bidder passed,
-        infoName[bidder].style.animation = "none";                  // stop them from blinking
-        bidder = next[bidder];                                      // skip this bidder, and make next bidder blink if not passed
-        infoName[bidder].style.animation = bid[bidder]==pass? "none" : blink;
+        infoName[bidder].style.animation = "none";                  // stop waitin for this bidder
+        bidder = next[bidder];                                      // advance to next bidder
+        infoName[bidder].style.animation = blink;                   // await the next bidder
     }
     if (nPass()==3) {                                           // if this is the last bid,
         for (const p of pArray)                                     // clear bid displays
@@ -1645,7 +1651,7 @@ function handsFanned() {
         }
         if (bidder==p3 || (shift==0&&bot[bidder])) {                // if the last bidder is me or my bot,
             notify({op:"bid", player:left(bidder), bid:bid[bidder]});   // notify others of this bid
-            infoName[bidder].style.animation = "none";                  // stop blinking
+            infoName[bidder].style.animation = "none";                  // stop waiting for this bid
             setTimeout(bidDone, dealTime / 4);                          // advance to bidding done
         }
         return;
@@ -1662,32 +1668,34 @@ function handsFanned() {
         return;
     }
     if (shift==0 && bot[bidder]) {                              // if my bot is the bidder,
-        infoName[bidder].style.animation = "none";                  // stop bidder from blinking
-        const bid0 = bid[bidder] == none;                           // note if bot's first bid
+        const bid0 = bid[bidder] == none;                           // note if my bot's first bid
         const max0 = Math.max(50, ...bid);                          // note previous high bid
-        bid[bidder] = autoBid();                                    // get bot's bid
-        if (bid0 && bid[bidder]>max0+1 && bid[bidder]<60)           // if bot made a jump bid,
-            est[bidder] = (bid[bidder] - max0) * 10;                    // update other's estimate of bot's hand
-        infoBid[bidder].textContent = bidString(bid[bidder]);       // display bot's bid
-        notify({op:"bid", player:left(bidder), bid:bid[bidder]});   // notify others of bot's bid
+        bid[bidder] = autoBid();                                    // get my bot's bid
+        if (bid0 && bid[bidder]>max0+1 && bid[bidder]<60)           // if my bot made a jump bid,
+            est[bidder] = (bid[bidder] - max0) * 10;                    // update other's estimate of my bot's hand
+        infoBid[bidder].innerHTML = bidString(bidder);              // display my bot's bid
+        notify({op:"bid", player:left(bidder), bid:bid[bidder]});   // notify others of my bot's bid
+        infoName[bidder].style.animation = "none";                  // stop waiting for my bot's bid
         bidder = next[bidder];                                      // advance to next bidder
-        infoName[bidder].style.animation = blink;                   // blink if bidder takes too long
-        setTimeout(handsFanned, dealTime / 4);                      // go again
+        infoName[bidder].style.animation = blink;
+        setTimeout(awaitBid, dealTime / 4);                         // await next bid
         return;
     }
 }
 
-// Hands gathered: fan hands, then trigger handsFanned
+// Hands gathered: fan hands, then trigger awaitBid
 function handsGathered() {
     log("--> handsGathered");
     for (let c = 0; c < deckCards; c++)
         card[c].g = hand;
     locateCards();
-    for (let c = 0; c < deckCards; c++)
+    for (let c = 0; c < deckCards; c++) {
+        cardImg[c].style.filter = "brightness(100%)";
         if (show[openHands] || card[c].p==p3)
             moveCard(c, gone, 0, hand, c, true, dealTime/10);
         else
             moveCard(c, gone, 0, hand, -c, false, dealTime/10);
+    }
     bidder = next[dealer];
     tossO = tossE = false;
     takeO = takeE = 0;
@@ -1698,12 +1706,12 @@ function handsGathered() {
         maxCards[p].fill(4);
         bid[p] = none;
         est[p] = typical;
-        infoBid[p].textContent = bidString(bid[p]);
+        infoBid[p].innerHTML = bidString(p);
         infoBid[p].style.display = "inline";
     }
     remaining.fill(4);
     logHands();
-    setTimeout(handsFanned, dealTime/10);
+    setTimeout(awaitBid, dealTime/10);
 }
 
 // Deck dealt: gather hands, then trigger handsGathered
@@ -1776,7 +1784,6 @@ function shuffleCards() {
             card[c].z = 0;
             card[c].f = false;
             card[c].k = false;
-            card[c].d = false;
             c++;
         }
     }
@@ -1885,7 +1892,8 @@ function createClicked() {
     waiter.length = 0;
     createHdg.innerText = `Double Deck Pinochle - Create Game ${websocket?id:""}`;
     pLegend.innerText = websocket? `Players Waiting: ${waiter.length}` : `Players`;
-    for (const p of pArray)                                     // for every player,
+    for (const p of pArray) {                                   // for every player,
+        pName[p].placeholder = "";                                  // no placeholder
         if (p==3) {                                                 // if I'm the player,
             pName[p].value = name[p];                                   // default to my old name
             pIcon[p].src = humanSrc;                                    // set player icon based on player type
@@ -1900,11 +1908,11 @@ function createClicked() {
             pIcon[p].src = bot[p]? robotSrc : humanSrc;                 // set player icon based on player type
             pIcon[p].disabled = !websocket;                             // if offline, disallow player type change
         }
+    }
     for (let i = 0; i < aBox.length; i++) {
         aBox[i].src = show[i]? checked : unchecked;
         aBox[i].disabled = false;
     }
-    createSub.disabled = pName[p0].value=="" || pName[p1].value=="" || pName[p2].value=="" || pName[p3].value=="";
     loadPage.style.display = "none";
     createPg.style.display = "flex";
 }
@@ -1920,11 +1928,19 @@ function createCloseClicked() {
 function joinClicked() {
     log(`--> join clicked`);
     pName[j].value = localStorage.self? localStorage.self : "";
+    pName[j].placeholder = "";
     jGame.value = "";
-    joinSub.innerText = "Join";
-    joinSub.disabled = false; //true;
+    jGame.placeholder = "";
     loadPage.style.display = "none";
+    joinSub.style.display = "inline";
+    joinWait.style.display = "none";
     joinPage.style.display = "grid";
+    pName[j].disabled = false;
+    jGame.disabled = false;
+    if (pName[j].value == "")
+        pName[j].focus();
+    else
+        jGame.focus();
 }
 
 // Join close icon clicked
@@ -1936,49 +1952,53 @@ function joinCloseClicked() {
 
 // Name for player p keyed
 function nKeyed(event, p) {
-    log(`--> player name ${p} keyed '${event.key}'`);
-    const item = pList[p].querySelectorAll('li');               // item[i] = DOM element for list item i
+    const item = pList[p].querySelectorAll("li");               // item[i] = DOM element for list item i
+    event.preventDefault();
     switch (event.key) {
     case "ArrowDown":                                           // if ArrowDown,
-        event.preventDefault();
         select = select+1<item.length? select+1 : select;           // select next item if not at bottom of list
-        log(`select:${select}`);
         for (let i=0; i<item.length; i++)                           // for each item,
-            item[i].classList.remove('selected');                       // remove item from select class 
-        item[select].classList.add('selected');                     // add selected item to select class
+            item[i].classList.remove("selected");                       // remove item from select class 
+        item[select].classList.add("selected");                     // add selected item to select class
         break;
     case "ArrowUp":                                             // if ArrowUp,
-        event.preventDefault();
         select = select>0? select-1 : select;                       // select previous item if not at top
         for (let i=0; i<item.length; i++)                           // for each item,
-            item[i].classList.remove('selected');                       // remove item from select class 
-        item[select].classList.add('selected');                     // add selected item to select class
+            item[i].classList.remove("selected");                       // remove item from select class 
+        item[select].classList.add("selected");                     // add selected item to select class
         break;
     case "Enter":                                               // if Enter,
-        event.preventDefault();
         if (select !== none) {                                      // if something's been selected,
             pName[p].value = item[select].textContent;                  // fill in pName value from selected item
-            pList[p].style.display = 'none';                            // turn off list
+            pList[p].style.display = "none";                            // turn off list
         }
-        if (p!=p3 && p!=j && !bot[p]) {                             // if remote human,
-            waiter.splice(waiter.indexOf(event.target.textContent), 1); // remove human from waiter list
-            pLegend.innerText = `Players Waiting: ${waiter.length}`;
+        if (!/^[A-Za-z]{2,10}$/.test(pName[p].value)) {             // if name is ill-formed,
+            pName[p].value = "";                                        // try again with prompt
+            pName[p].placeholder = "2 to 10 letters";
+            break;
         }
-        if (p==j)                                                   // if player is joiner, enable join button if all data entered
-            joinSub.disabled = false; //pName[j].value=="" || jGame.value=="";
-        else                                                        // if bot or me, enable start button if all data entered
-            createSub.disabled = pName[p0].value=="" || pName[p1].value=="" || pName[p2].value=="" || pName[p3].value=="";
+        for (const p of pArray)
+            if (pName[p].value == "") {
+                pName[p].focus();
+                return;
+            }
+        createSub.focus();
         break;
-    case "Escape":                                              // if Escape,
-        event.preventDefault();
-        pList[p].style.display = "none";                            // turn off list
+    case "Backspace":                                           // if Backspace,
+        if (p==p3 || p==j || bot[p])                                // if your name or bot name,
+            pName[p].value = pName[p].value.slice(0, -1);               // delete last letter, if any
         break;
+    default:                                                    // otherwise,
+        if (p==p3 || p==j || bot[p]) {                              // if your name or bot name,
+            if (event.key.length == 1)                                  // if single character,
+                pName[p].value += event.key;                                // add to end of name
+        } else                                                      // otherwise,
+            pName[p].placeholder = "pick from list";                    // prompt user
     }
 }
 
 // Name for player p focused
 function nFocused(p) {
-    log(`--> player name ${p} focused`);
     const alias = localStorage.alias? JSON.parse(localStorage.alias) : [];
     const robot = localStorage.robot? JSON.parse(localStorage.robot) : ["Bender", "Data", "Jarvis"];
     const list = bot[p]? robot : (p==p3||p==j? alias : waiter); 
@@ -2001,7 +2021,6 @@ function nFocused(p) {
 
 // Name for player p blurred
 function nBlurred(p) {
-    pName[p].value = pName[p].value=""? name[p] : pName[p].value;
     setTimeout(() => {
         log(`--> player name ${p} blurred`);
         pList[p].style.display = "none";
@@ -2010,19 +2029,24 @@ function nBlurred(p) {
 
 // List item for player p, suggestion s clicked
 function liClicked(p, s) {
-    log(`--> list item ${s} clicked for player ${p}`);
     pName[p].value = s;
-    for (const p of pArray)
-        pList[p].style.display = "none";
-    if (p==j)                                                   // if player is joiner, enable join button if all data entered
-        joinSub.disabled = false; //pName[j].value=="" || jGame.value=="";
-    else                                                        // if bot or me, enable start button if all data entered
-        createSub.disabled = pName[p0].value=="" || pName[p1].value=="" || pName[p2].value=="" || pName[p3].value=="";
+    pList[p].style.display = "none";
+    if (p == j) {
+        if (jGame.value == "")
+            jGame.focus();
+        else
+            joinSub.focus();
+        return;
+    } for (const p of pArray)
+        if (pName[p].value == "") {
+            pName[p].focus();
+            return;
+        }
+    createSub.focus();
 }
 
 // List item for player p contexted (right click or long press)
 function liContexted(event, p, s) {
-    log(`--> list item ${s} contexted for player ${p}`);
     event.preventDefault();
     if (confirm(`Delete ${s} from this list?`)) {
         const alias = localStorage.alias? JSON.parse(localStorage.alias) : [];
@@ -2035,21 +2059,8 @@ function liContexted(event, p, s) {
     }
 }
 
-// Join game number keyed
-function jKeyed() {
-    log(`--> join game number keyed'`);
-    //joinSub.disabled = pName[j].value=="" || jGame.value=="";   // enable join button if all data entered
-}
-
-// Join game number blurred
-function jBlurred() {
-    log(`--> Join game number blurred`);
-    //joinSub.disabled = pName[j].value=="" || jGame.value=="";   // enable join button if all data entered
-}
-
 // Create icon for player p clicked
 function iClicked(event,p) {
-    log(`--> create icon ${p} clicked`);
     event.preventDefault();
     for (const p of pArray)
         pList[p].style.display = "none";
@@ -2060,7 +2071,6 @@ function iClicked(event,p) {
 
 // Create box b clicked (b=0,1,2,3,4 for ts,tc,ccs,ccd,ohBox)
 function bClicked(event,b) {
-    log(`--> create box ${b} clicked`);
     event.preventDefault();
     for (const p of pArray)
         pList[p].style.display = "none";
@@ -2072,6 +2082,12 @@ function bClicked(event,b) {
 function createSubmitted(event) {
     log(`--> create form submitted`);
     event.preventDefault();
+    for (const p of pArray)
+        if (!/^[A-Za-z]{2,10}$/.test(pName[p].value)) {
+            pName[p].value = "";
+            pName[p].placeholder = bot[p]? "2 to 10 letters" : "pick from list";
+            return;
+        }
     const alias = localStorage.alias? JSON.parse(localStorage.alias) : [];
     const robot = localStorage.robot? JSON.parse(localStorage.robot) : ["Bender", "Data", "Jarvis"];
     for (const p of pArray) {                                   // for each player,
@@ -2089,7 +2105,7 @@ function createSubmitted(event) {
     localStorage.name = JSON.stringify(name);
     localStorage.bot = JSON.stringify(bot);
     localStorage.show = JSON.stringify(show);
-    shuffleCards();                                             // shuffle cards
+    shuffleCards();
     solo = bot[p0] && bot[p1] && bot[p2];                       // solo game if other players are all bots
     setTimeout(dealCards);                                      // deal the cards
 }
@@ -2098,6 +2114,17 @@ function createSubmitted(event) {
 function joinSubmitted(event) {
     log(`--> join form submitted`);
     event.preventDefault();
+    if (!/^[A-Za-z]{2,10}$/.test(pName[j].value)) {
+        pName[j].value = "";
+        pName[j].placeholder = "2 to 10 letters";
+        return;
+    }
+    if (jGame.value.length<1 || jGame.value.length>5) {
+        jGame.value = "";
+        jGame.placeholder = "1 to 5 digits";
+        jGame.focus();
+        return;
+    }
     name[p3] = pName[j].value;                                  // copy player name from form
     game = Number(jGame.value);                                 // copy game number from form
     const alias = localStorage.alias? JSON.parse(localStorage.alias) : [];
@@ -2111,9 +2138,11 @@ function joinSubmitted(event) {
         name: name[p3],
         creator: game
     }));
+    pName[j].disabled = true;
+    jGame.disabled = true;
+    joinSub.style.display = "none";
+    joinWait.style.display = "inline";
     solo = false;
-    joinSub.innerText = "Wait";
-    joinSub.disabled = true;                                    // await deal message
 }
 
 // Handle websocket connect calls and websocket reconnect timer
@@ -2181,7 +2210,6 @@ function wsMessage(messageEvent) {
             card[c].z = 0;
             card[c].f = false;
             card[c].k = false;
-            card[c].d = false;
         }
         name = left(msg.name);
         bot = left(msg.bot);
@@ -2191,20 +2219,21 @@ function wsMessage(messageEvent) {
     case "bid":                                                 // if {op:"bid", player:p, bid:b},
         log(`wsMessage: op:bid, player:${msg.player}, bid:${msg.bid}`);
         bidder = right(msg.player);                                 // record bidder (shifted to the right)
-        infoName[bidder].style.animation = "none";                  // stop bidder from blinking
+        infoName[bidder].style.animation = "none";                  // done awaiting this bid
         const bid0 = bid[bidder] == none;                           // note if bidder's first bid
         const max0 = Math.max(50, ...bid);                          // note high bid so far
         bid[bidder] = msg.bid;                                      // record bidder's bid
         if (bid0 && bid[bidder]>max0+1 && bid[bidder]<60)           // if bidder made a jump bid,
             est[bidder] = (bid[bidder] - max0) * 10;                    // update other's estimate of bidder's hand
-        infoBid[bidder].textContent = bidString(bid[bidder]);       // display bidder's bid
+        infoBid[bidder].innerHTML = bidString(bidder);              // display bidder's bid
         bidder = next[bidder];                                      // advance to next bidder
-        infoName[bidder].style.animation = blink;                   // blink if bidder takes too long
-        setTimeout(handsFanned, dealTime / 4);                      // advance to handsFanned
+        infoName[bidder].style.animation = blink;
+        setTimeout(awaitBid, dealTime / 4);                         // await next bid
         break;
     case "pick":                                                // if {op:"pick", suit:s},
         log(`op:pick, suit:${msg.suit}`);
         trump = msg.suit;                                           // store trump
+        infoName[bidder].style.animation = "none";                  // done awaiting pick
         setTimeout(trumpPicked);                                    // advance to trumpPicked
         break;
     case "toss":                                                // if {op:"toss"},
@@ -2212,19 +2241,21 @@ function wsMessage(messageEvent) {
         tossO = teamO[bidder];                                      // note which team tossed hand
         tossE = teamE[bidder];
         ready[bidder] = true;                                       // note bidder is ready
+        infoName[bidder].style.animation = "none";                  // done awaiting toss
         if (ready[p0] && ready[p1] && ready[p2] && ready[p3])       // if everyone's ready,
             setTimeout(onready);                                        // advance to next state
         break;
     case "ready":                                               // if msg {op:"ready", player:p},
         log(`op:ready, player:${msg.player}`);
         ready[right(msg.player)] = true;                            // note player (shifted to the right) is ready
-        infoName[right(msg.player)].style.animation = "none";
+        infoName[right(msg.player)].style.animation = "none";       // done awaiting ready
         if (ready[p0] && ready[p1] && ready[p2] && ready[p3])       // if everyone's ready,
             setTimeout(onready);                                        // advance to next state
         break;
     case "play":                                                // if msg {op:"play", card:c},
         log(`op:play, card:${msg.card}`);
         chosen = cardRight(msg.card);                               // note chosen card
+        infoName[player].style.animation = "none";                  // done awaiting play
         setTimeout(cardChosen);                                     // advance to cardChosen
         break;
     default:                                                    // if unrecognized,
@@ -2282,6 +2313,7 @@ function loaded() {
 
     // Initialize deck
     locateCards();
+    hideHints();
     for (let c=0; c<deckCards; c++) {
         cardImg[c].src = backImg[0].src;
         moveCard(c, gone, 0, gone, 0, false, 0, minC[p3], c);

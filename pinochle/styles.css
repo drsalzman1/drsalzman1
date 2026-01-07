@@ -2,13 +2,6 @@
     :root {
         font-size:      min(4.25svw, 2.55svh);
         --list-height:  21em;
-        --wInfo-left:   0.4em;
-        --eInfo-left:   calc(100svw - 6em);
-        --wgrid-left:   0.44em;
-        --egrid-left:   calc(100svw - 5.92em);
-        --number-left:  calc(100svw - 2.96em);
-        --number-top:   0.44em;
-        --number-align: right;
         --ass-width:    21em;
     }
 }
@@ -17,13 +10,6 @@
     :root {
         font-size:      min(4.25svh, 2.575svw);
         --list-height:  7em;
-        --wInfo-left:   2.12em;
-        --eInfo-left:   calc(100svw - 7.72em);
-        --wgrid-left:   2.16em;
-        --egrid-left:   calc(100svw - 7.68em);
-        --number-left:  calc(100svw - 1.84em);
-        --number-top:   1.6em;
-        --number-align: center;
         --ass-width:    100%;
    }
 }
@@ -185,6 +171,10 @@ body {
     background-color: white;
 }
 
+.pName::placeholder {
+    color: red;
+}
+
 .pList {
     position: absolute;
     width: 7.6em;
@@ -218,7 +208,7 @@ body {
 
 #assistanceGrid {
     margin-top: 0.4em;
-    margin-right: 0.8em;
+    padding-right: 0.4em;
     width: var(--ass-width);
     display: grid;
     grid-template-columns: repeat(3, auto);
@@ -284,6 +274,10 @@ body {
     background-color: white;
 }
 
+#joinPage input::placeholder {
+    color: red;
+}
+
 #joinBtns {
     display: grid;
     place-items: center;
@@ -325,10 +319,10 @@ body {
 
 #nTrump {
     position: absolute;
-    top: var(--number-top);
-    left: var(--number-left);
+    top: 0.44em;
+    left: calc(100svw - 2.96em);
     width: 1.4em;
-    text-align: var(--number-align);
+    text-align: right;
 }
 
 #cardImg img, #faceImg img, #backImg img {
@@ -501,7 +495,7 @@ body {
 
 #wGrid {
     top: calc(050svh - 2.8em);
-    left: var(--wgrid-left);
+    left: 0.44em;
 }
 
 #nGrid {
@@ -511,7 +505,7 @@ body {
 
 #eGrid {
     top: calc(050svh - 2.8em);
-    left: var(--egrid-left);
+    left: calc(100svw - 5.92em);
 }
 
 .gIcon {
@@ -526,97 +520,63 @@ body {
     position: absolute;
     text-align: center;
     display: none;
-}
-
-.infoName {
-    width: 5.6em;
-    display: inline;
-    z-index: -100;
-}
-
-.infoBid {
-    width: 4em;
-    display: none;
-}
-
-.infoHint {
-    width: 4em;
-    display: none;
+    z-index: -1000;
 }
 
 #wInfo .infoName {
     position: absolute;
-    top: 0.44em; 
-    left: var(--wInfo-left);
+    left: 0.4em;
+    width: 5.6em;
 }
 
 #wInfo .infoBid {
     position: absolute;
-    top: calc(50svh - 10.27em);
-    left: calc(var(--wInfo-left) + 0.78em);
-    background-color: gray;
+    left: 0.4em;
+    width: 5.6em;
 }
 
 #wInfo .infoHint {
     position: absolute;
-    top: calc(100svh - 1.6em);
-    left: calc(var(--wInfo-left) + 0.78em);
-    background-color: gray;
+    left: 0.4em;
+    width: 5.6em;
 }
 
-#nInfo .infoName {
+#nInfo {
     position: absolute;
     top: 0.44em;
-    left: calc(50svw - 2.8em);
-}
-
-#nInfo .infoBid {
-    position: absolute;
-    top: 2.3em;
-    left: calc(50svw - 2em);
-    background-color: gray;
-}
-
-#nInfo .infoHint {
-    position: absolute;
-    top: 2.44em;
-    left: calc(50svw - 2em);
-    background-color: gray;
+    left: calc(50svw - 10em);
+    width: 20em;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
 }
 
 #eInfo .infoName {
     position: absolute;
-    top: 0.44em;
-    left: var(--eInfo-left);
+    left: calc(100svw - 6em);
+    width: 5.6em;
 }
 
 #eInfo .infoBid {
     position: absolute;
-    top: calc(50svh - 10.27em);
-    left: calc(var(--eInfo-left) + 0.78em);
-    color: white;
-    background-color: gray;
+    left: calc(100svw - 6em);
+    width: 5.6em;
 }
 
 #eInfo .infoHint {
     position: absolute;
-    top: calc(100svh - 1.6em);
-    left: calc(var(--eInfo-left) + 0.78em);
-    background-color: gray;
+    left: calc(100svw - 6em);
+    width: 5.6em;
 }
 
-#sInfo .infoName {
+#sInfo {
     position: absolute;
     top: calc(100svh - 1.6em);
-    left: calc(50svw - 2.8em);
-}
-
-#sInfo .infoBid {
-    position: absolute;
-    top: calc(100svh - 3.2em);
-    left: calc(50svw - 2em);
-    color: black;
-    background-color: white;
+    left: calc(50svw - 10em);
+    width: 20em;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
 }
 
 @keyframes blink {

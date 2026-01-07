@@ -144,13 +144,12 @@
             Players know their own cards and reveal their cards when they lay down their meld, play a card,
             trump the lead suit, don't beat a high card, or don't follow the lead suit.<br>
             <br>
-            The game creator can choose to show the card count summary for each player where the opacity of each suit icon 
+            The game creator can choose to show the card count summary for each player where the color of each suit icon 
             indicates the player's cards:<br>
             <ul>
-                <li>100% - definitely has an ace in that suit</li>
-                <li>66% - may have an ace in that suit</li>
-                <li>33% - doesn't have an ace in that suit</li>
-                <li>0% - has no cards in that suit</li>
+                <li>white - definitely has an ace in that suit</li>
+                <li>gray - may have a card in that suit</li>
+                <li>black - has no cards in that suit</li>
             </ul><br>
             The game creator can also choose to show the card count detail for each player.
             The table shows the minimum and maximum number of cards each player
@@ -331,11 +330,12 @@
                 <ul class=pList></ul>
                 <br>
                 Game Number:<br>
-                <input id=jGame type=number onkeydown=jKeyed() onfocus="this.value=''" onBlur=jBlurred() required><br>
+                <input id=jGame type=number><br>
                 <br>
                 <br>
                 <div id=joinBtns>
                     <button id=joinSub>Join</button>
+                    <div id=joinWait>Please wait...</div>
                 </div>
             </form>
         </div>
@@ -403,6 +403,33 @@
                     <div id=iTrump>Trump is diamonds.</div>
                     <div id=iOut>15 spades, 17 hearts, 10 clubs and 16 diamonds are out.</div>
                     <div id=iTake>You've takeen 15 of 20 and they've taken 15 of 20.</div>
+                </div>
+            </div>
+            <div id=infoAreas>
+                <div id=wInfo>
+                    <div class=infoName></div>
+                    <div class=infoBid></div>
+                    <div class=infoHint>
+                        <img src=suits/spade.svg> <img src=suits/heart.svg> <img src=suits/club.svg> <img src=suits/diamond.svg>
+                    </div>
+                </div>
+                <div id=nInfo>
+                    <span class=infoName></span>
+                    <span class=infoBid></span>
+                    <span class=infoHint>
+                        &nbsp- <img src=suits/spade.svg> <img src=suits/heart.svg> <img src=suits/club.svg> <img src=suits/diamond.svg>
+                    </span>
+                </div>
+                <div id=eInfo>
+                    <div class=infoName></div>
+                    <div class=infoBid></div>
+                    <div class=infoHint>
+                        <img src=suits/spade.svg> <img src=suits/heart.svg> <img src=suits/club.svg> <img src=suits/diamond.svg>
+                    </div>
+                </div>
+                <div id=sInfo>
+                    <span class=infoName></span>
+                    <span class=infoBid></span>
                 </div>
             </div>
             <div id=cardImg>
@@ -516,42 +543,6 @@
             <div><img class=cIcon src=icons/2-2.svg></div>
             <div><img class=cIcon src=icons/3-3.svg></div>
             <div><img class=cIcon src=icons/4-4.svg></div>
-        </div>
-        <div id=infoAreas>
-            <div id=wInfo>
-                <div class=infoName>P0</div>
-                <div class=infoBid>Pass</div>
-                <div class=infoHint>
-                    <img src=suits/spade.svg alt=spade>
-                    <img src=suits/heart.svg alt=heart>
-                    <img src=suits/club.svg alt=club>
-                    <img src=suits/diamond.svg alt=diamond>
-                </div>
-            </div>
-            <div id=nInfo>
-                <div class=infoName>P1</div>
-                <div class=infoBid>Pass</div>
-                <div class=infoHint>
-                    <img src=suits/spade.svg alt=spade>
-                    <img src=suits/heart.svg alt=heart>
-                    <img src=suits/club.svg alt=club>
-                    <img src=suits/diamond.svg alt=diamond>
-                </div>
-            </div>
-            <div id=eInfo>
-                <div class=infoName>P2</div>
-                <div class=infoBid>Pass</div>
-                <div class=infoHint>
-                    <img src=suits/spade.svg alt=spade>
-                    <img src=suits/heart.svg alt=heart>
-                    <img src=suits/club.svg alt=club>
-                    <img src=suits/diamond.svg alt=diamond>
-                </div>
-            </div>
-            <div id=sInfo>
-                <div class=infoName>P3</div>
-                <div class=infoBid>Pass</div>
-            </div>
         </div>
         <div id=menuText>
             <b>Double Deck Pinochle</b>

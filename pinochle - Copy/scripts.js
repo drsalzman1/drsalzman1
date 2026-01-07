@@ -110,8 +110,7 @@ class R {
 const gone = 0;                                         // gone (not yet dealt, hidden from view, or pulled)
 const heap = 1;                                         // heap of dealt cards
 const hand = 2;                                         // normal hand position
-const bump = 3;                                         // bump hand position
-const play = 4;                                         // play position
+const play = 3;                                         // play position
 
 // Card class
 class C {
@@ -132,7 +131,6 @@ class C {
         this.gone = new P;                              // gone position
         this.heap = new P;                              // heap position
         this.hand = new P;                              // hand position
-        this.bump = new P;                              // bump position
         this.play = new P;                              // play position
     }
 }
@@ -326,6 +324,14 @@ let hpad        = 0;                                    // horizontal padding fo
 let vpad        = 0;                                    // vertical padding for p1 and p3 hands
 let hpitch      = 0;                                    // horizontal card pitch for p1 and p3 hands
 let vpitch      = 0;                                    // vertical card pitch for p2 and p0 hands
+
+// Global drag and drop variables
+let pickedC = 0;                                        // Picked card number
+let pickedE = null;                                     // Picked element
+let offsetX = 0;                                        // offset of pointer X from card X
+let offsetY = 0;                                        // offset of pointer Y from card Y
+let strt = "";                                          // start transform
+let fnsh = "";                                          // finish transform
 
 // Log debugText on console (comment out when done debugging)
 function log(debugText = "") {
@@ -658,7 +664,7 @@ function autoPick() {
 
 // Return true if card c can be chosen based on lead card l, high card h, and trump (disturbing nothing)
 function legal(c, l, h) {
-    if (card[c].g!=hand && card[c].g!=bump)                     // c's not in hand or bumped, c's illegal
+    if (card[c].g!=hand)                                        // c's not in hand, c's illegal
         return false;
     if (l == none)                                              // If no lead card (and no high card), c's legal
         return true;
@@ -981,7 +987,7 @@ function locateCards() {
         if (c == minC[p]) {
             n = -1;
             for (let c = minC[p]; c <= maxC[p]; c++)
-                n = card[c].g==hand||card[c].g==bump? n+1 : n;
+                n = card[c].g==hand? n+1 : n;
             v = 0;
         }
         card[c].gone.x = Math.round([-cardh/2-1, vw/2, vw+cardh/2+1, vw/2][p]);
@@ -993,13 +999,10 @@ function locateCards() {
         card[c].hand.x = Math.round([cardh/2+hpad, vw/2-hpitch*(v-n/2), vw-cardh/2-hpad, vw/2+hpitch*(v-n/2)][p]);
         card[c].hand.y = Math.round([vh/2+vpitch*(v-n/2), cardh/2+vpad, vh/2-vpitch*(v-n/2), vh-cardh/2-vpad][p]);
         card[c].hand.r = [r0, r1, r2, r3][p];
-        card[c].bump.x = Math.round(card[c].hand.x + [cardh*0.4, 0, -cardh*0.4, 0][p]);
-        card[c].bump.y = Math.round(card[c].hand.y + [0, cardh*0.4, 0, -cardh*0.4][p]);
-        card[c].bump.r = [r0, r1, r2, r3][p];
         card[c].play.x = Math.round(vw/2 + [-cardw*0.38, 0, +cardw*0.38, 0][p]);
         card[c].play.y = Math.round(vh/2 + [0, -cardw*0.38, 0, +cardw*0.38][p]);
         card[c].play.r = [r0, r1, r2, r3][p];
-        if (card[c].g==hand || card[c].g==bump)
+        if (card[c].g==hand)
             v++;
     }
     if (card[0].g == heap)
@@ -1023,12 +1026,12 @@ function moveCard(c, g0, d, g1, z1, f1, t, c0, c1) {
     if (card[c].f != f1)
         cardImg[c].src = f1? faceImg[card[c].v].src : backImg[0].src;
     card[c].f = f1;
-    const x0 = [card[c0].gone.x, card[c0].heap.x, card[c0].hand.x, card[c0].bump.x, card[c0].play.x][g0];
-    const y0 = [card[c0].gone.y, card[c0].heap.y, card[c0].hand.y, card[c0].bump.y, card[c0].play.y][g0];
-    const r0 = [card[c0].gone.r, card[c0].heap.r, card[c0].hand.r, card[c0].bump.r, card[c0].play.r][g0];
-    const x1 = [card[c1].gone.x, card[c1].heap.x, card[c1].hand.x, card[c1].bump.x, card[c1].play.x][g1];
-    const y1 = [card[c1].gone.y, card[c1].heap.y, card[c1].hand.y, card[c1].bump.y, card[c1].play.y][g1];
-    const r1 = [card[c1].gone.r, card[c1].heap.r, card[c1].hand.r, card[c1].bump.r, card[c1].play.r][g1];
+    const x0 = [card[c0].gone.x, card[c0].heap.x, card[c0].hand.x, card[c0].play.x][g0];
+    const y0 = [card[c0].gone.y, card[c0].heap.y, card[c0].hand.y, card[c0].play.y][g0];
+    const r0 = [card[c0].gone.r, card[c0].heap.r, card[c0].hand.r, card[c0].play.r][g0];
+    const x1 = [card[c1].gone.x, card[c1].heap.x, card[c1].hand.x, card[c1].play.x][g1];
+    const y1 = [card[c1].gone.y, card[c1].heap.y, card[c1].hand.y, card[c1].play.y][g1];
+    const r1 = [card[c1].gone.r, card[c1].heap.r, card[c1].hand.r, card[c1].play.r][g1];
     const strt =`translate(${x0}px,${y0}px) rotate(${r0}rad)`;
     const fnsh =`translate(${x1}px,${y1}px) rotate(${r1}rad)`;
     cardImg[c].animate([{transform:strt}, {transform:fnsh}], {duration:t, delay:d, fill:"forwards"});
@@ -1044,16 +1047,16 @@ function setSizes() {
     iconw = 1.32 * em;
     iconh = 1.32 * em;
     pad   = 0.4 * em;
-    if (vw <= vh) {
+    if (vw <= vh) { // portrait
         hpad = pad;
         vpad = iconh + pad;
         hpitch = cardw/4;
-        vpitch = Math.min(cardw/4, (vh - cardh*2 - iconw*4 - pad*3 - cardw) / 19);
-    } else {
+        vpitch = Math.min(cardw*3/4, (vh - cardh*2 - iconw*4 - pad*3 - cardw) / 19);
+    } else { // landscape
         hpad = iconw + pad*2;
         vpad = iconw + pad;
         hpitch = cardw/4;
-        vpitch = Math.min(cardw/4, (vh - iconw*2 - pad*2 - cardw) / 19);
+        vpitch = Math.min(cardw*3/4, (vh - iconw*2 - pad*2 - cardw) / 19);
     }
 }
 
@@ -1067,8 +1070,6 @@ function xy2c(x, y) {
         const t = card[c].hand.y - [cardw/2, cardh/2, cardw/2, cardh/2][card[c].p];
         const b = card[c].hand.y + [cardw/2, cardh/2, cardw/2, cardh/2][card[c].p];
         if (card[c].g==hand && x>=l && x<=r && y>=t && y<=b)
-            topC = card[c].c;
-        else if (card[c].g==bump && x>=l && x<=r && y>=t-cardh*0.4 && y<=b)
             topC = card[c].c;
     }
     card.sort((a,b)=>a.c-b.c);
@@ -1297,84 +1298,78 @@ function cardChosen() {
 
     // animate card play
     infoName[player].style.animation = "none";
-    moveCard(chosen, card[chosen].g, 0, play, card[chosen].z, true, dealTime/10);
+    if (player != p3)
+        moveCard(chosen, card[chosen].g, 0, play, card[chosen].z, true, dealTime/10);
     if (player!=p3 && nCards(player)==0)
         infoHint[player].style.display = "none";
     setTimeout(cardPlayed, dealTime/10);
 }
 
-// Mouse moved: if off bump card, unbump cards; if moved to hand legal card, bump it
-function mouseMoved(e) {
-    const c = xy2c(e.clientX, e.clientY);
-    if (c == undefined || card[c].g != bump)
-        for (let c2 = 0; c2 < deckCards; c2++)
-            if (card[c2].g == bump)
-                moveCard(c2, bump, 0, hand, c2, true, dealTime/20);
-    if (c!=undefined && card[c].g==hand && card[c].p==player && legal(c, leadCard, highCard))
-        moveCard(c, hand, 0, bump, c, true, dealTime/20);
-}
-
-// Mouse pressed: if hand/bump p3 card, unbump cards; if hand legal card, bump it; if legal, choose it
-function mousePressed(e) {
-    const c = xy2c(e.clientX, e.clientY);
-    if (c != undefined) {
-        for (let c2 = 0; c2 < deckCards; c2++)
-            if (c2!=c && card[c2].g==bump)
-                moveCard(c2, bump, 0, hand, c2, true, dealTime/20);
-        if (card[c].g==hand && card[c].p==player && legal(c, leadCard, highCard))
-            moveCard(c, hand, 0, bump, c, true, dealTime/20);
-        if (card[c].g==bump && card[c].p==player && legal(c, leadCard, highCard)) {
-            chosen = c; 
-            body.onmousemove = "";
-            body.onmousedown = "";
-            body.ontouchstart = "";
-            body.ontouchmove = "";
-            notify({op:"play", card:cardLeft(chosen)});
-            setTimeout(cardChosen, 100);
-        }
-    }
-}
-
-// Touch started: if legal bump card, choose it; if isn't bump card, unbump cards; if hand legal, bump it 
-function touchStarted(e) {
-    body.onmousedown = "";
-    body.onmousemove = "";
-    const c = xy2c(e.touches[0].clientX, e.touches[0].clientY);
-    if (c!=undefined && card[c].g==bump && card[c].p==player && legal(c, leadCard, highCard)) {
-        chosen = c; 
-        body.ontouchstart = "";
-        body.ontouchmove = "";
-        notify({op:"play", card:cardLeft(chosen)});
-        setTimeout(cardChosen);
+// Pointer down event
+function pointerDowned(event) {
+    let pickX, pickY;
+    event.preventDefault();
+    pickX = event.clientX;
+    pickY = event.clientY;
+    pickedC = xy2c(pickX, pickY)
+    if (!pickedC)
         return;
-    }
-    if (c==undefined || card[c].g!=bump)
-        for (let c2 = 0; c2 < deckCards; c2++)
-            if (card[c2].g == bump)
-                moveCard(c2, bump, 0, hand, c2, true, dealTime/20);
-    if (c!=undefined && card[c].g==hand && card[c].p==player && legal(c, leadCard, highCard))
-        moveCard(c, hand, 0, bump, c, true, dealTime/20);
-}
+    pickedE = event.target;
+    pickedE.setPointerCapture(event.pointerId);
+    offsetX = pickX - card[pickedC].hand.x;
+    offsetY = pickY - card[pickedC].hand.y;
+    fnsh = `translate(${pickX-offsetX}px, ${pickY-offsetY}px)`;
+};
 
-// Touch moved: if off bump card, unbump cards; if hand legal card, bump it
-function touchMoved(e) {
-    const c = xy2c(e.touches[0].clientX, e.touches[0].clientY);
-    if (c==undefined || card[c].g!=bump)
-        for (let c2 = 0; c2 < deckCards; c2++)
-            if (card[c2].g == bump)
-                moveCard(c2, bump, 0, hand, c2, true, dealTime/20);
-    if (c!=undefined && card[c].g==hand && card[c].p==player && legal(c, leadCard, highCard))
-        moveCard(c, hand, 0, bump, c, true, dealTime/20);
+// Pointer move event
+function pointerMoved(event) {
+    let moveX, moveY;
+    event.preventDefault();
+    if (pickedC && pickedE) {
+        moveX = event.clientX;
+        moveY = event.clientY;
+        strt = fnsh;
+        fnsh = `translate(${moveX-offsetX}px, ${moveY-offsetY}px)`;
+        pickedE.animate([{transform:strt}, {transform:fnsh}], {duration:0, fill:"forwards"});
+    };
+};
+
+// Pointer up event
+function pointerUpped(event) {
+    event.preventDefault();
+    if (pickedC && pickedE) {
+        if (event.clientY-offsetY < card[pickedC].hand.y-cardh/2) {
+            strt = fnsh;
+            fnsh = `translate(${card[pickedC].play.x}px, ${card[pickedC].play.y}px)`;
+            pickedE.animate([{transform:strt}, {transform:fnsh}], {duration:dealTime/10, fill:"forwards"});
+            card[pickedC].g = play;
+            chosen = pickedC; 
+            notify({op:"play", card:cardLeft(chosen)});
+            for (let c=minC[p3]; c<=maxC[p3]; c++) {
+                cardImg[c].onpointerdown = "";
+                cardImg[c].onpointermove = "";
+                cardImg[c].onpointerup = "";
+            }
+            setTimeout(cardChosen, dealTime/10);
+        } else {
+            strt = fnsh;
+            fnsh = `translate(${card[pickedC].hand.x}px, ${card[pickedC].hand.y}px)`;
+            pickedE.animate([{transform:strt}, {transform:fnsh}], {duration:dealTime/10, fill:"forwards"});
+        }
+        pickedE = null;
+    }
 }
 
 // Hands re-fanned: wait for p3 or bot to choose a card
 function handsRefanned() {
     log("--> handsRefanned");
     if (player == p3) {
-        body.onmousemove = mouseMoved;
-        body.onmousedown = mousePressed;
-        body.ontouchstart = touchStarted;
-        body.ontouchmove = touchMoved;
+        for (let c=minC[p3]; c<=maxC[p3]; c++)
+            if (legal(c, leadCard, highCard)) {
+                cardImg[c].onpointerdown = pointerDowned;
+                cardImg[c].onpointermove = pointerMoved;
+                cardImg[c].onpointerup = pointerUpped;
+            }
         displayHints();
         infoName[p3].style.animation = blink;
     } else if (shift==0 && bot[player]) {
@@ -1520,7 +1515,7 @@ function handsRegathered() {
     // animate movement of meld cards to hand
     locateCards();
     for (let c = 0; c < deckCards; c++)
-        if (card[c].g==hand || card[c].g==bump)
+        if (card[c].g==hand)
             moveCard(c, gone, 0, card[c].g, c, true, dealTime/10);
     setTimeout(meldFanned, dealTime/10);
 }
@@ -2271,7 +2266,8 @@ function loaded() {
     log("--> loaded");
 
     // Initialize constants
-    menuIcon.draggable = false;
+    for (const img of document.querySelectorAll("img"))
+        img.draggable = false;
     setSizes();
     vh0 = vh;
     vw0 = vw;

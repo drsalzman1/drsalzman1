@@ -44,7 +44,7 @@ body {
     color: white;
     -webkit-user-select: none;
     user-select: none;
-    touch-action: pan-y;
+    touch-action: none;
     overflow: hidden;
 }
 
@@ -337,6 +337,7 @@ body {
     height: round(5.6em, 1px);
     top: round(-2.8em, 1px);
     left: round(-2em, 1px);
+    touch-action: none;
 }
 
 #faceImg, #backImg {
@@ -353,6 +354,7 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    background-color: green;
 }
 
 #bidText {
