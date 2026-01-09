@@ -22,300 +22,256 @@
             <br>
             <input type=button value="Exit" onclick=exitClicked()>
         </div>
-        <div class=tutorPage>
-            <img class=whiteClose src=icons/close.svg alt=close onclick=tutorCloseClicked()>
-            <b>Double Deck Pinochle - Set Up</b><br>
-            <div style=margin-top:0.5em></div>
-            A player creates a game by naming themself, the player to their left, the player across, and the player to their right.
-            If the creator is online, the creator can choose whether each player is a remote player or a local robot.
-            The creator can also choose the types of assistance provided.<br>
-            <br>
-            Once the creator names the players and makes their choices, they click their Create button and wait for others to join.<br>
-            <br>
-            Remote players join by naming themselves, clicking their Join buttons, and waiting for others to join.<br>
-            <br>
-            After everyone joins, the creator will shuffle and deal the cards, and the game will begin.
-            <br>
-            <img class=nextIcon src=icons/next.svg alt=next onclick=tutorNextClicked()>
-        </div>
-        <div class=tutorPage>
-            <img class=whiteClose src=icons/close.svg alt=close onclick=tutorCloseClicked()>
-            <b>Double Deck Pinochle - Rules</b><br>
-            <div style=margin-top:0.5em></div>
-            The dealer deals a deck of 80 cards: 4 cards of each rank (ordered ace, ten, king, queen, jack) in each suit (spades, 
-            hearts, clubs, diamonds).<br>
-            <br>
-            The player to the left of dealer must bid at least 50 or pass.
-            The next player to the left must bid higher (5 higher starting at 60) or pass. 
-            Bidding continues until only one bidder remains.
-            If the first three players pass, the fourth player (dealer) must bid.
-            The final bidder picks a trump suit (which outranks the other suits) and plays first.<br>
-            <br>
-            The first player may lead any card.
-            The next player to the left must follow the lead suit if possible, and if the lead's not been trumped, 
-            must beat the high card in the lead suit if possible.
-            If they can't follow the lead, they must play trump if possible, and beat any high trump if possible.
-            If they can't follow the lead or play trump, they can play any card.
-            Play continues until everyone has played a card.<br>
-            <br>
-            The winner then collects the trick and leads the next trick if possible.
-            When the hand is over, the player to the left of dealer deals the next hand until the game is over.<br>
-            <br>
-            <img class=backIcon src=icons/back.svg alt=back onclick=tutorBackClicked()>
-            <img class=nextIcon src=icons/next.svg alt=next onclick=tutorNextClicked()>
-        </div>
-        <div class=tutorPage>
-            <img class=whiteClose src=icons/close.svg alt=close onclick=tutorCloseClicked()>
-            <b>Double Deck Pinochle - Meld</b><br>
-            <div style=margin-top:0.5em></div>
-            Each player's meld comes from their hand:<br>
-            <br>
-            <span id="tutorGrid">
-                <span><u>Card Set in Hand</u></span><span><u>Single</u></span><span><u>Double</u></span><span><u>Triple</u></span>
-                <span>
-                    Aces around 
-                    (<img src=suits/spade.svg><img src=suits/heart.svg><img src=suits/club.svg><img src=suits/diamond.svg>)
-                </span> <span>10</span> <span>100</span> <span>500</span>
-                <span>Kings around</span> <span>8</span> <span>80</span> <span>500</span>
-                <span>Queens around</span> <span>6</span> <span>60</span> <span>500</span>
-                <span>Jacks around</span> <span>4</span> <span>40</span> <span>500</span>
-                <span>Trump run (A,10,K,Q,J)</span> <span>15</span> <span>150</span> <span>500</span>
-                <span>Pinochle (Q<img src=suits/spade.svg>,J<img src=suits/diamond.svg>)</span> <span>4</span> <span>30</span> <span>90</span>
-                <span>Non-trump marriage (K,Q)</span> <span>2</span> <span>4</span> <span>6</span>
-                <span>Trump marriage (not in run)</span> <span>4</span> <span>8</span> <span>12</span>
-            </span>
-            <br>
-            The bidder's meld for each possible trump suit is displayed while they're bidding.<br>
-            <br>
-            A team's meld is the sum of their meld.
-            If the sum is less than 20, it won't count towards their score.<br>
-            <br>
-            <img class=backIcon src=icons/back.svg alt=back onclick=tutorBackClicked()>
-            <img class=nextIcon src=icons/next.svg alt=next onclick=tutorNextClicked()>
-        </div>
-        <div class=tutorPage>
-            <img class=whiteClose src=icons/close.svg alt=close onclick=tutorCloseClicked()>
-            <b>Double Deck Pinochle - Scoring</b><br>
-            <div style=margin-top:0.5em></div>
-            After bidding, each player reveals their meld.
-            Even if a player's team melds less than 20, the player must reveal if they have aces around.
-            If a player wins the bid without a run or marriage in trump, they can't play (must toss) the hand.
-            The bid winner may also choose to toss a hand.<br>
-            <br>
-            After each hand, each team counts their take.
-            Each ace, ten and king is worth 1.
-            Taking the last trick is worth 2.
-            If a team's take is less than 20, their take is 0.<br>                 
-            <br>
-            Normally, each team's score increases by their meld plus take.
-            However, if the bid-winning team's meld plus take is less than their bid, their score decreases by their bid.
-            The first team to reach 500, wins.
-            If both teams reach 500, the bid-winning team wins.<br>
-            <br>
-            <img class=backIcon src=icons/back.svg alt=back onclick=tutorBackClicked()>
-            <img class=nextIcon src=icons/next.svg alt=next onclick=tutorNextClicked()>
-        </div>
-        <div class=tutorPage>
-            <img class=whiteClose src=icons/close.svg alt=close onclick=tutorCloseClicked()>
-            <b>Double Deck Pinochle - Communicating</b><br>
-            <div style=margin-top:0.5em></div>
-            Players are not allowed to directly communicate their cards or strategy to their partner.
-            This is called talking across the table.
-            However, they can reveal certain information by the way they bid and play.<br>
-            <br>
-            Robots use jump bids.
-            If a player starts the bid at 52 or increases the bid by 2, the robot assumes they have a marriage and 20 meld.
-            If a player starts the bid at 53 or increases the bid by 3, the robot assumes they have a marriage and 30 meld, etc.
-            Robots assume players have 14 meld unless their partner provides a jump bid.<br>
-            <br>
-            Robots ignore indicators.
-            If a player plays an ace or jack on their partner's ace, robots assume nothing.<br>
-            <br>
-            The game creator can choose an open hands game that reveals everyone's cards.
-            This allows players to <del>cheat</del> learn, but robots don't exploit open hands.<br>
-            <br>
-            <img class=backIcon src=icons/back.svg alt=back onclick=tutorBackClicked()>
-            <img class=nextIcon src=icons/next.svg alt=next onclick=tutorNextClicked()>
-        </div>
-        <div class=tutorPage>
-            <img class=whiteClose src=icons/close.svg alt=close onclick=tutorCloseClicked()>
-            <b>Double Deck Pinochle - Counts</b><br>
-            <div style=margin-top:0.5em></div>
-            Players know their own cards and reveal their cards when they lay down their meld, play a card,
-            trump the lead suit, don't beat a high card, or don't follow the lead suit.<br>
-            <br>
-            The game creator can choose to show the card count summary for each player where the color of each suit icon 
-            indicates the player's cards:<br>
-            <ul>
-                <li>white - definitely has an ace in that suit</li>
-                <li>gray - may have a card in that suit</li>
-                <li>black - has no cards in that suit</li>
-            </ul><br>
-            The game creator can also choose to show the card count detail for each player.
-            The table shows the minimum and maximum number of cards each player
-            has revealed for each rank of each suit using rectangles:<br>
-            <ul>
-                <li>Black quadrants indicate the minimum number of cards in that player/rank/suit</li>
-                <li>Black/gray quadrants indicate the max number of cards in that player/rank/suit</li>
-                <li>Four white quadrants indicate there are no cards in that player/suit/rank</li>
-            </ul><br>
-            <br>
-            <img class=backIcon src=icons/back.svg alt=back onclick=tutorBackClicked()>
-            <img class=nextIcon src=icons/next.svg alt=next onclick=tutorNextClicked()>
-        </div>
-        <div class=tutorPage>
-            <img class=whiteClose src=icons/close.svg alt=close onclick=tutorCloseClicked()>
-            <b>Double Deck Pinochle - Info</b><br>
-            <div style=margin-top:0.5em></div>
-            The game creator can choose to display the trump suit as an icon in the upper-right corner.
-            The game creator can also choose to display a count of how many trump cards remain in other players' hands. <br>
-            <br>
-            You can tap the trump suit icon to display additional information such as the:<br>
-            <ul>
-                <li>Trump suit</li>
-                <li>Total cards per suit in other players' hands</li>
-                <li>Points you've taken of the points you'll need</li>
-                <li>Points they've taken of the points they'll need</li>
-            </ul><br>
-            <img class=backIcon src=icons/back.svg alt=back onclick=tutorBackClicked()>
-            <img class=nextIcon src=icons/next.svg alt=next onclick=tutorNextClicked()>
-        </div>
-        <div class=tutorPage>
-            <img class=whiteClose src=icons/close.svg alt=close onclick=tutorCloseClicked()>
-            <b>Double Deck Pinochle - Strategy</b><br>
-            <div style=margin-top:0.5em></div>
-            The robots bid up to a limit based on their meld, their estimate of their partner's meld (perhaps based on a jump bid),
-            and their estimate of the strength of their playing hand.<br>
-            <br>
-            The robots count the cards that each player reveals as meld.
-            For example, if you reveal a king of clubs but no queen of clubs, the robot knows you don't have a queen of clubs.
-            The robot also counts the cards that each player reveals during play.
-            For example, if you play a jack of clubs on a king of clubs, it knows you don't have a ten or ace of clubs.
-            This app offers a menu option to display such stats from your perspective without cheating.<br>
-            <br>
-            If a robot estimates that its team can win the trick, it plays the card that it estimates will
-            take the trick, 
-            take the most points, 
-            spend the fewest of its team's high and trump cards, and
-            waste the most of its opponents' high and trump cards.
-            If the robot estimates that its team will lose the trick, it plays the card that it estimates will
-            lose the fewest points, 
-            waste the fewest of its team's high and trump cards, and
-            waste the most of its opponents' high and trump cards.<br>
-            <br>
-            <img class=backIcon src=icons/back.svg alt=back onclick=tutorBackClicked()>
-            <img class=nextIcon src=icons/next.svg alt=next onclick=tutorNextClicked()>
-        </div>
-        <div class=tutorPage>
-            <img class=whiteClose src=icons/close.svg alt=close onclick=tutorCloseClicked()>
-            <b>Double Deck Pinochle - Glossary</b><br>
-            <ul>
-                <li>Players: the four named players</li>
-                <li>Teams: you and your partner vs. them</li>
-                <li>Suit: spades, hearts, clubs, diamonds</li>
-                <li>Rank: ace, ten, king, queen, jack (in that order)</li>
-                <li>Deck: 80 cards - 4 of each rank in each suit</li>
-                <li>Bid: compete for right to pick trump and lead</li>
-                <li>Pass: withdraw from bidding</li>
-                <li>Trump: the suit that outranks the other suits</li>
-                <li>Lead: the first card played</li>
-                <li>Trick: a set of four played cards</li>
-                <li>Meld: valuable sets of cards in a player's hand</li>
-                <li>Around: one specific rank in each suit</li>
-                <li>Marriage: king and queen in a suit</li>
-                <li>Run: one of each rank in a suit</li>
-                <li>Pinochle: queen of spades & jack of diamonds</li>
-                <li>Take: points earned by the trick winner</li>
-                <li>Toss: decide to not play a hand</li>
-            </ul>
-            <img class=backIcon src=icons/back.svg alt=back onclick=tutorBackClicked()>
+        <div id=Tutorial>
+            <div class=tutorPage>
+                <img class=blackClose src=icons/close.svg alt=close onclick=tutorCloseClicked()>
+                <b>Double Deck Pinochle - Set Up</b><br>
+                <div style=margin-top:0.5em></div>
+                A player creates a game by naming themself, the player to their left, the player across, and the player to their right.
+                If the creator is online, the creator can choose whether each player is a remote player or a local robot.
+                The creator can also choose the types of assistance provided.<br>
+                <br>
+                Once the creator names the players and makes their choices, they click their Create button and wait for others to join.<br>
+                <br>
+                Remote players join by naming themselves, clicking their Join buttons, and waiting for others to join.<br>
+                <br>
+                After everyone joins, the creator will shuffle and deal the cards, and the game will begin.
+                <br>
+                <img class=nextIcon src=icons/next.svg alt=next onclick=tutorNextClicked()>
+            </div>
+            <div class=tutorPage>
+                <img class=blackClose src=icons/close.svg alt=close onclick=tutorCloseClicked()>
+                <b>Double Deck Pinochle - Rules</b><br>
+                <div style=margin-top:0.5em></div>
+                The dealer deals a deck of 80 cards: 4 cards of each rank (ordered ace, ten, king, queen, jack) in each suit (spades, 
+                hearts, clubs, diamonds).<br>
+                <br>
+                The player to the left of dealer must bid at least 50 or pass.
+                The next player to the left must bid higher (5 higher starting at 60) or pass. 
+                Bidding continues until only one bidder remains.
+                If the first three players pass, the fourth player (dealer) must bid.
+                The final bidder picks a trump suit (which outranks the other suits) and plays first.<br>
+                <br>
+                The first player may lead any card.
+                The next player to the left must follow the lead suit if possible, and if the lead's not been trumped, 
+                must beat the high card in the lead suit if possible.
+                If they can't follow the lead, they must play trump if possible, and beat any high trump if possible.
+                If they can't follow the lead or play trump, they can play any card.
+                Play continues until everyone has played a card.<br>
+                <br>
+                The winner then collects the trick and leads the next trick if possible.
+                When the hand is over, the player to the left of dealer deals the next hand until the game is over.<br>
+                <br>
+                <img class=backIcon src=icons/back.svg alt=back onclick=tutorBackClicked()>
+                <img class=nextIcon src=icons/next.svg alt=next onclick=tutorNextClicked()>
+            </div>
+            <div class=tutorPage>
+                <img class=blackClose src=icons/close.svg alt=close onclick=tutorCloseClicked()>
+                <b>Double Deck Pinochle - Meld</b><br>
+                <div style=margin-top:0.5em></div>
+                Each player's meld comes from their hand:<br>
+                <br>
+                <span id="tutorGrid">
+                    <span><u>Card Set in Hand</u></span><span><u>Single</u></span><span><u>Double</u></span><span><u>Triple</u></span>
+                    <span>
+                        Aces around 
+                        (<img src=suits/spade.svg><img src=suits/heart.svg><img src=suits/club.svg><img src=suits/diamond.svg>)
+                    </span> <span>10</span> <span>100</span> <span>500</span>
+                    <span>Kings around</span> <span>8</span> <span>80</span> <span>500</span>
+                    <span>Queens around</span> <span>6</span> <span>60</span> <span>500</span>
+                    <span>Jacks around</span> <span>4</span> <span>40</span> <span>500</span>
+                    <span>Trump run (A,10,K,Q,J)</span> <span>15</span> <span>150</span> <span>500</span>
+                    <span>Pinochle (Q<img src=suits/spade.svg>,J<img src=suits/diamond.svg>)</span> <span>4</span> <span>30</span> <span>90</span>
+                    <span>Non-trump marriage (K,Q)</span> <span>2</span> <span>4</span> <span>6</span>
+                    <span>Trump marriage (not in run)</span> <span>4</span> <span>8</span> <span>12</span>
+                </span>
+                <br>
+                The bidder's meld for each possible trump suit is displayed while they're bidding.<br>
+                <br>
+                A team's meld is the sum of their meld.
+                If the sum is less than 20, it won't count towards their score.<br>
+                <br>
+                <img class=backIcon src=icons/back.svg alt=back onclick=tutorBackClicked()>
+                <img class=nextIcon src=icons/next.svg alt=next onclick=tutorNextClicked()>
+            </div>
+            <div class=tutorPage>
+                <img class=blackClose src=icons/close.svg alt=close onclick=tutorCloseClicked()>
+                <b>Double Deck Pinochle - Scoring</b><br>
+                <div style=margin-top:0.5em></div>
+                After bidding, each player reveals their meld.
+                Even if a player's team melds less than 20, the player must reveal if they have aces around.
+                If a player wins the bid without a run or marriage in trump, they can't play (must toss) the hand.
+                The bid winner may also choose to toss a hand.<br>
+                <br>
+                After each hand, each team counts their take.
+                Each ace, ten and king is worth 1.
+                Taking the last trick is worth 2.
+                If a team's take is less than 20, their take is 0.<br>                 
+                <br>
+                Normally, each team's score increases by their meld plus take.
+                However, if the bid-winning team's meld plus take is less than their bid, their score decreases by their bid.
+                The first team to reach 500, wins.
+                If both teams reach 500, the bid-winning team wins.<br>
+                <br>
+                <img class=backIcon src=icons/back.svg alt=back onclick=tutorBackClicked()>
+                <img class=nextIcon src=icons/next.svg alt=next onclick=tutorNextClicked()>
+            </div>
+            <div class=tutorPage>
+                <img class=blackClose src=icons/close.svg alt=close onclick=tutorCloseClicked()>
+                <b>Double Deck Pinochle - Communicating</b><br>
+                <div style=margin-top:0.5em></div>
+                Players are not allowed to directly communicate their cards or strategy to their partner.
+                This is called talking across the table.
+                However, they can reveal certain information by the way they bid and play.<br>
+                <br>
+                Robots use jump bids.
+                If a player starts the bid at 52 or increases the bid by 2, the robot assumes they have a marriage and 20 meld.
+                If a player starts the bid at 53 or increases the bid by 3, the robot assumes they have a marriage and 30 meld, etc.
+                Robots assume players have 14 meld unless their partner provides a jump bid.<br>
+                <br>
+                Robots ignore indicators.
+                If a player plays an ace or jack on their partner's ace, robots assume nothing.<br>
+                <br>
+                The game creator can choose an open hands game that reveals everyone's cards.
+                This allows players to <del>cheat</del> learn, but robots don't exploit open hands.<br>
+                <br>
+                <img class=backIcon src=icons/back.svg alt=back onclick=tutorBackClicked()>
+                <img class=nextIcon src=icons/next.svg alt=next onclick=tutorNextClicked()>
+            </div>
+            <div class=tutorPage>
+                <img class=blackClose src=icons/close.svg alt=close onclick=tutorCloseClicked()>
+                <b>Double Deck Pinochle - Counts</b><br>
+                <div style=margin-top:0.5em></div>
+                Players know their own cards and reveal their cards when they lay down their meld, play a card,
+                trump the lead suit, don't beat a high card, or don't follow the lead suit.<br>
+                <br>
+                The game creator can choose to show the card count summary for each player where the color of each suit icon 
+                indicates the player's cards:<br>
+                <ul>
+                    <li>white - definitely has an ace in that suit</li>
+                    <li>gray - may have a card in that suit</li>
+                    <li>black - has no cards in that suit</li>
+                </ul><br>
+                The game creator can also choose to show the card count detail for each player.
+                The table shows the minimum and maximum number of cards each player
+                has revealed for each rank of each suit using rectangles:<br>
+                <ul>
+                    <li>Black quadrants indicate the minimum number of cards in that player/rank/suit</li>
+                    <li>Black/gray quadrants indicate the max number of cards in that player/rank/suit</li>
+                    <li>Four white quadrants indicate there are no cards in that player/suit/rank</li>
+                </ul><br>
+                <br>
+                <img class=backIcon src=icons/back.svg alt=back onclick=tutorBackClicked()>
+                <img class=nextIcon src=icons/next.svg alt=next onclick=tutorNextClicked()>
+            </div>
+            <div class=tutorPage>
+                <img class=blackClose src=icons/close.svg alt=close onclick=tutorCloseClicked()>
+                <b>Double Deck Pinochle - Info</b><br>
+                <div style=margin-top:0.5em></div>
+                The game creator can choose to display the trump suit as an icon in the upper-right corner.
+                The game creator can also choose to display a count of how many trump cards remain in other players' hands. <br>
+                <br>
+                You can tap the trump suit icon to display additional information such as the:<br>
+                <ul>
+                    <li>Trump suit</li>
+                    <li>Total cards per suit in other players' hands</li>
+                    <li>Points you've taken of the points you'll need</li>
+                    <li>Points they've taken of the points they'll need</li>
+                </ul><br>
+                <img class=backIcon src=icons/back.svg alt=back onclick=tutorBackClicked()>
+                <img class=nextIcon src=icons/next.svg alt=next onclick=tutorNextClicked()>
+            </div>
+            <div class=tutorPage>
+                <img class=blackClose src=icons/close.svg alt=close onclick=tutorCloseClicked()>
+                <b>Double Deck Pinochle - Strategy</b><br>
+                <div style=margin-top:0.5em></div>
+                The robots bid up to a limit based on their meld, their estimate of their partner's meld (perhaps based on a jump bid),
+                and their estimate of the strength of their playing hand.<br>
+                <br>
+                The robots count the cards that each player reveals as meld.
+                For example, if you reveal a king of clubs but no queen of clubs, the robot knows you don't have a queen of clubs.
+                The robot also counts the cards that each player reveals during play.
+                For example, if you play a jack of clubs on a king of clubs, it knows you don't have a ten or ace of clubs.
+                This app offers a menu option to display such stats from your perspective without cheating.<br>
+                <br>
+                If a robot estimates that its team can win the trick, it plays the card that it estimates will
+                take the trick, 
+                take the most points, 
+                spend the fewest of its team's high and trump cards, and
+                waste the most of its opponents' high and trump cards.
+                If the robot estimates that its team will lose the trick, it plays the card that it estimates will
+                lose the fewest points, 
+                waste the fewest of its team's high and trump cards, and
+                waste the most of its opponents' high and trump cards.<br>
+                <br>
+                <img class=backIcon src=icons/back.svg alt=back onclick=tutorBackClicked()>
+                <img class=nextIcon src=icons/next.svg alt=next onclick=tutorNextClicked()>
+            </div>
+            <div class=tutorPage>
+                <img class=blackClose src=icons/close.svg alt=close onclick=tutorCloseClicked()>
+                <b>Double Deck Pinochle - Glossary</b><br>
+                <ul>
+                    <li>Players: the four named players</li>
+                    <li>Teams: you and your partner vs. them</li>
+                    <li>Suit: spades, hearts, clubs, diamonds</li>
+                    <li>Rank: ace, ten, king, queen, jack (in that order)</li>
+                    <li>Deck: 80 cards - 4 of each rank in each suit</li>
+                    <li>Bid: compete for right to pick trump and lead</li>
+                    <li>Pass: withdraw from bidding</li>
+                    <li>Trump: the suit that outranks the other suits</li>
+                    <li>Lead: the first card played</li>
+                    <li>Trick: a set of four played cards</li>
+                    <li>Meld: valuable sets of cards in a player's hand</li>
+                    <li>Around: one specific rank in each suit</li>
+                    <li>Marriage: king and queen in a suit</li>
+                    <li>Run: one of each rank in a suit</li>
+                    <li>Pinochle: queen of spades & jack of diamonds</li>
+                    <li>Take: points earned by the trick winner</li>
+                    <li>Toss: decide to not play a hand</li>
+                </ul>
+                <img class=backIcon src=icons/back.svg alt=back onclick=tutorBackClicked()>
+            </div>
         </div>
         <div id=createPg>
             <img class=whiteClose src=icons/close.svg alt=close onclick=createCloseClicked()>
             <div id=createHdg class=pageTitle>Double Deck Pinochle - Create Game</div>
             <form id=createForm onsubmit=createSubmitted(event)>
-                <fieldset>
-                    <legend id=pLegend>Players Waiting: 0</legend>
-                    <div id=playersGrid>
-                        <div class=pLabl>Left name:</div>
-                        <div class=pBlck>
-                            <input class=pName type=text onkeydown=nKeyed(event,0) onfocus=nFocused(0) onblur=nBlurred(0)>
-                            <ul class=pList></ul>
-                        </div>
-                        <input class=pIcon type=image alt=wIcon onclick=iClicked(event,0)>
-                        <div class=pLabl>Across name:</div>
-                        <div class=pBlck>
-                            <input class=pName type=text onkeydown=nKeyed(event,1) onfocus=nFocused(1) onblur=nBlurred(1)>
-                            <ul class=pList></ul>
-                        </div>
-                        <input class=pIcon type=image alt=nIcon onclick=iClicked(event,1)>
-                        <div class=pLabl>Right name:</div>
-                        <div class=pBlck>
-                            <input class=pName type=text onkeydown=nKeyed(event,2) onfocus=nFocused(2) onblur=nBlurred(2)>
-                            <ul class=pList></ul>
-                        </div>
-                        <input class=pIcon type=image alt=eIcon onclick=iClicked(event,2)>
-                        <div class=pLabl>Your name:</div>
-                        <div class=pBlck>
-                            <input class=pName type=text onkeydown=nKeyed(event,3) onfocus=nFocused(3) onblur=nBlurred(3)>
-                            <ul class=pList></ul>
-                        </div>
-                        <input class=pIcon type=image alt=sIcon onclick=iClicked(event,3)>
+                <div id=pLegend>
+                    Players joining: 0
+                </div>
+                <div id=playersGrid>
+                    <div class=pLabl>Left name:</div>
+                    <div class=pBlck>
+                        <input id=wName class=pName type=text onkeydown=nKeyed(event,0) onfocus=nFocused(0) onblur=nBlurred(0)>
+                        <ul class=pList></ul>
                     </div>
-                </fieldset>
-                <fieldset>
-                    <legend>Assistance</legend>
-                    <div id=assistanceGrid>
-                        <div>Trump suit:</div>
-                        <input class=aBox type=image alt=tsBox onclick=bClicked(event,0)>
-                        <div class=tip>
-                            <img src=icons/info.svg alt=info>
-                            <div class=tiptext>
-                                Show trump suit icon in upper-right corner.
-                            </div>
-                        </div>
-                        <div>Trump count:</div>
-                        <input class=aBox type=image alt=tcBox onclick=bClicked(event,1)>
-                        <div class=tip>
-                            <img src=icons/info.svg alt=info>
-                            <div class=tiptext>
-                                Show number of trump in other player's hands in upper-right corner.
-                            </div>
-                        </div>
-                        <div>Card count summary:</div>
-                        <input class=aBox type=image alt=ccsBox onclick=bClicked(event,2)>
-                        <div class=tip>
-                            <img src=icons/info.svg alt=info>
-                            <div class=tiptext>
-                                Show suit icons near each hand:<br>
-                                    &nbsp; - White if definite ace in suit<br>
-                                    &nbsp; - Light if possible ace in suit<br> 
-                                    &nbsp; - Dark if no ace in suit<br>
-                                    &nbsp; - Transparent if no cards in suit
-                            </div>
-                        </div>
-                        <div>Card count detail:</div>
-                        <input class=aBox type=image alt=ccdBox onclick=bClicked(event,3)>
-                        <div class=tip>
-                            <img src=icons/info.svg alt=info>
-                            <div class=tiptext>
-                                Overlay each hand with a table of rectangles indicating the minimum 
-                                and maximum number of cards for each rank and suit:<br>
-                                    &nbsp; - # black quads = min cards<br>
-                                    &nbsp; - # black/gray quads = max cards<br>
-                                    &nbsp; - 4 white quads = no cards
-                            </div>
-                        </div>
-                        <div>Open hands:</div>
-                        <input class=aBox type=image alt=ohBox onclick=bClicked(event,4)>
-                        <div class=tip>
-                            <img src=icons/info.svg alt=info>
-                            <div class=tiptext>
-                                Show every player's cards.
-                            </div>
-                        </div>
+                    <input class=pIcon type=image alt=wIcon onclick=iClicked(event,0)>
+                    <div class=pLabl>Across name:</div>
+                    <div class=pBlck>
+                        <input id=nName class=pName type=text onkeydown=nKeyed(event,1) onfocus=nFocused(1) onblur=nBlurred(1)>
+                        <ul class=pList></ul>
                     </div>
-                </fieldset>
+                    <input class=pIcon type=image alt=nIcon onclick=iClicked(event,1)>
+                    <div class=pLabl>Right name:</div>
+                    <div class=pBlck>
+                        <input id=eName class=pName type=text onkeydown=nKeyed(event,2) onfocus=nFocused(2) onblur=nBlurred(2)>
+                        <ul class=pList></ul>
+                    </div>
+                    <input class=pIcon type=image alt=eIcon onclick=iClicked(event,2)>
+                    <div class=pLabl>Your name:</div>
+                    <div class=pBlck>
+                        <input id=sName class=pName type=text onkeydown=nKeyed(event,3) onfocus=nFocused(3) onblur=nBlurred(3)>
+                        <ul class=pList></ul>
+                    </div>
+                    <input class=pIcon type=image alt=sIcon onclick=iClicked(event,3)>
+                </div>
+                <div id=assistanceGrid>
+                    <div>Show card counts:&nbsp;</div>
+                    <input class=aBox type=image onclick=bClicked(event,0)>
+                    <div></div>
+                    <div>Show all hands:&nbsp;</div>
+                    <input class=aBox type=image onclick=bClicked(event,1)>
+                </div>
                 <div style=width:100%>
                     <button id=createSub>Start</button>
                 </div>
@@ -326,7 +282,7 @@
             <div class=pageTitle>Double Deck Pinochle - Join Game</div>
             <form onsubmit=joinSubmitted(event)>
                 Your Name:<br>
-                <input class=pName type=text onkeydown=nKeyed(event,4) onfocus=nFocused(4) onblur=nBlurred(4)><br>
+                <input id=jName class=pName type=text onkeydown=nKeyed(event,4) onfocus=nFocused(4) onblur=nBlurred(4)><br>
                 <ul class=pList></ul>
                 <br>
                 Game Number:<br>
@@ -341,6 +297,7 @@
         </div>
         <div id=gamePage>
             <img id=menuIcon src=icons/menu.svg alt=menu onclick=menuIconClicked()>
+            <img id=infoIcon src=icons/info.svg alt=menu onclick=infoIconClicked()>
             <img id=trmpIcon src=suits/club.svg alt=trump onclick=trmpIconClicked()>
             <div id=nTrump></div> 
             <div id=textArea>
@@ -401,8 +358,12 @@
                 <div id=iText>
                     <img class=blackClose src=icons/close.svg alt=close onclick=iCloseClicked()>
                     <div id=iTrump>Trump is diamonds.</div>
-                    <div id=iOut>15 spades, 17 hearts, 10 clubs and 16 diamonds are out.</div>
-                    <div id=iTake>You've takeen 15 of 20 and they've taken 15 of 20.</div>
+                    <div id=iOut>
+                        <u>Out</u><img src=suits/spade.svg><img src=suits/heart.svg><img src=suits/club.svg><img src=suits/diamond.svg>
+                        <span>Aces</span>  <div>0</div> <div>1</div> <div>2</div> <div>3</div>
+                        <span>Total</span> <div>4</div> <div>5</div> <div>6</div> <div>7</div>
+                    </div>
+                    <div id=iTake>You've takeen 15 of 20. They've taken 15 of 20.</div>
                 </div>
             </div>
             <div id=infoAreas>
@@ -448,106 +409,13 @@
                 <img src=cards/gb.svg>
             </div>
         </div>
-        <div id=wGrid>
-            <div></div>
-            <div><img class=gIcon src=ranks/ace.svg></div>
-            <div><img class=gIcon src=ranks/ten.svg></div>
-            <div><img class=gIcon src=ranks/king.svg></div>
-            <div><img class=gIcon src=ranks/queen.svg></div>
-            <div><img class=gIcon src=ranks/jack.svg></div>
-            <div><img class=gIcon src=suits/spade.svg></div>
-            <div><img class=cIcon src=icons/0-0.svg></div>
-            <div><img class=cIcon src=icons/1-1.svg></div>
-            <div><img class=cIcon src=icons/2-2.svg></div>
-            <div><img class=cIcon src=icons/3-3.svg></div>
-            <div><img class=cIcon src=icons/4-4.svg></div>
-            <div><img class=gIcon src=suits/heart.svg></div>
-            <div><img class=cIcon src=icons/0-0.svg></div>
-            <div><img class=cIcon src=icons/1-1.svg></div>
-            <div><img class=cIcon src=icons/2-2.svg></div>
-            <div><img class=cIcon src=icons/3-3.svg></div>
-            <div><img class=cIcon src=icons/4-4.svg></div>
-            <div><img class=gIcon src=suits/club.svg></div>
-            <div><img class=cIcon src=icons/0-0.svg></div>
-            <div><img class=cIcon src=icons/1-1.svg></div>
-            <div><img class=cIcon src=icons/2-2.svg></div>
-            <div><img class=cIcon src=icons/3-3.svg></div>
-            <div><img class=cIcon src=icons/4-4.svg></div>
-            <div><img class=gIcon src=suits/diamond.svg></div>
-            <div><img class=cIcon src=icons/0-0.svg></div>
-            <div><img class=cIcon src=icons/1-1.svg></div>
-            <div><img class=cIcon src=icons/2-2.svg></div>
-            <div><img class=cIcon src=icons/3-3.svg></div>
-            <div><img class=cIcon src=icons/4-4.svg></div>
-        </div>
-        <div id=nGrid>
-            <div></div>
-            <div><img class=gIcon src=ranks/ace.svg></div>
-            <div><img class=gIcon src=ranks/ten.svg></div>
-            <div><img class=gIcon src=ranks/king.svg></div>
-            <div><img class=gIcon src=ranks/queen.svg></div>
-            <div><img class=gIcon src=ranks/jack.svg></div>
-            <div><img class=gIcon src=suits/spade.svg></div>
-            <div><img class=cIcon src=icons/0-0.svg></div>
-            <div><img class=cIcon src=icons/1-1.svg></div>
-            <div><img class=cIcon src=icons/2-2.svg></div>
-            <div><img class=cIcon src=icons/3-3.svg></div>
-            <div><img class=cIcon src=icons/4-4.svg></div>
-            <div><img class=gIcon src=suits/heart.svg></div>
-            <div><img class=cIcon src=icons/0-0.svg></div>
-            <div><img class=cIcon src=icons/1-1.svg></div>
-            <div><img class=cIcon src=icons/2-2.svg></div>
-            <div><img class=cIcon src=icons/3-3.svg></div>
-            <div><img class=cIcon src=icons/4-4.svg></div>
-            <div><img class=gIcon src=suits/club.svg></div>
-            <div><img class=cIcon src=icons/0-0.svg></div>
-            <div><img class=cIcon src=icons/1-1.svg></div>
-            <div><img class=cIcon src=icons/2-2.svg></div>
-            <div><img class=cIcon src=icons/3-3.svg></div>
-            <div><img class=cIcon src=icons/4-4.svg></div>
-            <div><img class=gIcon src=suits/diamond.svg></div>
-            <div><img class=cIcon src=icons/0-0.svg></div>
-            <div><img class=cIcon src=icons/1-1.svg></div>
-            <div><img class=cIcon src=icons/2-2.svg></div>
-            <div><img class=cIcon src=icons/3-3.svg></div>
-            <div><img class=cIcon src=icons/4-4.svg></div>
-        </div>
-        <div id=eGrid>
-            <div></div>
-            <div><img class=gIcon src=ranks/ace.svg></div>
-            <div><img class=gIcon src=ranks/ten.svg></div>
-            <div><img class=gIcon src=ranks/king.svg></div>
-            <div><img class=gIcon src=ranks/queen.svg></div>
-            <div><img class=gIcon src=ranks/jack.svg></div>
-            <div><img class=gIcon src=suits/spade.svg></div>
-            <div><img class=cIcon src=icons/0-0.svg></div>
-            <div><img class=cIcon src=icons/1-1.svg></div>
-            <div><img class=cIcon src=icons/2-2.svg></div>
-            <div><img class=cIcon src=icons/3-3.svg></div>
-            <div><img class=cIcon src=icons/4-4.svg></div>
-            <div><img class=gIcon src=suits/heart.svg></div>
-            <div><img class=cIcon src=icons/0-0.svg></div>
-            <div><img class=cIcon src=icons/1-1.svg></div>
-            <div><img class=cIcon src=icons/2-2.svg></div>
-            <div><img class=cIcon src=icons/3-3.svg></div>
-            <div><img class=cIcon src=icons/4-4.svg></div>
-            <div><img class=gIcon src=suits/club.svg></div>
-            <div><img class=cIcon src=icons/0-0.svg></div>
-            <div><img class=cIcon src=icons/1-1.svg></div>
-            <div><img class=cIcon src=icons/2-2.svg></div>
-            <div><img class=cIcon src=icons/3-3.svg></div>
-            <div><img class=cIcon src=icons/4-4.svg></div>
-            <div><img class=gIcon src=suits/diamond.svg></div>
-            <div><img class=cIcon src=icons/0-0.svg></div>
-            <div><img class=cIcon src=icons/1-1.svg></div>
-            <div><img class=cIcon src=icons/2-2.svg></div>
-            <div><img class=cIcon src=icons/3-3.svg></div>
-            <div><img class=cIcon src=icons/4-4.svg></div>
-        </div>
         <div id=menuText>
             <b>Double Deck Pinochle</b>
             <img class=blackClose src=icons/close.svg alt=close onclick=menuCloseClicked()><br>
             <br>
+            <div onclick=tutorClicked()>
+                <img class=menuIcon src=icons/help.svg alt=tutor> Show tutorial
+            </div><br>
             <div onclick=reloadClicked()>
                 <img class=menuIcon src=icons/refresh.svg alt=refresh> Reload app
             </div><br>
@@ -568,6 +436,27 @@
             If you have any comments or suggestions, please email me at salzman.apps@gmail.com.<br>
             <br>
             &copy; 2025 David Salzman
+        </div>
+        <div id=infoText>
+            <img class=blackClose src=icons/close.svg alt=close onclick=infoCloseClicked()>
+            <div id=default>
+                State: TBD
+            </div>
+            <div id=awaitBid>
+                <b>Double Deck Pinochle - Bidding</b><br>
+                <br>
+                <img src="screens/bidding.png" alt="bidding" style="max-height:20.5em;float:left;margin-right:0.4em">
+                Please select your next bid.<br>
+                <br>
+                If you bid too low, you can't pick trump or play first and therefore may score less.
+                If you bid more than your team's meld plus your team's playing points, you will go back by your bid.<br>
+                <br>
+                It's usually safe to bid your meld plus 10 (your partner's meld?) plus 20 (40% of the playing points).
+                If you have a strong hand or your partner indicates they have lots of meld, you can bid higher.<br>
+                <br>
+                If you start the bid at 52 (or bid 2 higher than the previous bid), your partner assumes you have 20 meld.
+                If you start the bid at 53, your partner assumes you have 30 meld, etc.
+            </div>
         </div>
     </body>
 </html>

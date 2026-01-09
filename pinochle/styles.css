@@ -61,6 +61,9 @@ body {
     padding: 0.4em;
     display: none;
     overflow: hidden;
+    color: black;
+    background-color: white;
+    z-index: 1000;
 }
 
 .tutorPage .backIcon {
@@ -88,7 +91,6 @@ body {
 
 .tutorPage img {
     height: 0.8em;
-    filter: invert(100%);
 }
 
 .tutorPage ul {
@@ -126,27 +128,27 @@ body {
 
 #createForm {
     display: flex;
-    flex-direction: row;
+    width: 20em;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
     flex-wrap: wrap;
 }
 
-#createForm fieldset {
-    height: 11.8em;
-    margin: 0.4em;
-    padding-left: 0.4em;
-    border: 1px solid;
-    text-align: left;
+#pLegend {
+    width: 100%;
+    line-height: 1.5em;
+    border: 2px solid;
 }
 
 #playersGrid {
-    margin-top: 0.4em;
-    width: 21em;
+    margin-top: 1.5em;
+    width: 100%;
     display: grid;
     grid-template-columns: repeat(11, 1fr);
     grid-template-rows: 1.3em 2.0em 1.3em 2.0em 1.3em 2.0em;
+    text-align: left;
 }
 
 :nth-child(1 of .pLabl) {grid-area: 03/01/03/05}
@@ -207,48 +209,25 @@ body {
 }
 
 #assistanceGrid {
-    margin-top: 0.4em;
-    padding-right: 0.4em;
-    width: var(--ass-width);
+    margin-top: 1.5em;
+    width: 100%;
     display: grid;
-    grid-template-columns: repeat(3, auto);
-    grid-template-rows: repeat(5, 2em);
+    grid-template-columns: auto auto 1fr auto auto;
     justify-content: center;
-    column-gap: 0.5em;;
     text-align: right;
 }
 
-.tip {
-    position: relative;
-}
-
-.tip img, .aBox {
+.aBox {
     position: relative;
     bottom: 0.1em;
     height: 1.3em;
     filter: invert(100%);
 }
 
-.tiptext {
-    padding: 0.4em;
-    visibility: hidden;
-    position: absolute;
-    width: 18.2em;
-    bottom: 2.2em;
-    right: -2.7em;
-    color: black;
-    background-color: white;
-    text-align: left;
-}
-
-.tip:hover .tiptext {
-    visibility: visible;
-}
-
 #createSub {
     width: 5em;
     height: 1.3em;
-    margin: 0.8em 0em 0em 0em;
+    margin-top: 2em;
     border: none;
     background-color: white;
     text-align: center;
@@ -301,8 +280,17 @@ body {
 
 #menuIcon {
     position: absolute;
-    top: 0;
-    left: 0;
+    top: -0.2em;
+    left: 0em;
+    height: 1.32em;
+    filter: invert(100%);
+    margin: 0.4em;
+}
+
+#infoIcon {
+    position: absolute;
+    top: -0.2em;
+    left: 1.6em;
     height: 1.32em;
     filter: invert(100%);
     margin: 0.4em;
@@ -468,52 +456,31 @@ body {
     display: none;
     flex-direction: column;
     justify-content: space-between;
-    text-align: center;
+    text-align: left;
     color: black;
     background-color: white;
 }
 
-.blackClose {
+#iText #iOut {
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto 1.5em 1.5em 1.5em 1.5em;
+    justify-content: space-between;
+    text-align: center;
+}
+
+#iText #iOut img {
+    position: relative;
+    top: 0.1em;
+    left: 0.3em;
+    height: 0.9em;
+}
+
+.tutorPage .blackClose, .blackClose {
     position: absolute;
     top: 0.26em;
     right: 0.26em;
     height: 1.32em;
-}
-
-#wGrid, #nGrid, #eGrid {
-    position: absolute;
-    width: 5.488em;
-    height: 5.488em;
-    display: none;
-    grid-template-columns: auto auto auto auto auto auto;
-    grid-template-rows: 1.008em 1.12em 1.12em 1.12em 1.12em;
-    justify-content: space-around;
-    text-align: center;
-    color: black;
-    background-color: #ffffffc0;
-}
-
-#wGrid {
-    top: calc(050svh - 2.8em);
-    left: 0.44em;
-}
-
-#nGrid {
-    top: 1.76em;
-    left: calc(050svw - 2.8em);
-}
-
-#eGrid {
-    top: calc(050svh - 2.8em);
-    left: calc(100svw - 5.92em);
-}
-
-.gIcon {
-    height: 0.8em;
-}
-
-.cIcon {
-    height: 1em;
 }
 
 #infoAreas {
@@ -598,6 +565,7 @@ body {
     color: black;
     background-color: white;
     display: none;
+    z-index: 1000;
 }
 
 .menuIcon {
@@ -613,4 +581,15 @@ body {
     color: black;
     background-color: white;
     display: none;
+    z-index: 1000;
+}
+
+#infoText {
+    position: absolute;
+    padding: 0.4em;
+    width: 100%;
+    color: black;
+    background-color: white;
+    display: none;
+    z-index: 1000;
 }
