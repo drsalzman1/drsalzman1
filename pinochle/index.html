@@ -12,229 +12,18 @@
     </head>
     <body id=body>
         <div id=loadPage>
+            <img id=menuIcon src=icons/menu.svg alt=menu onclick="info('loading')">
+            <img class=whiteClose src=icons/close.svg alt=close onclick=exitClicked()>
             Welcome to Double Deck Pinochle!<br>
             <br>
-            <input type=button value="Tutorial" onclick=tutorClicked()>
+            <input type=button value="Create Game" onclick=createClicked()>
             <br>
-            <input type=button value="Create" onclick=createClicked()>
-            <br>
-            <input id=joinBtn type=button value="Join" onclick=joinClicked() disabled>
-            <br>
-            <input type=button value="Exit" onclick=exitClicked()>
-        </div>
-        <div id=Tutorial>
-            <div class=tutorPage>
-                <img class=blackClose src=icons/close.svg alt=close onclick=tutorCloseClicked()>
-                <b>Double Deck Pinochle - Set Up</b><br>
-                <div style=margin-top:0.5em></div>
-                A player creates a game by naming themself, the player to their left, the player across, and the player to their right.
-                If the creator is online, the creator can choose whether each player is a remote player or a local robot.
-                The creator can also choose the types of assistance provided.<br>
-                <br>
-                Once the creator names the players and makes their choices, they click their Create button and wait for others to join.<br>
-                <br>
-                Remote players join by naming themselves, clicking their Join buttons, and waiting for others to join.<br>
-                <br>
-                After everyone joins, the creator will shuffle and deal the cards, and the game will begin.
-                <br>
-                <img class=nextIcon src=icons/next.svg alt=next onclick=tutorNextClicked()>
-            </div>
-            <div class=tutorPage>
-                <img class=blackClose src=icons/close.svg alt=close onclick=tutorCloseClicked()>
-                <b>Double Deck Pinochle - Rules</b><br>
-                <div style=margin-top:0.5em></div>
-                The dealer deals a deck of 80 cards: 4 cards of each rank (ordered ace, ten, king, queen, jack) in each suit (spades, 
-                hearts, clubs, diamonds).<br>
-                <br>
-                The player to the left of dealer must bid at least 50 or pass.
-                The next player to the left must bid higher (5 higher starting at 60) or pass. 
-                Bidding continues until only one bidder remains.
-                If the first three players pass, the fourth player (dealer) must bid.
-                The final bidder picks a trump suit (which outranks the other suits) and plays first.<br>
-                <br>
-                The first player may lead any card.
-                The next player to the left must follow the lead suit if possible, and if the lead's not been trumped, 
-                must beat the high card in the lead suit if possible.
-                If they can't follow the lead, they must play trump if possible, and beat any high trump if possible.
-                If they can't follow the lead or play trump, they can play any card.
-                Play continues until everyone has played a card.<br>
-                <br>
-                The winner then collects the trick and leads the next trick if possible.
-                When the hand is over, the player to the left of dealer deals the next hand until the game is over.<br>
-                <br>
-                <img class=backIcon src=icons/back.svg alt=back onclick=tutorBackClicked()>
-                <img class=nextIcon src=icons/next.svg alt=next onclick=tutorNextClicked()>
-            </div>
-            <div class=tutorPage>
-                <img class=blackClose src=icons/close.svg alt=close onclick=tutorCloseClicked()>
-                <b>Double Deck Pinochle - Meld</b><br>
-                <div style=margin-top:0.5em></div>
-                Each player's meld comes from their hand:<br>
-                <br>
-                <span id="tutorGrid">
-                    <span><u>Card Set in Hand</u></span><span><u>Single</u></span><span><u>Double</u></span><span><u>Triple</u></span>
-                    <span>
-                        Aces around 
-                        (<img src=suits/spade.svg><img src=suits/heart.svg><img src=suits/club.svg><img src=suits/diamond.svg>)
-                    </span> <span>10</span> <span>100</span> <span>500</span>
-                    <span>Kings around</span> <span>8</span> <span>80</span> <span>500</span>
-                    <span>Queens around</span> <span>6</span> <span>60</span> <span>500</span>
-                    <span>Jacks around</span> <span>4</span> <span>40</span> <span>500</span>
-                    <span>Trump run (A,10,K,Q,J)</span> <span>15</span> <span>150</span> <span>500</span>
-                    <span>Pinochle (Q<img src=suits/spade.svg>,J<img src=suits/diamond.svg>)</span> <span>4</span> <span>30</span> <span>90</span>
-                    <span>Non-trump marriage (K,Q)</span> <span>2</span> <span>4</span> <span>6</span>
-                    <span>Trump marriage (not in run)</span> <span>4</span> <span>8</span> <span>12</span>
-                </span>
-                <br>
-                The bidder's meld for each possible trump suit is displayed while they're bidding.<br>
-                <br>
-                A team's meld is the sum of their meld.
-                If the sum is less than 20, it won't count towards their score.<br>
-                <br>
-                <img class=backIcon src=icons/back.svg alt=back onclick=tutorBackClicked()>
-                <img class=nextIcon src=icons/next.svg alt=next onclick=tutorNextClicked()>
-            </div>
-            <div class=tutorPage>
-                <img class=blackClose src=icons/close.svg alt=close onclick=tutorCloseClicked()>
-                <b>Double Deck Pinochle - Scoring</b><br>
-                <div style=margin-top:0.5em></div>
-                After bidding, each player reveals their meld.
-                Even if a player's team melds less than 20, the player must reveal if they have aces around.
-                If a player wins the bid without a run or marriage in trump, they can't play (must toss) the hand.
-                The bid winner may also choose to toss a hand.<br>
-                <br>
-                After each hand, each team counts their take.
-                Each ace, ten and king is worth 1.
-                Taking the last trick is worth 2.
-                If a team's take is less than 20, their take is 0.<br>                 
-                <br>
-                Normally, each team's score increases by their meld plus take.
-                However, if the bid-winning team's meld plus take is less than their bid, their score decreases by their bid.
-                The first team to reach 500, wins.
-                If both teams reach 500, the bid-winning team wins.<br>
-                <br>
-                <img class=backIcon src=icons/back.svg alt=back onclick=tutorBackClicked()>
-                <img class=nextIcon src=icons/next.svg alt=next onclick=tutorNextClicked()>
-            </div>
-            <div class=tutorPage>
-                <img class=blackClose src=icons/close.svg alt=close onclick=tutorCloseClicked()>
-                <b>Double Deck Pinochle - Communicating</b><br>
-                <div style=margin-top:0.5em></div>
-                Players are not allowed to directly communicate their cards or strategy to their partner.
-                This is called talking across the table.
-                However, they can reveal certain information by the way they bid and play.<br>
-                <br>
-                Robots use jump bids.
-                If a player starts the bid at 52 or increases the bid by 2, the robot assumes they have a marriage and 20 meld.
-                If a player starts the bid at 53 or increases the bid by 3, the robot assumes they have a marriage and 30 meld, etc.
-                Robots assume players have 14 meld unless their partner provides a jump bid.<br>
-                <br>
-                Robots ignore indicators.
-                If a player plays an ace or jack on their partner's ace, robots assume nothing.<br>
-                <br>
-                The game creator can choose an open hands game that reveals everyone's cards.
-                This allows players to <del>cheat</del> learn, but robots don't exploit open hands.<br>
-                <br>
-                <img class=backIcon src=icons/back.svg alt=back onclick=tutorBackClicked()>
-                <img class=nextIcon src=icons/next.svg alt=next onclick=tutorNextClicked()>
-            </div>
-            <div class=tutorPage>
-                <img class=blackClose src=icons/close.svg alt=close onclick=tutorCloseClicked()>
-                <b>Double Deck Pinochle - Counts</b><br>
-                <div style=margin-top:0.5em></div>
-                Players know their own cards and reveal their cards when they lay down their meld, play a card,
-                trump the lead suit, don't beat a high card, or don't follow the lead suit.<br>
-                <br>
-                The game creator can choose to show the card count summary for each player where the color of each suit icon 
-                indicates the player's cards:<br>
-                <ul>
-                    <li>white - definitely has an ace in that suit</li>
-                    <li>gray - may have a card in that suit</li>
-                    <li>black - has no cards in that suit</li>
-                </ul><br>
-                The game creator can also choose to show the card count detail for each player.
-                The table shows the minimum and maximum number of cards each player
-                has revealed for each rank of each suit using rectangles:<br>
-                <ul>
-                    <li>Black quadrants indicate the minimum number of cards in that player/rank/suit</li>
-                    <li>Black/gray quadrants indicate the max number of cards in that player/rank/suit</li>
-                    <li>Four white quadrants indicate there are no cards in that player/suit/rank</li>
-                </ul><br>
-                <br>
-                <img class=backIcon src=icons/back.svg alt=back onclick=tutorBackClicked()>
-                <img class=nextIcon src=icons/next.svg alt=next onclick=tutorNextClicked()>
-            </div>
-            <div class=tutorPage>
-                <img class=blackClose src=icons/close.svg alt=close onclick=tutorCloseClicked()>
-                <b>Double Deck Pinochle - Info</b><br>
-                <div style=margin-top:0.5em></div>
-                The game creator can choose to display the trump suit as an icon in the upper-right corner.
-                The game creator can also choose to display a count of how many trump cards remain in other players' hands. <br>
-                <br>
-                You can tap the trump suit icon to display additional information such as the:<br>
-                <ul>
-                    <li>Trump suit</li>
-                    <li>Total cards per suit in other players' hands</li>
-                    <li>Points you've taken of the points you'll need</li>
-                    <li>Points they've taken of the points they'll need</li>
-                </ul><br>
-                <img class=backIcon src=icons/back.svg alt=back onclick=tutorBackClicked()>
-                <img class=nextIcon src=icons/next.svg alt=next onclick=tutorNextClicked()>
-            </div>
-            <div class=tutorPage>
-                <img class=blackClose src=icons/close.svg alt=close onclick=tutorCloseClicked()>
-                <b>Double Deck Pinochle - Strategy</b><br>
-                <div style=margin-top:0.5em></div>
-                The robots bid up to a limit based on their meld, their estimate of their partner's meld (perhaps based on a jump bid),
-                and their estimate of the strength of their playing hand.<br>
-                <br>
-                The robots count the cards that each player reveals as meld.
-                For example, if you reveal a king of clubs but no queen of clubs, the robot knows you don't have a queen of clubs.
-                The robot also counts the cards that each player reveals during play.
-                For example, if you play a jack of clubs on a king of clubs, it knows you don't have a ten or ace of clubs.
-                This app offers a menu option to display such stats from your perspective without cheating.<br>
-                <br>
-                If a robot estimates that its team can win the trick, it plays the card that it estimates will
-                take the trick, 
-                take the most points, 
-                spend the fewest of its team's high and trump cards, and
-                waste the most of its opponents' high and trump cards.
-                If the robot estimates that its team will lose the trick, it plays the card that it estimates will
-                lose the fewest points, 
-                waste the fewest of its team's high and trump cards, and
-                waste the most of its opponents' high and trump cards.<br>
-                <br>
-                <img class=backIcon src=icons/back.svg alt=back onclick=tutorBackClicked()>
-                <img class=nextIcon src=icons/next.svg alt=next onclick=tutorNextClicked()>
-            </div>
-            <div class=tutorPage>
-                <img class=blackClose src=icons/close.svg alt=close onclick=tutorCloseClicked()>
-                <b>Double Deck Pinochle - Glossary</b><br>
-                <ul>
-                    <li>Players: the four named players</li>
-                    <li>Teams: you and your partner vs. them</li>
-                    <li>Suit: spades, hearts, clubs, diamonds</li>
-                    <li>Rank: ace, ten, king, queen, jack (in that order)</li>
-                    <li>Deck: 80 cards - 4 of each rank in each suit</li>
-                    <li>Bid: compete for right to pick trump and lead</li>
-                    <li>Pass: withdraw from bidding</li>
-                    <li>Trump: the suit that outranks the other suits</li>
-                    <li>Lead: the first card played</li>
-                    <li>Trick: a set of four played cards</li>
-                    <li>Meld: valuable sets of cards in a player's hand</li>
-                    <li>Around: one specific rank in each suit</li>
-                    <li>Marriage: king and queen in a suit</li>
-                    <li>Run: one of each rank in a suit</li>
-                    <li>Pinochle: queen of spades & jack of diamonds</li>
-                    <li>Take: points earned by the trick winner</li>
-                    <li>Toss: decide to not play a hand</li>
-                </ul>
-                <img class=backIcon src=icons/back.svg alt=back onclick=tutorBackClicked()>
-            </div>
+            <input id=joinBtn type=button value="Join Game" onclick=joinClicked() disabled>
         </div>
         <div id=createPg>
+            <img id=menuIcon src=icons/menu.svg alt=menu onclick="info('creating')">
             <img class=whiteClose src=icons/close.svg alt=close onclick=createCloseClicked()>
-            <div id=createHdg class=pageTitle>Double Deck Pinochle - Create Game</div>
+            <div id=createHdg class=pageTitle>Create Game</div>
             <form id=createForm onsubmit=createSubmitted(event)>
                 <div id=pLegend>
                     Players joining: 0
@@ -296,8 +85,8 @@
             </form>
         </div>
         <div id=gamePage>
-            <img id=menuIcon src=icons/menu.svg alt=menu onclick=menuIconClicked()>
-            <img id=infoIcon src=icons/info.svg alt=menu onclick=infoIconClicked()>
+            <img id=menuIcon src=icons/menu.svg alt=menu onclick="info('bidding')">
+            <img class=whiteClose src=icons/close.svg alt=close onclick=exitClicked()>
             <img id=trmpIcon src=suits/club.svg alt=trump onclick=trmpIconClicked()>
             <div id=nTrump></div> 
             <div id=textArea>
@@ -413,7 +202,7 @@
             <b>Double Deck Pinochle</b>
             <img class=blackClose src=icons/close.svg alt=close onclick=menuCloseClicked()><br>
             <br>
-            <div onclick=tutorClicked()>
+            <div onclick="info('tutorial')">
                 <img class=menuIcon src=icons/help.svg alt=tutor> Show tutorial
             </div><br>
             <div onclick=reloadClicked()>
@@ -426,36 +215,379 @@
                 <img class=menuIcon src=icons/exit.svg alt=exit> Exit app
             </div><br>
         </div>
-        <div id=aboutText>
-            <b>Double Deck Pinochle v2.10</b>
-            <br>
-            <img class=blackClose src=icons/close.svg alt=close onclick=aboutCloseClicked()><br>
-            This app was written by David Salzman based on the Salzman house rules.
-            You're welcome to enjoy this game, but not to reproduce it or modify it in any manner.<br>
-            <br>
-            If you have any comments or suggestions, please email me at salzman.apps@gmail.com.<br>
-            <br>
-            &copy; 2025 David Salzman
-        </div>
         <div id=infoText>
-            <img class=blackClose src=icons/close.svg alt=close onclick=infoCloseClicked()>
-            <div id=default>
-                State: TBD
+            <div id=loading>
+                <img class=blackClose src=icons/close.svg alt=close onclick=infoCloseClicked()>
+                <b>Double Deck Pinochle v2.10</b><br>
+                <img src="screens/loading.png" alt="loading" style="max-height:20.8em;float:left;margin:0.8em 0.4em 0 0">
+                <p>Please create or join a game.</p>
+                <p>You must be online for a multiplayer game.</p>
+                <p>Click for more:</p>
+                <div class=links>
+                    <a href="javascript:info('setup')">Set Up</a>
+                    <a href="javascript:info('rules')">Rules</a>
+                    <a href="javascript:info('meld')">Meld</a>
+                    <a href="javascript:info('scoring')">Scoring</a>
+                    <a href="javascript:info('comm')">Comm</a>
+                    <a href="javascript:info('counts')">Counts</a>
+                    <a href="javascript:info('info')">Info</a>
+                    <a href="javascript:info('strategy')">Strategy</a>
+                    <a href="javascript:info('glossary')">Glossary</a>
+                </div>
+                <p style="font-size:75%">&copy; 2025 David Salzman (salzman.apps@gmail.com)</p>
             </div>
-            <div id=awaitBid>
+            <div id=creating>
+                <img class=blackClose src=icons/close.svg alt=close onclick=infoCloseClicked()>
+                <b>Create Game</b><br>
+                <img src="screens/creating.png" alt="creating" style="max-height:20.8em;float:left;margin:0.8em 0.4em 0 0">
+                <p>Please create a game.</p>
+                <p>For a solo game: select robot for left, across and right, enter or pick the robot names, 
+                enable card counts and/or open hands, and then click the start button.</p>
+                <p>For a multiplayer game: announce the game number, select robot or human for left, across and right,
+                enter or pick the robot names, enable card counts and/or open hands.
+                As remote players join, select their names from the pick lists, and then click the start button.</p>
+                <div class=links>
+                    <a href="javascript:info('setup')">Set Up</a>
+                    <a href="javascript:info('rules')">Rules</a>
+                    <a href="javascript:info('meld')">Meld</a>
+                    <a href="javascript:info('scoring')">Scoring</a>
+                    <a href="javascript:info('comm')">Comm</a>
+                    <a href="javascript:info('counts')">Counts</a>
+                    <a href="javascript:info('info')">Info</a>
+                    <a href="javascript:info('strategy')">Strategy</a>
+                    <a href="javascript:info('glossary')">Glossary</a>
+                </div>
+            </div>
+            <div id=bidding>
+                <img class=blackClose src=icons/close.svg alt=close onclick=infoCloseClicked()>
                 <b>Double Deck Pinochle - Bidding</b><br>
                 <br>
                 <img src="screens/bidding.png" alt="bidding" style="max-height:20.5em;float:left;margin-right:0.4em">
-                Please select your next bid.<br>
+                Please <a href="javascript:info('bid')">bid</a> this <a href="javascript:info('hand')">hand</a>.<br>
                 <br>
-                If you bid too low, you can't pick trump or play first and therefore may score less.
-                If you bid more than your team's meld plus your team's playing points, you will go back by your bid.<br>
+                If you win the bid, you'll pick <a href="javascript:info('trump')">trump</a> and 
+                <a href="javascript:info('lead')">lead</a>.
+                However, if your <a href="javascript:info('team')">team</a>'s <a href="javascript:info('meld')">meld</a> and 
+                <a href="javascript:info('take')">take</a> are less than your bid, 
+                your team's <a href="javascript:info('score')">score</a> will be reduced by your bid.<br>
                 <br>
-                It's usually safe to bid your meld plus 10 (your partner's meld?) plus 20 (40% of the playing points).
-                If you have a strong hand or your partner indicates they have lots of meld, you can bid higher.<br>
+                Since normally your <a href="javascript:info('partner')">partner</a> will have at least 10 meld and 
+                your team will take at least 20 of the 50 points, it's usually safe to bid your meld plus 30 points.
+                Of course, if you have a strong hand or your partner has lots of meld, you can bid higher.<br>
                 <br>
-                If you start the bid at 52 (or bid 2 higher than the previous bid), your partner assumes you have 20 meld.
-                If you start the bid at 53, your partner assumes you have 30 meld, etc.
+                Starting the bid at 52 or jumping the bid by 2 tells your partner that you have about 20 meld. 
+                Likewise, starting at 53 or jumping the bid by 3 indicates 30 meld, etc.<br>
+                <div class=links>
+                    <a href="javascript:info('setup')">Set Up</a>
+                    <a href="javascript:info('rules')">Rules</a>
+                    <a href="javascript:info('meld')">Meld</a>
+                    <a href="javascript:info('scoring')">Scoring</a>
+                    <a href="javascript:info('comm')">Comm</a>
+                    <a href="javascript:info('counts')">Counts</a>
+                    <a href="javascript:info('info')">Info</a>
+                    <a href="javascript:info('strategy')">Strategy</a>
+                    <a href="javascript:info('glossary')">Glossary</a>
+                </div>
+            </div>
+            <div id=setup>
+                <img class=blackClose src=icons/close.svg alt=close onclick=infoCloseClicked()>
+                <b>Set Up</b><br>
+                <br>
+                A player creates a game by naming themself, the player to their left, the player across, and the player to their right.
+                If the creator is online, the creator can choose whether each player is a remote player or a local robot.
+                The creator can also choose the types of assistance provided.<br>
+                <br>
+                Once the creator names the players and makes their choices, they click their Create button and wait for others to join.<br>
+                <br>
+                Remote players join by naming themselves, clicking their Join buttons, and waiting for others to join.<br>
+                <br>
+                After everyone joins, the creator will shuffle and deal the cards, and the game will begin.<br>
+            </div>
+            <div id=rules>
+                <img class=blackClose src=icons/close.svg alt=close onclick=infoCloseClicked()>
+                <b>Rules</b><br>
+                <br>
+                The dealer deals a deck of 80 cards: 4 cards of each rank (ordered ace, ten, king, queen, jack) in each suit (spades, 
+                hearts, clubs, diamonds).<br>
+                <br>
+                The player to the left of dealer must bid at least 50 or pass.
+                The next player to the left must bid higher (5 higher starting at 60) or pass. 
+                Bidding continues until only one bidder remains.
+                If the first three players pass, the fourth player (dealer) must bid.
+                The final bidder picks a trump suit (which outranks the other suits) and plays first.<br>
+                <br>
+                The first player may lead any card.
+                The next player to the left must follow the lead suit if possible, and if the lead's not been trumped, 
+                must beat the high card in the lead suit if possible.
+                If they can't follow the lead, they must play trump if possible, and beat any high trump if possible.
+                If they can't follow the lead or play trump, they can play any card.
+                Play continues until everyone has played a card.<br>
+                <br>
+                The winner then collects the trick and leads the next trick if possible.
+                When the hand is over, the player to the left of dealer deals the next hand until the game is over.<br>
+            </div>
+            <div id=meld>
+                <img class=blackClose src=icons/close.svg alt=close onclick=infoCloseClicked()>
+                <b>Meld</b><br>
+                <br>
+                Each player's meld comes from their hand:<br>
+                <br>
+                <div id="meldGrid">
+                    <div><u>Card Set in Hand</u></div><div><u>Single</u></div><div><u>Double</u></div><div><u>Triple</u></div>
+                    <div>
+                        Aces around 
+                        (<img src=suits/spade.svg><img src=suits/heart.svg><img src=suits/club.svg><img src=suits/diamond.svg>)
+                    </div> <div>10</div> <div>100</div> <div>500</div>
+                    <div>Kings around</div> <div>8</div> <div>80</div> <div>500</div>
+                    <div>Queens around</div> <div>6</div> <div>60</div> <div>500</div>
+                    <div>Jacks around</div> <div>4</div> <div>40</div> <div>500</div>
+                    <div>Trump run (A,10,K,Q,J)</div> <div>15</div> <div>150</div> <div>500</div>
+                    <div>Pinochle (Q<img src=suits/spade.svg>,J<img src=suits/diamond.svg>)</div> <div>4</div> <div>30</div> <div>90</div>
+                    <div>Non-trump marriage (K,Q)</div> <div>2</div> <div>4</div> <div>6</div>
+                    <div>Trump marriage (not in run)</div> <div>4</div> <div>8</div> <div>12</div>
+                </div>
+                <br>
+                The bidder's meld for each possible trump suit is displayed while they're bidding.<br>
+                <br>
+                A team's meld is the sum of their meld.
+                If the sum is less than 20, it won't count towards their score.<br>
+            </div>
+            <div id=scoring>
+                <img class=blackClose src=icons/close.svg alt=close onclick=infoCloseClicked()>
+                <b>Scoring</b><br>
+                <br>
+                After bidding, each player reveals their meld.
+                Even if a player's team melds less than 20, the player must reveal if they have aces around.
+                If a player wins the bid without a run or marriage in trump, they can't play (must toss) the hand.
+                The bid winner may also choose to toss a hand.<br>
+                <br>
+                After each hand, each team counts their take.
+                Each ace, ten and king is worth 1.
+                Taking the last trick is worth 2.
+                If a team's take is less than 20, their take is 0.<br>                 
+                <br>
+                Normally, each team's score increases by their meld plus take.
+                However, if the bid-winning team's meld plus take is less than their bid, their score decreases by their bid.
+                The first team to reach 500, wins.
+                If both teams reach 500, the bid-winning team wins.<br>
+            </div>
+            <div id=comm>
+                <img class=blackClose src=icons/close.svg alt=close onclick=infoCloseClicked()>
+                <b>Communicating</b><br>
+                <br>
+                Players are not allowed to directly communicate their cards or strategy to their partner.
+                This is called talking across the table.
+                However, they can reveal certain information by the way they bid and play.<br>
+                <br>
+                Robots use jump bids.
+                If a player starts the bid at 52 or increases the bid by 2, the robot assumes they have a marriage and 20 meld.
+                If a player starts the bid at 53 or increases the bid by 3, the robot assumes they have a marriage and 30 meld, etc.
+                Robots assume players have 14 meld unless their partner provides a jump bid.<br>
+                <br>
+                Robots ignore indicators.
+                If a player plays an ace or jack on their partner's ace, robots assume nothing.<br>
+                <br>
+                The game creator can choose an open hands game that reveals everyone's cards.
+                This allows players to <del>cheat</del> learn, but robots don't exploit open hands.<br>
+            </div>
+            <div id=counts>
+                <img class=blackClose src=icons/close.svg alt=close onclick=infoCloseClicked()>
+                <b>Card Counts</b><br>
+                <br>
+                Players know their own cards and reveal their cards when they lay down their meld, play a card,
+                trump the lead suit, don't beat a high card, or don't follow the lead suit.<br>
+                <br>
+                The game creator can choose to show the card count summary for each player where the color of each suit icon 
+                indicates the player's cards:<br>
+                <ul>
+                    <li>white - definitely has an ace in that suit</li>
+                    <li>gray - may have a card in that suit</li>
+                    <li>black - has no cards in that suit</li>
+                </ul><br>
+                The game creator can also choose to show the card count detail for each player.
+                The table shows the minimum and maximum number of cards each player
+                has revealed for each rank of each suit using rectangles:<br>
+                <ul>
+                    <li>Black quadrants indicate the minimum number of cards in that player/rank/suit</li>
+                    <li>Black/gray quadrants indicate the max number of cards in that player/rank/suit</li>
+                    <li>Four white quadrants indicate there are no cards in that player/suit/rank</li>
+                </ul><br>
+            </div>
+            <div id=info>
+                <img class=blackClose src=icons/close.svg alt=close onclick=infoCloseClicked()>
+                <b>Information</b><br>
+                <br>
+                The game creator can choose to display the trump suit as an icon in the upper-right corner.
+                The game creator can also choose to display a count of how many trump cards remain in other players' hands. <br>
+                <br>
+                You can tap the trump suit icon to display additional information such as the:<br>
+                <ul>
+                    <li>Trump suit</li>
+                    <li>Total cards per suit in other players' hands</li>
+                    <li>Points you've taken of the points you'll need</li>
+                    <li>Points they've taken of the points they'll need</li>
+                </ul><br>
+            </div>
+            <div id=strategy>
+                <img class=blackClose src=icons/close.svg alt=close onclick=infoCloseClicked()>
+                <b>Strategy</b><br>
+                <br>
+                The robots bid up to a limit based on their meld, their estimate of their partner's meld (perhaps based on a jump bid),
+                and their estimate of the strength of their playing hand.<br>
+                <br>
+                The robots count the cards that each player reveals as meld.
+                For example, if you reveal a king of clubs but no queen of clubs, the robot knows you don't have a queen of clubs.
+                The robot also counts the cards that each player reveals during play.
+                For example, if you play a jack of clubs on a king of clubs, it knows you don't have a ten or ace of clubs.
+                This app offers a menu option to display such stats from your perspective without cheating.<br>
+                <br>
+                If a robot estimates that its team can win the trick, it plays the card that it estimates will
+                take the trick, 
+                take the most points, 
+                spend the fewest of its team's high and trump cards, and
+                waste the most of its opponents' high and trump cards.
+                If the robot estimates that its team will lose the trick, it plays the card that it estimates will
+                lose the fewest points, 
+                waste the fewest of its team's high and trump cards, and
+                waste the most of its opponents' high and trump cards.<br>
+            </div>
+            <div id=glossary>
+                <img class=blackClose src=icons/close.svg alt=close onclick=infoCloseClicked()>
+                <b>Glossary</b><br>
+                <ul>
+                    <li>Players: the four named players</li>
+                    <li>Teams: you and your partner vs. them</li>
+                    <li>Suit: spades, hearts, clubs, diamonds</li>
+                    <li>Rank: ace, ten, king, queen, jack (in that order)</li>
+                    <li>Deck: 80 cards - 4 of each rank in each suit</li>
+                    <li>Bid: compete for right to pick trump and lead</li>
+                    <li>Pass: withdraw from bidding</li>
+                    <li>Trump: the suit that outranks the other suits</li>
+                    <li>Lead: the first card played</li>
+                    <li>Trick: a set of four played cards</li>
+                    <li>Meld: valuable sets of cards in a player's hand</li>
+                    <li>Around: one specific rank in each suit</li>
+                    <li>Marriage: king and queen in a suit</li>
+                    <li>Run: one of each rank in a suit</li>
+                    <li>Pinochle: queen of spades & jack of diamonds</li>
+                    <li>Take: points earned by the trick winner</li>
+                    <li>Toss: decide to not play a hand</li>
+                </ul>
+            </div>
+            <div id=bid>
+                <img class=blackClose src=icons/close.svg alt=close onclick=infoCloseClicked()>
+                <b>Double Deck Pinochle - Bid</b><br>
+                <br>
+                Compete for the right to pick <a href="javascript:info('trump')">trump</a> and 
+                <a href="javascript:info('lead')">lead</a>.<br>
+            </div>
+            <div id=hand>
+                <img class=blackClose src=icons/close.svg alt=close onclick=infoCloseClicked()>
+                <b>Double Deck Pinochle - Hand</b><br>
+                <br>
+                A set of playing cards held by a player.<br>
+                <br>
+                Each player is initially dealt 20 cards.
+                Each <a href="javascript:info('trick')">trick</a> reduces each player's hand by one card.
+                The hand is over when all hands are empty.<br>
+            </div>
+            <div id=trump>
+                <img class=blackClose src=icons/close.svg alt=close onclick=infoCloseClicked()>
+                <b>Double Deck Pinochle - Trump</b><br>
+                <br>
+                Trump is the <a href="javascript:info('suit')">suit</a> that beats the other suits.<br>
+                <br>
+                For example, if the bid winner declares hearts trump, a jack of hearts will beat an ace of spades.<br>
+            </div>
+            <div id=lead>
+                <img class=blackClose src=icons/close.svg alt=close onclick=infoCloseClicked()>
+                <b>Double Deck Pinochle - Lead</b><br>
+                <br>
+                Play the first card in a <a href="javascript:info('trick')">trick</a>.<br>
+            </div>
+            <div id=team>
+                <img class=blackClose src=icons/close.svg alt=close onclick=infoCloseClicked()>
+                <b>Double Deck Pinochle - Team</b><br>
+                <br>
+                You and your partner play on "your" team.
+                The player to your left and the player to your right play on "their" team.<br>
+            </div>
+            <div id=meld>
+                <img class=blackClose src=icons/close.svg alt=close onclick=infoCloseClicked()>
+                <b>Double Deck Pinochle - Meld</b><br>
+                <br>
+                Valuable sets of cards in a player's hand.<br>
+                <br>
+                <div id="tutorGrid">
+                    <div><u>Card Set in Hand</u></div><div><u>Single</u></div><div><u>Double</u></div><div><u>Triple</u></div>
+                    <div>
+                        Aces around 
+                        (<img src=suits/spade.svg><img src=suits/heart.svg><img src=suits/club.svg><img src=suits/diamond.svg>)
+                    </div> <div>10</div> <div>100</div> <div>500</div>
+                    <div>Kings around</div> <div>8</div> <div>80</div> <div>500</div>
+                    <div>Queens around</div> <div>6</div> <div>60</div> <div>500</div>
+                    <div>Jacks around</div> <div>4</div> <div>40</div> <div>500</div>
+                    <div>Trump run (A,10,K,Q,J)</div> <div>15</div> <div>150</div> <div>500</div>
+                    <div>Pinochle (Q<img src=suits/spade.svg>,J<img src=suits/diamond.svg>)</div> <div>4</div> <div>30</div> <div>90</div>
+                    <div>Non-trump marriage (K,Q)</div> <div>2</div> <div>4</div> <div>6</div>
+                    <div>Trump marriage (not in run)</div> <div>4</div> <div>8</div> <div>12</div>
+                </div>
+            </div>
+            <div id=take>
+                <img class=blackClose src=icons/close.svg alt=close onclick=infoCloseClicked()>
+                <b>Double Deck Pinochle - Take</b><br>
+                <br>
+                Points earned by winning a <a href="javascript:info('trick')">trick</a>.<br>
+                <br>
+                Aces, tens and kings are each worth one point.
+                Queens and jacks are worth zero points.<br>
+                <br>
+                The player with the highest card wins the trick.
+                An ace beats a ten.
+                A ten beats a king. (weird, huh?)
+                A king beats a queen.
+                A queen beats a jack.
+                Any trump beats a non-trump.
+            </div>
+            <div id=score>
+                <img class=blackClose src=icons/close.svg alt=close onclick=infoCloseClicked()>
+                <b>Double Deck Pinochle - Score</b><br>
+                <br>
+                Points accumulated during a <a href="javascript:info('game')">game</a>.<br>
+                <br>
+                Points are earned by a team's <a href="javascript:info('meld')">meld</a> and 
+                <a href="javascript:info('take')">take</a>.
+                Any meld less than 20 is worthless.
+                Likewise, any take less than 20 isn't saved.
+                If your meld plus take are less than your winning <a href="javascript:info('bid')">bid</a>,
+                you don't save your meld or take and your team's score is reduced by your bid.<br>
+            </div>
+            <div id=partner>
+                <img class=blackClose src=icons/close.svg alt=close onclick=infoCloseClicked()>
+                <b>Double Deck Pinochle - Partner</b><br>
+                <br>
+                The player across the table from you.<br>
+            </div>
+            <div id=suit>
+                <img class=blackClose src=icons/close.svg alt=close onclick=infoCloseClicked()>
+                <b>Double Deck Pinochle - Suit</b><br>
+                <br>
+                Spades, hearts, clubs, or diamonds.<br>
+            </div>
+            <div id=trick>
+                <img class=blackClose src=icons/close.svg alt=close onclick=infoCloseClicked()>
+                <b>Double Deck Pinochle - Trick</b><br>
+                <br>
+                A set of four played cards.<br>
+            </div>
+            <div id=game>
+                <img class=blackClose src=icons/close.svg alt=close onclick=infoCloseClicked()>
+                <b>Double Deck Pinochle - Game</b><br>
+                <br>
+                A progression of <a href="javascript:info('hand')">hand</a>s until a team reaches a 
+                <a href="javascript:info('score')">score</a> of 500.<br>
+                <br>
+                If both teams reach 500, the team that won the bid on the last hand wins the game.<br>
             </div>
         </div>
     </body>

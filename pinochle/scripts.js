@@ -213,8 +213,7 @@ const iTrump    = document.getElementById("iTrump");
 const iOutGrid  = document.getElementById("iOut");
 const iOutCell  = document.querySelectorAll("#iOut div");
 const iTake     = document.getElementById("iTake");
-const infoText  = document.getElementById("infoText");
-const infoDiv   = document.querySelectorAll("#infoText div");
+const infoText  = document.querySelectorAll("#infoText div");
 
 // Animation constants
 const dealTime  = 2000;                                 // milliseconds to deal all cards
@@ -256,7 +255,7 @@ let wsIntervlID = null;                                 // websocket interval ti
 let id          = none;                                 // id = websocket identifier
 
 // Game variables from this player's perspective
-let state       = "";                                   // game state (for info icon)
+let idStack     = [];                                   // stack of infoText divs
 let game        = none;                                 // game number (aka id of creator)
 let solo        = true;                                 // creator is only human player
 let shift       = 0;                                    // this player is shift players left of creator
@@ -332,7 +331,6 @@ function log(debugText = "") {
 // Log state s on console and update state variable
 function logState(s) {
     log(`--> ${s}`);
-    state = s;
 }
 
 // Return p rotated clockwise by "shift" players; if shift is 1, p0 returns p1 and [p0,p1,p2,p3] returns [p1,p2,p3,p0]
@@ -1053,24 +1051,24 @@ function xy2c(x, y) {
 //                     EVENT HANDLERS                      //
 /////////////////////////////////////////////////////////////
 
-// Info icon clicked
-function infoIconClicked() {
-    for (const i of infoDiv)
-        i.style.display = "none";
-    switch (state) {
-    case "awaitBid":
-        infoDiv[1].style.display = "block";
-        break;
-    default:
-        infoDiv[0].innerHTML = `state: ${state}`;
-        infoDiv[0].style.display = "block";
-    }
-    infoText.style.display = "block";
+// Info close icon clicked: pop and hide and discard current infoText div, then display previous infoText div
+function infoCloseClicked() {
+    if (idStack.length > 0)
+        idStack.pop().style.display = "none";
+    if (idStack.length > 0)
+        idStack.at(-1).style.display = "block";
 }
 
-// Info close icon clicked
-function infoCloseClicked() {
-    infoText.style.display = "none";
+// Info icon or link clicked: hide previous infoText div and display new infoText div id
+function info(id) {
+    for (const div of infoText)
+        if (div.id == id) {
+            if (idStack.length > 0)
+                idStack.at(-1).style.display = "none";
+            div.style.display = "block";
+            idStack.push(div);
+            break;
+        }
 }
 
 // Info icon clicked: reveal/hide handEnded paragraphs
@@ -1622,6 +1620,7 @@ function bidClicked(n) {
 // Hands fanned: await bidClicked, autoBid or data message then retrigger awaitBid or trigger bidDone
 function awaitBid() {
     logState("awaitBid");
+    infoIcon.onclick = "info('bidding')";
     while (bid[bidder] == pass) {                               // if bidder passed,
         infoName[bidder].style.animation = "none";                  // stop waitin for this bidder
         bidder = next[bidder];                                      // advance to next bidder
@@ -1841,7 +1840,7 @@ function trmpIconClicked() {
             q += remaining[r+s] - nValue(p3,r+s);
         iOutCell[i++].textContent = q;
     }
-    iOutGrid.style.display = show[counts]? "block" : "none";
+    iOutGrid.style.display = show[counts]? "grid" : "none";
     iTake.textContent = `Your take: ${takeO} of ${needO}. Their take: ${takeE} of ${needE}.`;
     iText.style.display = "flex";
 }
@@ -1854,14 +1853,16 @@ function iCloseClicked() {
 // Create button clicked: close load page, apply game settings and open create page
 function createClicked() {
     logState("createPage");
+    infoIcon.onclick = "info('creating')";
     name = localStorage.name? JSON.parse(localStorage.name) : name;
     bot  = localStorage.bot?  JSON.parse(localStorage.bot)  : bot;
     show = localStorage.show? JSON.parse(localStorage.show) : show;
     game = id;
     shift = 0;
     waiter.length = 0;
-    createHdg.innerText = `Double Deck Pinochle - Create Game ${websocket?id:""}`;
-    //pLegend.innerText = websocket? `Players Waiting: ${waiter.length}` : `Players`;
+    createHdg.innerText = `Create Game ${websocket?id:""}`;
+    pLegend.style.visibility = bot[p0]&&bot[p1]&&bot[p2]? "hidden" : "visible";
+    pLegend.style.visibility = "hidden";
     for (const p of pArray) {                                   // for every player,
         pName[p].placeholder = "";                                  // no placeholder
         if (p==3) {                                                 // if I'm the player,
@@ -1879,6 +1880,7 @@ function createClicked() {
             pIcon[p].disabled = !websocket;                             // if offline, disallow player type change
         }
     }
+    pLegend.style.visibility = bot[p0]&&bot[p1]&&bot[p2]? "hidden" : "visible";
     aBox[counts].src = show[counts]? checked : unchecked;
     aBox[hands].src = show[hands]? checked : unchecked;
     aBox[counts].disabled = aBox[hands].disabled = false;
@@ -2037,6 +2039,7 @@ function iClicked(event,p) {
         pList[p].style.display = "none";
     bot[p] = !bot[p];
     pIcon[p].src = bot[p]? robotSrc : humanSrc;
+    pLegend.style.visibility = bot[p0]&&bot[p1]&&bot[p2]? "hidden" : "visible";
     pName[p].value = "";
 }
 
@@ -2160,7 +2163,7 @@ function wsMessage(messageEvent) {
     case "join":                                                // if {op:"join", name:n$}, (only received by creator)
         log(`wsMessage: op:join, name:${msg.name}`);
         waiter.push(msg.name);                                      // add name to waiter list
-        //pLegend.innerText = `Players Waiting: ${waiter.length}`;    // update count on create page
+        pLegend.textContent = `Players joining: ${waiter.length}`;  // update count on create page
         break;
     case "deal":                                                // if {op:"deal", player:p, value:[v], name:[n$], bot:[f], show:[f]}
         log(`wsMessage: op:deal, player:${msg.player}, value:${msg.value}, name:${msg.name}, bot:${msg.bot}, show:${msg.show}`);

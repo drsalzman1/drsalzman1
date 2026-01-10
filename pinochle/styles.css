@@ -48,54 +48,10 @@ body {
 }
 
 #loadPage input {
-    width: 6em;
+    width: 7em;
     height: 1.3em;
     border: none;
     background-color: white;
-}
-
-.tutorPage {
-    position: absolute;
-    width: 100svw;
-    height: 100svh;
-    padding: 0.4em;
-    display: none;
-    overflow: hidden;
-    color: black;
-    background-color: white;
-    z-index: 1000;
-}
-
-.tutorPage .backIcon {
-    position: absolute;
-    bottom: 0.4em;
-    left: 0.4em;
-    height: 1.32em;
-}
-
-.tutorPage .nextIcon {
-    position: absolute;
-    bottom: 0.4em;
-    right: 0.4em;
-    height: 1.32em;
-}
-
-#tutorGrid {
-    display: grid;
-    grid-template-columns: repeat(4, auto);
-    grid-template-rows: 1.3em repeat(8, auto);
-    column-gap: 0.5em;
-    justify-content: center;
-    text-align: center;
-}
-
-.tutorPage img {
-    height: 0.8em;
-}
-
-.tutorPage ul {
-    margin-top: 0.5em;
-    margin-left: 1.6em;
 }
 
 #createPg {
@@ -111,19 +67,28 @@ body {
 
 .pageTitle {
     position: absolute;
+    width: 100%;
     top: 0px;
     left: 0px;
     padding: 0.4em;
-    text-align: left;
+    text-align: center;
     font-weight: bold;
+    z-index: -100;
 }
 
-.tutorPage .whiteClose, .whiteClose {
+.whiteClose {
     position: absolute;
     top: 0.26em;
     right: 0.26em;
     height: 1.32em;
     filter: invert(100%);
+}
+
+.blackClose {
+    position: absolute;
+    top: 0.26em;
+    right: 0.26em;
+    height: 1.32em;
 }
 
 #createForm {
@@ -179,7 +144,7 @@ body {
 
 .pList {
     position: absolute;
-    width: 7.6em;
+    /*width: 7.6em;*/
     max-height: var(--list-height);
     overflow-y: auto;
     overflow-x: hidden;
@@ -280,7 +245,7 @@ body {
 
 #menuIcon {
     position: absolute;
-    top: -0.2em;
+    top: -0.1em;
     left: 0em;
     height: 1.32em;
     filter: invert(100%);
@@ -297,9 +262,9 @@ body {
 }
 
 #trmpIcon {
-    position: relative;
-    float: right;
-    margin: 0.4em;
+    position: absolute;
+    left: 2em;
+    top: 0.4em;
     height: 1em;
     filter: invert(100%);
     display: none;
@@ -307,8 +272,8 @@ body {
 
 #nTrump {
     position: absolute;
-    top: 0.44em;
-    left: calc(100svw - 2.96em);
+    left: 2.8em;
+    top: 0.4em;
     width: 1.4em;
     text-align: right;
 }
@@ -476,18 +441,17 @@ body {
     height: 0.9em;
 }
 
-.tutorPage .blackClose, .blackClose {
-    position: absolute;
-    top: 0.26em;
-    right: 0.26em;
-    height: 1.32em;
-}
-
 #infoAreas {
     position: absolute;
     text-align: center;
     display: none;
     z-index: -1000;
+}
+
+.infoHint img {
+    height: 0.75em;
+    filter: invert(100%);
+    opacity: 100%;
 }
 
 #wInfo .infoName {
@@ -552,12 +516,6 @@ body {
     100% {opacity:1}
 }
 
-.infoHint img {
-    height: 0.75em;
-    filter: invert(100%);
-    opacity: 100%;
-}
-
 #menuText {
     position: absolute;
     width: 16em;
@@ -584,12 +542,41 @@ body {
     z-index: 1000;
 }
 
-#infoText {
+#infoText>div {
     position: absolute;
     padding: 0.4em;
     width: 100%;
     color: black;
     background-color: white;
-    display: none;
     z-index: 1000;
+    display: none;
+}
+
+#infoText>div>p {
+    margin-top: 0.8em;
+}
+
+.links {
+    margin-top: 0.8em;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 4.2em);
+    column-gap: 0.4em;
+}
+
+#meldGrid {
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    grid-template-rows: 1.3em repeat(8, auto);
+    column-gap: 0.5em;
+    justify-content: center;
+    text-align: center;
+}
+
+#meldGrid img {
+    height: 0.8em;
+}
+
+#infoText ul {
+    margin-top: 0.5em;
+    margin-left: 1.6em;
 }
