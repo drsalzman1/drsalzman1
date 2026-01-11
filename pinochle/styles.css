@@ -112,22 +112,22 @@ body {
     width: 100%;
     display: grid;
     grid-template-columns: repeat(11, 1fr);
-    grid-template-rows: 1.3em 2.0em 1.3em 2.0em 1.3em 2.0em;
+    grid-template-rows: 1.3em 1.3em 0.8em 1.3em 1.3em 0.8em 1.3em 1.3em;
     text-align: left;
 }
 
-:nth-child(1 of .pLabl) {grid-area: 03/01/03/05}
-:nth-child(1 of .pBlck) {grid-area: 04/01/04/05}
-:nth-child(1 of .pIcon) {grid-area: 04/05/04/05}
+:nth-child(1 of .pLabl) {grid-area: 04/01/04/05}
+:nth-child(1 of .pBlck) {grid-area: 05/01/05/05}
+:nth-child(1 of .pIcon) {grid-area: 05/05/05/05}
 :nth-child(2 of .pLabl) {grid-area: 01/04/01/08}
 :nth-child(2 of .pBlck) {grid-area: 02/04/02/08}
 :nth-child(2 of .pIcon) {grid-area: 02/08/02/08}
-:nth-child(3 of .pLabl) {grid-area: 03/07/03/11}
-:nth-child(3 of .pBlck) {grid-area: 04/07/04/11}
-:nth-child(3 of .pIcon) {grid-area: 04/11/04/11}
-:nth-child(4 of .pLabl) {grid-area: 05/04/05/08}
-:nth-child(4 of .pBlck) {grid-area: 06/04/06/08}
-:nth-child(4 of .pIcon) {grid-area: 06/08/06/08}
+:nth-child(3 of .pLabl) {grid-area: 04/07/04/11}
+:nth-child(3 of .pBlck) {grid-area: 05/07/05/11}
+:nth-child(3 of .pIcon) {grid-area: 05/11/05/11}
+:nth-child(4 of .pLabl) {grid-area: 07/04/07/08}
+:nth-child(4 of .pBlck) {grid-area: 08/04/08/08}
+:nth-child(4 of .pIcon) {grid-area: 08/08/08/08}
 
 .pName {
     width: 100%;

@@ -1919,6 +1919,11 @@ function joinCloseClicked() {
     loadPage.style.display = "flex";
 }
 
+// Name for player p clicked
+function nClicked(event, p) {
+    log(`nClicked p:${p}, event.target.value:${event.target.value}`);
+}
+
 // Name for player p keyed
 function nKeyed(event, p) {
     const item = pList[p].querySelectorAll("li");               // item[i] = DOM element for list item i
