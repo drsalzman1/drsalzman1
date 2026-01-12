@@ -1915,8 +1915,9 @@ function createClicked() {
     aBox[counts].src = show[counts]? checked : unchecked;
     aBox[hands].src = show[hands]? checked : unchecked;
     aBox[counts].disabled = aBox[hands].disabled = false;
-    pAdd.style.visibility = pDel.style.visibility = "hidden";
+    pAdd.style.display = "block";
     pDel.style.display = "none";
+    pAdd.style.visibility = pDel.style.visibility = "hidden";
     loadPage.style.display = "none";
     createPg.style.display = "flex";
 }
@@ -1957,29 +1958,32 @@ function nChanged(event, p) {
 
     // pAdd input keyed: if entered name, add name to list
     function pAddKeyed(event) {
-        if (event.key != "Enter")
-            return;
-        event.preventDefault();
-        pAddInp.removeEventListener("keydown", pAddKeyed);
-        pAdd.style.visibility = "hidden";
-        const name = pAddInp.value.trim().substring(0,10);
-        if (name != "")
-            if (p==p3 || p==pj) {
-                const alias = localStorage.alias? JSON.parse(localStorage.alias) : [];
-                if (alias.indexOf(name) == none)
-                    alias.push(name);
-                alias.sort();
-                localStorage.alias = JSON.stringify(alias);
-            } else {
-                const robot = localStorage.robot? JSON.parse(localStorage.robot) : ["Bender", "Data", "Jarvis"];
-                if (robot.indexOf(name) == none)
-                    robot.push(name);
-                robot.sort();
-                localStorage.robot = JSON.stringify(robot);
-            }
-        setOptions();
-        pName[p].value = name;
-        pName[p].focus();
+        switch (event.key) {
+        case "Escape":
+            event.preventDefault();
+            pAdd.style.visibility = "hidden";
+            pName[p].value = "";
+            pName[p].focus();
+            break;
+        case "Enter":
+            event.preventDefault();
+            pAddInp.removeEventListener("keydown", pAddKeyed);
+            pAdd.style.visibility = "hidden";
+            const alias = localStorage.alias? JSON.parse(localStorage.alias) : [];
+            const robot = localStorage.robot? JSON.parse(localStorage.robot) : ["Bender", "Data", "Jarvis"];
+            const name = pAddInp.value.trim().substring(0,10);
+            if ((p==p3||p==pj) && name!="" && alias.indexOf(name)==none)
+                alias.push(name);
+            else if ((p==p0||p==p1||p==p2) && name!="" && robot.indexOf(name)==none)
+                robot.push(name);
+            alias.sort();
+            robot.sort();
+            localStorage.alias = JSON.stringify(alias);
+            localStorage.robot = JSON.stringify(robot);
+            setOptions();
+            pName[p].value = name;
+            pName[p].focus();
+        }
     }
 
     // pDel select changed: delete selected name from list
@@ -1987,20 +1991,18 @@ function nChanged(event, p) {
         event.preventDefault();
         pDelSel.removeEventListener("changed", pDelChanged);
         pDel.style.visibility = "hidden";
-        if (pDelSel.value != "") {
-            if (p==p3 || p==pj) {
-                const alias = localStorage.alias? JSON.parse(localStorage.alias) : [];
-                alias.splice(alias.indexOf(pDelSel.value), 1);
-                localStorage.alias = JSON.stringify(alias);
-            } else {
-                const robot = localStorage.robot? JSON.parse(localStorage.robot) : ["Bender", "Data", "Jarvis"];
-                robot.splice(robot.indexOf(pDelSel.value), 1);
-                localStorage.robot = JSON.stringify(robot);
-            }
-            setOptions();
-            pName[p].value = "";
-            pName[p].focus();
-        }
+        const alias = localStorage.alias? JSON.parse(localStorage.alias) : [];
+        const robot = localStorage.robot? JSON.parse(localStorage.robot) : ["Bender", "Data", "Jarvis"];
+        const name = pDelSel.value;
+        if ((p==p3||p==pj) && alias.indexOf(name)!=none)
+            alias.splice(alias.indexOf(name), 1);
+        else if ((p==p0||p==p1||p==p2) && robot.indexOf(name)!=none)
+            robot.splice(robot.indexOf(name), 1);
+        localStorage.alias = JSON.stringify(alias);
+        localStorage.robot = JSON.stringify(robot);
+        setOptions();
+        pName[p].value = "";
+        pName[p].focus();
     }
 
     if (event.target.value == "Add...") {
