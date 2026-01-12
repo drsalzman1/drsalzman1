@@ -1960,6 +1960,8 @@ function nChanged(event, p) {
         if (event.key != "Enter")
             return;
         event.preventDefault();
+        pAddInp.removeEventListener("keydown", pAddKeyed);
+        pAdd.style.visibility = "hidden";
         const name = pAddInp.value.trim().substring(0,10);
         if (name != "")
             if (p==p3 || p==pj) {
@@ -1976,14 +1978,15 @@ function nChanged(event, p) {
                 localStorage.robot = JSON.stringify(robot);
             }
         setOptions();
-        pAddInp.removeEventListener("keydown", pAddKeyed);
-        pAdd.style.visibility = "hidden";
         pName[p].value = name;
         pName[p].focus();
     }
 
     // pDel select changed: delete selected name from list
-    function pDelChanged() {
+    function pDelChanged(event) {
+        event.preventDefault();
+        pDelSel.removeEventListener("changed", pDelChanged);
+        pDel.style.visibility = "hidden";
         if (pDelSel.value != "") {
             if (p==p3 || p==pj) {
                 const alias = localStorage.alias? JSON.parse(localStorage.alias) : [];
@@ -1995,8 +1998,6 @@ function nChanged(event, p) {
                 localStorage.robot = JSON.stringify(robot);
             }
             setOptions();
-            pDelSel.removeEventListener("changed", pDelChanged);
-            pDel.style.visibility = "hidden";
             pName[p].value = "";
             pName[p].focus();
         }
