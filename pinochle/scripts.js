@@ -1960,23 +1960,26 @@ function nChanged(event, p) {
         if (event.key != "Enter")
             return;
         event.preventDefault();
-        if (pAddInp.value.length != "")
+        const name = pAddInp.value.trim().substring(0,10);
+        if (name != "")
             if (p==p3 || p==pj) {
                 const alias = localStorage.alias? JSON.parse(localStorage.alias) : [];
-                alias.push(pAddInp.value);
+                if (alias.indexOf(name) == none)
+                    alias.push(name);
                 alias.sort();
                 localStorage.alias = JSON.stringify(alias);
             } else {
                 const robot = localStorage.robot? JSON.parse(localStorage.robot) : ["Bender", "Data", "Jarvis"];
-                robot.push(pAddInp.value);
+                if (robot.indexOf(name) == none)
+                    robot.push(name);
                 robot.sort();
                 localStorage.robot = JSON.stringify(robot);
             }
         setOptions();
-        pName[p].value = pAddInp.value;
-        pName[p].focus();
         pAddInp.removeEventListener("keydown", pAddKeyed);
         pAdd.style.visibility = "hidden";
+        pName[p].value = name;
+        pName[p].focus();
     }
 
     // pDel select changed: delete selected name from list
@@ -1992,10 +1995,10 @@ function nChanged(event, p) {
                 localStorage.robot = JSON.stringify(robot);
             }
             setOptions();
-            pName[p].value = "";
-            pName[p].focus();
             pDelSel.removeEventListener("changed", pDelChanged);
             pDel.style.visibility = "hidden";
+            pName[p].value = "";
+            pName[p].focus();
         }
     }
 
