@@ -10,7 +10,7 @@ const p0        = 0;                                        // my left opponent 
 const p1        = 1;                                        // my partner        (name from robot or waiter)
 const p2        = 2;                                        // my right opponent (name from robot or waiter)
 const p3        = 3;                                        // me                (name from alias)
-const j         = 4;                                        // j                 (name from alias)
+const pj        = 4;                                        // joiner            (name from alias)
 const players   = 4;
 const pArray    = [p0, p1, p2, p3];
 const next      = [p1, p2, p3, p0];                         // next player to the left
@@ -168,7 +168,6 @@ const createHdg = document.getElementById("createHdg");
 const pLegend   = document.getElementById("pLegend");
 const pName     = document.querySelectorAll(".pName");
 const pIcon     = document.querySelectorAll(".pIcon");
-const pList     = document.querySelectorAll(".pList");
 const aBox      = document.querySelectorAll(".aBox");
 const createSub = document.getElementById("createSub");
 const joinPage  = document.getElementById("joinPage");
@@ -214,6 +213,16 @@ const iOutGrid  = document.getElementById("iOut");
 const iOutCell  = document.querySelectorAll("#iOut div");
 const iTake     = document.getElementById("iTake");
 const infoText  = document.querySelectorAll("#infoText div");
+const pAdd      = document.getElementById("pAdd");
+const pAddLbl   = document.getElementById("pAddLbl");
+const pAddInp   = document.getElementById("pAddInp");
+const pAddAdd   = document.getElementById("pAddAdd");
+const pAddCan   = document.getElementById("pAddCan");
+const pDel      = document.getElementById("pDel");
+const pDelLbl   = document.getElementById("pDelLbl");
+const pDelSel   = document.getElementById("pDelSel");
+const pDelDel   = document.getElementById("pDelDel");
+const pDelCan   = document.getElementById("pDelCan");
 
 // Animation constants
 const dealTime  = 2000;                                 // milliseconds to deal all cards
@@ -261,7 +270,7 @@ let solo        = true;                                 // creator is only human
 let shift       = 0;                                    // this player is shift players left of creator
 let waiter      = [];                                   // waiter[w] = waiter w's name
 let name        = ["Bender", "Data", "Jarvis", ""];     // name[p] = player p's name
-let bot         = [true, true, true, false];            // bot[p] = player p is a bot
+let bot         = [true, true, true, false];            // bot[p] = player p is a bot (include pj)
 let ready       = [true, true, true, true ];            // ready[p] = player p is ready to play (robots are always ready)
 let show        = [true, false];                        // show[counts] and show[hands]
 let dealer      = p3;                                   // the player who is dealing or last dealt
@@ -1855,18 +1864,22 @@ function setOptions() {
     const alias = localStorage.alias? JSON.parse(localStorage.alias) : [];
     const robot = localStorage.robot? JSON.parse(localStorage.robot) : ["Bender", "Data", "Jarvis"];
     for (let p=0; p<pName.length; p++) {
-        const list = p==p3||p==j? alias : (bot[p]? robot : waiter);
+        const list = p==p3||p==pj? alias : (bot[p]? robot : waiter);
+        const name = pName[p].value;
         pName[p].innerHTML = "";
         const opt = document.createElement("option");
         opt.value = "";
         opt.disabled = opt.selected = opt.hidden = true;
         opt.text = "Select...";
         pName[p].appendChild(opt);
-        pName[p].add(new Option("Add..."));
-        pName[p].add(new Option("Delete..."));
-        pName[p].appendChild(document.createElement("hr"));
+        if (p==p3 || p==pj || bot[p]) {
+            pName[p].add(new Option("Add..."));
+            pName[p].add(new Option("Delete..."));
+            pName[p].appendChild(document.createElement("hr"));
+        }
         for (const i of list)
             pName[p].add(new Option(i));
+        pName[p].value = name;
     }
 }
 
@@ -1902,6 +1915,8 @@ function createClicked() {
     aBox[counts].src = show[counts]? checked : unchecked;
     aBox[hands].src = show[hands]? checked : unchecked;
     aBox[counts].disabled = aBox[hands].disabled = false;
+    pAdd.style.visibility = pDel.style.visibility = "hidden";
+    pDel.style.display = "none";
     loadPage.style.display = "none";
     createPg.style.display = "flex";
 }
@@ -1915,18 +1930,18 @@ function createCloseClicked() {
 // Join button clicked: recall defaults, close load page, open join page
 function joinClicked() {
     logState("joinPage");
-    pName[j].value = localStorage.self? localStorage.self : "";
-    pName[j].placeholder = "";
+    pName[pj].value = localStorage.self? localStorage.self : "";
+    pName[pj].placeholder = "";
     jGame.value = "";
     jGame.placeholder = "";
     loadPage.style.display = "none";
     joinSub.style.display = "inline";
     joinWait.style.display = "none";
     joinPage.style.display = "grid";
-    pName[j].disabled = false;
+    pName[pj].disabled = false;
     jGame.disabled = false;
-    if (pName[j].value == "")
-        pName[j].focus();
+    if (pName[pj].value == "")
+        pName[pj].focus();
     else
         jGame.focus();
 }
@@ -1937,140 +1952,96 @@ function joinCloseClicked() {
     loadPage.style.display = "flex";
 }
 
-// Name for player p clicked
-function nClicked(event, p) {
-    log(`nClicked p:${p}, event.target.value:${event.target.value}`);
-}
+// Name for player p changed: show pAdd or pDel dialogs, if necessary
+function nChanged(event, p) {
 
-// Name for player p keyed
-function nKeyed(event, p) {
-    const item = pList[p].querySelectorAll("li");               // item[i] = DOM element for list item i
-    event.preventDefault();
-    switch (event.key) {
-    case "ArrowDown":                                           // if ArrowDown,
-        select = select+1<item.length? select+1 : select;           // select next item if not at bottom of list
-        for (let i=0; i<item.length; i++)                           // for each item,
-            item[i].classList.remove("selected");                       // remove item from select class 
-        item[select].classList.add("selected");                     // add selected item to select class
-        break;
-    case "ArrowUp":                                             // if ArrowUp,
-        select = select>0? select-1 : select;                       // select previous item if not at top
-        for (let i=0; i<item.length; i++)                           // for each item,
-            item[i].classList.remove("selected");                       // remove item from select class 
-        item[select].classList.add("selected");                     // add selected item to select class
-        break;
-    case "Enter":                                               // if Enter,
-        if (select !== none)                                        // if something's been selected,
-            pName[p].value = item[select].textContent;                  // fill in pName value from selected item
-        if (!/^[A-Za-z]{2,10}$/.test(pName[p].value)) {             // if name is ill-formed,
-            pName[p].value = "";                                        // try again with prompt
-            pName[p].placeholder = "2 to 10 letters";
-            break;
-        }
-    case "Tab":                                                 // if Enter or Tab,
-        pList[p].style.display = "none";                            // turn off list
-        if (p == j) {                                               // if name on join page,
-            if (jGame.value == "")                                      // focus on game number or submit
-                jGame.focus();
-            else
-                joinSub.focus();
+    // pAdd input keyed: if entered name, add name to list
+    function pAddKeyed(event) {
+        if (event.key != "Enter")
             return;
-        }
-        for (const p of pArray)                                     // if name on create page,
-            if (pName[p].value == "") {                                 // focus on next empty name or submit
-                pName[p].focus();
-                return;
+        event.preventDefault();
+        if (pAddInp.value.length != "")
+            if (p==p3 || p==pj) {
+                const alias = localStorage.alias? JSON.parse(localStorage.alias) : [];
+                alias.push(pAddInp.value);
+                alias.sort();
+                localStorage.alias = JSON.stringify(alias);
+            } else {
+                const robot = localStorage.robot? JSON.parse(localStorage.robot) : ["Bender", "Data", "Jarvis"];
+                robot.push(pAddInp.value);
+                robot.sort();
+                localStorage.robot = JSON.stringify(robot);
             }
-        createSub.focus();
-        break;
-    case "Backspace":                                           // if Backspace,
-        if (p==p3 || p==j || bot[p])                                // if your name or bot name,
-            pName[p].value = pName[p].value.slice(0, -1);               // delete last letter, if any
-        break;
-    default:                                                    // otherwise,
-        if (p==p3 || p==j || bot[p]) {                              // if your name or bot name,
-            if (event.key.length == 1)                                  // if single character,
-                pName[p].value += event.key;                                // add to end of name
-        } else                                                      // otherwise,
-            pName[p].placeholder = "pick from list";                    // prompt user
+        setOptions();
+        pName[p].value = pAddInp.value;
+        pName[p].focus();
+        pAddInp.removeEventListener("keydown", pAddKeyed);
+        pAdd.style.visibility = "hidden";
     }
-}
 
-// Name for player p focused
-function nFocused(p) {
-    const alias = localStorage.alias? JSON.parse(localStorage.alias) : [];
-    const robot = localStorage.robot? JSON.parse(localStorage.robot) : ["Bender", "Data", "Jarvis"];
-    const list = bot[p]? robot : (p==p3||p==j? alias : waiter); 
-    for (const p of pArray)                                     // turn off all player lists
-        pList[p].style.display = "none";
-    pList[p].innerHTML = "";                                    // clear this player list
-    for (const s of list) {                                     // for each suggestion in list,
-        const li = document.createElement("li");                    // create a list item
-        li.innerText = s;                                           // put suggestion in list item
-        li.setAttribute("onclick", `liClicked(${p}, "${s}")`);      // fire liClicked when this li is clicked
-        li.setAttribute("oncontextmenu", `liContexted(event, ${p}, "${s}")`);
-        pList[p].appendChild(li);                                   // add list item to this player list
-    }
-    localStorage.alias = JSON.stringify(alias);                 // save favorites in case they changed
-    localStorage.robot = JSON.stringify(robot);
-    pName[p].value = "";                                        // clear input field
-    pList[p].style.display = list.length==0? "none" : "block";  // display this player list
-    select = none;                                              // nothing has been selected yet
-}
-
-// Name for player p blurred
-function nBlurred(p) {
-    setTimeout(()=>{pList[p].style.display="none"}, 200);
-}
-
-// List item for player p, suggestion s clicked
-function liClicked(p, s) {
-    pName[p].value = s;
-    pList[p].style.display = "none";
-    if (p == j) {
-        if (jGame.value == "")
-            jGame.focus();
-        else
-            joinSub.focus();
-        return;
-    } for (const p of pArray)
-        if (pName[p].value == "") {
+    // pDel select changed: delete selected name from list
+    function pDelChanged() {
+        if (pDelSel.value != "") {
+            if (p==p3 || p==pj) {
+                const alias = localStorage.alias? JSON.parse(localStorage.alias) : [];
+                alias.splice(alias.indexOf(pDelSel.value), 1);
+                localStorage.alias = JSON.stringify(alias);
+            } else {
+                const robot = localStorage.robot? JSON.parse(localStorage.robot) : ["Bender", "Data", "Jarvis"];
+                robot.splice(robot.indexOf(pDelSel.value), 1);
+                localStorage.robot = JSON.stringify(robot);
+            }
+            setOptions();
+            pName[p].value = "";
             pName[p].focus();
-            return;
+            pDelSel.removeEventListener("changed", pDelChanged);
+            pDel.style.visibility = "hidden";
         }
-    createSub.focus();
-}
+    }
 
-// List item for player p contexted (right click or long press)
-function liContexted(event, p, s) {
-    event.preventDefault();
-    if (confirm(`Delete ${s} from this list?`)) {
+    if (event.target.value == "Add...") {
+        pDel.style.display = "none";
+        pAdd.style.display = "block";
+        pAdd.style.visibility = "visible";
+        pAddLbl.textContent = p==p3||p==pj? "New alias:" : "New bot name:";
+        pAddInp.value = "";
+        pAddInp.focus();
+        pAddInp.addEventListener("keydown", pAddKeyed);
+    } else if (event.target.value == "Delete...") {
         const alias = localStorage.alias? JSON.parse(localStorage.alias) : [];
-        const robot = localStorage.robot? JSON.parse(localStorage.robot) : ["Bender", "Data", "Jarvis"];
-        const list = bot[p]? robot : (p==p3||p==j? alias : waiter); 
-        list.splice(list.indexOf(s), 1);
-        localStorage.alias = JSON.stringify(alias);
-        localStorage.robot = JSON.stringify(robot);
-        pName[p].value = ""; 
+        const robot = localStorage.robot? JSON.parse(localStorage.robot) : [];
+        const list = p==p3||p==pj? alias : robot;
+        pAdd.style.display = "none";
+        pDel.style.display = "block";
+        pDel.style.visibility = "visible";
+        pDelLbl.textContent = p==p3||p==pj? "Old alias:" : "Old bot name:";
+        pDelSel.innerHTML = "";
+        const opt = document.createElement("option");
+        opt.value = "";
+        opt.disabled = opt.selected = opt.hidden = true;
+        opt.text = "Select...";
+        pDelSel.appendChild(opt);
+        pDelSel.add(new Option("(none)"));
+        pDelSel.appendChild(document.createElement("hr"));
+        for (const i of list)
+            pDelSel.add(new Option(i));
+        pDelSel.focus();
+        pDelSel.addEventListener("change", pDelChanged);
     }
 }
 
 // Create icon for player p clicked
 function iClicked(event,p) {
     event.preventDefault();
-    for (const p of pArray)
-        pList[p].style.display = "none";
     bot[p] = !bot[p];
     pIcon[p].src = bot[p]? robotSrc : humanSrc;
     pLegend.style.visibility = bot[p0]&&bot[p1]&&bot[p2]? "hidden" : "visible";
     pName[p].value = "";
 }
 
-// Create box b clicked (b=0,1,2,3,4 for ts,tc,ccs,ccd,ohBox)
-function bClicked(event,b) {
+// Create box b clicked (b=0,1 for counts,hands)
+function bClicked(event, b) {
     event.preventDefault();
-    for (const p of pArray)
-        pList[p].style.display = "none";
     show[b] = !show[b];
     aBox[b].src = show[b]? checked : unchecked;
 }
@@ -2109,9 +2080,9 @@ function createSubmitted(event) {
 // Join form submitted: store form data and join game, then await deal message
 function joinSubmitted(event) {
     event.preventDefault();
-    if (!/^[A-Za-z]{2,10}$/.test(pName[j].value)) {
-        pName[j].value = "";
-        pName[j].placeholder = "2 to 10 letters";
+    if (!/^[A-Za-z]{2,10}$/.test(pName[pj].value)) {
+        pName[pj].value = "";
+        pName[pj].placeholder = "2 to 10 letters";
         return;
     }
     if (jGame.value.length<1 || jGame.value.length>5) {
@@ -2120,7 +2091,7 @@ function joinSubmitted(event) {
         jGame.focus();
         return;
     }
-    name[p3] = pName[j].value;                                  // copy player name from form
+    name[p3] = pName[pj].value;                                  // copy player name from form
     game = Number(jGame.value);                                 // copy game number from form
     const alias = localStorage.alias? JSON.parse(localStorage.alias) : [];
     if (!alias.includes(name[p3]))                              // if new name,
@@ -2133,7 +2104,7 @@ function joinSubmitted(event) {
         name: name[p3],
         creator: game
     }));
-    pName[j].disabled = true;
+    pName[pj].disabled = true;
     jGame.disabled = true;
     joinSub.style.display = "none";
     joinWait.style.display = "inline";

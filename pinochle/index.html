@@ -30,47 +30,16 @@
                 </div>
                 <div id=playersGrid>
                     <label for=wName class=pLabl>Left name:</label>
-                    <select id=wName class=pName onchange=nChanged(event,0)>
-                        <option value="" disabled selected hidden>Select...</option>
-                        <option>Add...</option>
-                        <option>Delete...</option>
-                        <hr>
-                        <option>Bender</option>
-                        <option>Data</option>
-                        <option>Jarvis</option>
-                    </select>
+                    <select id=wName class=pName onchange=nChanged(event,0)></select>
                     <input class=pIcon type=image alt=wIcon onclick=iClicked(event,0)>
                     <label for=nName class=pLabl>Across name:</label>
-                    <select id=nName class=pName onchange=nChanged(event,1)>
-                        <option value="" disabled selected hidden>Select...</option>
-                        <option>Add...</option>
-                        <option>Delete...</option>
-                        <hr>
-                        <option>Bender</option>
-                        <option>Data</option>
-                        <option>Jarvis</option>
-                    </select>
+                    <select id=nName class=pName onchange=nChanged(event,1)></select>
                     <input class=pIcon type=image alt=nIcon onclick=iClicked(event,1)>
                     <label for=eName class=pLabl>Right name:</label>
-                    <select id=eName class=pName onchange=nChanged(event,2)>
-                        <option value="" disabled selected hidden>Select...</option>
-                        <option>Add...</option>
-                        <option>Delete...</option>
-                        <hr>
-                        <option>Bender</option>
-                        <option>Data</option>
-                        <option>Jarvis</option>
-                    </select>
+                    <select id=eName class=pName onchange=nChanged(event,2)></select>
                     <input class=pIcon type=image alt=eIcon onclick=iClicked(event,2)>
                     <label for=sName class=pLabl>Your name:</label>
-                    <select id=sName class=pName onchange=nChanged(event,3)>
-                        <option value="" disabled selected hidden>Select...</option>
-                        <option>Add...</option>
-                        <option>Delete...</option>
-                        <hr>
-                        <option>Grammy</option>
-                        <option>Grampy</option>
-                    </select>
+                    <select id=sName class=pName onchange=nChanged(event,3)></select>
                     <input class=pIcon type=image alt=wIcon onclick=iClicked(event,3)>
                 </div>
                 <div id=assistanceGrid>
@@ -80,29 +49,19 @@
                     <div>Show all hands:&nbsp;</div>
                     <input class=aBox type=image onclick=bClicked(event,1)>
                 </div>
-                <div style=width:100%>
+                <div id=createBtns style=width:100%>
                     <button id=createSub>Start</button>
                 </div>
-                <dialog id=pAdd>
-                    <label id=pAddLbl for=pAddInp>New robot name:</label><br>
-                    <input id=pAddInp type=text><br>
-                    <br>
-                    <input type=button value=Add onclick=pAddOkayed()>
-                    <input type=button value=Cancel onclick=pAddCanceled() style=float:right >
-                </dialog>
-                <dialog id=pDel>
-                    <label id=pDelLbl for=pDelSel>Old robot name:</label><br>
-                    <select id=pDelSel type=text>
-                        <option selected disabled>Select...</option>
-                        <hr>
-                        <option>Bender</option>
-                        <option>Data</option>
-                        <option>Jarvis</option>
-                    </select><br>
-                    <br>
-                    <input type=button value=Delete onclick=pDelOkayed()>
-                    <input type=button value=Cancel onclick=pDelCanceled() style=float:right >
-                </dialog>
+                <div id=pEdit>
+                    <div id=pAdd>
+                        <label id=pAddLbl for=pAddInp>New bot name:</label><br>
+                        <input id=pAddInp type=text><br>
+                    </div>
+                    <div id=pDel>
+                        <label id=pDelLbl for=pDelSel>Old bot name:</label><br>
+                        <select id=pDelSel type=text></select><br>
+                    </div>
+                </div>
             </form>
         </div>
         <div id=joinPage>
