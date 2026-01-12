@@ -1850,6 +1850,26 @@ function iCloseClicked() {
     iText.style.display = "none";
 }
 
+// Set option list for each name selector
+function setOptions() {
+    const alias = localStorage.alias? JSON.parse(localStorage.alias) : [];
+    const robot = localStorage.robot? JSON.parse(localStorage.robot) : ["Bender", "Data", "Jarvis"];
+    for (let p=0; p<pName.length; p++) {
+        const list = p==p3||p==j? alias : (bot[p]? robot : waiter);
+        pName[p].innerHTML = "";
+        const opt = document.createElement("option");
+        opt.value = "";
+        opt.disabled = opt.selected = opt.hidden = true;
+        opt.text = "Select...";
+        pName[p].appendChild(opt);
+        pName[p].add(new Option("Add..."));
+        pName[p].add(new Option("Delete..."));
+        pName[p].appendChild(document.createElement("hr"));
+        for (const i of list)
+            pName[p].add(new Option(i));
+    }
+}
+
 // Create button clicked: close load page, apply game settings and open create page
 function createClicked() {
     logState("createPage");
@@ -1861,25 +1881,23 @@ function createClicked() {
     shift = 0;
     waiter.length = 0;
     createHdg.innerText = `Create Game ${websocket?id:""}`;
-    pLegend.style.visibility = bot[p0]&&bot[p1]&&bot[p2]? "hidden" : "visible";
-    pLegend.style.visibility = "hidden";
-    for (const p of pArray) {                                   // for every player,
-        pName[p].placeholder = "";                                  // no placeholder
-        if (p==3) {                                                 // if I'm the player,
+    for (const p of [p0, p1, p2])                               // for p0..p2,
+        bot[p] = bot[p] || !websocket;                              // bot if was bot last time or is now offline
+    setOptions();                                               // set option list for each name selector
+    for (const p of pArray)                                     // for every player,
+        if (p==p3) {                                                // if I'm the player,
             pName[p].value = name[p];                                   // default to my old name
-            pIcon[p].src = humanSrc;                                    // set player icon based on player type
+            pIcon[p].src = humanSrc;                                    // set player icon to human
             pIcon[p].disabled = true;                                   // disallow player type change
-        } else if (bot[p]) {                                        // if the player was a robot,
+        } else if (bot[p]) {                                        // if the player is a robot,
             pName[p].value = name[p];                                   // default to robot's old name
-            pIcon[p].src = robotSrc;                                    // set player icon based on player type
-            pIcon[p].disabled = !websocket;                             // if offline, disallow player type change
-        } else {                                                    // if the player was a human,
-            bot[p] = !websocket;                                        // player must now be a robot if offline
+            pIcon[p].src = robotSrc;                                    // set player icon to robot
+            pIcon[p].disabled = !websocket;                             // disallow player type change if offline
+        } else {                                                    // if the player is a human who isn't me,
             pName[p].value = "";                                        // default to no name
-            pIcon[p].src = bot[p]? robotSrc : humanSrc;                 // set player icon based on player type
-            pIcon[p].disabled = !websocket;                             // if offline, disallow player type change
+            pIcon[p].src = humanSrc;                                    // set player icon to human
+            pIcon[p].disabled = false;                                  // allow player type change
         }
-    }
     pLegend.style.visibility = bot[p0]&&bot[p1]&&bot[p2]? "hidden" : "visible";
     aBox[counts].src = show[counts]? checked : unchecked;
     aBox[hands].src = show[hands]? checked : unchecked;

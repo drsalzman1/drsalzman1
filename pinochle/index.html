@@ -12,7 +12,7 @@
     </head>
     <body id=body>
         <div id=loadPage>
-            <img id=menuIcon src=icons/menu.svg alt=menu onclick="info('loading')">
+            <img id=menuIcon src=icons/help.svg alt=menu onclick="info('loading')">
             <img class=whiteClose src=icons/close.svg alt=close onclick=exitClicked()>
             Welcome to Double Deck Pinochle!<br>
             <br>
@@ -21,7 +21,7 @@
             <input id=joinBtn type=button value="Join Game" onclick=joinClicked() disabled>
         </div>
         <div id=createPg>
-            <img id=menuIcon src=icons/menu.svg alt=menu onclick="info('creating')">
+            <img id=menuIcon src=icons/help.svg alt=menu onclick="info('creating')">
             <img class=whiteClose src=icons/close.svg alt=close onclick=createCloseClicked()>
             <div id=createHdg class=pageTitle>Create Game</div>
             <form id=createForm onsubmit=createSubmitted(event)>
@@ -30,8 +30,8 @@
                 </div>
                 <div id=playersGrid>
                     <label for=wName class=pLabl>Left name:</label>
-                    <select id=wName class=pBlck class=pName onchange=nClicked(event,0)>
-                        <option selected disabled>Select...</option>
+                    <select id=wName class=pName onchange=nChanged(event,0)>
+                        <option value="" disabled selected hidden>Select...</option>
                         <option>Add...</option>
                         <option>Delete...</option>
                         <hr>
@@ -40,24 +40,38 @@
                         <option>Jarvis</option>
                     </select>
                     <input class=pIcon type=image alt=wIcon onclick=iClicked(event,0)>
-                    <div class=pLabl>Across name:</div>
-                    <div class=pBlck>
-                        <input id=nName class=pName type=text onkeydown=nKeyed(event,1) onfocus=nFocused(1) onblur=nBlurred(1)>
-                        <ul class=pList></ul>
-                    </div>
+                    <label for=nName class=pLabl>Across name:</label>
+                    <select id=nName class=pName onchange=nChanged(event,1)>
+                        <option value="" disabled selected hidden>Select...</option>
+                        <option>Add...</option>
+                        <option>Delete...</option>
+                        <hr>
+                        <option>Bender</option>
+                        <option>Data</option>
+                        <option>Jarvis</option>
+                    </select>
                     <input class=pIcon type=image alt=nIcon onclick=iClicked(event,1)>
-                    <div class=pLabl>Right name:</div>
-                    <div class=pBlck>
-                        <input id=eName class=pName type=text onkeydown=nKeyed(event,2) onfocus=nFocused(2) onblur=nBlurred(2)>
-                        <ul class=pList></ul>
-                    </div>
+                    <label for=eName class=pLabl>Right name:</label>
+                    <select id=eName class=pName onchange=nChanged(event,2)>
+                        <option value="" disabled selected hidden>Select...</option>
+                        <option>Add...</option>
+                        <option>Delete...</option>
+                        <hr>
+                        <option>Bender</option>
+                        <option>Data</option>
+                        <option>Jarvis</option>
+                    </select>
                     <input class=pIcon type=image alt=eIcon onclick=iClicked(event,2)>
-                    <div class=pLabl>Your name:</div>
-                    <div class=pBlck>
-                        <input id=sName class=pName type=text onkeydown=nKeyed(event,3) onfocus=nFocused(3) onblur=nBlurred(3)>
-                        <ul class=pList></ul>
-                    </div>
-                    <input class=pIcon type=image alt=sIcon onclick=iClicked(event,3)>
+                    <label for=sName class=pLabl>Your name:</label>
+                    <select id=sName class=pName onchange=nChanged(event,3)>
+                        <option value="" disabled selected hidden>Select...</option>
+                        <option>Add...</option>
+                        <option>Delete...</option>
+                        <hr>
+                        <option>Grammy</option>
+                        <option>Grampy</option>
+                    </select>
+                    <input class=pIcon type=image alt=wIcon onclick=iClicked(event,3)>
                 </div>
                 <div id=assistanceGrid>
                     <div>Show card counts:&nbsp;</div>
@@ -69,15 +83,41 @@
                 <div style=width:100%>
                     <button id=createSub>Start</button>
                 </div>
+                <dialog id=pAdd>
+                    <label id=pAddLbl for=pAddInp>New robot name:</label><br>
+                    <input id=pAddInp type=text><br>
+                    <br>
+                    <input type=button value=Add onclick=pAddOkayed()>
+                    <input type=button value=Cancel onclick=pAddCanceled() style=float:right >
+                </dialog>
+                <dialog id=pDel>
+                    <label id=pDelLbl for=pDelSel>Old robot name:</label><br>
+                    <select id=pDelSel type=text>
+                        <option selected disabled>Select...</option>
+                        <hr>
+                        <option>Bender</option>
+                        <option>Data</option>
+                        <option>Jarvis</option>
+                    </select><br>
+                    <br>
+                    <input type=button value=Delete onclick=pDelOkayed()>
+                    <input type=button value=Cancel onclick=pDelCanceled() style=float:right >
+                </dialog>
             </form>
         </div>
         <div id=joinPage>
             <img class=whiteClose src=icons/close.svg alt=close onclick=joinCloseClicked()>
             <div class=pageTitle>Double Deck Pinochle - Join Game</div>
             <form onsubmit=joinSubmitted(event)>
-                Your Name:<br>
-                <input id=jName class=pName type=text onkeydown=nKeyed(event,4) onfocus=nFocused(4) onblur=nBlurred(4)><br>
-                <ul class=pList></ul>
+                <label for jName class=pLabl>Your Name:</label><br>
+                <select id=jName class=pName onchange=nChanged(event,4)>
+                    <option value="" disabled selected hidden>Select...</option>
+                    <option>Add...</option>
+                    <option>Delete...</option>
+                    <hr>
+                    <option>Grammy</option>
+                    <option>Grampy</option>
+                </select><br>
                 <br>
                 Game Number:<br>
                 <input id=jGame type=number><br>
@@ -90,7 +130,7 @@
             </form>
         </div>
         <div id=gamePage>
-            <img id=menuIcon src=icons/menu.svg alt=menu onclick="info('bidding')">
+            <img id=menuIcon src=icons/help.svg alt=menu onclick="info('bidding')">
             <img class=whiteClose src=icons/close.svg alt=close onclick=exitClicked()>
             <img id=trmpIcon src=suits/club.svg alt=trump onclick=trmpIconClicked()>
             <div id=nTrump></div> 
