@@ -264,6 +264,7 @@ const blink     = "blink 1s ease-in-out 5s infinite";   // slow blink animation
 let websocket   = null;                                 // websocket object (or null)
 let wsIntervlID = null;                                 // websocket interval timer identifier (or null)
 let id          = none;                                 // id = websocket identifier
+let online      = false;                                // true when online with a numbered wsConnect
 
 // Game variables from this player's perspective
 let helpStack   = [];                                   // stack of help pages
@@ -1780,7 +1781,7 @@ function startClicked() {
     bot  = localStorage.bot?  JSON.parse(localStorage.bot)  : bot;
     show = localStorage.show? JSON.parse(localStorage.show) : show;
     for (const p of pArray) {
-        bot[p] = bot[p] || (p==p0||p==p1||p==p2)&&!websocket;
+        bot[p] = bot[p] || (p==p0||p==p1||p==p2)&&!online;
         name[p] = (bot[p]&&robot.includes(name[p]))||(p==p3&&alias.includes(name[p]))? name[p] : "";
     }
     game = id;
@@ -1795,7 +1796,7 @@ function startClicked() {
         } else if (bot[p]) {                                        // if the player is a robot,
             pName[p].value = name[p];                                   // default to robot's old name
             pIcon[p].src = robotSrc;                                    // set player icon to robot
-            pIcon[p].disabled = !websocket;                             // disallow player type change if offline
+            pIcon[p].disabled = !online;                                // disallow player type change if offline
         } else {                                                    // if the player is a human who isn't me,
             pName[p].value = "";                                        // default to no name
             pIcon[p].src = humanSrc;                                    // set player icon to human
@@ -2017,7 +2018,6 @@ function wsConnect() {
 
 // Handle the websocket's open event
 function wsOpen(event) {
-    joinBtn.disabled = false;
     log(`wsOpen: id:${id}`);
 }
 
@@ -2034,11 +2034,15 @@ function wsMessage(messageEvent) {
         log(`wsMessage: op:id, id:${msg.id}, old id:${id}`);
         if (id == none) {                                           // if first id of this session,
             sessionStorage.id = msg.id;                                 // save the id offered by our anonymous wsConnect
-            websocket.close();                                          // close this websocket and await numbered wsConnect
-        } else if (msg.id != id) {                                  // otherwise, if new id,
+            websocket.close();                                          // close this websocket
+            break;                                                      // await numbered wsConnect
+        }
+        if (msg.id != id) {                                         // otherwise, if new id,
             id = msg.id;                                                // save new id (may impact comms)
             sessionStorage.id = id;                                     
-        }                                                           // otherwise, ignore message
+        }
+        online = true;                                              // note that we're online with numbered wsConnect
+        joinBtn.disabled = false;                                   // note that we're online
         break;
     case "pong":                                                // if {op:"pong"}, ignore
         break;
@@ -2120,6 +2124,7 @@ function wsMessage(messageEvent) {
 
 // Handle the websocket's close event
 function wsClose(closeEvent) {
+    online = false;                                             // note that we're offline
     joinBtn.disabled = true;
     log(`wsClose: id:${id}`);
     clearInterval(wsIntervlID);                                 // stop websocket timer, if any
@@ -2181,6 +2186,8 @@ function loaded() {
     logState("loadPage");
 
     // Initialize websocket if not running from WS Code debugger
+    online = false;
+    joinBtn.disabled = true;
     if (location.hostname) {
         wsConnect();
     }
