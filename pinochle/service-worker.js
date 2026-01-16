@@ -11,12 +11,12 @@ const appStaticResources = [
     "cards/kc.svg", "cards/kd.svg", "cards/kh.svg", "cards/ks.svg",
     "cards/qc.svg", "cards/qd.svg", "cards/qh.svg", "cards/qs.svg",
     "cards/tc.svg", "cards/td.svg", "cards/th.svg", "cards/ts.svg",
-    "icons/any.png", "icons/any.svg", "icons/back.svg", "icons/checked.svg", "icons/close.svg", "icons/exit.svg", 
-    "icons/help.svg", "icons/human.svg", "icons/info.svg", "icons/maskable.png", "icons/menu.svg",  "icons/next.svg",
-    "icons/refresh.svg", "icons/robot.svg", "icons/unchecked.svg", 
+    "icons/any.png", "icons/any.svg", "icons/checked.svg", "icons/close.svg", "icons/help.svg", "icons/human.svg", 
+    "icons/maskable.png", "icons/robot.svg", "icons/unchecked.svg", 
     "index.html", "pinochle.webmanifest",
     "ranks/ace.svg", "ranks/jack.svg", "ranks/king.svg", "ranks/queen.svg", "ranks/ten.svg",
-    "screens/narrow.png", "screens/wide.png",
+    "screens/bidpage.png", "screens/handpage.png", "screens/joinpage.png", "screens/loadpage.png", "screens/narrow.png", 
+    "screens/playpage.png", "screens/startpage.png", "screens/tosspage.png", "screens/trumppage.png", "screens/wide.png",
     "scripts.js", "styles.css", 
     "suits/club.svg", "suits/diamond.svg", "suits/heart.svg", "suits/spade.svg"
 ];

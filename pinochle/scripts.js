@@ -1101,13 +1101,13 @@ function handEnded() {
     handCell[5].innerHTML = scoreE;
     handCell[7].innerHTML = teamO[bidder]? bidO : "Pass";
     handCell[8].innerHTML = teamE[bidder]? bidE : "Pass";
-    handCell[10].innerHTML = meldO<20||(!tossE&&takeO<20)? `<s>&nbsp;${meldO}&nbsp;</s>` : meldO;
+    handCell[10].innerHTML = meldO<20||(!tossE&&takeO<20)||(teamO[bidder]&&meldO+takeO<bidO)? `<s>&nbsp;${meldO}&nbsp;</s>` : meldO;
     meldO = meldO<20||(!tossE&&takeO<20)? 0 : meldO;
-    handCell[11].innerHTML = meldE<20||(!tossO&&takeE<20)? `<s>&nbsp;${meldE}&nbsp;</s>` : meldE;
+    handCell[11].innerHTML = meldE<20||(!tossO&&takeE<20)||(teamE[bidder]&&meldE+takeE<bidE)? `<s>&nbsp;${meldE}&nbsp;</s>` : meldE;
     meldE = meldE<20||(!tossO&&takeE<20)? 0 : meldE;
-    handCell[13].innerHTML = takeO<20? `<u><s>&nbsp;${takeO}&nbsp;</s></u>` : `<u>${takeO}</u>`;
+    handCell[13].innerHTML = takeO<20||(teamO[bidder]&&meldO+takeO<bidO)? `<u><s>&nbsp;${takeO}&nbsp;</s></u>` : `<u>${takeO}</u>`;
     takeO = takeO<20? 0 : takeO;
-    handCell[14].innerHTML = takeE<20? `<u><s>&nbsp;${takeE}&nbsp;</s></u>` : `<u>${takeE}</u>`;
+    handCell[14].innerHTML = takeE<20||(teamE[bidder]&&meldE+takeE<bidE)? `<u><s>&nbsp;${takeE}&nbsp;</s></u>` : `<u>${takeE}</u>`;
     takeE = takeE<20? 0 : takeE;
     scoreO += teamO[bidder]&&meldO+takeO<bidO? -bidO : meldO+takeO;
     scoreE += teamE[bidder]&&meldE+takeE<bidE? -bidE : meldE+takeE;
@@ -1118,9 +1118,9 @@ function handEnded() {
     for (const p of pArray)
         ready[p] = bot[p];
     if (takeE==50 || (scoreE>=500 && scoreO<500) || (scoreO>=500 && scoreE>=500 && teamE[bidder]))
-        handPara.textContent = `Boohoo! We lost!`;
+        handPara.textContent = `Boohoo! You lose!`;
     else if (takeO==50 || (scoreO>=500 && scoreE<500) || (scoreO>=500 && scoreE>=500 && teamO[bidder]))
-        handPara.textContent = `Woohoo! We win!`;
+        handPara.textContent = `Woohoo! You win!`;
     else
         handPara.textContent = `${name[dealer]} deals next.`;
     handBtn.style.display = "inline";
@@ -1856,9 +1856,9 @@ function nChanged(event, p) {
             const alias = localStorage.alias? JSON.parse(localStorage.alias) : [];
             const robot = localStorage.robot? JSON.parse(localStorage.robot) : ["Bender", "Data", "Jarvis"];
             const name = nAddInp.value.trim().substring(0,10);
-            if ((p==p3||p==pj) && name!="" && alias.indexOf(name)==none)
+            if ((p==p3||p==pj) && name!="" && !alias.includes(name))
                 alias.push(name);
-            else if ((p==p0||p==p1||p==p2) && name!="" && robot.indexOf(name)==none)
+            else if ((p==p0||p==p1||p==p2) && name!="" && !robot.includes(name))
                 robot.push(name);
             alias.sort();
             robot.sort();
@@ -1878,9 +1878,9 @@ function nChanged(event, p) {
         const alias = localStorage.alias? JSON.parse(localStorage.alias) : [];
         const robot = localStorage.robot? JSON.parse(localStorage.robot) : ["Bender", "Data", "Jarvis"];
         const name = nDelSel.value;
-        if ((p==p3||p==pj) && alias.indexOf(name)!=none)
+        if ((p==p3||p==pj) && alias.includes(name))
             alias.splice(alias.indexOf(name), 1);
-        else if ((p==p0||p==p1||p==p2) && robot.indexOf(name)!=none)
+        else if ((p==p0||p==p1||p==p2) && robot.includes(name))
             robot.splice(robot.indexOf(name), 1);
         localStorage.alias = JSON.stringify(alias);
         localStorage.robot = JSON.stringify(robot);
@@ -2003,7 +2003,8 @@ function wsConnect() {
         url = `ws://localhost:3000/`;
     else
         url = `wss://${document.location.hostname}/ws/`;
-    url = id==none? url : url+id;                               // if is exists, append id to url
+    id = sessionStorage.id? sessionStorage.id : none;           // did this session already have an id?
+    url = id==none? url : url+id;                               // if so, try to get it again
     websocket = new WebSocket(url);                             // try to create a new websocket
     websocket.onopen = wsOpen;                                  // prepare for callbacks
     websocket.onerror = wsError;
@@ -2011,18 +2012,18 @@ function wsConnect() {
     websocket.onclose = wsClose;
     clearInterval(wsIntervlID);                                 // clear websocket timer, if any
     wsIntervlID = setInterval(wsCheck, 1000);                   // check websocket status every second
-    log(`wsConnect: url:${url}`);
+    log(`wsConnect: id:${id}, url:${url}`);
 }
 
 // Handle the websocket's open event
 function wsOpen(event) {
     joinBtn.disabled = false;
-    log(`wsOpen:`);
+    log(`wsOpen: id:${id}`);
 }
 
 // Handle the websocket's error event
 function wsError(event) {
-    log(`wsError:`);
+    log(`wsError: id:${id}`);
 }
 
 // Handle the websocket's message event
@@ -2030,8 +2031,14 @@ function wsMessage(messageEvent) {
     const msg = JSON.parse(messageEvent.data);                  // parse the message event data
     switch (msg.op) {
     case "id":                                                  // if {op:"id", id:i},
-        log(`wsMessage: op:id, id:${msg.id}`);
-        id = msg.id;                                                // save id
+        log(`wsMessage: op:id, id:${msg.id}, old id:${id}`);
+        if (id == none) {                                           // if first id of this session,
+            sessionStorage.id = msg.id;                                 // save the id offered by our anonymous wsConnect
+            websocket.close();                                          // close this websocket and await numbered wsConnect
+        } else if (msg.id != id) {                                  // otherwise, if new id,
+            id = msg.id;                                                // save new id (may impact comms)
+            sessionStorage.id = id;                                     
+        }                                                           // otherwise, ignore message
         break;
     case "pong":                                                // if {op:"pong"}, ignore
         break;
@@ -2079,13 +2086,13 @@ function wsMessage(messageEvent) {
         setTimeout(awaitBid, dealTime / 4);                         // await next bid
         break;
     case "pick":                                                // if {op:"pick", suit:s},
-        log(`op:pick, suit:${msg.suit}`);
+        log(`wsMessage: op:pick, suit:${msg.suit}`);
         trump = msg.suit;                                           // store trump
         infoName[bidder].style.animation = "none";                  // done awaiting pick
         setTimeout(trumpPicked);                                    // advance to trumpPicked
         break;
     case "toss":                                                // if {op:"toss"},
-        log(`op:toss}`);
+        log(`wsMessage: op:toss}`);
         tossO = teamO[bidder];                                      // note which team tossed hand
         tossE = teamE[bidder];
         ready[bidder] = true;                                       // note bidder is ready
@@ -2094,27 +2101,27 @@ function wsMessage(messageEvent) {
             setTimeout(onready);                                        // advance to next state
         break;
     case "ready":                                               // if msg {op:"ready", player:p},
-        log(`op:ready, player:${msg.player}`);
+        log(`wsMessage: op:ready, player:${msg.player}`);
         ready[right(msg.player)] = true;                            // note player (shifted to the right) is ready
         infoName[right(msg.player)].style.animation = "none";       // done awaiting ready
         if (ready[p0] && ready[p1] && ready[p2] && ready[p3])       // if everyone's ready,
             setTimeout(onready);                                        // advance to next state
         break;
     case "play":                                                // if msg {op:"play", card:c},
-        log(`op:play, card:${msg.card}`);
+        log(`wsMessage: op:play, card:${msg.card}`);
         chosen = cardRight(msg.card);                               // note chosen card
         infoName[player].style.animation = "none";                  // done awaiting play
         setTimeout(cardChosen);                                     // advance to cardChosen
         break;
     default:                                                    // if unrecognized,
-        log(`wsMessage msg:${msg}`);                                // log message
+        log(`wsMessage: msg:${msg}`);                                // log message
     }
 }
 
 // Handle the websocket's close event
 function wsClose(closeEvent) {
     joinBtn.disabled = true;
-    log(`wsClose`);
+    log(`wsClose: id:${id}`);
     clearInterval(wsIntervlID);                                 // stop websocket timer, if any
     wsIntervlID = setInterval(wsConnect, 1000);                 // start websocket reconnect timer
 }
@@ -2123,7 +2130,7 @@ function wsClose(closeEvent) {
 function wsDisconnect() {
     clearInterval(wsIntervlID);                                 // clear websocket timer, if any
     websocket.close();
-    log(`wsDisconnect`);
+    log(`wsDisconnect: id:${id}`);
 }
 
 // Handle websocket check timer

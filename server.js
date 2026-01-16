@@ -75,21 +75,22 @@ let nextId = 0;                                                 // next id if no
 ////////////////
 
 // Handle a websocket's close event
-function wsClose(closeEvent) {
-    const ws = closeEvent.target;                               // recall websocket
+function wsClose(event) {
+    const ws = event.target;                                    // recall websocket
     socket[ws.id] = null;                                       // deref websocket, but not message or group in case of outage
     console.log(`wsClose: id:${ws.id}`);
 }
 
 // Handle a websocket's error event
-function wsError() {
+function wsError(event) {
+    const ws = event.target;
     console.log(`wsError: id:${ws.id}`);
 }
 
 // Handle a websocket's message event
-function wsMessage(messageEvent) {
-    const ws = messageEvent.target;                             // recall this websocket
-    const msg = JSON.parse(messageEvent.data);                  // parse message data
+function wsMessage(event) {
+    const ws = event.target;                                    // recall this websocket
+    const msg = JSON.parse(event.data);                         // parse message data
     switch (msg.op) {
     case "ping":                                                // if {op:"ping"},
         ws.send(JSON.stringify({op:"pong"}));                       // send {op:"pong"}
@@ -118,20 +119,21 @@ function wsMessage(messageEvent) {
         console.log(`wsMessage: group[${ws.id}]:${group[ws.id]}`);
         break
     default:                                                    // otherwise, send or queue message to sender's group
-        console.log(`wsMessage: rxed message:${messageEvent.data} from id:${ws.id}`);
+        console.log(`wsMessage: rxed message:${event.data} from id:${ws.id}`);
         for (const member of group[ws.id])
             if (socket[member]) {
-                socket[member].send(messageEvent.data);
-                console.log(`wsMessage: txed message:${messageEvent.data} to id:${member}`);
+                socket[member].send(event.data);
+                console.log(`wsMessage: txed message:${event.data} to id:${member}`);
             } else {
-                message[member].push(messageEvent.data);
-                console.log(`wsMessage: queued message:${messageEvent.data} for id:${member}`);
+                message[member].push(event.data);
+                console.log(`wsMessage: queued message:${event.data} for id:${member}`);
             }
     }
 }
 
 // Handle a websocket's open event
-function wsOpen() {
+function wsOpen(event) {
+    const ws = event.target;
     console.log(`wsOpen: id:${ws.id}`);
 }
 
@@ -168,7 +170,7 @@ function wssConnection(ws, req) {
     ws.onmessage = wsMessage;
     ws.onopen = wsOpen;
     ws.send(JSON.stringify({op:"id", id:id}));                  // notify connector of their id
-    console.log(`wssConnection: id:${id}`);
+    console.log(`wssConnection: url:${req.url}, id:${id}`);
     for (const m of message[id]) {                              // send queued messages to this websocket
         ws.send(m);
         console.log(`wsMessage: txed queued message:${m} to id:${id}`);
@@ -182,8 +184,8 @@ function wssError() {
 }
 
 // Handle the websocket server's headers event
-function wssHeaders() {
-    console.log(`wssHeaders:`);
+function wssHeaders(headers, request) {
+    //console.log(`wssHeaders: headers:${headers}, request:${request}`);
 }
 
 // Handle the websocket server's listening event

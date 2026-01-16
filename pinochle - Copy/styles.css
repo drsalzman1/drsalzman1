@@ -1,30 +1,12 @@
 @media (orientation: portrait) {
     :root {
         font-size:      min(4.25svw, 2.55svh);
-        --list-height:  21em;
-        --wInfo-left:   0.4em;
-        --eInfo-left:   calc(100svw - 6em);
-        --wgrid-left:   0.44em;
-        --egrid-left:   calc(100svw - 5.92em);
-        --number-left:  calc(100svw - 2.96em);
-        --number-top:   0.44em;
-        --number-align: right;
-        --ass-width:    21em;
     }
 }
 
 @media (orientation: landscape) {
     :root {
         font-size:      min(4.25svh, 2.575svw);
-        --list-height:  7em;
-        --wInfo-left:   2.12em;
-        --eInfo-left:   calc(100svw - 7.72em);
-        --wgrid-left:   2.16em;
-        --egrid-left:   calc(100svw - 7.68em);
-        --number-left:  calc(100svw - 1.84em);
-        --number-top:   1.6em;
-        --number-align: center;
-        --ass-width:    100%;
    }
 }
 
@@ -61,56 +43,30 @@ body {
     overflow: hidden;
 }
 
+.helpIcon {
+    position: absolute;
+    top: 0.4em;
+    left: 0.4em;
+    height: 1.1em;
+    filter: invert(100%);
+}
+
+.whiteClose {
+    position: absolute;
+    top: 0.26em;
+    right: 0.26em;
+    height: 1.32em;
+    filter: invert(100%);
+}
+
 #loadPage input {
-    width: 6em;
+    width: 7em;
     height: 1.3em;
     border: none;
     background-color: white;
 }
 
-.tutorPage {
-    position: absolute;
-    width: 100svw;
-    height: 100svh;
-    padding: 0.4em;
-    display: none;
-    overflow: hidden;
-}
-
-.tutorPage .backIcon {
-    position: absolute;
-    bottom: 0.4em;
-    left: 0.4em;
-    height: 1.32em;
-}
-
-.tutorPage .nextIcon {
-    position: absolute;
-    bottom: 0.4em;
-    right: 0.4em;
-    height: 1.32em;
-}
-
-#tutorGrid {
-    display: grid;
-    grid-template-columns: repeat(4, auto);
-    grid-template-rows: 1.3em repeat(8, auto);
-    column-gap: 0.5em;
-    justify-content: center;
-    text-align: center;
-}
-
-.tutorPage img {
-    height: 0.8em;
-    filter: invert(100%);
-}
-
-.tutorPage ul {
-    margin-top: 0.5em;
-    margin-left: 1.6em;
-}
-
-#createPg {
+#startPage {
     position: absolute;
     height: 100svh;
     width: 100svw;
@@ -121,91 +77,50 @@ body {
     overflow: hidden;
 }
 
-.pageTitle {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    padding: 0.4em;
-    text-align: left;
-    font-weight: bold;
-}
-
-.tutorPage .whiteClose, .whiteClose {
-    position: absolute;
-    top: 0.26em;
-    right: 0.26em;
-    height: 1.32em;
-    filter: invert(100%);
-}
-
-#createForm {
+#startForm {
     display: flex;
-    flex-direction: row;
+    width: 20em;
+    flex-direction: column;
     justify-content: center;
-    align-items: center;
+    align-items: end;
     text-align: center;
-    flex-wrap: wrap;
 }
 
-#createForm fieldset {
-    height: 11.8em;
-    margin: 0.4em;
-    padding-left: 0.4em;
-    border: 1px solid;
-    text-align: left;
+#startCtr {
+    width: 100%;
+    line-height: 1.5em;
+    border: 2px solid;
 }
 
 #playersGrid {
-    margin-top: 0.4em;
-    width: 21em;
+    margin-top: 1em;
+    width: 100%;
     display: grid;
     grid-template-columns: repeat(11, 1fr);
-    grid-template-rows: 1.3em 2.0em 1.3em 2.0em 1.3em 2.0em;
+    grid-template-rows: 1.3em 1.3em 0.4em 1.3em 1.3em 0.4em 1.3em 1.3em;
+    text-align: left;
 }
 
-:nth-child(1 of .pLabl) {grid-area: 03/01/03/05}
-:nth-child(1 of .pBlck) {grid-area: 04/01/04/05}
-:nth-child(1 of .pIcon) {grid-area: 04/05/04/05}
-:nth-child(2 of .pLabl) {grid-area: 01/04/01/08}
-:nth-child(2 of .pBlck) {grid-area: 02/04/02/08}
-:nth-child(2 of .pIcon) {grid-area: 02/08/02/08}
-:nth-child(3 of .pLabl) {grid-area: 03/07/03/11}
-:nth-child(3 of .pBlck) {grid-area: 04/07/04/11}
-:nth-child(3 of .pIcon) {grid-area: 04/11/04/11}
-:nth-child(4 of .pLabl) {grid-area: 05/04/05/08}
-:nth-child(4 of .pBlck) {grid-area: 06/04/06/08}
-:nth-child(4 of .pIcon) {grid-area: 06/08/06/08}
+#wLabl {grid-area: 04/01/04/05}
+#wName {grid-area: 05/01/05/05}
+#wIcon {grid-area: 05/05/05/05}
+#nLabl {grid-area: 01/04/01/08}
+#nName {grid-area: 02/04/02/08}
+#nIcon {grid-area: 02/08/02/08}
+#eLabl {grid-area: 04/07/04/11}
+#eName {grid-area: 05/07/05/11}
+#eIcon {grid-area: 05/11/05/11}
+#sLabl {grid-area: 07/04/07/08}
+#sName {grid-area: 08/04/08/08}
+#sIcon {grid-area: 08/08/08/08}
 
 .pName {
     width: 100%;
     height: 1.3em;
     border: none;
-    padding: 0em 0em 0em 0.4em;
+    padding-left: 0.4em;
     text-align: left;
     background-color: white;
-}
-
-.pList {
-    position: absolute;
-    width: 7.6em;
-    max-height: var(--list-height);
-    overflow-y: auto;
-    overflow-x: hidden;
-    color: black;
-    background-color:white;
-    border: none;
-    border-top: 2px solid darkgreen;
-    display: none;
-    z-index: 100;
-}
-
-#createPg li, #joinPage li {
-    margin: 0em 0.4em 0em 0.4em;
-    line-height: 3em;
-}
-
-.selected {
-    background-color: lightgray;
 }
 
 .pIcon {
@@ -217,51 +132,50 @@ body {
 }
 
 #assistanceGrid {
-    margin-top: 0.4em;
-    margin-right: 0.8em;
-    width: var(--ass-width);
+    margin-top: 1em;
+    width: 100%;
     display: grid;
-    grid-template-columns: repeat(3, auto);
-    grid-template-rows: repeat(5, 2em);
+    grid-template-columns: auto auto 1fr auto auto;
     justify-content: center;
-    column-gap: 0.5em;;
     text-align: right;
 }
 
-.tip {
-    position: relative;
-}
-
-.tip img, .aBox {
+.aBox {
     position: relative;
     bottom: 0.1em;
     height: 1.3em;
     filter: invert(100%);
 }
 
-.tiptext {
-    padding: 0.4em;
-    visibility: hidden;
-    position: absolute;
-    width: 18.2em;
-    bottom: 2.2em;
-    right: -2.7em;
-    color: black;
-    background-color: white;
-    text-align: left;
-}
-
-.tip:hover .tiptext {
-    visibility: visible;
-}
-
-#createSub {
+#startSub {
     width: 5em;
     height: 1.3em;
-    margin: 0.8em 0em 0em 0em;
+    margin-top: 0.8em;
     border: none;
     background-color: white;
     text-align: center;
+}
+
+#pEdit, #jEdit {
+    width: 100%;
+    display: grid;
+    justify-items: center;
+}
+
+#pAddDiv, #pDelDiv, #jAddDiv, #jDelDiv {
+    margin-top: 1.2em;
+    width: 9.2em;
+    padding: 0.4em;
+    border: 2px solid;
+    text-align: left;
+}
+
+#pAddInp, #pDelSel, #jAddInp, #jDelSel {
+    width: 100%;
+    height: 1.3em;
+    padding-left: 0.4em;
+    border: none;
+    background-color: white;
 }
 
 #joinPage {
@@ -272,16 +186,20 @@ body {
     overflow: hidden;
 }
 
-#joinPage form {
+#joinForm {
     width: 10em;
 }
 
-#joinPage input {
+#jGame {
     height: 1.3em;
     width: 100%;
     border: none;
     padding: 0em 0em 0em 0.4em;
     background-color: white;
+}
+
+#jGame::placeholder {
+    color: red;
 }
 
 #joinBtns {
@@ -305,30 +223,21 @@ body {
     overflow: hidden;
 }
 
-#menuIcon {
+#trumpIcon {
     position: absolute;
-    top: 0;
-    left: 0;
-    height: 1.32em;
-    filter: invert(100%);
-    margin: 0.4em;
-}
-
-#trmpIcon {
-    position: relative;
-    float: right;
-    margin: 0.4em;
-    height: 1em;
+    left: 1.8em;
+    top: 0.5em;
+    height: 0.9em;
     filter: invert(100%);
     display: none;
 }
 
-#nTrump {
+#trumpOut {
     position: absolute;
-    top: var(--number-top);
-    left: var(--number-left);
+    left: 2.9em;
+    top: 0.4em;
     width: 1.4em;
-    text-align: var(--number-align);
+    text-align: left;
 }
 
 #cardImg img, #faceImg img, #backImg img {
@@ -354,7 +263,6 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: green;
 }
 
 #bidText {
@@ -441,7 +349,7 @@ body {
     text-align: center;
 }
 
-#handText p {
+#handPara {
     margin-bottom: 0.8em;
 }
 
@@ -450,13 +358,6 @@ body {
     justify-content: center;
     grid-template-columns: 3em 3em 3em;
     margin-bottom: 0.8em;
-}
-
-#handText img {
-    position: relative;
-    top: 0.3em;
-    height: 1.3em;
-    filter: invert(100%);
 }
 
 #handBtn {
@@ -475,7 +376,7 @@ body {
     display: none;
     flex-direction: column;
     justify-content: space-between;
-    text-align: center;
+    text-align: left;
     color: black;
     background-color: white;
 }
@@ -487,137 +388,88 @@ body {
     height: 1.32em;
 }
 
-#wGrid, #nGrid, #eGrid {
-    position: absolute;
-    width: 5.488em;
-    height: 5.488em;
-    display: none;
-    grid-template-columns: auto auto auto auto auto auto;
-    grid-template-rows: 1.008em 1.12em 1.12em 1.12em 1.12em;
-    justify-content: space-around;
+#iText #iOut {
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto 1.5em 1.5em 1.5em 1.5em;
+    justify-content: space-between;
     text-align: center;
-    color: black;
-    background-color: #ffffffc0;
 }
 
-#wGrid {
-    top: calc(050svh - 2.8em);
-    left: var(--wgrid-left);
-}
-
-#nGrid {
-    top: 1.76em;
-    left: calc(050svw - 2.8em);
-}
-
-#eGrid {
-    top: calc(050svh - 2.8em);
-    left: var(--egrid-left);
-}
-
-.gIcon {
-    height: 0.8em;
-}
-
-.cIcon {
-    height: 1em;
+#iText #iOut img {
+    position: relative;
+    top: 0.1em;
+    left: 0.3em;
+    height: 0.9em;
 }
 
 #infoAreas {
     position: absolute;
     text-align: center;
     display: none;
+    z-index: -1000;
 }
 
-.infoName {
-    width: 5.6em;
-    display: inline;
-    z-index: -100;
-}
-
-.infoBid {
-    width: 4em;
-    display: none;
-}
-
-.infoHint {
-    width: 4em;
-    display: none;
+.infoHint img {
+    height: 0.8em;
+    filter: invert(100%);
+    opacity: 100%;
 }
 
 #wInfo .infoName {
     position: absolute;
-    top: 0.44em; 
-    left: var(--wInfo-left);
+    left: 0.4em;
+    width: 5.6em;
 }
 
 #wInfo .infoBid {
     position: absolute;
-    top: calc(50svh - 10.27em);
-    left: calc(var(--wInfo-left) + 0.78em);
-    background-color: gray;
+    left: 0.4em;
+    width: 5.6em;
 }
 
 #wInfo .infoHint {
     position: absolute;
-    top: calc(100svh - 1.6em);
-    left: calc(var(--wInfo-left) + 0.78em);
-    background-color: gray;
+    left: 0.4em;
+    width: 5.6em;
 }
 
-#nInfo .infoName {
+#nInfo {
     position: absolute;
     top: 0.44em;
-    left: calc(50svw - 2.8em);
-}
-
-#nInfo .infoBid {
-    position: absolute;
-    top: 2.3em;
-    left: calc(50svw - 2em);
-    background-color: gray;
-}
-
-#nInfo .infoHint {
-    position: absolute;
-    top: 2.44em;
-    left: calc(50svw - 2em);
-    background-color: gray;
+    left: calc(50svw - 10em);
+    width: 20em;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
 }
 
 #eInfo .infoName {
     position: absolute;
-    top: 0.44em;
-    left: var(--eInfo-left);
+    left: calc(100svw - 6em);
+    width: 5.6em;
 }
 
 #eInfo .infoBid {
     position: absolute;
-    top: calc(50svh - 10.27em);
-    left: calc(var(--eInfo-left) + 0.78em);
-    color: white;
-    background-color: gray;
+    left: calc(100svw - 6em);
+    width: 5.6em;
 }
 
 #eInfo .infoHint {
     position: absolute;
-    top: calc(100svh - 1.6em);
-    left: calc(var(--eInfo-left) + 0.78em);
-    background-color: gray;
+    left: calc(100svw - 6em);
+    width: 5.6em;
 }
 
-#sInfo .infoName {
+#sInfo {
     position: absolute;
     top: calc(100svh - 1.6em);
-    left: calc(50svw - 2.8em);
-}
-
-#sInfo .infoBid {
-    position: absolute;
-    top: calc(100svh - 3.2em);
-    left: calc(50svw - 2em);
-    color: black;
-    background-color: white;
+    left: calc(50svw - 10em);
+    width: 20em;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
 }
 
 @keyframes blink {
@@ -626,32 +478,75 @@ body {
     100% {opacity:1}
 }
 
-.infoHint img {
-    height: 0.75em;
-    filter: invert(100%);
-    opacity: 100%;
-}
-
-#menuText {
+#helpPage>div {
     position: absolute;
-    width: 16em;
+    top: 0em;
+    left: 0em;
     padding: 0.4em;
+    width: 100%;
     color: black;
     background-color: white;
+    z-index: 1000;
     display: none;
 }
 
-.menuIcon {
+#helpPage>div>b {
+    display: block;
+}
+
+#helpPage>div>p {
+    margin-top: 0.8em;
+}
+
+#helpPage>div>ul {
+    margin-top: 0.5em;
+    margin-left: 1.6em;
+}
+
+#helpPage>div>ul>li>ul {
+    margin-left: 1.6em;
+}
+
+#helpPage>div>ul img {
     position: relative;
-    top: 0.3em;
-    height: 1.32em;
+    height: 1em;
+    top: 0.2em;
 }
 
-#aboutText {
-    position: absolute;
-    padding: 0.4em;
-    width: 16em;
-    color: black;
-    background-color: white;
-    display: none;
+#helpPage>div>.links {
+    margin-top: 0.8em;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 4.2em);
+    column-gap: 0.4em;
+}
+
+#helpPage>.screenshot {
+    padding: 0em !important;
+    height: 100svh;
+    width: 100svw;
+    background-color: black !important;
+}
+
+#helpPage>.screenshot>div {
+    display: grid;
+    justify-content: center;
+}
+
+#helpPage>.screenshot>div>img {
+    max-height: 100svh;
+    max-width: 100svw;
+}
+
+#helpPage #meldGrid {
+    margin-top: 0.8em;
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    grid-template-rows: 1.3em repeat(8, auto);
+    column-gap: 0.5em;
+    justify-content: center;
+    text-align: center;
+}
+
+#helpPage #meldGrid img {
+    height: 0.8em;
 }
