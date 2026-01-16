@@ -1812,6 +1812,8 @@ function startClicked() {
     pAddDiv.style.visibility = pDelDiv.style.visibility = "hidden";
     loadPage.style.display = "none";
     startPage.style.display = "flex";
+    if (online)                                                 // if online,
+        websocket.send(JSON.stringify({op:"solo"}));                // clear my group so folks can join
 }
 
 // Join button clicked: recall defaults, close load page, open join page
@@ -1981,6 +1983,7 @@ function joinSubmitted(event) {
     name[p3] = pName[pj].value;                                 // copy player name from form
     game = Number(jGame.value);                                 // copy game number from form
     localStorage.self = name[p3];                               // save my name for next time
+    websocket.send(JSON.stringify({op:"solo"}));                // clear my group so starter can be added
     websocket.send(JSON.stringify({                             // send join message
         op: "join",
         name: name[p3],

@@ -35,9 +35,14 @@ hs.listen(hsPort, hsListening);
 //
 // From sender                                                      Server action
 // ===========                                                      =============
-// wsConnect(ws)                                                    set ws.id; reply {op:"id", id:i}
+// wsConnect(ws) to wss://games.koyeb.app/ws/ or .../i              set ws.id; reply {op:"id", id:i}
 // wsClose(closeEvent)                                              socket[closeEvent.target.id]=null
 // {op:"ping"}                                                      reply {op:"pong"}
+
+// {op:"game", game:n$}                                             create and join self-named game
+// {op:"list"}                                                      {op:"list", game:[n$]}
+// {op:"join", game:g$}
+
 // {op:"join", name:n$, starter:i}                                  fix groups; send {op:"join", name:n$} to starter
 // {op:"solo"}                                                      clear sender's group
 // {op:"deal", player:p, value:[v], name:[n$], bot:[f], show:[f]}   forward message to sender's group
@@ -119,15 +124,12 @@ function wsMessage(event) {
         console.log(`wsMessage: group[${ws.id}]:${group[ws.id]}`);
         break
     default:                                                    // otherwise, send or queue message to sender's group
-        console.log(`wsMessage: rxed message:${event.data} from id:${ws.id}`);
+        console.log(`wsMessage: ${event.data} from ${ws.id} to ${group[ws.id]}`);
         for (const member of group[ws.id])
-            if (socket[member]) {
+            if (socket[member])
                 socket[member].send(event.data);
-                console.log(`wsMessage: txed message:${event.data} to id:${member}`);
-            } else {
+            else
                 message[member].push(event.data);
-                console.log(`wsMessage: queued message:${event.data} for id:${member}`);
-            }
     }
 }
 
