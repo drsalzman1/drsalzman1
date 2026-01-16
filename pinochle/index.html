@@ -22,11 +22,10 @@
         </div>
         <div id=startPage>
             <img class=helpIcon src=icons/help.svg alt=menu onclick="help('startHelp')">
-            <div id=startHdg class=pageTitle>Start Page</div>
             <img class=whiteClose src=icons/close.svg alt=close onclick=window.location.reload()>
             <form id=startForm onsubmit=startSubmitted(event)>
                 <div id=startCtr>
-                    Players joining: 0
+                    0 players are joining game number 0
                 </div>
                 <div id=playersGrid>
                     <label  id=wLabl for=wName>Left name:</label>
@@ -66,7 +65,6 @@
         </div>
         <div id=joinPage>
             <img class=helpIcon src=icons/help.svg alt=menu onclick="help('joinHelp')">
-            <div class=pageTitle>Join Page</div>
             <img class=whiteClose src=icons/close.svg alt=close onclick=window.location.reload()>
             <form id=joinForm onsubmit=joinSubmitted(event)>
                 <label for=jName>Your name:</label><br>

@@ -164,7 +164,6 @@ const body      = document.getElementById("body");
 const loadPage  = document.getElementById("loadPage");
 const joinBtn   = document.getElementById("joinBtn");
 const startPage = document.getElementById("startPage");
-const startHdg  = document.getElementById("startHdg");
 const startCtr  = document.getElementById("startCtr");
 const pName     = document.querySelectorAll(".pName");
 const pIcon     = document.querySelectorAll(".pIcon");
@@ -1787,7 +1786,6 @@ function startClicked() {
     game = id;
     shift = 0;
     waiter.length = 0;
-    startHdg.innerText = `Start Page ${websocket?id:""}`;
     setOptions();                                               // set option list for each name selector
     for (const p of pArray)                                     // for every player,
         if (p==p3) {                                                // if I'm the player,
@@ -1804,6 +1802,7 @@ function startClicked() {
             pIcon[p].disabled = false;                                  // allow player type change
         }
     startCtr.style.visibility = bot[p0]&&bot[p1]&&bot[p2]? "hidden" : "visible";
+    startCtr.textContent = `0 players are joining game ${id}`;
     aBox[counts].src = show[counts]? checked : unchecked;
     aBox[hands].src = show[hands]? checked : unchecked;
     aBox[counts].disabled = aBox[hands].disabled = false;
@@ -2039,7 +2038,7 @@ function wsMessage(messageEvent) {
     case "join":                                                // if {op:"join", name:n$}, (only received by starter)
         log(`wsMessage: op:join, name:${msg.name}`);
         waiter.push(msg.name);                                      // add name to waiter list
-        startCtr.textContent = `Players joining: ${waiter.length}`; // update count on start page
+        startCtr.textContent = `${waiter.length} player${waiter.length==1?" is":"s are"} joining game ${id}`;
         setOptions();                                               // update option lists
         break;
     case "deal":                                                // if {op:"deal", player:p, value:[v], name:[n$], bot:[f], show:[f]}

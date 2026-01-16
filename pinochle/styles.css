@@ -77,17 +77,6 @@ body {
     overflow: hidden;
 }
 
-.pageTitle {
-    position: absolute;
-    width: 100%;
-    top: 0px;
-    left: 0px;
-    padding: 0.4em;
-    text-align: center;
-    font-weight: bold;
-    z-index: -100;
-}
-
 #startForm {
     display: flex;
     width: 20em;
