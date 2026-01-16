@@ -1,16 +1,12 @@
 @media (orientation: portrait) {
     :root {
         font-size:      min(4.25svw, 2.55svh);
-        --list-height:  21em;
-        --ass-width:    21em;
     }
 }
 
 @media (orientation: landscape) {
     :root {
         font-size:      min(4.25svh, 2.575svw);
-        --list-height:  7em;
-        --ass-width:    100%;
    }
 }
 
@@ -47,6 +43,22 @@ body {
     overflow: hidden;
 }
 
+.helpIcon {
+    position: absolute;
+    top: 0.4em;
+    left: 0.4em;
+    height: 1.1em;
+    filter: invert(100%);
+}
+
+.whiteClose {
+    position: absolute;
+    top: 0.26em;
+    right: 0.26em;
+    height: 1.32em;
+    filter: invert(100%);
+}
+
 #loadPage input {
     width: 7em;
     height: 1.3em;
@@ -54,7 +66,7 @@ body {
     background-color: white;
 }
 
-#createPg {
+#startPage {
     position: absolute;
     height: 100svh;
     width: 100svw;
@@ -76,22 +88,7 @@ body {
     z-index: -100;
 }
 
-.whiteClose {
-    position: absolute;
-    top: 0.26em;
-    right: 0.26em;
-    height: 1.32em;
-    filter: invert(100%);
-}
-
-.blackClose {
-    position: absolute;
-    top: 0.26em;
-    right: 0.26em;
-    height: 1.32em;
-}
-
-#createForm {
+#startForm {
     display: flex;
     width: 20em;
     flex-direction: column;
@@ -100,7 +97,7 @@ body {
     text-align: center;
 }
 
-#pLegend {
+#startCtr {
     width: 100%;
     line-height: 1.5em;
     border: 2px solid;
@@ -115,18 +112,18 @@ body {
     text-align: left;
 }
 
-:nth-child(1 of .pLabl) {grid-area: 04/01/04/05}
-:nth-child(1 of .pName) {grid-area: 05/01/05/05}
-:nth-child(1 of .pIcon) {grid-area: 05/05/05/05}
-:nth-child(2 of .pLabl) {grid-area: 01/04/01/08}
-:nth-child(2 of .pName) {grid-area: 02/04/02/08}
-:nth-child(2 of .pIcon) {grid-area: 02/08/02/08}
-:nth-child(3 of .pLabl) {grid-area: 04/07/04/11}
-:nth-child(3 of .pName) {grid-area: 05/07/05/11}
-:nth-child(3 of .pIcon) {grid-area: 05/11/05/11}
-:nth-child(4 of .pLabl) {grid-area: 07/04/07/08}
-:nth-child(4 of .pName) {grid-area: 08/04/08/08}
-:nth-child(4 of .pIcon) {grid-area: 08/08/08/08}
+#wLabl {grid-area: 04/01/04/05}
+#wName {grid-area: 05/01/05/05}
+#wIcon {grid-area: 05/05/05/05}
+#nLabl {grid-area: 01/04/01/08}
+#nName {grid-area: 02/04/02/08}
+#nIcon {grid-area: 02/08/02/08}
+#eLabl {grid-area: 04/07/04/11}
+#eName {grid-area: 05/07/05/11}
+#eIcon {grid-area: 05/11/05/11}
+#sLabl {grid-area: 07/04/07/08}
+#sName {grid-area: 08/04/08/08}
+#sIcon {grid-area: 08/08/08/08}
 
 .pName {
     width: 100%;
@@ -161,7 +158,7 @@ body {
     filter: invert(100%);
 }
 
-#createSub {
+#startSub {
     width: 5em;
     height: 1.3em;
     margin-top: 0.8em;
@@ -170,13 +167,13 @@ body {
     text-align: center;
 }
 
-#pEdit {
+#pEdit, #jEdit {
     width: 100%;
     display: grid;
     justify-items: center;
 }
 
-#pAdd, #pDel {
+#pAddDiv, #pDelDiv, #jAddDiv, #jDelDiv {
     margin-top: 1.2em;
     width: 9.2em;
     padding: 0.4em;
@@ -184,19 +181,10 @@ body {
     text-align: left;
 }
 
-#pAdd input[type=text], #pDel select {
+#pAddInp, #pDelSel, #jAddInp, #jDelSel {
     width: 100%;
     height: 1.3em;
     padding-left: 0.4em;
-    border: none;
-    background-color: white;
-}
-
-#pAdd input[type=button], #pDel input[type=button]{
-    height: 1.3em;
-    width: 4em;
-    padding-left: 0.4em;
-    padding-right: 0.4em;
     border: none;
     background-color: white;
 }
@@ -209,11 +197,11 @@ body {
     overflow: hidden;
 }
 
-#joinPage form {
+#joinForm {
     width: 10em;
 }
 
-#joinPage input {
+#jGame {
     height: 1.3em;
     width: 100%;
     border: none;
@@ -221,7 +209,7 @@ body {
     background-color: white;
 }
 
-#joinPage input::placeholder {
+#jGame::placeholder {
     color: red;
 }
 
@@ -246,39 +234,21 @@ body {
     overflow: hidden;
 }
 
-#menuIcon {
+#trumpIcon {
     position: absolute;
-    top: -0.1em;
-    left: 0em;
-    height: 1.32em;
-    filter: invert(100%);
-    margin: 0.4em;
-}
-
-#infoIcon {
-    position: absolute;
-    top: -0.2em;
-    left: 1.6em;
-    height: 1.32em;
-    filter: invert(100%);
-    margin: 0.4em;
-}
-
-#trmpIcon {
-    position: absolute;
-    left: 2em;
-    top: 0.4em;
-    height: 1em;
+    left: 1.8em;
+    top: 0.5em;
+    height: 0.9em;
     filter: invert(100%);
     display: none;
 }
 
-#nTrump {
+#trumpOut {
     position: absolute;
-    left: 2.8em;
+    left: 2.9em;
     top: 0.4em;
     width: 1.4em;
-    text-align: right;
+    text-align: left;
 }
 
 #cardImg img, #faceImg img, #backImg img {
@@ -390,7 +360,7 @@ body {
     text-align: center;
 }
 
-#handText p {
+#handPara {
     margin-bottom: 0.8em;
 }
 
@@ -399,13 +369,6 @@ body {
     justify-content: center;
     grid-template-columns: 3em 3em 3em;
     margin-bottom: 0.8em;
-}
-
-#handText img {
-    position: relative;
-    top: 0.3em;
-    height: 1.3em;
-    filter: invert(100%);
 }
 
 #handBtn {
@@ -427,6 +390,13 @@ body {
     text-align: left;
     color: black;
     background-color: white;
+}
+
+.blackClose {
+    position: absolute;
+    top: 0.26em;
+    right: 0.26em;
+    height: 1.32em;
 }
 
 #iText #iOut {
@@ -452,7 +422,7 @@ body {
 }
 
 .infoHint img {
-    height: 0.75em;
+    height: 0.8em;
     filter: invert(100%);
     opacity: 100%;
 }
@@ -519,34 +489,10 @@ body {
     100% {opacity:1}
 }
 
-#menuText {
+#helpPage>div {
     position: absolute;
-    width: 16em;
-    padding: 0.4em;
-    color: black;
-    background-color: white;
-    display: none;
-    z-index: 1000;
-}
-
-.menuIcon {
-    position: relative;
-    top: 0.3em;
-    height: 1.32em;
-}
-
-#aboutText {
-    position: absolute;
-    padding: 0.4em;
-    width: 16em;
-    color: black;
-    background-color: white;
-    display: none;
-    z-index: 1000;
-}
-
-#infoText>div {
-    position: absolute;
+    top: 0em;
+    left: 0em;
     padding: 0.4em;
     width: 100%;
     color: black;
@@ -555,18 +501,55 @@ body {
     display: none;
 }
 
-#infoText>div>p {
+#helpPage>div>b {
+    display: block;
+}
+
+#helpPage>div>p {
     margin-top: 0.8em;
 }
 
-.links {
+#helpPage>div>ul {
+    margin-top: 0.5em;
+    margin-left: 1.6em;
+}
+
+#helpPage>div>ul>li>ul {
+    margin-left: 1.6em;
+}
+
+#helpPage>div>ul img {
+    position: relative;
+    height: 1em;
+    top: 0.2em;
+}
+
+#helpPage>div>.links {
     margin-top: 0.8em;
     display: grid;
     grid-template-columns: repeat(auto-fit, 4.2em);
     column-gap: 0.4em;
 }
 
-#meldGrid {
+#helpPage>.screenshot {
+    padding: 0em !important;
+    height: 100svh;
+    width: 100svw;
+    background-color: black !important;
+}
+
+#helpPage>.screenshot>div {
+    display: grid;
+    justify-content: center;
+}
+
+#helpPage>.screenshot>div>img {
+    max-height: 100svh;
+    max-width: 100svw;
+}
+
+#helpPage #meldGrid {
+    margin-top: 0.8em;
     display: grid;
     grid-template-columns: repeat(4, auto);
     grid-template-rows: 1.3em repeat(8, auto);
@@ -575,11 +558,6 @@ body {
     text-align: center;
 }
 
-#meldGrid img {
+#helpPage #meldGrid img {
     height: 0.8em;
-}
-
-#infoText ul {
-    margin-top: 0.5em;
-    margin-left: 1.6em;
 }

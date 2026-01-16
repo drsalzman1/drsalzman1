@@ -163,19 +163,34 @@ const unchecked = "icons/unchecked.svg";
 const body      = document.getElementById("body");
 const loadPage  = document.getElementById("loadPage");
 const joinBtn   = document.getElementById("joinBtn");
-const createPg  = document.getElementById("createPg");
-const createHdg = document.getElementById("createHdg");
-const pLegend   = document.getElementById("pLegend");
+const startPage = document.getElementById("startPage");
+const startHdg  = document.getElementById("startHdg");
+const startCtr  = document.getElementById("startCtr");
 const pName     = document.querySelectorAll(".pName");
 const pIcon     = document.querySelectorAll(".pIcon");
 const aBox      = document.querySelectorAll(".aBox");
-const createSub = document.getElementById("createSub");
+const startSub  = document.getElementById("startSub");
+const pAddDiv   = document.getElementById("pAddDiv");
+const pAddLbl   = document.getElementById("pAddLbl");
+const pAddInp   = document.getElementById("pAddInp");
+const pDelDiv   = document.getElementById("pDelDiv");
+const pDelLbl   = document.getElementById("pDelLbl");
+const pDelSel   = document.getElementById("pDelSel");
 const joinPage  = document.getElementById("joinPage");
 const jGame     = document.getElementById("jGame");
 const joinBtns  = document.getElementById("joinBtns");
 const joinWait  = document.getElementById("joinWait");
 const joinSub   = document.getElementById("joinSub");
+const jAddDiv   = document.getElementById("jAddDiv");
+const jAddLbl   = document.getElementById("jAddLbl");
+const jAddInp   = document.getElementById("jAddInp");
+const jDelDiv   = document.getElementById("jDelDiv");
+const jDelLbl   = document.getElementById("jDelLbl");
+const jDelSel   = document.getElementById("jDelSel");
 const gamePage  = document.getElementById("gamePage");
+const gameHelp  = document.getElementById("gameHelp");
+const trumpIcon = document.getElementById("trumpIcon");
+const trumpOut  = document.getElementById("trumpOut");
 const bidText   = document.getElementById("bidText");
 const meldSpan  = document.querySelectorAll("#meldColumn span");
 const infoAreas = document.getElementById("infoAreas");
@@ -190,14 +205,12 @@ const playText  = document.getElementById("playText");
 const playPara  = document.querySelectorAll("#playText p");
 const playBtn   = document.getElementById("playBtn");
 const tossBtn   = document.getElementById("tossBtn");
+const playWait  = document.getElementById("playWait");
 const handText  = document.getElementById("handText");
-const handPara  = document.querySelectorAll("#handText p");
 const handCell  = document.querySelectorAll("#handGrid div");
+const handPara  = document.getElementById("handPara");
 const handBtn   = document.getElementById("handBtn");
-const menuIcon  = document.getElementById("menuIcon");
-const trmpIcon  = document.getElementById("trmpIcon");
-const nTrump    = document.getElementById("nTrump");
-const menuText  = document.getElementById("menuText");
+const handWait  = document.getElementById("handWait");
 const spadesT   = document.getElementById("spadesT");
 const heartsT   = document.getElementById("heartsT");
 const clubsT    = document.getElementById("clubsT");
@@ -212,17 +225,7 @@ const iTrump    = document.getElementById("iTrump");
 const iOutGrid  = document.getElementById("iOut");
 const iOutCell  = document.querySelectorAll("#iOut div");
 const iTake     = document.getElementById("iTake");
-const infoText  = document.querySelectorAll("#infoText div");
-const pAdd      = document.getElementById("pAdd");
-const pAddLbl   = document.getElementById("pAddLbl");
-const pAddInp   = document.getElementById("pAddInp");
-const pAddAdd   = document.getElementById("pAddAdd");
-const pAddCan   = document.getElementById("pAddCan");
-const pDel      = document.getElementById("pDel");
-const pDelLbl   = document.getElementById("pDelLbl");
-const pDelSel   = document.getElementById("pDelSel");
-const pDelDel   = document.getElementById("pDelDel");
-const pDelCan   = document.getElementById("pDelCan");
+const helpPage  = document.querySelectorAll("#helpPage div");
 
 // Animation constants
 const dealTime  = 2000;                                 // milliseconds to deal all cards
@@ -235,7 +238,7 @@ const blink     = "blink 1s ease-in-out 5s infinite";   // slow blink animation
 // wsConnect(ws) (if reconnect, url basename is id)                 set ws.id; reply {op:"id", id:i}
 // wsClose(closeEvent)                                              socket[closeEvent.target.id]=null
 // {op:"ping"}                                                      reply {op:"pong"}
-// {op:"join", name:n$, creator:i}                                  fix groups; send {op:"join", name:n$} to creator
+// {op:"join", name:n$, starter:i}                                  fix groups; send {op:"join", name:n$} to starter
 // {op:"solo"}                                                      clear sender's group
 // {op:"deal", player:p, value:[v], name:[n$], bot:[f], show:[f]}   forward message to sender's group
 // {op:"bid",  player:p, bid:b}                                     forward message to sender's group
@@ -250,24 +253,24 @@ const blink     = "blink 1s ease-in-out 5s infinite";   // slow blink animation
 // n$   = player name                                               name:"Grampy"
 // p    = player index (left=0, across=1, right=2, origin=3)        player:3
 // [v]  = array of 80 card values (suit + rank=0..4 for JQKTA)      value:[0, 0, 0, 0, ...19, 19, 19, 19]
-// [n$] = array of 4 player names                                   name:["Bender", "Data", "Jarvis", "Creator"]
+// [n$] = array of 4 player names                                   name:["Bender", "Data", "Jarvis", "Starter"]
 // [f]  = array of 4 bot flags                                      bot:[true, false, true, false]
 // [f]  = array of 2 show flags (counts, hands)                     show:[true, false]
 // b    = player's bid (none=-1, pass=0)                            bid:50
 // s    = suit value (diamonds=0, clubs=5, hearts=10, spades=15)    suit:0
 // c    = card index in deck (0 to 79)                              card:62
 //
-//  creator: >wsConnect <id [<join] [>deal [<>bid] <>pick <>toss/ready [<>play]] >solo >wsClose
+//  starter: >wsConnect <id [<join] [>deal [<>bid] <>pick <>toss/ready [<>play]] >solo >wsClose
 //  joiner:  >wsConnect <id  >join  [<deal [<>bid] <>pick <>toss/ready [<>play]] >solo >wsClose
 let websocket   = null;                                 // websocket object (or null)
 let wsIntervlID = null;                                 // websocket interval timer identifier (or null)
 let id          = none;                                 // id = websocket identifier
 
 // Game variables from this player's perspective
-let idStack     = [];                                   // stack of infoText divs
-let game        = none;                                 // game number (aka id of creator)
-let solo        = true;                                 // creator is only human player
-let shift       = 0;                                    // this player is shift players left of creator
+let helpStack   = [];                                   // stack of help pages
+let game        = none;                                 // game number (aka id of starter)
+let solo        = true;                                 // starter is only human player
+let shift       = 0;                                    // this player is shift players left of starter
 let waiter      = [];                                   // waiter[w] = waiter w's name
 let name        = ["Bender", "Data", "Jarvis", ""];     // name[p] = player p's name
 let bot         = [true, true, true, false];            // bot[p] = player p is a bot (include pj)
@@ -669,22 +672,22 @@ function autoPick() {
     return t;
 }
 
-// Return true if card c can be chosen based on lead card l, high card h, and trump (disturbing nothing)
-function legal(c, l, h) {
+// Return true if card c can be chosen based on leadCard, highCard, and trump (disturbing nothing)
+function legal(c) {
     if (card[c].g!=hand)                                        // c's not in hand, c's illegal
         return false;
-    if (l == none)                                              // If no lead card (and no high card), c's legal
+    if (leadCard == none)                                       // If no lead card (and no high card), c's legal
         return true;
-    if (!card[l].m && card[h].m) {                              // If non-trump lead was trumped, 
-        if (card[c].s == card[l].s)                                 // if c follows the lead, c's legal
+    if (!card[leadCard].m && card[highCard].m) {                // If non-trump lead was trumped, 
+        if (card[c].s == card[leadCard].s)                          // if c follows the lead, c's legal
             return true;
         for (let i = minC[card[c].p]; i <= maxC[card[c].p]; i++)    // if player can follow but doesn't, c's illegal
-            if (card[i].g==hand && card[i].s==card[l].s)
+            if (card[i].g==hand && card[i].s==card[leadCard].s)
                 return false;
-        if (card[c].m && card[c].r>card[h].r)                       // if player overtrumps, c's legal
+        if (card[c].m && card[c].r>card[highCard].r)                // if player overtrumps, c's legal
             return true;
         for (let i = minC[card[c].p]; i <= maxC[card[c].p]; i++)    // if player can overtrump but doesn't, c's illegal
-            if (card[i].g==hand && card[i].m && card[i].r>card[h].r)
+            if (card[i].g==hand && card[i].m && card[i].r>card[highCard].r)
                 return false;
         if (card[c].m)                                              // if c's trump, c's legal
             return true;
@@ -692,22 +695,22 @@ function legal(c, l, h) {
             if (card[i].g==hand && card[i].m)
                 return false;
     } else {                                                    // If trump was lead or high card isn't trump,
-        if (card[c].s==card[l].s && card[c].r>card[h].r)            // if c follows lead and beats high, c's legal
+        if (card[c].s==card[leadCard].s && card[c].r>card[highCard].r) // if c follows lead and beats high, c's legal
             return true;
         for (let i = minC[card[c].p]; i <= maxC[card[c].p]; i++)    // if player can follow lead & beat high but doesn't, c's illegal
-            if (card[i].g==hand && card[i].s==card[l].s && card[i].r>card[h].r)
+            if (card[i].g==hand && card[i].s==card[leadCard].s && card[i].r>card[highCard].r)
                 return false;
-        if (card[c].s == card[l].s)                                 // if c follows lead, c's legal
+        if (card[c].s == card[leadCard].s)                          // if c follows lead, c's legal
             return true;
         for (let i = minC[card[c].p]; i <= maxC[card[c].p]; i++)    // if player can follow lead but doesn't, c's illegal
-            if (card[i].g==hand && card[i].s==card[l].s)
+            if (card[i].g==hand && card[i].s==card[leadCard].s)
                 return false;
         if (card[c].m)                                              // if card is (first) trump, c's legal
             return true;
         for (let i = minC[card[c].p]; i <= maxC[card[c].p]; i++)    // if player can trump but doesn't, c's illegal
             if (card[i].g==hand && card[i].m)
                 return false;
-        }
+    }
     return true;                                                // All other c's are legal
 }
 
@@ -760,18 +763,19 @@ function showHints() {
         let n = 0, i = 0;
         for (const r of rArray)
             n += remaining[r+trump] - nValue(p3,r+trump);
-        nTrump.textContent = n;
+        trumpOut.textContent = n;
         for (const p of [p0, p1, p2]) {
             for (const s of sArray) {
                 let n = 0;
                 for (const r of rArray)
                     n += capMaxCards(p, r+s, p3);
-                infoIcon[i++].style.filter = n==0? "invert(0%)" : (minCards[p][ace+s]>0? "invert(100%)" : "invert(50%)");
+                const f = minCards[p][ace+s]>0? 3/3 : (capMaxCards(p,ace+s,p3)>0? 2/3 : (n>0? 1/3 : 0/3));
+                infoIcon[i++].style.filter = `invert(${f})`;
             }
             infoHint[p].style.display = nCards(p)>0? "inline" : "none";
         }
     } else {
-        nTrump.textContent = "";
+        trumpOut.textContent = "";
         infoHint[p0].style.display = infoHint[p1].style.display = infoHint[p2].style.display = "none";
     }
 }
@@ -1060,37 +1064,30 @@ function xy2c(x, y) {
 //                     EVENT HANDLERS                      //
 /////////////////////////////////////////////////////////////
 
-// Info close icon clicked: pop and hide and discard current infoText div, then display previous infoText div
-function infoCloseClicked() {
-    if (idStack.length > 0)
-        idStack.pop().style.display = "none";
-    if (idStack.length > 0)
-        idStack.at(-1).style.display = "block";
+// Help close icon clicked: pop and hide and discard current helpPage div, then display previous helpPage div
+function helpClosed() {
+    if (helpStack.length > 0)
+        helpStack.pop().style.display = "none";
+    if (helpStack.length > 0)
+        helpStack.at(-1).style.display = "block";
 }
 
-// Info icon or link clicked: hide previous infoText div and display new infoText div id
-function info(id) {
-    for (const div of infoText)
-        if (div.id == id) {
-            if (idStack.length > 0)
-                idStack.at(-1).style.display = "none";
+// Help icon or link clicked: hide previous helpPage div and display new helpPage div.id topic
+function help(topic) {
+    for (const div of helpPage)
+        if (div.id == topic) {
+            if (helpStack.length > 0)
+                helpStack.at(-1).style.display = "none";
             div.style.display = "block";
-            idStack.push(div);
+            helpStack.push(div);
             break;
         }
 }
 
-// Info icon clicked: reveal/hide handEnded paragraphs
-function infoClicked() {
-    if (handPara[0].style.display == "none")
-        handPara[0].style.display = handPara[1].style.display = handPara[2].style.display = "block";
-    else
-        handPara[0].style.display = handPara[1].style.display = handPara[2].style.display = "none";
-}
-
 // Ok button clicked: note p3 is ready, notify others, and await all ready
 function okClicked() {
-    handBtn.disabled = true;
+    handBtn.style.display = "none";
+    handWait.style.display = "inline";
     ready[p3] = true;
     notify({op:"ready", player:left(p3)});
     infoName[p3].style.animation = "none";
@@ -1106,72 +1103,15 @@ function handEnded() {
     handCell[7].innerHTML = teamO[bidder]? bidO : "Pass";
     handCell[8].innerHTML = teamE[bidder]? bidE : "Pass";
     handCell[10].innerHTML = meldO<20||(!tossE&&takeO<20)? `<s>&nbsp;${meldO}&nbsp;</s>` : meldO;
+    meldO = meldO<20||(!tossE&&takeO<20)? 0 : meldO;
     handCell[11].innerHTML = meldE<20||(!tossO&&takeE<20)? `<s>&nbsp;${meldE}&nbsp;</s>` : meldE;
+    meldE = meldE<20||(!tossO&&takeE<20)? 0 : meldE;
     handCell[13].innerHTML = takeO<20? `<u><s>&nbsp;${takeO}&nbsp;</s></u>` : `<u>${takeO}</u>`;
+    takeO = takeO<20? 0 : takeO;
     handCell[14].innerHTML = takeE<20? `<u><s>&nbsp;${takeE}&nbsp;</s></u>` : `<u>${takeE}</u>`;
-    if (tossO) {
-        scoreO = scoreO - bidO;
-        handPara[0].innerHTML = `You lost your bid because ` +
-            `${bidder==p3?"you":name[bidder]} tossed due to ${mustToss?`no trump marriage`:`insufficient meld`}.`;
-    } else if (teamO[bidder] && (meldO<20 || takeO<20 || meldO+takeO<bidO)) {
-        scoreO = scoreO - bidO;
-        handPara[0].innerHTML = `You lost your bid because ` + 
-            (meldO<20? `your meld was less than 20.` :
-            (takeO<20? `your take was less than 20.` :
-            `your meld plus take was less than your bid.`));
-    } else if (teamO[bidder]) {
-        scoreO = scoreO + meldO + takeO;
-        handPara[0].innerHTML = `You won your meld plus take because ` +
-            `they were each at least 20 and your meld plus take was at least your bid.`;
-    } else if (tossE) {
-        scoreE = scoreE - bidE;
-        handPara[0].innerHTML = `They lost their bid because ` +
-            `${name[bidder]} tossed in the hand due to ${mustToss?`no trump marriage`:`insufficient meld`}.`;
-    } else if (teamE[bidder] && (meldE<20 || takeE<20 || meldE+takeE<bidE)) {
-        scoreE = scoreE - bidE;
-        handPara[0].innerHTML = `They lost their bid because ` + 
-            (meldE<20? `their meld was less than 20.` :
-            (takeE<20? `their take was less than 20.` :
-            `their meld plus take was less than their bid.`));
-    } else if (teamE[bidder]) {
-        scoreE = scoreE + meldE + takeE;
-        handPara[0].innerHTML = `They won their meld plus take because ` +
-            `they were each at least 20 and their meld plus take was at least their bid.`;
-    }
-    if (tossO && meldE<20) {
-        scoreE = scoreE;
-        handPara[1].innerHTML = `They didn't win their meld because it was less than 20.`;
-    } else if (tossO && meldE>=20) {
-        scoreE = scoreE + meldE;
-        handPara[1].innerHTML = `They won their meld because it was at least 20.`;
-    } else if (teamO[bidder] && !tossO && takeE<20) {
-        scoreE = scoreE;
-        handPara[1].innerHTML = `They didn't win their meld or take because their take was less than 20.`;
-    } else if (teamO[bidder] && !tossO && meldE<20 && takeE>=20) {
-        scoreE = scoreE + takeE;
-        handPara[1].innerHTML = `They didn't win their meld because it was less than 20, but ` +
-            `they won their take because it was at least 20.`;
-    } else if (teamO[bidder] && !tossO && meldE>=20 && takeE>=20) {
-        scoreE = scoreE + meldE + takeE;
-        handPara[1].innerHTML = `They won their meld plus take because they were each at least 20.`;
-    } else if (tossE && meldO<20) {
-        scoreO = scoreO;
-        handPara[1].innerHTML = `We didn't win our meld because it was less than 20.`;
-    } else if (tossE && meldO>=20) {
-        scoreO = scoreO + meldO;
-        handPara[1].innerHTML = `We won our meld because it was at least 20.`;
-    } else if (teamE[bidder] && !tossE && takeO<20) {
-        scoreO = scoreO;
-        handPara[1].innerHTML = `We didn't win our meld or take because our take was less than 20.`;
-    } else if (teamE[bidder] && !tossE && meldO<20 && takeO>=20) {
-        scoreO = scoreO + takeO;
-        handPara[1].innerHTML = `We didn't win our meld because it was less than 20, but ` +
-            `we won our take because it was at least 20.`;
-    } else if (teamE[bidder] && !tossE && meldO>=20 && takeO>=20) {
-        scoreO = scoreO + meldO + takeO;
-        handPara[1].innerHTML = `We won our meld plus take because they were each at least 20.`;
-    }
-    handPara[2].innerHTML = `Your score is now ${scoreO}.<br>Their score is now ${scoreE}.`;    
+    takeE = takeE<20? 0 : takeE;
+    scoreO += teamO[bidder]&&meldO+takeO<bidO? -bidO : meldO+takeO;
+    scoreE += teamE[bidder]&&meldE+takeE<bidE? -bidE : meldE+takeE;
     handCell[16].innerHTML = scoreO;
     handCell[17].innerHTML = scoreE;
     dealer = next[dealer];
@@ -1179,13 +1119,13 @@ function handEnded() {
     for (const p of pArray)
         ready[p] = bot[p];
     if (takeE==50 || (scoreE>=500 && scoreO<500) || (scoreO>=500 && scoreE>=500 && teamE[bidder]))
-        handPara[3].innerHTML = `Boohoo! We lost!`;
+        handPara.textContent = `Boohoo! We lost!`;
     else if (takeO==50 || (scoreO>=500 && scoreE<500) || (scoreO>=500 && scoreE>=500 && teamO[bidder]))
-        handPara[3].innerHTML = `Woohoo! We win!`;
+        handPara.textContent = `Woohoo! We win!`;
     else
-        handPara[3].innerHTML = `${name[dealer]} deals next.`;
-    handBtn.disabled = false;
-    handPara[0].style.display = handPara[1].style.display = handPara[2].style.display = "none";
+        handPara.textContent = `${name[dealer]} deals next.`;
+    handBtn.style.display = "inline";
+    handWait.style.display = "none";
     handText.style.display = "block";
     for (const p of pArray) {
         ready[p] = bot[p];
@@ -1194,7 +1134,7 @@ function handEnded() {
     onready = takeO<50 && takeE<50 && scoreO<500 && scoreE<500? dealCards : loaded;
 }
 
-// Trick viewed: pull trick, then retrigger awaitChoice or trigger handEnded
+// Trick viewed: pull trick, then retrigger awaitPlay or trigger handEnded
 function trickViewed() {
     logState("trickViewed");
     for (let c = 0; c < deckCards; c++)
@@ -1204,15 +1144,15 @@ function trickViewed() {
         player = card[highCard].p;
         chosen = leadCard = highCard = none;
         infoName[player].style.animation = blink;                   // wait for next player to choose a card
-        setTimeout(awaitChoice, dealTime/10);
+        setTimeout(awaitPlay, dealTime/10);
     } else {
         player = none;
         if (card[highCard].o)
             takeO += 2;
         else
             takeE += 2;
-        trmpIcon.style.display = "none";
-        nTrump.textContent = "";
+        trumpIcon.style.display = "none";
+        trumpOut.textContent = "";
         infoHint[p0].style.display = infoHint[p1].style.display = infoHint[p2].style.display = "none";
         setTimeout(handEnded, dealTime/10);
     }
@@ -1233,7 +1173,7 @@ function trickPlayed() {
     setTimeout(trickViewed, dealTime/4);
 }
 
-// Card played: close hand, then trigger trickPlayed or awaitChoice and wait for player to bick a card 
+// Card played: close hand, then trigger trickPlayed or awaitPlay and wait for player to bick a card 
 function cardPlayed() {
     logState("cardPlayed");
     locateCards();
@@ -1244,7 +1184,7 @@ function cardPlayed() {
     else {
         player = next[player];
         infoName[player].style.animation = blink;                   // wait for next player to pick a card
-        setTimeout(awaitChoice, 100);
+        setTimeout(awaitPlay, 100);
     }
 }
 
@@ -1335,16 +1275,18 @@ function pointerMoved(event) {
 
 // Pointer up event
 function pointerUpped(event) {
+    const deltaY = card[pickedC].hand.y - (event.clientY - offsetY);
     event.preventDefault();
     if (pickedC && pickedE) {
-        if (event.clientY-offsetY < card[pickedC].hand.y-cardh/2) {
+        log(deltaY);
+        if (deltaY==0 || deltaY>cardh/2) {
             strt = fnsh;
             fnsh = `translate(${card[pickedC].play.x}px, ${card[pickedC].play.y}px)`;
             pickedE.animate([{transform:strt}, {transform:fnsh}], {duration:dealTime/10, fill:"forwards"});
             card[pickedC].g = play;
             chosen = pickedC; 
             notify({op:"play", card:cardLeft(chosen)});
-            infoName[p3].style.animation = "none";                      // stop waiting for me to pick a card
+            infoName[p3].style.animation = "none";
             for (let c=minC[p3]; c<=maxC[p3]; c++) {
                 cardImg[c].onpointerdown = "";
                 cardImg[c].onpointermove = "";
@@ -1361,24 +1303,24 @@ function pointerUpped(event) {
     }
 }
 
-// Hands re-fanned: wait for p3, bot or remote player to choose a card
-function awaitChoice() {
-    logState("awaitChoice");
+// Hands re-fanned: wait for p3, bot or remote player to play a card
+function awaitPlay() {
+    logState("awaitPlay");
+    gameHelp.onclick = function () {help('playHelp');};
     showHints();
-    if (player == p3)
-        for (let c=minC[p3]; c<=maxC[p3]; c++)
-            if (legal(c, leadCard, highCard)) {
-                cardImg[c].style.filter = "brightness(100%)";
-                cardImg[c].onpointerdown = pointerDowned;
-                cardImg[c].onpointermove = pointerMoved;
-                cardImg[c].onpointerup = pointerUpped;
-            } else
-                cardImg[c].style.filter = "brightness(70%)";
-
-    else if (shift==0 && bot[player]) {
+    for (let c=minC[p3]; c<=maxC[p3]; c++) {
+        if (player>=nGroup(play) && card[c].g==hand)
+            cardImg[c].style.filter = `brightness(${legal(c)?"100%":"70%"})`;
+        if (player==p3 && legal(c)) {
+            cardImg[c].onpointerdown = pointerDowned;
+            cardImg[c].onpointermove = pointerMoved;
+            cardImg[c].onpointerup = pointerUpped;
+        }
+    }
+    if (shift==0 && bot[player]) {
         chosen = autoSelect();
         notify({op:"play", card:cardLeft(chosen)});
-        infoName[player].style.animation = "none";              // stop waiting for my bot to choose a card
+        infoName[player].style.animation = "none";
         setTimeout (cardChosen);
     }
 }
@@ -1399,7 +1341,7 @@ function meldGathered() {
     player = bidder;
     chosen = leadCard = highCard = none;
     infoName[player].style.animation = blink;
-    setTimeout(awaitChoice, dealTime/10);                       // wait for player to choose a card
+    setTimeout(awaitPlay, dealTime/10);                       // wait for player to choose a card
 }
 
 // Bidding is complete: gather meld, then trigger handEnded or meldGathered
@@ -1419,9 +1361,9 @@ function biddingComplete() {
 // Play button clicked: notify others then await all ready
 function playClicked() {
     notify({op:"ready", player:left(p3)});
-    infoName[p3].style.animation = "none";                      // stop waiting for me to be ready
-    playBtn.disabled = true;
-    tossBtn.disabled = true;
+    infoName[p3].style.animation = "none";
+    playBtn.style.display = tossBtn.style.display = "none";
+    playWait.style.display = "inline";
     ready[p3] = true;
     if (ready[p0] && ready[p1] && ready[p2] && ready[p3])
         setTimeout(onready);
@@ -1431,17 +1373,18 @@ function playClicked() {
 function tossClicked() {
     tossO = true;
     notify({op:"toss"});
-    infoName[p3].style.animation = "none";                      // stop waiting for me to toss
-    playBtn.disabled = true;
-    tossBtn.disabled = true;
+    infoName[p3].style.animation = "none";
+    playBtn.style.display = tossBtn.style.display = "none";
+    playWait.style.display = "inline";
     ready[p3] = true;
     if (ready[p0] && ready[p1] && ready[p2] && ready[p3])
         setTimeout(onready);
 }
 
-// Meld fanned: display information then await all ready
-function meldFanned() {
-    logState("meldFanned");
+// Meld fanned: display information then await toss or all ready
+function awaitToss() {
+    logState("awaitToss");
+    gameHelp.onclick = function () {help('tossHelp');};
     playPara[0].innerHTML = `${bidder==p3?"You":name[bidder]} picked ${suit$[trump]}.`;
     playPara[1].innerHTML = `Your meld is ${meldO<20?"<20":meldO}.<br>`;
     playPara[1].innerHTML += `Their meld is ${meldE<20?"<20":meldE}.`;
@@ -1454,15 +1397,17 @@ function meldFanned() {
     playBtn.disabled = bidder==p3? mustToss : false;
     tossBtn.style.display = bidder==p3? "inline" : "none";
     tossBtn.disabled = false;
+    playBtn.style.display = "inline";
+    playWait.style.display = "none";
     for (const p of pArray) {
         ready[p] = bot[p];
-        infoName[p].style.animation = bot[p]? "none" : blink;       // wait for all ready
+        infoName[p].style.animation = bot[p]? "none" : blink;
     }
     playText.style.display = "flex";
     onready = biddingComplete;
 }
 
-// Hands regathered: fan out meld, then trigger meldFanned
+// Hands regathered: fan out meld, then trigger awaitToss
 function handsRegathered() {
     logState("handsRegathered");
 
@@ -1525,14 +1470,14 @@ function handsRegathered() {
     for (let c = 0; c < deckCards; c++)
         if (card[c].g==hand)
             moveCard(c, gone, 0, card[c].g, c, true, dealTime/10);
-    setTimeout(meldFanned, dealTime/10);
+    setTimeout(awaitToss, dealTime/10);
 }
 
 // Trump picked: regather hands, then trigger handsRegathered
 function trumpPicked() {
     logState("trumpPicked");
-    trmpIcon.src = suitSrc[trump];
-    trmpIcon.style.display = "block";
+    trumpIcon.src = suitSrc[trump];
+    trumpIcon.style.display = "block";
     bidO  = Math.max(bid[p1], bid[p3]);
     bidE  = Math.max(bid[p0], bid[p2]);
     meldO = meld(p1, trump) + meld(p3, trump);
@@ -1560,8 +1505,9 @@ function suitClicked(s) {
 }
 
 // Bid won: await suitClicked (p3), autoPick (bot) or picked message (remote human)
-function bidDone() {
-    logState("bidDone");
+function awaitTrump() {
+    logState("awaitTrump");
+    gameHelp.onclick = function () {help('trumpHelp');};
     for (const p of pArray)                                     // stop displaying bids
         infoBid[p].style.display = "none";
     for (bidder of pArray)                                      // find winning bidder
@@ -1590,7 +1536,7 @@ function bidDone() {
     }
 }
 
-// Bid button n clicked: handle button n and retrigger awaitBid or trigger bidDone
+// Bid button n clicked: handle button n and retrigger awaitBid or trigger awaitTrump
 function bidClicked(n) {
     const b = bidBtn[n].value;
     const highBid = Math.max(...bid);
@@ -1626,10 +1572,9 @@ function bidClicked(n) {
     setTimeout(awaitBid, dealTime / 4);                         // await next bidder
 }
 
-// Hands fanned: await bidClicked, autoBid or data message then retrigger awaitBid or trigger bidDone
+// Hands fanned: await bidClicked, autoBid or data message then retrigger awaitBid or trigger awaitTrump
 function awaitBid() {
     logState("awaitBid");
-    infoIcon.onclick = "info('bidding')";
     while (bid[bidder] == pass) {                               // if bidder passed,
         infoName[bidder].style.animation = "none";                  // stop waitin for this bidder
         bidder = next[bidder];                                      // advance to next bidder
@@ -1645,7 +1590,7 @@ function awaitBid() {
         if (bidder==p3 || (shift==0&&bot[bidder])) {                // if the last bidder is me or my bot,
             notify({op:"bid", player:left(bidder), bid:bid[bidder]});   // notify others of this bid
             infoName[bidder].style.animation = "none";                  // stop waiting for this bid
-            setTimeout(bidDone, dealTime / 4);                          // advance to bidding done
+            setTimeout(awaitTrump, dealTime / 4);                          // advance to bidding done
         }
         return;
     }
@@ -1732,7 +1677,7 @@ function resized() {
 function dealCards() {
     logState("dealCards");
     const cardV = Array.from(card, (c)=>c.v);
-    createPg.style.display = "none";
+    startPage.style.display = "none";
     joinPage.style.display = "none";
     handText.style.display = "none";
     gamePage.style.display = "block";
@@ -1782,63 +1727,8 @@ function shuffleCards() {
     }
 }
 
-// Menu icon clicked: display the menu
-function menuIconClicked() {
-    menuText.style.display = "block";
-}
-
-// Menu close icon clicked: close the menu
-function menuCloseClicked() {
-    menuText.style.display = "none";
-}
-
-// Reload app menu item clicked: restart the app
-function reloadClicked() {
-    window.location.reload();
-}
-
-// Tutor menu item clicked: close menu and display first page of tutorial
-function tutorClicked() {
-    menuText.style.display = "none";
-    tutorialPg = 0;
-    tutorPage[tutorialPg].style.display = "block";
-}
-
-// Tutor back icon clicked: close current page and display previous page
-function tutorBackClicked() {
-    tutorPage[tutorialPg--].style.display = "none";
-    tutorPage[tutorialPg].style.display = "block";
-}
-
-// Tutor next icon clicked: close current page and display next page
-function tutorNextClicked() {
-    tutorPage[tutorialPg++].style.display = "none";
-    tutorPage[tutorialPg].style.display = "block";
-}
-
-// Tutor close icon clicked: close the tutor display
-function tutorCloseClicked() {
-    tutorPage[tutorialPg].style.display = "none";
-}
-
-// About app menu item clicked: close the app
-function aboutClicked() {
-    menuText.style.display = "none";
-    aboutText.style.display = "block"
-}
-
-// Tutor close icon clicked: close the tutor display
-function aboutCloseClicked() {
-    aboutText.style.display = "none";
-}
-
-// Exit app menu item clicked: close the app
-function exitClicked() {
-    window.close();
-}
-
 // Trmp icon clicked: display the info
-function trmpIconClicked() {
+function trumpIconClicked() {
     iTrump.textContent = `Trump is ${suit$[trump]}.`;
     let i = 0;
     for (const s of sArray)
@@ -1873,9 +1763,8 @@ function setOptions() {
         opt.text = "Select...";
         pName[p].appendChild(opt);
         if (p==p3 || p==pj || bot[p]) {
-            pName[p].add(new Option("Add..."));
-            pName[p].add(new Option("Delete..."));
-            pName[p].appendChild(document.createElement("hr"));
+            pName[p].add(new Option("(add)"));
+            pName[p].add(new Option("(delete)"));
         }
         for (const i of list)
             pName[p].add(new Option(i));
@@ -1883,19 +1772,22 @@ function setOptions() {
     }
 }
 
-// Create button clicked: close load page, apply game settings and open create page
-function createClicked() {
-    logState("createPage");
-    infoIcon.onclick = "info('creating')";
+// Start button clicked: close load page, apply game settings and open start page
+function startClicked() {
+    logState("startPage");
+    const alias = localStorage.alias? JSON.parse(localStorage.alias) : [];
+    const robot = localStorage.robot? JSON.parse(localStorage.robot) : [];
     name = localStorage.name? JSON.parse(localStorage.name) : name;
     bot  = localStorage.bot?  JSON.parse(localStorage.bot)  : bot;
     show = localStorage.show? JSON.parse(localStorage.show) : show;
+    for (const p of pArray) {
+        bot[p] = bot[p] || (p==p0||p==p1||p==p2)&&!websocket;
+        name[p] = (bot[p]&&robot.includes(name[p]))||(p==p3&&alias.includes(name[p]))? name[p] : "";
+    }
     game = id;
     shift = 0;
     waiter.length = 0;
-    createHdg.innerText = `Create Game ${websocket?id:""}`;
-    for (const p of [p0, p1, p2])                               // for p0..p2,
-        bot[p] = bot[p] || !websocket;                              // bot if was bot last time or is now offline
+    startHdg.innerText = `Start Page ${websocket?id:""}`;
     setOptions();                                               // set option list for each name selector
     for (const p of pArray)                                     // for every player,
         if (p==p3) {                                                // if I'm the player,
@@ -1911,33 +1803,32 @@ function createClicked() {
             pIcon[p].src = humanSrc;                                    // set player icon to human
             pIcon[p].disabled = false;                                  // allow player type change
         }
-    pLegend.style.visibility = bot[p0]&&bot[p1]&&bot[p2]? "hidden" : "visible";
+    startCtr.style.visibility = bot[p0]&&bot[p1]&&bot[p2]? "hidden" : "visible";
     aBox[counts].src = show[counts]? checked : unchecked;
     aBox[hands].src = show[hands]? checked : unchecked;
     aBox[counts].disabled = aBox[hands].disabled = false;
-    pAdd.style.display = "block";
-    pDel.style.display = "none";
-    pAdd.style.visibility = pDel.style.visibility = "hidden";
+    pAddDiv.style.display = "block";
+    pDelDiv.style.display = "none";
+    pAddDiv.style.visibility = pDelDiv.style.visibility = "hidden";
     loadPage.style.display = "none";
-    createPg.style.display = "flex";
-}
-
-// Create close icon clicked
-function createCloseClicked() {
-    createPg.style.display = "none";
-    loadPage.style.display = "flex";
+    startPage.style.display = "flex";
 }
 
 // Join button clicked: recall defaults, close load page, open join page
 function joinClicked() {
     logState("joinPage");
+    setOptions();
+    const alias = localStorage.alias? JSON.parse(localStorage.alias) : [];
     pName[pj].value = localStorage.self? localStorage.self : "";
-    pName[pj].placeholder = "";
+    pName[pj].value = alias.includes(pName[pj].value)? pName[pj].value : "";
     jGame.value = "";
     jGame.placeholder = "";
-    loadPage.style.display = "none";
     joinSub.style.display = "inline";
     joinWait.style.display = "none";
+    jAddDiv.style.display = "block";
+    jDelDiv.style.display = "none";
+    jAddDiv.style.visibility = jDelDiv.style.visibility = "hidden";
+    loadPage.style.display = "none";
     joinPage.style.display = "grid";
     pName[pj].disabled = false;
     jGame.disabled = false;
@@ -1947,31 +1838,25 @@ function joinClicked() {
         jGame.focus();
 }
 
-// Join close icon clicked
-function joinCloseClicked() {
-    joinPage.style.display = "none";
-    loadPage.style.display = "flex";
-}
-
 // Name for player p changed: show pAdd or pDel dialogs, if necessary
 function nChanged(event, p) {
 
     // pAdd input keyed: if entered name, add name to list
-    function pAddKeyed(event) {
+    function nAddKeyed(event) {
         switch (event.key) {
         case "Escape":
             event.preventDefault();
-            pAdd.style.visibility = "hidden";
+            nAddDiv.style.visibility = "hidden";
             pName[p].value = "";
             pName[p].focus();
             break;
         case "Enter":
             event.preventDefault();
-            pAddInp.removeEventListener("keydown", pAddKeyed);
-            pAdd.style.visibility = "hidden";
+            nAddInp.removeEventListener("keydown", nAddKeyed);
+            nAddDiv.style.visibility = "hidden";
             const alias = localStorage.alias? JSON.parse(localStorage.alias) : [];
             const robot = localStorage.robot? JSON.parse(localStorage.robot) : ["Bender", "Data", "Jarvis"];
-            const name = pAddInp.value.trim().substring(0,10);
+            const name = nAddInp.value.trim().substring(0,10);
             if ((p==p3||p==pj) && name!="" && alias.indexOf(name)==none)
                 alias.push(name);
             else if ((p==p0||p==p1||p==p2) && name!="" && robot.indexOf(name)==none)
@@ -1987,13 +1872,13 @@ function nChanged(event, p) {
     }
 
     // pDel select changed: delete selected name from list
-    function pDelChanged(event) {
+    function nDelChanged(event) {
         event.preventDefault();
-        pDelSel.removeEventListener("changed", pDelChanged);
-        pDel.style.visibility = "hidden";
+        nDelSel.removeEventListener("changed", nDelChanged);
+        nDelDiv.style.visibility = "hidden";
         const alias = localStorage.alias? JSON.parse(localStorage.alias) : [];
         const robot = localStorage.robot? JSON.parse(localStorage.robot) : ["Bender", "Data", "Jarvis"];
-        const name = pDelSel.value;
+        const name = nDelSel.value;
         if ((p==p3||p==pj) && alias.indexOf(name)!=none)
             alias.splice(alias.indexOf(name), 1);
         else if ((p==p0||p==p1||p==p2) && robot.indexOf(name)!=none)
@@ -2005,76 +1890,72 @@ function nChanged(event, p) {
         pName[p].focus();
     }
 
-    if (event.target.value == "Add...") {
-        pDel.style.display = "none";
-        pAdd.style.display = "block";
-        pAdd.style.visibility = "visible";
-        pAddLbl.textContent = p==p3||p==pj? "New alias:" : "New bot name:";
-        pAddInp.value = "";
-        pAddInp.focus();
-        pAddInp.addEventListener("keydown", pAddKeyed);
-    } else if (event.target.value == "Delete...") {
+    const nAddDiv = p==pj? jAddDiv : pAddDiv;
+    const nAddLbl = p==pj? jAddLbl : pAddLbl;
+    const nAddInp = p==pj? jAddInp : pAddInp;
+    const nDelDiv = p==pj? jDelDiv : pDelDiv;
+    const nDelLbl = p==pj? jDelLbl : pDelLbl;
+    const nDelSel = p==pj? jDelSel : pDelSel;
+    pName[p].style.color = "black";
+    if (event.target.value == "(add)") {
+        nDelDiv.style.display = "none";
+        nAddDiv.style.display = "block";
+        nAddDiv.style.visibility = "visible";
+        nAddLbl.textContent = p==p3||p==pj? "New alias:" : "New bot name:";
+        nAddInp.value = "";
+        nAddInp.focus();
+        nAddInp.addEventListener("keydown", nAddKeyed);
+    } else if (event.target.value == "(delete)") {
         const alias = localStorage.alias? JSON.parse(localStorage.alias) : [];
         const robot = localStorage.robot? JSON.parse(localStorage.robot) : [];
         const list = p==p3||p==pj? alias : robot;
-        pAdd.style.display = "none";
-        pDel.style.display = "block";
-        pDel.style.visibility = "visible";
-        pDelLbl.textContent = p==p3||p==pj? "Old alias:" : "Old bot name:";
-        pDelSel.innerHTML = "";
+        nAddDiv.style.display = "none";
+        nDelDiv.style.display = "block";
+        nDelDiv.style.visibility = "visible";
+        nDelLbl.textContent = p==p3||p==pj? "Old alias:" : "Old bot name:";
+        nDelSel.innerHTML = "";
         const opt = document.createElement("option");
         opt.value = "";
         opt.disabled = opt.selected = opt.hidden = true;
         opt.text = "Select...";
-        pDelSel.appendChild(opt);
-        pDelSel.add(new Option("(none)"));
-        pDelSel.appendChild(document.createElement("hr"));
+        nDelSel.appendChild(opt);
+        nDelSel.add(new Option("(none)"));
         for (const i of list)
-            pDelSel.add(new Option(i));
-        pDelSel.focus();
-        pDelSel.addEventListener("change", pDelChanged);
+            nDelSel.add(new Option(i));
+        nDelSel.focus();
+        nDelSel.addEventListener("change", nDelChanged);
     }
 }
 
-// Create icon for player p clicked
+// Bot/human icon for player p clicked
 function iClicked(event,p) {
     event.preventDefault();
     bot[p] = !bot[p];
     pIcon[p].src = bot[p]? robotSrc : humanSrc;
-    pLegend.style.visibility = bot[p0]&&bot[p1]&&bot[p2]? "hidden" : "visible";
+    startCtr.style.visibility = bot[p0]&&bot[p1]&&bot[p2]? "hidden" : "visible";
+    setOptions();
     pName[p].value = "";
 }
 
-// Create box b clicked (b=0,1 for counts,hands)
+// Show box b clicked (b=0,1 for counts,hands)
 function bClicked(event, b) {
     event.preventDefault();
     show[b] = !show[b];
     aBox[b].src = show[b]? checked : unchecked;
 }
 
-// Create form submitted
-function createSubmitted(event) {
+// Start form submitted
+function startSubmitted(event) {
     event.preventDefault();
     for (const p of pArray)
-        if (!/^[A-Za-z]{2,10}$/.test(pName[p].value)) {
-            pName[p].value = "";
-            pName[p].placeholder = bot[p]? "2 to 10 letters" : "pick from list";
+        if (pName[p].value == "") {
+            pName[p].style.color = "red";
+            pName[p].focus();
             return;
         }
-    const alias = localStorage.alias? JSON.parse(localStorage.alias) : [];
-    const robot = localStorage.robot? JSON.parse(localStorage.robot) : ["Bender", "Data", "Jarvis"];
-    for (const p of pArray) {                                   // for each player,
+    for (const p of pArray)                                     // for each player,
         name[p] = pName[p].value;                                   // copy player name from form
-        if (p==p3 && !alias.includes(name[p]))                      // if player name isn't a favorite, add it
-            alias.push(name[p]);
-        if (bot[p] && !robot.includes(name[p]))
-            robot.push(name[p]);
-    }
-    alias.sort();                                               // sort favorites
-    robot.sort();
-    shift = 0;                                                  // I'm this game's creator
-    localStorage.alias = JSON.stringify(alias);                 // update favorites and settings
-    localStorage.robot = JSON.stringify(robot);
+    shift = 0;                                                  // I'm this game's starter
     localStorage.name = JSON.stringify(name);
     localStorage.bot = JSON.stringify(bot);
     localStorage.show = JSON.stringify(show);
@@ -2086,9 +1967,9 @@ function createSubmitted(event) {
 // Join form submitted: store form data and join game, then await deal message
 function joinSubmitted(event) {
     event.preventDefault();
-    if (!/^[A-Za-z]{2,10}$/.test(pName[pj].value)) {
-        pName[pj].value = "";
-        pName[pj].placeholder = "2 to 10 letters";
+    if (pName[pj].value == "") {
+        pName[pj].style.color = "red";
+        pName[pj].focus();
         return;
     }
     if (jGame.value.length<1 || jGame.value.length>5) {
@@ -2097,18 +1978,13 @@ function joinSubmitted(event) {
         jGame.focus();
         return;
     }
-    name[p3] = pName[pj].value;                                  // copy player name from form
+    name[p3] = pName[pj].value;                                 // copy player name from form
     game = Number(jGame.value);                                 // copy game number from form
-    const alias = localStorage.alias? JSON.parse(localStorage.alias) : [];
-    if (!alias.includes(name[p3]))                              // if new name,
-        alias.push(name[p3]);                                       // add to alias list
-    alias.sort();
-    localStorage.alias = JSON.stringify(alias);                 // update alias list
     localStorage.self = name[p3];                               // save my name for next time
     websocket.send(JSON.stringify({                             // send join message
         op: "join",
         name: name[p3],
-        creator: game
+        starter: game
     }));
     pName[pj].disabled = true;
     jGame.disabled = true;
@@ -2160,10 +2036,11 @@ function wsMessage(messageEvent) {
         break;
     case "pong":                                                // if {op:"pong"}, ignore
         break;
-    case "join":                                                // if {op:"join", name:n$}, (only received by creator)
+    case "join":                                                // if {op:"join", name:n$}, (only received by starter)
         log(`wsMessage: op:join, name:${msg.name}`);
         waiter.push(msg.name);                                      // add name to waiter list
-        pLegend.textContent = `Players joining: ${waiter.length}`;  // update count on create page
+        startCtr.textContent = `Players joining: ${waiter.length}`; // update count on start page
+        setOptions();                                               // update option lists
         break;
     case "deal":                                                // if {op:"deal", player:p, value:[v], name:[n$], bot:[f], show:[f]}
         log(`wsMessage: op:deal, player:${msg.player}, value:${msg.value}, name:${msg.name}, bot:${msg.bot}, show:${msg.show}`);
@@ -2290,8 +2167,8 @@ function loaded() {
     }
 
     // Initialize display
-    trmpIcon.style.display = "none";
-    nTrump.textContent = "";
+    trumpIcon.style.display = "none";
+    trumpOut.textContent = "";
     infoHint[p0].style.display = infoHint[p1].style.display = infoHint[p2].style.display = "none";
     gamePage.style.display = "none";
     loadPage.style.display = "flex";
