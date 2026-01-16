@@ -38,7 +38,7 @@ hs.listen(hsPort, hsListening);
 // wsConnect(ws)                                                    set ws.id; reply {op:"id", id:i}
 // wsClose(closeEvent)                                              socket[closeEvent.target.id]=null
 // {op:"ping"}                                                      reply {op:"pong"}
-// {op:"join", name:n$, creator:i}                                  fix groups; send {op:"join", name:n$} to creator
+// {op:"join", name:n$, starter:i}                                  fix groups; send {op:"join", name:n$} to starter
 // {op:"solo"}                                                      clear sender's group
 // {op:"deal", player:p, value:[v], name:[n$], bot:[f], show:[f]}   forward message to sender's group
 // {op:"bid",  player:p, bid[b]}                                    forward message to sender's group
@@ -53,14 +53,14 @@ hs.listen(hsPort, hsListening);
 // n$   = player name                                               name:"Grampy"
 // p    = player index (left=0, across=1, right=2, origin=3)        player:3
 // [v]  = array of 80 card values (suit + rank=0..4 for JQKTA)      value:[0, 0, 0, 0, ...19, 19, 19, 19]
-// [n$] = array of 4 player names                                   name:["Bender", "Data", "Jarvis", "Creator"]
+// [n$] = array of 4 player names                                   name:["Bender", "Data", "Jarvis", "Starter"]
 // [f]  = array of 4 bot flags                                      bot:[true, false, true, false]
 // [f]  = array of 5 show flags                                     show:[true, true, true, false, false]
 // [b]  = array of 4 bid values (none=-1, pass=0)                   bid:[0, 50, -1, -1]
 // s    = suit value (diamonds=0, clubs=5, hearts=10, spades=15)    suit:0
 // c    = card index in deck (0 to 79)                              card:62
 //
-//  creator: >wsConnect <id [<join] [>deal [<>bid] <>pick <>toss/ready [<>play]] >solo >wsClose
+//  starter: >wsConnect <id [<join] [>deal [<>bid] <>pick <>toss/ready [<>play]] >solo >wsClose
 //  joiner:  >wsConnect <id  >join  [<deal [<>bid] <>pick <>toss/ready [<>play]] >solo >wsClose
 
 const wssPort = 3000;                                           // websocket server port
@@ -94,22 +94,22 @@ function wsMessage(messageEvent) {
     case "ping":                                                // if {op:"ping"},
         ws.send(JSON.stringify({op:"pong"}));                       // send {op:"pong"}
         break;
-    case "join":                                                // if {op:"join", name:p$, creator:i},
-        console.log(`wsMessage: rxed op:join, name:${msg.name}, creator:${msg.creator} from id:${ws.id}`);
-        group[ws.id].push(msg.creator, ...group[msg.creator]);      // add creator and creator's group to joiner's group
+    case "join":                                                // if {op:"join", name:p$, starter:i},
+        console.log(`wsMessage: rxed op:join, name:${msg.name}, starter:${msg.starter} from id:${ws.id}`);
+        group[ws.id].push(msg.starter, ...group[msg.starter]);      // add starter and starter's group to joiner's group
         console.log(`wsMessage: group[${ws.id}]:${group[ws.id]}`);
-        for (const member of group[msg.creator]) {                  // for each member of creator's group,
+        for (const member of group[msg.starter]) {                  // for each member of starter's group,
             group[member].push(ws.id);                                  // add joiner to member's group
             console.log(`wsMessage: group[${member}]:${group[member]}`);
         }
-        group[msg.creator].push(ws.id);                             // add joiner to creator's group
-        console.log(`wsMessage: group[${msg.creator}]:${group[msg.creator]}`);
-        if (socket[msg.creator]) {                                  // if creator is online, send notification to creator
-            socket[msg.creator].send(JSON.stringify({op:"join", name:msg.name}));
-            console.log(`wsMessage: txed op:join, name:${msg.name} to id:${msg.creator}`);
-        } else {                                                    // otherwise, queue notification for creator
-            message[msg.creator].push(JSON.stringify({op:"join", name:msg.name}));
-            console.log(`wsMessage: queued op:join, name:${msg.name} to id:${msg.creator}`);
+        group[msg.starter].push(ws.id);                             // add joiner to starter's group
+        console.log(`wsMessage: group[${msg.starter}]:${group[msg.starter]}`);
+        if (socket[msg.starter]) {                                  // if starter is online, send notification to starter
+            socket[msg.starter].send(JSON.stringify({op:"join", name:msg.name}));
+            console.log(`wsMessage: txed op:join, name:${msg.name} to id:${msg.starter}`);
+        } else {                                                    // otherwise, queue notification for starter
+            message[msg.starter].push(JSON.stringify({op:"join", name:msg.name}));
+            console.log(`wsMessage: queued op:join, name:${msg.name} to id:${msg.starter}`);
         }
         break;
     case "solo":                                                // if {op:"solo"},
