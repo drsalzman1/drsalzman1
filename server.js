@@ -31,49 +31,44 @@ function hsListening() {
 const hs = createServer(hsRequest);
 hs.listen(hsPort, hsListening);
 
-// --------------------------------------------Websocket Server Protocol--------------------------------------------
+// ---------------------------------------Websocket Server Protocol-----------------------------------------
 //
-// From sender                                                      Server action
-// ===========                                                      =============
-// wsConnect(ws) to wss://games.koyeb.app/ws/ or .../i              set ws.id; reply {op:"id", id:i}
-// wsClose(closeEvent)                                              socket[closeEvent.target.id]=null
-// {op:"ping"}                                                      reply {op:"pong"}
-
-// {op:"game", game:n$}                                             create and join self-named game
-// {op:"list"}                                                      {op:"list", game:[n$]}
-// {op:"join", game:g$}
-
-// {op:"join", name:n$, starter:i}                                  fix groups; send {op:"join", name:n$} to starter
-// {op:"solo"}                                                      clear sender's group
-// {op:"deal", player:p, value:[v], name:[n$], bot:[f], show:[f]}   forward message to sender's group
-// {op:"bid",  player:p, bid[b]}                                    forward message to sender's group
-// {op:"pick", suit:s}                                              forward message to sender's group
-// {op:"toss"}                                                      forward message to sender's group
-// {op:"ready", player:p}                                           forward message to sender's group
-// {op:"play", card:c}                                              forward message to sender's group
+// From sender                                                  Server action
+// ===========                                                  =============
+// wsConnect(ws,req) req.url=wss://games.koyeb.app/ws/          pick ws.id; reply {op:"id", id:i}
+// wsConnect(ws,req) req.url=wss://games.koyeb.app/ws/i         set ws.id, ws.game; reply {op:"id", id:i}
+// wsClose(event)                                               set socket[ws.id] to null
 //
-// Parameters                                                       Example
-// ==========                                                       =======
-// i    = player identifier (index of player's websocket)           id:1234
-// n$   = player name                                               name:"Grampy"
-// p    = player index (left=0, across=1, right=2, origin=3)        player:3
-// [v]  = array of 80 card values (suit + rank=0..4 for JQKTA)      value:[0, 0, 0, 0, ...19, 19, 19, 19]
-// [n$] = array of 4 player names                                   name:["Bender", "Data", "Jarvis", "Starter"]
-// [f]  = array of 4 bot flags                                      bot:[true, false, true, false]
-// [f]  = array of 5 show flags                                     show:[true, true, true, false, false]
-// [b]  = array of 4 bid values (none=-1, pass=0)                   bid:[0, 50, -1, -1]
-// s    = suit value (diamonds=0, clubs=5, hearts=10, spades=15)    suit:0
-// c    = card index in deck (0 to 79)                              card:62
+// {op:"ping"}                                                  reply {op:"pong", msg:m[-1]}
+// {op:"start", game:g}                                         create and join self-named game; set ws.game
+// {op:"list"}                                                  reply {op:"list", game:[g]}
+// {op:"join", game:g, player:p}                                add id; tx {op:"join", player:p} to id[0]
+// {op:"resend", x:x}                                           reply {op:"resend", msg:[m[x]...]}
 //
-//  starter: >wsConnect <id [<join] [>deal [<>bid] <>pick <>toss/ready [<>play]] >solo >wsClose
-//  joiner:  >wsConnect <id  >join  [<deal [<>bid] <>pick <>toss/ready [<>play]] >solo >wsClose
+// {x:x, op:"deal", player:[p], bot:[f], show:[f], value:[v]}   store and forward to others
+// {x:x, op:"bid", bid:b}                                       store and forward to others
+// {x:x, op:"trump", suit:s}                                    store and forward to others
+// {x:x, op:"toss"}                                             store and forward to others
+// {x:x, op:"play", card:c}                                     store and forward to others
+//
+// Parameters                                                   Example
+// ==========                                                   =======
+// b = bidder's bid (none=-1, pass=0)                           bid:50
+// c = card index (0 to 79) from starter's perspective          card:62
+// f = flag (true, false)                                       bot:[true, false, true, false]
+// g = game name (game starter's name)                          game:"Grampy"
+// i = socket index                                             id:1234
+// m = stringified game message object                          msg:"{'x':23, 'op':'toss'}"
+// p = player name                                              player:"Grampy"
+// s = suit value (diamonds=0, clubs=5, hearts=10, spades=15)   suit:0
+// v = card value (suit + rank=0..4 for JQKTA)                  value:[0, 0, 0, 0, ...19, 19, 19, 19]
+// x = message index                                            x:0
 
 const wssPort = 3000;                                           // websocket server port
 const none = -1;                                                // result if search fails
 const socket = [];                                              // socket[id] = id's websocket
-const message = [];                                             // message[id] = id's message array
-const group = [];                                               // group[id] = id's client array
-let nextId = 0;                                                 // next id if no old nulls
+const queue = [];                                               // queue[id] = id's offline queue
+const game = {};                                                // {g1:{id:[i], date:d, msg:[m]}, g2:{}, ...}
 
 ////////////////
 // Web Socket //
@@ -82,7 +77,7 @@ let nextId = 0;                                                 // next id if no
 // Handle a websocket's close event
 function wsClose(event) {
     const ws = event.target;                                    // recall websocket
-    socket[ws.id] = null;                                       // deref websocket, but not message or group in case of outage
+    socket[ws.id] = null;                                       // deref socket, but not queue or game in case of outage
     console.log(`wsClose: id:${ws.id}`);
 }
 
@@ -98,38 +93,62 @@ function wsMessage(event) {
     const msg = JSON.parse(event.data);                         // parse message data
     switch (msg.op) {
     case "ping":                                                // if {op:"ping"},
-        ws.send(JSON.stringify({op:"pong"}));                       // send {op:"pong"}
+        let m = "";
+        if (ws.game && game[ws.game].msg.length>0)
+            m = game[ws.game].log.at(-1);
+        ws.send(JSON.stringify({op:"pong", msg:m}));                // send {op:"pong", msg:m[-1]}
+        //console.log(`wsConnect: op:pong, msg:${m} to ${ws.id}`);
         break;
-    case "join":                                                // if {op:"join", name:p$, starter:i},
-        console.log(`wsMessage: rxed op:join, name:${msg.name}, starter:${msg.starter} from id:${ws.id}`);
-        group[ws.id].push(msg.starter, ...group[msg.starter]);      // add starter and starter's group to joiner's group
-        console.log(`wsMessage: group[${ws.id}]:${group[ws.id]}`);
-        for (const member of group[msg.starter]) {                  // for each member of starter's group,
-            group[member].push(ws.id);                                  // add joiner to member's group
-            console.log(`wsMessage: group[${member}]:${group[member]}`);
-        }
-        group[msg.starter].push(ws.id);                             // add joiner to starter's group
-        console.log(`wsMessage: group[${msg.starter}]:${group[msg.starter]}`);
-        if (socket[msg.starter]) {                                  // if starter is online, send notification to starter
-            socket[msg.starter].send(JSON.stringify({op:"join", name:msg.name}));
-            console.log(`wsMessage: txed op:join, name:${msg.name} to id:${msg.starter}`);
-        } else {                                                    // otherwise, queue notification for starter
-            message[msg.starter].push(JSON.stringify({op:"join", name:msg.name}));
-            console.log(`wsMessage: queued op:join, name:${msg.name} to id:${msg.starter}`);
-        }
+    case "start":                                               // if {op:"start", game:g},
+        console.log(`wsConnect: op:start, game:${msg.game} from ${ws.id}`);
+        delete game[msg.game];                                      // delete old game (if any)
+        game[msg.game] = {id:[ws.id], date:Date.now(), log:[]};     // add new game property to game object
+        ws.game = msg.game;                                         // add game name to ws object
         break;
-    case "solo":                                                // if {op:"solo"},
-        console.log(`wsMessage: rxed op:solo from ${ws.id}`)
-        group[ws.id].length = 0;                                    // clear solo's group
-        console.log(`wsMessage: group[${ws.id}]:${group[ws.id]}`);
+    case "list":                                                // if {op:"list"},
+        const list = [];
+        for (const g in game)                                       // for each existing game,
+            if (game[g].date < Date.now()+5*60*1000)                    // if game was born less than 5 minutes ago,
+                list.push(g);                                               // add game to list
+            else if (game[g].date > Date.now()+24*60*60*1000)           // if game was born more than 24 hours ago,
+                delete game[g];                                             // delete game altogether
+        ws.send(JSON.stringify({op:"list", game:list}));            // reply {op:"list", game:[g]}
+        console.log(`wsConnect: op:list, game:${list} to ${ws.id}`);
+        break;
+    case "join":                                                // if {op:"join", game:g, player:p},
+        console.log(`wsMessage: op:join, game:${msg.game}, player:${msg.player} from id:${ws.id}`);
+        if (!game[msg.game] || game[msg.game].id.includes(ws.id))   // if joining non-existent game or already joined,
+            return;                                                     // ignore join message
+        game[msg.game].id.push(ws.id);                              // add this id to the id array
+        ws.game = msg.game;                                         // add this game name to this ws
+        if (socket[game[msg.game].id[0]])                           // if starter is online, notify starter
+            socket[game[msg.game].id[0]].send(JSON.stringify({op:"join", player:msg.player}));
+        else                                                        // otherwise, queue notification for starter
+            queue[game[msg.game].id[0]].push(JSON.stringify({op:"join", player:msg.player}));
+        break;
+    case "resend":                                              // if {op:"resend", x:x},
+        if (ws.game) {                                              // if in game,
+            ws.send(JSON.stringify({                                    // tx {op:"resend", msg:[x]...}
+                op: "resend",
+                msg: game[ws.game].msg.slice(msg.x)
+            }))
+            console.log(`wsMessage: op:resend, msg:${game[ws.game].msg.slice(msg.x)} to ${ws.id}`);
+        }
         break
-    default:                                                    // otherwise, send or queue message to sender's group
-        console.log(`wsMessage: ${event.data} from ${ws.id} to ${group[ws.id]}`);
-        for (const member of group[ws.id])
-            if (socket[member])
-                socket[member].send(event.data);
-            else
-                message[member].push(event.data);
+    default:                                                    // otherwise, store and forward to others
+        if (ws.game) {                                              // if in game,
+            game[ws.game].msg.push(event.data);                         // store game message
+            const list = [];
+            for (const id of game[ws.game].id)                          // for each game id,
+                if (id != ws.id) {                                          // if id isn't sender,
+                    list.push(id);                  
+                    if (socket[id])                                             // send or queue message to id
+                        socket[id].send(event.data);
+                    else
+                        queue[id].push(event.data);
+                }
+            console.log(`wsMessage: ${event.data} from ${ws.id} to ${list}`);
+        }
     }
 }
 
@@ -149,35 +168,34 @@ function wssClose() {
     console.log(`wssClose:`);
 }
 
-// Handle a websocket server's connection event (url's basename, if any, is closed id)
+// Handle a websocket server's connection event for websocket ws and request req
 function wssConnection(ws, req) {
-    const bn = basename(req.url);                               // bn is the basename
+    const bn = basename(req.url);                               // bn is the request url's basename
     let id = /^\d+$/.test(bn)? Number(bn) : none;               // id is from valid bn (or none)
-    if (id==none || socket[id]) {                               // if id invalid or id open, pick a new id
-        id = socket.indexOf(null);                                  // id is the first null socket
-        if (id==none || id+500>nextId) {                            // if none or too recent,
-            id = nextId++;                                              // id is the nextId, then increment nextId
-            while (socket[id])                                          // while id is open,
-                id = nextId++;                                              // skip this id, then increment nextId
-        }
-        message[id] = [];                                           // initialize client's message message
-        group[id] = [];                                             // initialize client's group array
+    if (id==none || socket[id]) {                               // if id invalid or that socket is already open,
+        id = socket.indexOf(null);                                  // find first null socket
+        if (id==none || id+500>socket.length)                       // if no null or first is too young, id is a new socket
+            id = socket.length;
+        ws.game = "";                                               // save empty game name
+        queue[id] = [];                                             // no messages are queued for this id
+        ws.send(JSON.stringify({op:"id", id:id}));                  // notify connector of their id
+    } else {                                                    // otherwise,
+        ws.game = "";                                               // save youngest game name that includes this id
+        for (const g in game)
+            if (game[g].id.includes(id) && (!ws.game || game[g].born>game[ws.game].born))
+                ws.game = g;
+        ws.send(JSON.stringify({op:"id", id:id}));                  // notify connector of their id
+        queue[id] ??= [];                                           // don't crash when after server reboot
+        while (queue[id].length > 0)                                // send any queued messages
+            ws.send(queue[id].pop());
     }
-    message[id] ??= [];                                         // if server rebooted, don't crash
-    group[id] ??= [];
-    socket[id] = ws;                                            // initialize client's websocket reference
-    ws.id = id;                                                 // save id in websocket object for quick reference
+    socket[id] = ws;                                            // save this ws
+    ws.id = id;                                                 // save id in this ws
     ws.onclose = wsClose;                                       // prepare callbacks
     ws.onerror = wsError;
     ws.onmessage = wsMessage;
     ws.onopen = wsOpen;
-    ws.send(JSON.stringify({op:"id", id:id}));                  // notify connector of their id
     console.log(`wssConnection: url:${req.url}, id:${id}`);
-    for (const m of message[id]) {                              // send queued messages to this websocket
-        ws.send(m);
-        console.log(`wsMessage: txed queued message:${m} to id:${id}`);
-    }
-    message[id].length = 0;                                     // clear this message message
 }
 
 // Handle the websocket server's close event

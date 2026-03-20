@@ -43,19 +43,19 @@ body {
     overflow: hidden;
 }
 
-.helpIcon {
+.helpIco {
     position: absolute;
-    top: 0.4em;
+    top: 0.1em;
     left: 0.4em;
-    height: 1.1em;
+    height: 1.6em;
     filter: invert(100%);
 }
 
 .whiteClose {
     position: absolute;
-    top: 0.26em;
-    right: 0.26em;
-    height: 1.32em;
+    top: -0.1em;
+    right: 0.2em;
+    height: 1.9em;
     filter: invert(100%);
 }
 
@@ -101,20 +101,20 @@ body {
     text-align: left;
 }
 
-#wLabl {grid-area: 04/01/04/05}
-#wName {grid-area: 05/01/05/05}
-#wIcon {grid-area: 05/05/05/05}
-#nLabl {grid-area: 01/04/01/08}
-#nName {grid-area: 02/04/02/08}
-#nIcon {grid-area: 02/08/02/08}
-#eLabl {grid-area: 04/07/04/11}
-#eName {grid-area: 05/07/05/11}
-#eIcon {grid-area: 05/11/05/11}
-#sLabl {grid-area: 07/04/07/08}
-#sName {grid-area: 08/04/08/08}
-#sIcon {grid-area: 08/08/08/08}
+#nameLbl0 {grid-area: 04/01/04/05}
+#nameSel0 {grid-area: 05/01/05/05}
+#nameIco0 {grid-area: 05/05/05/05}
+#nameLbl1 {grid-area: 01/04/01/08}
+#nameSel1 {grid-area: 02/04/02/08}
+#nameIco1 {grid-area: 02/08/02/08}
+#nameLbl2 {grid-area: 04/07/04/11}
+#nameSel2 {grid-area: 05/07/05/11}
+#nameIco2 {grid-area: 05/11/05/11}
+#nameLbl3 {grid-area: 07/04/07/08}
+#nameSel3 {grid-area: 08/04/08/08}
+#nameIco3 {grid-area: 08/08/08/08}
 
-.pName {
+.nameSel {
     width: 100%;
     height: 1.3em;
     border: none;
@@ -123,7 +123,7 @@ body {
     background-color: white;
 }
 
-.pIcon {
+.nameIco {
     position: relative;
     top: -0.25em;
     height: 1.8em;
@@ -140,7 +140,7 @@ body {
     text-align: right;
 }
 
-.aBox {
+.assistBox {
     position: relative;
     bottom: 0.1em;
     height: 1.3em;
@@ -156,13 +156,13 @@ body {
     text-align: center;
 }
 
-#pEdit, #jEdit {
+#startEdit, #joinEdit {
     width: 100%;
     display: grid;
     justify-items: center;
 }
 
-#pAddDiv, #pDelDiv, #jAddDiv, #jDelDiv {
+#startAdd, #startDel, #joinAdd, #joinDel {
     margin-top: 1.2em;
     width: 9.2em;
     padding: 0.4em;
@@ -170,7 +170,7 @@ body {
     text-align: left;
 }
 
-#pAddInp, #pDelSel, #jAddInp, #jDelSel {
+#startAInp, #startDSel, #joinAInp, #joinDSel {
     width: 100%;
     height: 1.3em;
     padding-left: 0.4em;
@@ -188,18 +188,6 @@ body {
 
 #joinForm {
     width: 10em;
-}
-
-#jGame {
-    height: 1.3em;
-    width: 100%;
-    border: none;
-    padding: 0em 0em 0em 0.4em;
-    background-color: white;
-}
-
-#jGame::placeholder {
-    color: red;
 }
 
 #joinBtns {
@@ -223,18 +211,18 @@ body {
     overflow: hidden;
 }
 
-#trumpIcon {
+#trumpIco {
     position: absolute;
-    left: 1.8em;
-    top: 0.5em;
-    height: 0.9em;
+    left: 2.1em;
+    top: 0.25em;
+    height: 1.3em;
     filter: invert(100%);
     display: none;
 }
 
 #trumpOut {
     position: absolute;
-    left: 2.9em;
+    left: 3.4em;
     top: 0.4em;
     width: 1.4em;
     text-align: left;
@@ -368,7 +356,7 @@ body {
     background-color: white;
 }
 
-#iText {
+#infoText {
     position: absolute;
     width: 100%;
     height: 100%;
@@ -388,7 +376,7 @@ body {
     height: 1.32em;
 }
 
-#iText #iOut {
+#infoText #infoGrid {
     width: 100%;
     display: grid;
     grid-template-columns: auto 1.5em 1.5em 1.5em 1.5em;
@@ -396,7 +384,7 @@ body {
     text-align: center;
 }
 
-#iText #iOut img {
+#infoText #infoGrid img {
     position: relative;
     top: 0.1em;
     left: 0.3em;
@@ -416,25 +404,25 @@ body {
     opacity: 100%;
 }
 
-#wInfo .infoName {
+#infoArea0 .infoName {
     position: absolute;
     left: 0.4em;
     width: 5.6em;
 }
 
-#wInfo .infoBid {
+#infoArea0 .infoBid {
     position: absolute;
     left: 0.4em;
     width: 5.6em;
 }
 
-#wInfo .infoHint {
+#infoArea0 .infoHint {
     position: absolute;
     left: 0.4em;
     width: 5.6em;
 }
 
-#nInfo {
+#infoArea1 {
     position: absolute;
     top: 0.44em;
     left: calc(50svw - 10em);
@@ -444,25 +432,25 @@ body {
     justify-content: center;
 }
 
-#eInfo .infoName {
+#infoArea2 .infoName {
     position: absolute;
     left: calc(100svw - 6em);
     width: 5.6em;
 }
 
-#eInfo .infoBid {
+#infoArea2 .infoBid {
     position: absolute;
     left: calc(100svw - 6em);
     width: 5.6em;
 }
 
-#eInfo .infoHint {
+#infoArea2 .infoHint {
     position: absolute;
     left: calc(100svw - 6em);
     width: 5.6em;
 }
 
-#sInfo {
+#infoArea3 {
     position: absolute;
     top: calc(100svh - 1.6em);
     left: calc(50svw - 10em);

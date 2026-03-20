@@ -12,87 +12,87 @@
     </head>
     <body id=body>
         <div id=loadPage>
-            <img class=helpIcon src=icons/help.svg alt=menu onclick="help('loadHelp')">
+            <img class=helpIco src=icons/help.svg alt=help onclick="helpEvent('loadHelp')">
             <img class=whiteClose src=icons/close.svg alt=close onclick=window.close()>
             Welcome to Double Deck Pinochle!<br>
             <br>
-            <input type=button value="Start Game" onclick=startClicked()>
+            <input type=button value="Start Game" onclick=startGameButtonEvent()>
             <br>
-            <input id=joinBtn type=button value="Join Game" onclick=joinClicked() disabled>
+            <input id=joinBtn type=button value="Join Game" onclick=joinGameButtonEvent() disabled>
         </div>
         <div id=startPage>
-            <img class=helpIcon src=icons/help.svg alt=menu onclick="help('startHelp')">
+            <img class=helpIco src=icons/help.svg alt=help onclick="helpEvent('startHelp')">
             <img class=whiteClose src=icons/close.svg alt=close onclick=window.location.reload()>
-            <form id=startForm onsubmit=startSubmitted(event)>
+            <form id=startForm onsubmit=startFormButtonEvent(event)>
                 <div id=startCtr>
                     0 players are joining game number 0
                 </div>
                 <div id=playersGrid>
-                    <label  id=wLabl for=wName>Left name:</label>
-                    <select id=wName class=pName onchange=nChanged(event,0)></select>
-                    <input  id=wIcon class=pIcon type=image alt=wIcon onclick=iClicked(event,0)>
-                    <label  id=nLabl for=nName>Across name:</label>
-                    <select id=nName class=pName onchange=nChanged(event,1)></select>
-                    <input  id=nIcon class=pIcon type=image alt=nIcon onclick=iClicked(event,1)>
-                    <label  id=eLabl for=eName>Right name:</label>
-                    <select id=eName class=pName onchange=nChanged(event,2)></select>
-                    <input  id=eIcon class=pIcon type=image alt=eIcon onclick=iClicked(event,2)>
-                    <label  id=sLabl for=sName>Your name:</label>
-                    <select id=sName class=pName onchange=nChanged(event,3)></select>
-                    <input  id=sIcon class=pIcon type=image alt=sIcon onclick=iClicked(event,3)>
+                    <label  id=nameLbl0 for=nameSel0>Left name:</label>
+                    <select id=nameSel0 class=nameSel onchange=nameSelectEvent(event,0)></select>
+                    <input  id=nameIco0 class=nameIco type=image onclick=nameIconEvent(event,0)>
+                    <label  id=nameLbl1 for=nameSel1>Across name:</label>
+                    <select id=nameSel1 class=nameSel onchange=nameSelectEvent(event,1)></select>
+                    <input  id=nameIco1 class=nameIco type=image onclick=nameIconEvent(event,1)>
+                    <label  id=nameLbl2 for=nameSel2>Right name:</label>
+                    <select id=nameSel2 class=nameSel onchange=nameSelectEvent(event,2)></select>
+                    <input  id=nameIco2 class=nameIco type=image onclick=nameIconEvent(event,2)>
+                    <label  id=nameLbl3 for=nameSel3>Your name:</label>
+                    <select id=nameSel3 class=nameSel onchange=nameSelectEvent(event,3)></select>
+                    <input  id=nameIco3 class=nameIco type=image onclick=nameIconEvent(event,3)>
                 </div>
                 <div id=assistanceGrid>
                     <div>Show card counts:&nbsp;</div>
-                    <input class=aBox type=image onclick=bClicked(event,0)>
+                    <input class=assistBox type=image onclick=assistBoxEvent(event,0)>
                     <div></div>
                     <div>Show all hands:&nbsp;</div>
-                    <input class=aBox type=image onclick=bClicked(event,1)>
+                    <input class=assistBox type=image onclick=assistBoxEvent(event,1)>
                 </div>
                 <div id=startBtns style=width:100%>
                     <button id=startSub>Start</button>
                 </div>
-                <div id=pEdit>
-                    <div id=pAddDiv>
-                        <label id=pAddLbl for=pAddInp>New bot name:</label><br>
-                        <input id=pAddInp type=text><br>
+                <div id=startEdit>
+                    <div id=startAdd>
+                        <label id=startALbl for=startAInp>New bot name:</label><br>
+                        <input id=startAInp type=text><br>
                     </div>
-                    <div id=pDelDiv>
-                        <label id=pDelLbl for=pDelSel>Old bot name:</label><br>
-                        <select id=pDelSel type=text></select><br>
+                    <div id=startDel>
+                        <label id=startDLbl for=startDSel>Old bot name:</label><br>
+                        <select id=startDSel type=text></select><br>
                     </div>
                 </div>
             </form>
         </div>
         <div id=joinPage>
-            <img class=helpIcon src=icons/help.svg alt=menu onclick="help('joinHelp')">
+            <img class=helpIco src=icons/help.svg alt=help onclick="helpEvent('joinHelp')">
             <img class=whiteClose src=icons/close.svg alt=close onclick=window.location.reload()>
-            <form id=joinForm onsubmit=joinSubmitted(event)>
-                <label for=jName>Your name:</label><br>
-                <select id=jName class=pName onchange=nChanged(event,4)></select><br>
+            <form id=joinForm onsubmit=joinFormButtonEvent(event)>
+                <label for=joinSel>Your name:</label><br>
+                <select id=joinSel class=nameSel onchange=nameSelectEvent(event,4)></select><br>
                 <br>
-                <label for=jGame>Game number:</label><br>
-                <input id=jGame type=number><br>
+                <label for=gameSel>Game name:</label><br>
+                <select id=gameSel class=nameSel onchange=nameSelectEvent(event,4)></select><br>
                 <br>
                 <br>
                 <div id=joinBtns>
                     <button id=joinSub>Join</button>
                     <div id=joinWait>Please wait...</div>
                 </div>
-                <div id=jEdit>
-                    <div id=jAddDiv>
-                        <label id=jAddLbl for=jAddInp>New alias:</label><br>
-                        <input id=jAddInp type=text><br>
+                <div id=joinEdit>
+                    <div id=joinAdd>
+                        <label id=joinALbl for=joinAInp>New alias:</label><br>
+                        <input id=joinAInp type=text><br>
                     </div>
-                    <div id=jDelDiv>
-                        <label id=jDelLbl for=jDelSel>Old alias:</label><br>
-                        <select id=jDelSel type=text></select><br>
+                    <div id=joinDel>
+                        <label id=joinDLbl for=joinDSel>Old alias:</label><br>
+                        <select id=joinDSel type=text></select><br>
                     </div>
                 </div>
             </form>
         </div>
         <div id=gamePage>
-            <img id=gameHelp class=helpIcon src=icons/help.svg alt=menu onclick="help('bidHelp')">
-            <img id=trumpIcon src=suits/club.svg alt=trump onclick=trumpIconClicked()>
+            <img id=gameHelp class=helpIco src=icons/help.svg alt=help onclick="helpEvent('bidHelp')">
+            <img id=trumpIco src=suits/club.svg alt=info onclick=infoEvent()>
             <div id=trumpOut></div> 
             <img class=whiteClose src=icons/close.svg alt=close onclick=window.location.reload()>
             <div id=textArea>
@@ -114,24 +114,24 @@
                         </div>
                     </div>
                     <div id=bidButtons>
-                        <input type=button value=Pass onclick=bidClicked(0)>
-                        <input type=button value=50 onclick=bidClicked(1)>
-                        <input type=button value=">" onclick=bidClicked(2)>
+                        <input type=button value="Pass" onclick=bidButtonEvent(0)>
+                        <input type=button value="50" onclick=bidButtonEvent(1)>
+                        <input type=button value=">" onclick=bidButtonEvent(2)>
                     </div>
                 </div>
                 <div id=trumpText>
-                    <div><input type=button value=Spades onclick=suitClicked(15)></div>
-                    <div><input type=button value=Hearts onclick=suitClicked(10)></div>
-                    <div><input type=button value=Clubs onclick=suitClicked(5)></div>
-                    <div><input type=button value=Diamonds onclick=suitClicked(0) ></div>
+                    <div><input type=button value=Spades onclick=trumpButtonEvent(15)></div>
+                    <div><input type=button value=Hearts onclick=trumpButtonEvent(10)></div>
+                    <div><input type=button value=Clubs onclick=trumpButtonEvent(5)></div>
+                    <div><input type=button value=Diamonds onclick=trumpButtonEvent(0) ></div>
                 </div>
                 <div id=playText>
                     <p></p>
                     <p></p>
                     <p></p>
                     <div id=playBtns>
-                        <input id=playBtn type=button value=OK onclick=playClicked()>
-                        <input id=tossBtn type=button value=Toss onclick=tossClicked()>
+                        <input id=playBtn type=button value=OK onclick=playButtonEvent(false)>
+                        <input id=tossBtn type=button value=Toss onclick=playButtonEvent(true)>
                         <div id=playWait>Please wait...</div>
                     </div>
                 </div>
@@ -145,22 +145,22 @@
                         <div>New</div>       <div></div>           <div></div>
                     </div>
                     <p id=handPara></p>
-                    <input id=handBtn type=button value=OK onclick=okClicked()>
+                    <input id=handBtn type=button value=OK onclick=okButtonEvent()>
                     <div id=handWait>Please wait...</div>
                 </div>
-                <div id=iText>
-                    <img class=blackClose src=icons/close.svg alt=close onclick=iCloseClicked()>
-                    <div id=iTrump>Trump is diamonds.</div>
-                    <div id=iOut>
+                <div id=infoText>
+                    <img class=blackClose src=icons/close.svg alt=close onclick=infoCloseEvent()>
+                    <div id=infoTrump>Trump is diamonds.</div>
+                    <div id=infoGrid>
                         <u>Out</u><img src=suits/spade.svg><img src=suits/heart.svg><img src=suits/club.svg><img src=suits/diamond.svg>
                         <span>Aces</span>  <div>0</div> <div>1</div> <div>2</div> <div>3</div>
                         <span>Total</span> <div>4</div> <div>5</div> <div>6</div> <div>7</div>
                     </div>
-                    <div id=iTake>You've takeen 15 of 20. They've taken 15 of 20.</div>
+                    <div id=infoTake>You've takeen 15 of 20. They've taken 15 of 20.</div>
                 </div>
             </div>
             <div id=infoAreas>
-                <div id=wInfo>
+                <div id=infoArea0>
                     <div class=infoName></div>
                     <div class=infoBid></div>
                     <div class=infoHint>
@@ -170,7 +170,7 @@
                         <img src=suits/diamond.svg>
                     </div>
                 </div>
-                <div id=nInfo>
+                <div id=infoArea1>
                     <span class=infoName></span>
                     <span class=infoBid></span>
                     <span class=infoHint>
@@ -181,7 +181,7 @@
                         <img src=suits/diamond.svg>
                     </span>
                 </div>
-                <div id=eInfo>
+                <div id=infoArea2>
                     <div class=infoName></div>
                     <div class=infoBid></div>
                     <div class=infoHint>
@@ -191,7 +191,7 @@
                         <img src=suits/diamond.svg>
                     </div>
                 </div>
-                <div id=sInfo>
+                <div id=infoArea3>
                     <span class=infoName></span>
                     <span class=infoBid></span>
                 </div>
@@ -214,10 +214,10 @@
         </div>
         <div id=helpPage>
             <div id=loadHelp>
-                <img class=blackClose src=icons/close.svg alt=close onclick=helpClosed()>
+                <img class=blackClose src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Double Deck Pinochle v2.20</b>
                 <p>
-                    This <a href="javascript:help('loadShot')">page</a> allows you to start or join a game:
+                    This <a href="javascript:helpEvent('loadShot')">page</a> allows you to start or join a game:
                 </p>
                 <ul>
                     <li>Click Start Game to create a new game</li>
@@ -227,8 +227,8 @@
                     Note that you must be online to start or join a multiplayer game.
                 </p>
                 <div class=links>
-                    <a href="javascript:help('tutorial')">Tutorial</a>
-                    <a href="javascript:help('terms')">Terms</a>
+                    <a href="javascript:helpEvent('tutorial')">Tutorial</a>
+                    <a href="javascript:helpEvent('terms')">Terms</a>
                 </div>
                 <p>
                     &copy; 2025 David Salzman
@@ -238,28 +238,28 @@
             </div>
             <div id=loadShot class=screenshot>
                 <div>
-                    <img src="screens/loadpage.png" alt="loadpage" onclick=helpClosed()>
+                    <img src="screens/loadpage.png" alt="loadpage" onclick=helpCloseEvent()>
                 </div>
             </div>
             <div id=tutorial>
-                <img class=blackClose src=icons/close.svg alt=close onclick=helpClosed()>
+                <img class=blackClose src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Tutorial</b>
                 <p>
                     Click these links to learn how to play double deck Pinochle:
                 </p>
                 <ul>
-                    <li><a href="javascript:help('setup')">Set Up</a></li>
-                    <li><a href="javascript:help('bidding')">Bidding</a></li>
-                    <li><a href="javascript:help('playing')">Playing</a></li>
-                    <li><a href="javascript:help('scoring')">Scoring</a></li>
-                    <li><a href="javascript:help('comm')">Communication</a></li>
-                    <li><a href="javascript:help('counts')">Counts</a></li>
-                    <li><a href="javascript:help('strategy')">Strategy</a></li>
-                    <li><a href="javascript:help('terms')">Terms</a></li>
+                    <li><a href="javascript:helpEvent('setup')">Set Up</a></li>
+                    <li><a href="javascript:helpEvent('bidding')">Bidding</a></li>
+                    <li><a href="javascript:helpEvent('playing')">Playing</a></li>
+                    <li><a href="javascript:helpEvent('scoring')">Scoring</a></li>
+                    <li><a href="javascript:helpEvent('comm')">Communication</a></li>
+                    <li><a href="javascript:helpEvent('counts')">Counts</a></li>
+                    <li><a href="javascript:helpEvent('strategy')">Strategy</a></li>
+                    <li><a href="javascript:helpEvent('terms')">Terms</a></li>
                 </ul> 
             </div>
             <div id=setup>
-                <img class=blackClose src=icons/close.svg alt=close onclick=helpClosed()>
+                <img class=blackClose src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Set Up</b>
                 <p>
                     To start a game:
@@ -286,11 +286,11 @@
                     The player who starts the game will shuffle and deal the deck</a>.
                 </p>
                 <div class=links>
-                    <a href="javascript:help('terms')">Terms</a>
+                    <a href="javascript:helpEvent('terms')">Terms</a>
                 </div>
             </div>
             <div id=bidding>
-                <img class=blackClose src=icons/close.svg alt=close onclick=helpClosed()>
+                <img class=blackClose src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Bidding</b>
                 <p>
                     The player to the dealer's left must bid at least 50 or pass.
@@ -318,11 +318,11 @@
                     Otherwise, you only reveal aces around.
                 </p>
                 <div class=links>
-                    <a href="javascript:help('terms')">Terms</a>
+                    <a href="javascript:helpEvent('terms')">Terms</a>
                 </div>
             </div>
             <div id=playing>
-                <img class=blackClose src=icons/close.svg alt=close onclick=helpClosed()>
+                <img class=blackClose src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Playing</b>
                 <p>
                     If you win the bid without a marriage in trump, you must toss the hand.
@@ -341,11 +341,11 @@
                     The game is over when some team's score reaches 500.
                 </p>
                 <div class=links>
-                    <a href="javascript:help('terms')">Terms</a>
+                    <a href="javascript:helpEvent('terms')">Terms</a>
                 </div>
             </div>
             <div id=scoring>
-                <img class=blackClose src=icons/close.svg alt=close onclick=helpClosed()>
+                <img class=blackClose src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Scoring</b>
                 <p>
                     After each hand, each team counts their take.
@@ -361,11 +361,11 @@
                     If both teams reach 500, the bid-winning team wins.
                 </p>
                 <div class=links>
-                    <a href="javascript:help('terms')">Terms</a>
+                    <a href="javascript:helpEvent('terms')">Terms</a>
                 </div>
             </div>
             <div id=comm>
-                <img class=blackClose src=icons/close.svg alt=close onclick=helpClosed()>
+                <img class=blackClose src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Communicating</b>
                 <p>
                     You can't directly communicate your cards or strategy to your partner.
@@ -386,11 +386,11 @@
                     This allows everyone to <del>cheat</del> <u>learn</u>.
                 </p>
                 <div class=links>
-                    <a href="javascript:help('terms')">Terms</a>
+                    <a href="javascript:helpEvent('terms')">Terms</a>
                 </div>
             </div>
             <div id=counts>
-                <img class=blackClose src=icons/close.svg alt=close onclick=helpClosed()>
+                <img class=blackClose src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Counts</b>
                 <p>
                     You know your own cards.
@@ -416,11 +416,11 @@
                     </li>
                 </ul>
                 <div class=links>
-                    <a href="javascript:help('terms')">Terms</a>
+                    <a href="javascript:helpEvent('terms')">Terms</a>
                 </div>
             </div>
             <div id=strategy>
-                <img class=blackClose src=icons/close.svg alt=close onclick=helpClosed()>
+                <img class=blackClose src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Strategy</b>
                 <p>
                     You should bid up to a limit based on your meld, your estimate of your partner's meld (perhaps based on a jump bid),
@@ -441,11 +441,11 @@
                     waste the most of its opponents' high and trump cards.
                 </p>
                 <div class=links>
-                    <a href="javascript:help('terms')">Terms</a>
+                    <a href="javascript:helpEvent('terms')">Terms</a>
                 </div>
             </div>
             <div id=terms>
-                <img class=blackClose src=icons/close.svg alt=close onclick=helpClosed()>
+                <img class=blackClose src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Terms</b>
                 <ul>
                     <li>Players: the four named players</li>
@@ -459,17 +459,17 @@
                     <li>Trump: the suit that outranks the other suits</li>
                     <li>Lead: the first card played</li>
                     <li>Trick: a set of four played cards</li>
-                    <li><a href="javascript:help('meld')">Meld</a>: valuable sets of cards in a player's hand</li>
+                    <li><a href="javascript:helpEvent('meld')">Meld</a>: valuable sets of cards in a player's hand</li>
                     <li>Around: one specific rank in each suit</li>
                     <li>Marriage: king and queen in a suit</li>
                     <li>Run: one of each rank in a suit</li>
                     <li>Pinochle: queen of spades & jack of diamonds</li>
-                    <li><a href="javascript:help('take')">Take</a>: points earned by the trick winner</li>
+                    <li><a href="javascript:helpEvent('take')">Take</a>: points earned by the trick winner</li>
                     <li>Toss: decide to not play a hand</li>
                 </ul>
             </div>
             <div id=meld>
-                <img class=blackClose src=icons/close.svg alt=close onclick=helpClosed()>
+                <img class=blackClose src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Meld</b>
                 <p>
                     The valuable sets of cards in your hand.
@@ -496,11 +496,11 @@
                     If your team's meld for a hand is less than 20, it won't count towards your team's score.
                 </p>
                 <div class=links>
-                    <a href="javascript:help('terms')">Terms</a>
+                    <a href="javascript:helpEvent('terms')">Terms</a>
                 </div>
             </div>
             <div id=take>
-                <img class=blackClose src=icons/close.svg alt=close onclick=helpClosed()>
+                <img class=blackClose src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Take</b>
                 <p>
                     Points your team earns by winning tricks.
@@ -525,14 +525,14 @@
                     If your team's take for a hand is less than 20, it won't count towards your team's score.
                 </p>
                 <div class=links>
-                    <a href="javascript:help('terms')">Terms</a>
+                    <a href="javascript:helpEvent('terms')">Terms</a>
                 </div>
             </div>
             <div id=startHelp>
-                <img class=blackClose src=icons/close.svg alt=close onclick=helpClosed()>
+                <img class=blackClose src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Start Help</b>
                 <p>
-                    This <a href="javascript:help('startShot')">page</a> allows you to start a new game:
+                    This <a href="javascript:helpEvent('startShot')">page</a> allows you to start a new game:
                 </p>
                 <ul>
                     <li>Select your name to identify yourself</li>
@@ -547,20 +547,20 @@
                     Note that you and the game server must be online to start a multiplayer game.
                 </p>
                 <div class=links>
-                    <a href="javascript:help('tutorial')">Tutorial</a>
-                    <a href="javascript:help('terms')">Terms</a>
+                    <a href="javascript:helpEvent('tutorial')">Tutorial</a>
+                    <a href="javascript:helpEvent('terms')">Terms</a>
                 </div>
             </div>
             <div id=startShot class=screenshot>
                 <div>
-                    <img src="screens/startpage.png" alt="startpage" onclick=helpClosed()>
+                    <img src="screens/startpage.png" alt="startpage" onclick=helpCloseEvent()>
                 </div>
             </div>
             <div id=joinHelp>
-                <img class=blackClose src=icons/close.svg alt=close onclick=helpClosed()>
+                <img class=blackClose src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Join Help</b>
                 <p>
-                    This <a href="javascript:help('joinShot')">page</a> allows you to join an existing game:
+                    This <a href="javascript:helpEvent('joinShot')">page</a> allows you to join an existing game:
                 </p>
                 <ul>
                     <li>Select your name to identify yourself</li>
@@ -569,20 +569,20 @@
                     <li>Wait for the cards to be dealt</li>
                 </ul>
                 <div class=links>
-                    <a href="javascript:help('tutorial')">Tutorial</a>
-                    <a href="javascript:help('terms')">Terms</a>
+                    <a href="javascript:helpEvent('tutorial')">Tutorial</a>
+                    <a href="javascript:helpEvent('terms')">Terms</a>
                 </div>
             </div>
             <div id=joinShot class=screenshot>
                 <div>
-                    <img src="screens/joinpage.png" alt="joinpage" onclick=helpClosed()>
+                    <img src="screens/joinpage.png" alt="joinpage" onclick=helpCloseEvent()>
                 </div>
             </div>
             <div id=bidHelp>
-                <img class=blackClose src=icons/close.svg alt=close onclick=helpClosed()>
+                <img class=blackClose src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Bid Help</b>
                 <p>
-                    This <a href="javascript:help('bidShot')">page</a> allows you to bid this hand:
+                    This <a href="javascript:helpEvent('bidShot')">page</a> allows you to bid this hand:
                 </p>
                 <ul>
                     <li>Note the other players' bids</li>
@@ -592,21 +592,21 @@
                     <li>Click Bid (53) to submit your bid</li>
                 </ul>
                 <div class=links>
-                    <a href="javascript:help('bidding')">Bidding</a>
-                    <a href="javascript:help('tutorial')">Tutorial</a>
-                    <a href="javascript:help('terms')">Terms</a>
+                    <a href="javascript:helpEvent('bidding')">Bidding</a>
+                    <a href="javascript:helpEvent('tutorial')">Tutorial</a>
+                    <a href="javascript:helpEvent('terms')">Terms</a>
                 </div>
             </div>
             <div id=bidShot class=screenshot>
                 <div>
-                    <img src="screens/bidpage.png" alt="bidpage" onclick=helpClosed()>
+                    <img src="screens/bidpage.png" alt="bidpage" onclick=helpCloseEvent()>
                 </div>
             </div>
             <div id=trumpHelp>
-                <img class=blackClose src=icons/close.svg alt=close onclick=helpClosed()>
+                <img class=blackClose src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Trump Help</b>
                 <p>
-                    This <a href="javascript:help('trumpShot')">page</a> allows you to pick trump:
+                    This <a href="javascript:helpEvent('trumpShot')">page</a> allows you to pick trump:
                 </p>
                 <ul>
                     <li>Note your hand</li>
@@ -614,21 +614,21 @@
                     <li>Click a trump option</li>
                 </ul>
                 <div class=links>
-                    <a href="javascript:help('bidding')">Bidding</a>
-                    <a href="javascript:help('tutorial')">Tutorial</a>
-                    <a href="javascript:help('terms')">Terms</a>
+                    <a href="javascript:helpEvent('bidding')">Bidding</a>
+                    <a href="javascript:helpEvent('tutorial')">Tutorial</a>
+                    <a href="javascript:helpEvent('terms')">Terms</a>
                 </div>
             </div>
             <div id=trumpShot class=screenshot>
                 <div>
-                    <img src="screens/trumppage.png" alt="trumppage" onclick=helpClosed()>
+                    <img src="screens/trumppage.png" alt="trumppage" onclick=helpCloseEvent()>
                 </div>
             </div>
             <div id=tossHelp>
-                <img class=blackClose src=icons/close.svg alt=close onclick=helpClosed()>
+                <img class=blackClose src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Toss Help</b>
                 <p>
-                    This <a href="javascript:help('tossShot')">page</a> allows you to toss a hand:
+                    This <a href="javascript:helpEvent('tossShot')">page</a> allows you to toss a hand:
                 </p>
                 <ul>
                     <li>Note Trump (<img src=suits/heart.svg alt=heart>); click to show counts</li>
@@ -642,22 +642,22 @@
                     Note that only the bid winner can toss the hand.
                 </p>
                 <div class=links>
-                    <a href="javascript:help('bidding')">Bidding</a>
-                    <a href="javascript:help('counts')">Counts</a>
-                    <a href="javascript:help('tutorial')">Tutorial</a>
-                    <a href="javascript:help('terms')">Terms</a>
+                    <a href="javascript:helpEvent('bidding')">Bidding</a>
+                    <a href="javascript:helpEvent('counts')">Counts</a>
+                    <a href="javascript:helpEvent('tutorial')">Tutorial</a>
+                    <a href="javascript:helpEvent('terms')">Terms</a>
                 </div>
             </div>
             <div id=tossShot class=screenshot>
                 <div>
-                    <img src="screens/tosspage.png" alt="tosspage" onclick=helpClosed()>
+                    <img src="screens/tosspage.png" alt="tosspage" onclick=helpCloseEvent()>
                 </div>
             </div>
             <div id=playHelp>
-                <img class=blackClose src=icons/close.svg alt=close onclick=helpClosed()>
+                <img class=blackClose src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Play Help</b>
                 <p>
-                    This <a href="javascript:help('playShot')">page</a> allows you to play cards:
+                    This <a href="javascript:helpEvent('playShot')">page</a> allows you to play cards:
                 </p>
                 <ul>
                     <li>Note Trump suit (<img src=suits/heart.svg alt=heart>)</li>
@@ -670,22 +670,22 @@
                     <li>Drag or click a card to play that card</li>
                 </ul>
                 <div class=links>
-                    <a href="javascript:help('playing')">Playing</a>
-                    <a href="javascript:help('counts')">Counts</a>
-                    <a href="javascript:help('tutorial')">Tutorial</a>
-                    <a href="javascript:help('terms')">Terms</a>
+                    <a href="javascript:helpEvent('playing')">Playing</a>
+                    <a href="javascript:helpEvent('counts')">Counts</a>
+                    <a href="javascript:helpEvent('tutorial')">Tutorial</a>
+                    <a href="javascript:helpEvent('terms')">Terms</a>
                 </div>
             </div>
             <div id=playShot class=screenshot>
                 <div>
-                    <img src="screens/playpage.png" alt="playpage" onclick=helpClosed()>
+                    <img src="screens/playpage.png" alt="playpage" onclick=helpCloseEvent()>
                 </div>
             </div>
             <div id=handHelp>
-                <img class=blackClose src=icons/close.svg alt=close onclick=helpClosed()>
+                <img class=blackClose src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Hand Help</b>
                 <p>
-                    This <a href="javascript:help('handShot')">page</a> shows how the hand was scored:
+                    This <a href="javascript:helpEvent('handShot')">page</a> shows how the hand was scored:
                 </p>
                 <ul>
                     <li>Read the hand and game score</li>
@@ -693,14 +693,14 @@
                     <li>Wait for the next hand/game to start</li>
                 </ul>
                 <div class=links>
-                    <a href="javascript:help('scoring')">Scoring</a>
-                    <a href="javascript:help('tutorial')">Tutorial</a>
-                    <a href="javascript:help('terms')">Terms</a>
+                    <a href="javascript:helpEvent('scoring')">Scoring</a>
+                    <a href="javascript:helpEvent('tutorial')">Tutorial</a>
+                    <a href="javascript:helpEvent('terms')">Terms</a>
                 </div>
             </div>
             <div id=handShot class=screenshot>
                 <div>
-                    <img src="screens/handpage.png" alt="handpage" onclick=helpClosed()>
+                    <img src="screens/handpage.png" alt="handpage" onclick=helpCloseEvent()>
                 </div>
             </div>
         </div>
