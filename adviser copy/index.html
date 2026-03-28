@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Adviser</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="manifest" href="manifest.json">
+        <link rel="icon" href="icon.svg">
+        <link rel="stylesheet" href="styles.css">
+    </head>
+    <body>
+        <div id="header">
+            Wordle Adviser
+        </div>
+        <div id="puzzle">
+            <button></button><button></button><button></button><button></button><button></button>
+            <button></button><button></button><button></button><button></button><button></button>
+            <button></button><button></button><button></button><button></button><button></button>
+            <button></button><button></button><button></button><button></button><button></button>
+            <button></button><button></button><button></button><button></button><button></button>
+            <button></button><button></button><button></button><button></button><button></button>
+        </div>
+        <div id="message">
+            Select tile, then select letter, color or backspace
+        </div>
+        <div id="keyboard">
+            <button>Q</button><button>W</button><button>E</button><button>R</button><button>T</button>
+            <button>Y</button><button>U</button><button>I</button><button>O</button><button>P</button>
+            <button>1</button><button>A</button><button>S</button><button>D</button><button>F</button>
+            <button>G</button><button>H</button><button>J</button><button>K</button><button>L</button>
+            <button>2</button><button>3</button><button>Z</button><button>X</button><button>C</button>
+            <button>V</button><button>B</button><button>N</button><button>M</button><button>&#9003;</button>
+        </div>
+        <div id="title">
+            Analysis based on dictionaries, guesses & information theory:
+        </div>
+        <div id="results">
+            <div id="headings">
+                <div>Words</div><div>Count</div><div></div><div>All</div><div>Bits</div><div></div><div>Possible</div><div>Bits</div>
+            </div>
+            <div id="table">
+                <div>All<br>Common<br>Possible</div>
+                <div>14,855<br>14,855<br>14,855</div>
+                <div></div>
+                <div>TARES<br>LARES<br>RALES<br>RATES<br>RANES<br>NARES<br>REAIS<br>TERAS<br>SOARE<br>TALES</div>
+                <div>6.16<br>6.11<br>6.10<br>6.08<br>6.08<br>6.07<br>6.05<br>6.05<br>6.04<br>6.01</div>
+                <div></div>
+                <div>TARES<br>LARES<br>RALES<br>RATES<br>RANES<br>NARES<br>REAIS<br>TERAS<br>SOARE<br>TALES</div>
+                <div>6.16<br>6.11<br>6.10<br>6.08<br>6.08<br>6.07<br>6.05<br>6.05<br>6.04<br>6.01</div>
+            </div>
+        </div>
+    </body>
+    <script src="scripts.js" defer></script>
+</html>

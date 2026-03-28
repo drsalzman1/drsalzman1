@@ -7,63 +7,44 @@
         <link rel="manifest" href="manifest.json">
         <link rel="icon" href="icon.svg">
         <link rel="stylesheet" href="styles.css">
+        <script src="scripts.js" defer></script>
     </head>
     <body>
         <div id="header">
             Wordle Adviser
         </div>
-        <div id="main">
-            <div id="leftSide">
-                <div>
-                    <button id="leftButton" type="button">&#x25C1;</button>
-                </div>
-                <div id="leftText">
-                    Reload
-                </div>
-            </div>
-            <div id="puzzle">
-                <button type="button"> </button><button type="button"> </button><button type="button"> </button><button type="button"> </button><button type="button"> </button>
-                <button type="button"> </button><button type="button"> </button><button type="button"> </button><button type="button"> </button><button type="button"> </button>
-                <button type="button"> </button><button type="button"> </button><button type="button"> </button><button type="button"> </button><button type="button"> </button>
-                <button type="button"> </button><button type="button"> </button><button type="button"> </button><button type="button"> </button><button type="button"> </button>
-                <button type="button"> </button><button type="button"> </button><button type="button"> </button><button type="button"> </button><button type="button"> </button>
-                <button type="button"> </button><button type="button"> </button><button type="button"> </button><button type="button"> </button><button type="button"> </button>
-            </div>
-            <div id="rightSide">
-                <div>
-                    <button id="rightButton" type="button">&#x25B7;</button>
-                </div>
-                <div id="rightText">
-                    Colors
-                </div>
-            </div>
+        <div id="puzzle">
+            <button></button><button></button><button></button><button></button><button></button>
+            <button></button><button></button><button></button><button></button><button></button>
+            <button></button><button></button><button></button><button></button><button></button>
+            <button></button><button></button><button></button><button></button><button></button>
+            <button></button><button></button><button></button><button></button><button></button>
+            <button></button><button></button><button></button><button></button><button></button>
         </div>
-        <div id="centerText">
-            Touch keys to enter letters
+        <div id="message">
+            Select tile, then select letter, color or backspace
         </div>
         <div id="keyboard">
-            <button type="button">Q</button><button type="button">W</button><button type="button">E</button><button type="button">R</button><button type="button">T</button><button type="button">Y</button><button type="button">U</button><button type="button">I</button><button type="button">O</button><button type="button">P</button>
-            <button type="button">A</button><button type="button">S</button><button type="button">D</button><button type="button">F</button><button type="button">G</button><button type="button">H</button><button type="button">J</button><button type="button">K</button><button type="button">L</button>
-            <button type="button">Z</button><button type="button">X</button><button type="button">C</button><button type="button">V</button><button type="button">B</button><button type="button">N</button><button type="button">M</button><button type="button">&#x232B;</button>
+            <button>Q</button><button>W</button><button>E</button><button>R</button><button>T</button><button>Y</button><button>U</button><button>I</button><button>O</button><button>P</button>
+            <button>1</button><button>A</button><button>S</button><button>D</button><button>F</button><button>G</button><button>H</button><button>J</button><button>K</button><button>L</button>
+            <button>2</button><button>3</button><button>Z</button><button>X</button><button>C</button><button>V</button><button>B</button><button>N</button><button>M</button><button>&#9003;</button>
         </div>
         <div id="title">
-            Analysis based on dictionaries, guesses & information theory:
+            Suggestions for next guess based on dictonaries & history:
         </div>
-        <div id="results">
-            <div id="headings">
-                <div>Words</div><div>Count</div><div></div><div>All</div><div>Bits</div><div></div><div>Possible</div><div>Bits</div>
-            </div>
-            <div id="table">
-                <div>All<br>Common<br>Possible</div>
-                <div>14,855<br>14,855<br>14,855</div>
-                <div></div>
-                <div>TARES<br>LARES<br>RALES<br>RATES<br>RANES<br>NARES<br>REAIS<br>TERAS<br>SOARE<br>TALES</div>
-                <div>6.16<br>6.11<br>6.10<br>6.08<br>6.08<br>6.07<br>6.05<br>6.05<br>6.04<br>6.01</div>
-                <div></div>
-                <div>TARES<br>LARES<br>RALES<br>RATES<br>RANES<br>NARES<br>REAIS<br>TERAS<br>SOARE<br>TALES</div>
-                <div>6.16<br>6.11<br>6.10<br>6.08<br>6.08<br>6.07<br>6.05<br>6.05<br>6.04<br>6.01</div>
-            </div>
+        <div id="table">
+            <div>Assume Valid Solution</div>                            <div>Assume Plausible Solution</div>
+            <div>Valid</div>              <div>Possible</div>           <div>Valid</div>              <div>Possible</div>
+            <div>TARES</div><div>44%</div><div>TARES</div><div>44%</div><div>SATER</div><div>54%</div><div>SANER</div><div>54%</div>
+            <div>LARES</div><div>44%</div><div>LARES</div><div>44%</div><div>RAISE</div><div>54%</div><div>TASER</div><div>54%</div>
+            <div>RALES</div><div>44%</div><div>RALES</div><div>44%</div><div>SANER</div><div>54%</div><div>AIRED</div><div>53%</div>
+            <div>RATES</div><div>44%</div><div>RATES</div><div>44%</div><div>TASER</div><div>54%</div><div>CARET</div><div>53%</div>
+            <div>RANES</div><div>44%</div><div>RANES</div><div>44%</div><div>TARES</div><div>54%</div><div>DATER</div><div>53%</div>
+            <div>NARES</div><div>44%</div><div>NARES</div><div>44%</div><div>OATER</div><div>54%</div><div>AIDER</div><div>53%</div>
+            <div>REAIS</div><div>44%</div><div>REAIS</div><div>44%</div><div>TARSE</div><div>53%</div><div>OARED</div><div>52%</div>
+            <div>TERAS</div><div>44%</div><div>TERAS</div><div>44%</div><div>TALER</div><div>53%</div><div>PARSE</div><div>52%</div>
+            <div>SOARE</div><div>44%</div><div>SOARE</div><div>44%</div><div>RATES</div><div>53%</div><div>PALER</div><div>52%</div>
+            <div>TALES</div><div>43%</div><div>TALES</div><div>43%</div><div>RAILE</div><div>53%</div><div>RATED</div><div>52%</div>
         </div>
     </body>
-    <script src="scripts.js" defer></script>
 </html>
