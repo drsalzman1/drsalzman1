@@ -1138,19 +1138,19 @@ function filter(possible, guess, pattern) {
 function patternByte(solution, word) {
     let byte = 0, yellowsNeeded, yellowsBefore;
     const yellow = [false, false, false, false, false];
-    for (let l = 0; l < letters; l++) {
+    for (let l=0; l<letters; l++) {
         if (word[l] == solution[l]) {
             byte += 2;
         } else {
             yellowsNeeded = 0;
-            for (let j = 0; j < letters; j++) {
-                if (solution[j] == word[l] && solution[j] != word[j]) {
+            for (let j=0; j<letters; j++) {
+                if (solution[j]==word[l] && solution[j]!=word[j]) {
                     yellowsNeeded++;
                 }
             }
             if (yellowsNeeded > 0) {
                 yellowsBefore = 0;
-                for (let j = 0; j < l; j++) {
+                for (let j=0; j<l; j++) {
                     if (word[j] == word[l] && yellow[j]) {
                         yellowsBefore++;
                     }
@@ -1168,6 +1168,7 @@ function patternByte(solution, word) {
 
 // Suggest next guess based on possible words and possible, plausible words, including and excluding impossible guesses
 function analyze(guess, pattern) {
+    const t0 = performance.now();
     const patterns = 3**5;
     const words = all.length;
     const count = Array(patterns);
@@ -1196,9 +1197,15 @@ function analyze(guess, pattern) {
         cell[s*8+7].textContent = (pair[s][1]*100).toFixed(0)+"%";
         while (p<words && !possible.includes(pair[p][0]))
             p++;
-        cell[s*8+8].textContent = p<words? pair[p][0].toUpperCase() : "";
-        cell[s*8+9].textContent = p<words? (pair[p][1]*100).toFixed(0)+"%" : "";
-        p++;
+        if (p < words) {
+            cell[s*8+8].style.color = historic.includes(pair[p][0])? "red" : "black";
+            cell[s*8+8].textContent = pair[p][0].toUpperCase();
+            cell[s*8+9].textContent = (pair[p][1]*100).toFixed(0)+"%";
+            p++;
+        } else {
+            cell[s*8+8].innerHTML = "";
+            cell[s*8+9].textContent = p<words? (pair[p][1]*100).toFixed(0)+"%" : "";
+        }
     }
     possible = [...plausible];
     filter(possible, guess, pattern);
@@ -1221,11 +1228,17 @@ function analyze(guess, pattern) {
         cell[s*8+11].textContent = (pair[s][1]*100).toFixed(0)+"%";
         while (p<words && !possible.includes(pair[p][0]))
             p++;
-        cell[s*8+12].textContent = p<words? pair[p][0].toUpperCase() : "";
-        cell[s*8+13].textContent = p<words? (pair[p][1]*100).toFixed(0)+"%" : "";
-        p++;
+        if (p < words) {
+            cell[s*8+12].style.color = historic.includes(pair[p][0])? "red" : "black";
+            cell[s*8+12].textContent = pair[p][0].toUpperCase();
+            cell[s*8+13].textContent = (pair[p][1]*100).toFixed(0)+"%";
+            p++;
+        } else {
+            cell[s*8+12].innerHTML = "";
+            cell[s*8+13].textContent = p<words? (pair[p][1]*100).toFixed(0)+"%" : "";
+        }
     }
-    message.textContent = "Select tile, then select letter, color or backspace";
+    message.textContent = ((performance.now()-t0)/1000).toFixed(1); "Select tile, then select letter, color or backspace";
 }
 
 // If guesses are complete, analyze guesses
@@ -1328,15 +1341,3 @@ for (let x=0; x<key.length; x++)
 for (let x=6; x<cell.length; x+=2)
     cell[x].onclick = cellClick;
 document.onkeydown = keyDown;
-
-// Remove historic solutions from plausible list
-let h = 0;
-let x = 0;
-for (let p=0; p<plausible.length; p++) {
-    plausible[x] = plausible[p];
-    while (h<historic.length && plausible[p]>historic[h])
-        h++;
-    if (plausible[p] != historic[h])
-        x++;
-}
-plausible.length = x;
