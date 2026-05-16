@@ -95,14 +95,14 @@ function wsMessage(event) {
     case "ping":                                                // if {op:"ping"},
         let m = "";
         if (ws.game && game[ws.game].msg.length>0)
-            m = game[ws.game].log.at(-1);
+            m = game[ws.game].msg.at(-1);
         ws.send(JSON.stringify({op:"pong", msg:m}));                // send {op:"pong", msg:m[-1]}
         //console.log(`wsConnect: op:pong, msg:${m} to ${ws.id}`);
         break;
     case "start":                                               // if {op:"start", game:g},
         console.log(`wsConnect: op:start, game:${msg.game} from ${ws.id}`);
         delete game[msg.game];                                      // delete old game (if any)
-        game[msg.game] = {id:[ws.id], date:Date.now(), log:[]};     // add new game property to game object
+        game[msg.game] = {id:[ws.id], date:Date.now(), msg:[]};     // add new game property to game object
         ws.game = msg.game;                                         // add game name to ws object
         break;
     case "list":                                                // if {op:"list"},

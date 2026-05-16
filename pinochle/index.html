@@ -71,7 +71,7 @@
                 <select id=joinSel class=nameSel onchange=nameSelectEvent(event,4)></select><br>
                 <br>
                 <label for=gameSel>Game name:</label><br>
-                <select id=gameSel class=nameSel onchange=nameSelectEvent(event,4)></select><br>
+                <select id=gameSel class=nameSel onchange=nameSelectEvent(event,5)></select><br>
                 <br>
                 <br>
                 <div id=joinBtns>
@@ -118,6 +118,9 @@
                         <input type=button value="50" onclick=bidButtonEvent(1)>
                         <input type=button value=">" onclick=bidButtonEvent(2)>
                     </div>
+                    <div id=bidPrompt>
+                        Waiting on Bender...
+                    </div>
                 </div>
                 <div id=trumpText>
                     <div><input type=button value=Spades onclick=trumpButtonEvent(15)></div>
@@ -126,14 +129,16 @@
                     <div><input type=button value=Diamonds onclick=trumpButtonEvent(0) ></div>
                 </div>
                 <div id=playText>
-                    <p></p>
-                    <p></p>
-                    <p></p>
+                    <p>You picked hearts.</p>
+                    <p>Your meld is 20.<br>Their meld is 20.</p>
+                    <p>You need 30 points.<br>They need 20 points.</p>
                     <div id=playBtns>
                         <input id=playBtn type=button value=OK onclick=playButtonEvent(false)>
                         <input id=tossBtn type=button value=Toss onclick=playButtonEvent(true)>
                         <div id=playWait>Please wait...</div>
                     </div>
+                </div>
+                <div id=gameText>
                 </div>
                 <div id=handText>
                     <div id=handGrid>

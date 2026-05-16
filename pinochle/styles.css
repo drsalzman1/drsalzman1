@@ -45,17 +45,17 @@ body {
 
 .helpIco {
     position: absolute;
-    top: 0.1em;
+    top: 0.5em;
     left: 0.4em;
-    height: 1.6em;
+    height: 1.05em;
     filter: invert(100%);
 }
 
 .whiteClose {
     position: absolute;
-    top: -0.1em;
-    right: 0.2em;
-    height: 1.9em;
+    top: 0.4em;
+    right: 0.3em;
+    height: 1.3em;
     filter: invert(100%);
 }
 
@@ -213,16 +213,16 @@ body {
 
 #trumpIco {
     position: absolute;
-    left: 2.1em;
-    top: 0.25em;
-    height: 1.3em;
+    left: 1.8em;
+    top: 0.6em;
+    height: 0.8em;
     filter: invert(100%);
     display: none;
 }
 
 #trumpOut {
     position: absolute;
-    left: 3.4em;
+    left: 2.9em;
     top: 0.4em;
     width: 1.4em;
     text-align: left;
@@ -288,6 +288,11 @@ body {
     height: 1.3em;
     border: none;
     background-color: white;
+}
+
+#bidPrompt {
+    margin-top: 0.4em;
+    height: 1.3em;
 }
 
 #trumpText {
