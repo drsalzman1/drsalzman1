@@ -1231,7 +1231,7 @@ function handEndedEvent() {
     else if (takeO==50 || (scoreO>=500 && scoreE<500) || (scoreO>=500 && scoreE>=500 && teamO[bidder]))
         handPara.textContent = `Woohoo! You win!`;
     else
-        handPara.textContent = `${name[dealer]} deals next.`;
+        handPara.textContent = `${name[next[dealer]]} deals next.`;
     handBtn.style.display = "inline";
     handWait.style.display = "none";
     handText.style.display = "block";
