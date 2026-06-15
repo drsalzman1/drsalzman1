@@ -51,9 +51,9 @@ body {
     filter: invert(100%);
 }
 
-.whiteClose {
+.whiteCloseIco {
     position: absolute;
-    top: 0.4em;
+    top: 0.3em;
     right: 0.3em;
     height: 1.3em;
     filter: invert(100%);
@@ -147,7 +147,7 @@ body {
     filter: invert(100%);
 }
 
-#startSub {
+#startBtn {
     width: 5em;
     height: 1.3em;
     margin-top: 0.8em;
@@ -195,12 +195,16 @@ body {
     place-items: center;
 }
 
-#joinSub {
+#joinBtn {
     width: 5em;
     height: 1.3em;
     border: none;
     background-color: white;
     text-align: center;
+}
+
+#joinWait {
+    height: 1.3em;
 }
 
 #gamePage {
@@ -275,7 +279,7 @@ body {
     filter: invert(100%);
 }
 
-#bidButtons {
+#bidBtns {
     width: 100%;
     margin-top: 0.4em;
     display: flex;
@@ -283,15 +287,14 @@ body {
     justify-content: space-around;
 }
 
-#bidButtons input {
+#bidBtns input {
     width: 3em;
     height: 1.3em;
     border: none;
     background-color: white;
 }
 
-#bidPrompt {
-    margin-top: 0.4em;
+#bidWait {
     height: 1.3em;
 }
 
@@ -312,7 +315,7 @@ body {
     background-color: white;
 }
 
-#playText {
+#needText {
     width: 100%;
     height: 100%;
     display: none;
@@ -321,7 +324,7 @@ body {
     text-align: center;
 }
 
-#playBtns {
+#needBtns {
     width: 100%;
     display: flex;
     flex-direction: row;
@@ -329,7 +332,7 @@ body {
     justify-content: space-around;
 }
 
-#playBtn, #tossBtn {
+#okBtn, #playBtn, #tossBtn {
     width: 4em;
     height: 1.3em;
     border: none;
@@ -364,7 +367,7 @@ body {
 #infoText {
     position: absolute;
     width: 100%;
-    height: 100%;
+    height: 105%;
     padding: 0.4em;
     display: none;
     flex-direction: column;
@@ -374,7 +377,7 @@ body {
     background-color: white;
 }
 
-.blackClose {
+.blackCloseIco {
     position: absolute;
     top: 0.26em;
     right: 0.26em;
@@ -405,8 +408,6 @@ body {
 
 .infoHint img {
     height: 0.8em;
-    filter: invert(100%);
-    opacity: 100%;
 }
 
 #infoArea0 .infoName {

@@ -31,7 +31,7 @@ function hsListening() {
 const hs = createServer(hsRequest);
 hs.listen(hsPort, hsListening);
 
-// ---------------------------------------Websocket Server Protocol-----------------------------------------
+// ---------------------------------------Websocket Server Protocol--------------------------------------------
 //
 // From sender                                                  Server action
 // ===========                                                  =============
@@ -39,36 +39,33 @@ hs.listen(hsPort, hsListening);
 // wsConnect(ws,req) req.url=wss://games.koyeb.app/ws/i         set ws.id, ws.game; reply {op:"id", id:i}
 // wsClose(event)                                               set socket[ws.id] to null
 //
-// {op:"ping"}                                                  reply {op:"pong", msg:m[-1]}
-// {op:"start", game:g}                                         create and join self-named game; set ws.game
-// {op:"list"}                                                  reply {op:"list", game:[g]}
-// {op:"join", game:g, player:p}                                add id; tx {op:"join", player:p} to id[0]
-// {op:"resend", x:x}                                           reply {op:"resend", msg:[m[x]...]}
+// {op:"ping", turn:[t]}                                        update game; send {op:"do", turn:[t]} to sender
+// {op:"start", game:g}                                         create game; set ws.game
+// {op:"list"}                                                  send {op:"list", game:[g]} to sender
+// {op:"join", game:g, name:n}                                  add id; send {op:"join", name:n} to id[0]
 //
-// {x:x, op:"deal", player:[p], bot:[f], show:[f], value:[v]}   store and forward to others
-// {x:x, op:"bid", bid:b}                                       store and forward to others
-// {x:x, op:"trump", suit:s}                                    store and forward to others
-// {x:x, op:"toss"}                                             store and forward to others
-// {x:x, op:"play", card:c}                                     store and forward to others
+// {op:"deal", name:[n], bot:[f], show:[f], value:[v]}          update game; send {op:"do", turn:[t]} to id
+// {op:"bid", bid:b}                                            update game; send {op:"do", turn:[t]} to id
+// {op:"declare", suit:s, toss:f}                               update game; send {op:"do", turn:[t]} to id
+// {op:"play", card:c}                                          update game; send {op:"do", turn:[t]} to id
 //
 // Parameters                                                   Example
 // ==========                                                   =======
 // b = bidder's bid (none=-1, pass=0)                           bid:50
 // c = card index (0 to 79) from starter's perspective          card:62
-// f = flag (true, false)                                       bot:[true, false, true, false]
+// f = flag (true, false)                                       toss:false
 // g = game name (game starter's name)                          game:"Grampy"
 // i = socket index                                             id:1234
-// m = stringified game message object                          msg:"{'x':23, 'op':'toss'}"
-// p = player name                                              player:"Grampy"
+// n = player name                                              name:"Grampy"
 // s = suit value (diamonds=0, clubs=5, hearts=10, spades=15)   suit:0
+// t = turn object                                              turn:[{op:"bid", bid:50}]
 // v = card value (suit + rank=0..4 for JQKTA)                  value:[0, 0, 0, 0, ...19, 19, 19, 19]
-// x = message index                                            x:0
 
 const wssPort = 3000;                                           // websocket server port
 const none = -1;                                                // result if search fails
 const socket = [];                                              // socket[id] = id's websocket
 const queue = [];                                               // queue[id] = id's offline queue
-const game = {};                                                // {g1:{id:[i], date:d, msg:[m]}, g2:{}, ...}
+const game = {};                                                // {g1:{id:[i], date:d, turn:[t]}, g2:{}, ...}
 
 ////////////////
 // Web Socket //
@@ -92,12 +89,13 @@ function wsMessage(event) {
     const ws = event.target;                                    // recall this websocket
     const msg = JSON.parse(event.data);                         // parse message data
     switch (msg.op) {
-    case "ping":                                                // if {op:"ping"},
-        let m = "";
-        if (ws.game && game[ws.game].msg.length>0)
-            m = game[ws.game].msg.at(-1);
-        ws.send(JSON.stringify({op:"pong", msg:m}));                // send {op:"pong", msg:m[-1]}
-        //console.log(`wsConnect: op:pong, msg:${m} to ${ws.id}`);
+    case "ping":                                                // if {op:"ping", turn[t]},
+        if (ws.game) {                                              // if client is in a game,
+            if (game[ws.game].turn.length < msg.turn.length)            // if game missed client's turn(s),
+                game[ws.game].turn = [...msg.turn];                         // update game's turn array
+            ws.send(JSON.stringify({op:"do",turn:game[ws.game].turn})); // send {op:"do", turn:[t]} to client incl. lost turns
+        } else                                                      // otherwise,
+            ws.send(JSON.stringify({op:"do",turn:[]}));                 // send {op:"do", turn:[]} to client
         break;
     case "start":                                               // if {op:"start", game:g},
         console.log(`wsConnect: op:start, game:${msg.game} from ${ws.id}`);
@@ -119,35 +117,22 @@ function wsMessage(event) {
         console.log(`wsMessage: op:join, game:${msg.game}, player:${msg.player} from id:${ws.id}`);
         if (!game[msg.game] || game[msg.game].id.includes(ws.id))   // if joining non-existent game or already joined,
             return;                                                     // ignore join message
-        game[msg.game].id.push(ws.id);                              // add this id to the id array
+        game[msg.game].id.push(ws.id);                              // add this id to the game's id array
         ws.game = msg.game;                                         // add this game name to this ws
         if (socket[game[msg.game].id[0]])                           // if starter is online, notify starter
             socket[game[msg.game].id[0]].send(JSON.stringify({op:"join", player:msg.player}));
         else                                                        // otherwise, queue notification for starter
             queue[game[msg.game].id[0]].push(JSON.stringify({op:"join", player:msg.player}));
         break;
-    case "resend":                                              // if {op:"resend", x:x},
+    default:                                                    // otherwise (turn),
         if (ws.game) {                                              // if in game,
-            ws.send(JSON.stringify({                                    // tx {op:"resend", msg:[x]...}
-                op: "resend",
-                msg: game[ws.game].msg.slice(msg.x)
-            }))
-            console.log(`wsMessage: op:resend, msg:${game[ws.game].msg.slice(msg.x)} to ${ws.id}`);
-        }
-        break
-    default:                                                    // otherwise, store and forward to others
-        if (ws.game) {                                              // if in game,
-            game[ws.game].msg.push(event.data);                         // store game message
-            const list = [];
+            game[ws.game].turn.push(msg);                               // store turn object
             for (const id of game[ws.game].id)                          // for each game id,
-                if (id != ws.id) {                                          // if id isn't sender,
-                    list.push(id);                  
-                    if (socket[id])                                             // send or queue message to id
-                        socket[id].send(event.data);
-                    else
-                        queue[id].push(event.data);
-                }
-            console.log(`wsMessage: ${event.data} from ${ws.id} to ${list}`);
+                if (socket[id])                                             // send or queue {op:"do", turn:[t]} to id
+                    socket[id].send(JSON.stringify({op:"do",turn:game[ws.game].turn}));
+                else
+                    queue[id].push(JSON.stringify({op:"do",turn:game[ws.game].turn}));
+            console.log(`wsMessage: ${event.data} from ${ws.id} to ${game[ws.game].id}`);
         }
     }
 }
@@ -220,9 +205,9 @@ function wssWsClientError() {
 
 // Initialize websocket server
 const wss = new WebSocketServer({port:wssPort});
-wss.on('close', wssClose);
-wss.on('connection', wssConnection);
-wss.on('error', wssError);
-wss.on('headers', wssHeaders);
-wss.on('listening', wssListening);
-wss.on('wsClientError', wssWsClientError);
+wss.on("close", wssClose);
+wss.on("connection", wssConnection);
+wss.on("error", wssError);
+wss.on("headers", wssHeaders);
+wss.on("listening", wssListening);
+wss.on("wsClientError", wssWsClientError);

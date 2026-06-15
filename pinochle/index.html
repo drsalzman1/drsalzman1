@@ -13,33 +13,33 @@
     <body id=body>
         <div id=loadPage>
             <img class=helpIco src=icons/help.svg alt=help onclick="helpEvent('loadHelp')">
-            <img class=whiteClose src=icons/close.svg alt=close onclick=window.close()>
+            <img class=whiteCloseIco src=icons/close.svg alt=close onclick=window.close()>
             Welcome to Double Deck Pinochle!<br>
             <br>
-            <input type=button value="Start Game" onclick=startGameButtonEvent()>
+            <input type=button value="Start Game" onclick=startGBtnEvent()>
             <br>
-            <input id=joinBtn type=button value="Join Game" onclick=joinGameButtonEvent() disabled>
+            <input id=joinGBtn type=button value="Join Game" onclick=joinGBtnEvent() disabled>
         </div>
         <div id=startPage>
             <img class=helpIco src=icons/help.svg alt=help onclick="helpEvent('startHelp')">
-            <img class=whiteClose src=icons/close.svg alt=close onclick=window.location.reload()>
-            <form id=startForm onsubmit=startFormButtonEvent(event)>
+            <img class=whiteCloseIco src=icons/close.svg alt=close onclick=window.location.reload()>
+            <form id=startForm onsubmit=startBtnEvent(event)>
                 <div id=startCtr>
                     0 players are joining game number 0
                 </div>
                 <div id=playersGrid>
                     <label  id=nameLbl0 for=nameSel0>Left name:</label>
-                    <select id=nameSel0 class=nameSel onchange=nameSelectEvent(event,0)></select>
-                    <input  id=nameIco0 class=nameIco type=image onclick=nameIconEvent(event,0)>
+                    <select id=nameSel0 class=nameSel onchange=nameSelEvent(event,0)></select>
+                    <input  id=nameIco0 class=nameIco type=image onclick=nameIcoEvent(event,0)>
                     <label  id=nameLbl1 for=nameSel1>Across name:</label>
-                    <select id=nameSel1 class=nameSel onchange=nameSelectEvent(event,1)></select>
-                    <input  id=nameIco1 class=nameIco type=image onclick=nameIconEvent(event,1)>
+                    <select id=nameSel1 class=nameSel onchange=nameSelEvent(event,1)></select>
+                    <input  id=nameIco1 class=nameIco type=image onclick=nameIcoEvent(event,1)>
                     <label  id=nameLbl2 for=nameSel2>Right name:</label>
-                    <select id=nameSel2 class=nameSel onchange=nameSelectEvent(event,2)></select>
-                    <input  id=nameIco2 class=nameIco type=image onclick=nameIconEvent(event,2)>
+                    <select id=nameSel2 class=nameSel onchange=nameSelEvent(event,2)></select>
+                    <input  id=nameIco2 class=nameIco type=image onclick=nameIcoEvent(event,2)>
                     <label  id=nameLbl3 for=nameSel3>Your name:</label>
-                    <select id=nameSel3 class=nameSel onchange=nameSelectEvent(event,3)></select>
-                    <input  id=nameIco3 class=nameIco type=image onclick=nameIconEvent(event,3)>
+                    <select id=nameSel3 class=nameSel onchange=nameSelEvent(event,3)></select>
+                    <input  id=nameIco3 class=nameIco type=image onclick=nameIcoEvent(event,3)>
                 </div>
                 <div id=assistanceGrid>
                     <div>Show card counts:&nbsp;</div>
@@ -49,7 +49,7 @@
                     <input class=assistBox type=image onclick=assistBoxEvent(event,1)>
                 </div>
                 <div id=startBtns style=width:100%>
-                    <button id=startSub>Start</button>
+                    <button id=startBtn>Start</button>
                 </div>
                 <div id=startEdit>
                     <div id=startAdd>
@@ -65,17 +65,17 @@
         </div>
         <div id=joinPage>
             <img class=helpIco src=icons/help.svg alt=help onclick="helpEvent('joinHelp')">
-            <img class=whiteClose src=icons/close.svg alt=close onclick=window.location.reload()>
-            <form id=joinForm onsubmit=joinFormButtonEvent(event)>
+            <img class=whiteCloseIco src=icons/close.svg alt=close onclick=window.location.reload()>
+            <form id=joinForm onsubmit=joinBtnEvent(event)>
                 <label for=joinSel>Your name:</label><br>
-                <select id=joinSel class=nameSel onchange=nameSelectEvent(event,4)></select><br>
+                <select id=joinSel class=nameSel onchange=nameSelEvent(event,4)></select><br>
                 <br>
                 <label for=gameSel>Game name:</label><br>
-                <select id=gameSel class=nameSel onchange=nameSelectEvent(event,5)></select><br>
+                <select id=gameSel class=nameSel onchange=nameSelEvent(event,5)></select><br>
                 <br>
                 <br>
                 <div id=joinBtns>
-                    <button id=joinSub>Join</button>
+                    <button id=joinBtn>Join</button>
                     <div id=joinWait>Please wait...</div>
                 </div>
                 <div id=joinEdit>
@@ -94,7 +94,7 @@
             <img id=gameHelp class=helpIco src=icons/help.svg alt=help onclick="helpEvent('bidHelp')">
             <img id=trumpIco src=suits/club.svg alt=info onclick=infoEvent()>
             <div id=trumpOut></div> 
-            <img class=whiteClose src=icons/close.svg alt=close onclick=window.location.reload()>
+            <img class=whiteCloseIco src=icons/close.svg alt=close onclick=window.location.reload()>
             <div id=textArea>
                 <div id=bidText>
                     <div id=meldTable>
@@ -113,29 +113,27 @@
                             <span></span>
                         </div>
                     </div>
-                    <div id=bidButtons>
-                        <input type=button value="Pass" onclick=bidButtonEvent(0)>
-                        <input type=button value="50" onclick=bidButtonEvent(1)>
-                        <input type=button value=">" onclick=bidButtonEvent(2)>
-                    </div>
-                    <div id=bidPrompt>
-                        Waiting on Bender...
+                    <div id=bidBtns>
+                        <input type=button value="Pass" onclick=bidBtnEvent(0)>
+                        <input type=button value="50" onclick=bidBtnEvent(1)>
+                        <input type=button value=">" onclick=bidBtnEvent(2)>
+                        <div id=bidWait>Waiting for Bender.</div>
                     </div>
                 </div>
                 <div id=trumpText>
-                    <div><input type=button value=Spades onclick=trumpButtonEvent(15)></div>
-                    <div><input type=button value=Hearts onclick=trumpButtonEvent(10)></div>
-                    <div><input type=button value=Clubs onclick=trumpButtonEvent(5)></div>
-                    <div><input type=button value=Diamonds onclick=trumpButtonEvent(0) ></div>
+                    <div><input type=button value=Spades onclick=trumpBtnEvent(15)></div>
+                    <div><input type=button value=Hearts onclick=trumpBtnEvent(10)></div>
+                    <div><input type=button value=Clubs onclick=trumpBtnEvent(5)></div>
+                    <div><input type=button value=Diamonds onclick=trumpBtnEvent(0) ></div>
                 </div>
-                <div id=playText>
+                <div id=needText>
                     <p>You picked hearts.</p>
                     <p>Your meld is 20.<br>Their meld is 20.</p>
                     <p>You need 30 points.<br>They need 20 points.</p>
-                    <div id=playBtns>
-                        <input id=playBtn type=button value=OK onclick=playButtonEvent(false)>
-                        <input id=tossBtn type=button value=Toss onclick=playButtonEvent(true)>
-                        <div id=playWait>Please wait...</div>
+                    <div id=needBtns>
+                        <input id=okBtn type=button value=OK onclick=okBtnEvent()>
+                        <input id=playBtn type=button value=OK onclick=playBtnEvent()>
+                        <input id=tossBtn type=button value=Toss onclick=tossBtnEvent()>
                     </div>
                 </div>
                 <div id=gameText>
@@ -150,12 +148,12 @@
                         <div>New</div>       <div></div>           <div></div>
                     </div>
                     <p id=handPara></p>
-                    <input id=handBtn type=button value=OK onclick=okButtonEvent()>
-                    <div id=handWait>Please wait...</div>
+                    <input id=handBtn type=button value=OK onclick=handBtnEvent()>
+                    <div id=handWait>Awaiting other players</div>
                 </div>
                 <div id=infoText>
-                    <img class=blackClose src=icons/close.svg alt=close onclick=infoCloseEvent()>
-                    <div id=infoTrump>Trump is diamonds.</div>
+                    <img class=blackCloseIco src=icons/close.svg alt=close onclick=infoCloseEvent()>
+                    <div id=infoBiddr>Grampy won bid.</div>
                     <div id=infoGrid>
                         <u>Out</u><img src=suits/spade.svg><img src=suits/heart.svg><img src=suits/club.svg><img src=suits/diamond.svg>
                         <span>Aces</span>  <div>0</div> <div>1</div> <div>2</div> <div>3</div>
@@ -169,10 +167,10 @@
                     <div class=infoName></div>
                     <div class=infoBid></div>
                     <div class=infoHint>
-                        <img src=suits/spade.svg> 
-                        <img src=suits/heart.svg> 
-                        <img src=suits/club.svg> 
-                        <img src=suits/diamond.svg>
+                        <img src=suits/spade3.svg><img src=suits/spade2.svg><img src=suits/spade1.svg><img src=suits/spade0.svg>   
+                        <img src=suits/heart3.svg><img src=suits/heart2.svg><img src=suits/heart1.svg><img src=suits/heart0.svg> 
+                        <img src=suits/club3.svg><img src=suits/club2.svg><img src=suits/club1.svg><img src=suits/club0.svg> 
+                        <img src=suits/diamond3.svg><img src=suits/diamond2.svg><img src=suits/diamond1.svg><img src=suits/diamond0.svg>
                     </div>
                 </div>
                 <div id=infoArea1>
@@ -180,20 +178,20 @@
                     <span class=infoBid></span>
                     <span class=infoHint>
                         &nbsp- 
-                        <img src=suits/spade.svg> 
-                        <img src=suits/heart.svg> 
-                        <img src=suits/club.svg> 
-                        <img src=suits/diamond.svg>
+                        <img src=suits/spade3.svg><img src=suits/spade2.svg><img src=suits/spade1.svg><img src=suits/spade0.svg>   
+                        <img src=suits/heart3.svg><img src=suits/heart2.svg><img src=suits/heart1.svg><img src=suits/heart0.svg> 
+                        <img src=suits/club3.svg><img src=suits/club2.svg><img src=suits/club1.svg><img src=suits/club0.svg> 
+                        <img src=suits/diamond3.svg><img src=suits/diamond2.svg><img src=suits/diamond1.svg><img src=suits/diamond0.svg>
                     </span>
                 </div>
                 <div id=infoArea2>
                     <div class=infoName></div>
                     <div class=infoBid></div>
                     <div class=infoHint>
-                        <img src=suits/spade.svg> 
-                        <img src=suits/heart.svg> 
-                        <img src=suits/club.svg> 
-                        <img src=suits/diamond.svg>
+                        <img src=suits/spade3.svg><img src=suits/spade2.svg><img src=suits/spade1.svg><img src=suits/spade0.svg>   
+                        <img src=suits/heart3.svg><img src=suits/heart2.svg><img src=suits/heart1.svg><img src=suits/heart0.svg> 
+                        <img src=suits/club3.svg><img src=suits/club2.svg><img src=suits/club1.svg><img src=suits/club0.svg> 
+                        <img src=suits/diamond3.svg><img src=suits/diamond2.svg><img src=suits/diamond1.svg><img src=suits/diamond0.svg>
                     </div>
                 </div>
                 <div id=infoArea3>
@@ -219,7 +217,7 @@
         </div>
         <div id=helpPage>
             <div id=loadHelp>
-                <img class=blackClose src=icons/close.svg alt=close onclick=helpCloseEvent()>
+                <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Double Deck Pinochle v2.20</b>
                 <p>
                     This <a href="javascript:helpEvent('loadShot')">page</a> allows you to start or join a game:
@@ -247,7 +245,7 @@
                 </div>
             </div>
             <div id=tutorial>
-                <img class=blackClose src=icons/close.svg alt=close onclick=helpCloseEvent()>
+                <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Tutorial</b>
                 <p>
                     Click these links to learn how to play double deck Pinochle:
@@ -264,7 +262,7 @@
                 </ul> 
             </div>
             <div id=setup>
-                <img class=blackClose src=icons/close.svg alt=close onclick=helpCloseEvent()>
+                <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Set Up</b>
                 <p>
                     To start a game:
@@ -295,7 +293,7 @@
                 </div>
             </div>
             <div id=bidding>
-                <img class=blackClose src=icons/close.svg alt=close onclick=helpCloseEvent()>
+                <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Bidding</b>
                 <p>
                     The player to the dealer's left must bid at least 50 or pass.
@@ -327,7 +325,7 @@
                 </div>
             </div>
             <div id=playing>
-                <img class=blackClose src=icons/close.svg alt=close onclick=helpCloseEvent()>
+                <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Playing</b>
                 <p>
                     If you win the bid without a marriage in trump, you must toss the hand.
@@ -350,7 +348,7 @@
                 </div>
             </div>
             <div id=scoring>
-                <img class=blackClose src=icons/close.svg alt=close onclick=helpCloseEvent()>
+                <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Scoring</b>
                 <p>
                     After each hand, each team counts their take.
@@ -370,7 +368,7 @@
                 </div>
             </div>
             <div id=comm>
-                <img class=blackClose src=icons/close.svg alt=close onclick=helpCloseEvent()>
+                <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Communicating</b>
                 <p>
                     You can't directly communicate your cards or strategy to your partner.
@@ -395,7 +393,7 @@
                 </div>
             </div>
             <div id=counts>
-                <img class=blackClose src=icons/close.svg alt=close onclick=helpCloseEvent()>
+                <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Counts</b>
                 <p>
                     You know your own cards.
@@ -425,7 +423,7 @@
                 </div>
             </div>
             <div id=strategy>
-                <img class=blackClose src=icons/close.svg alt=close onclick=helpCloseEvent()>
+                <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Strategy</b>
                 <p>
                     You should bid up to a limit based on your meld, your estimate of your partner's meld (perhaps based on a jump bid),
@@ -450,7 +448,7 @@
                 </div>
             </div>
             <div id=terms>
-                <img class=blackClose src=icons/close.svg alt=close onclick=helpCloseEvent()>
+                <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Terms</b>
                 <ul>
                     <li>Players: the four named players</li>
@@ -474,7 +472,7 @@
                 </ul>
             </div>
             <div id=meld>
-                <img class=blackClose src=icons/close.svg alt=close onclick=helpCloseEvent()>
+                <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Meld</b>
                 <p>
                     The valuable sets of cards in your hand.
@@ -505,7 +503,7 @@
                 </div>
             </div>
             <div id=take>
-                <img class=blackClose src=icons/close.svg alt=close onclick=helpCloseEvent()>
+                <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Take</b>
                 <p>
                     Points your team earns by winning tricks.
@@ -534,7 +532,7 @@
                 </div>
             </div>
             <div id=startHelp>
-                <img class=blackClose src=icons/close.svg alt=close onclick=helpCloseEvent()>
+                <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Start Help</b>
                 <p>
                     This <a href="javascript:helpEvent('startShot')">page</a> allows you to start a new game:
@@ -562,7 +560,7 @@
                 </div>
             </div>
             <div id=joinHelp>
-                <img class=blackClose src=icons/close.svg alt=close onclick=helpCloseEvent()>
+                <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Join Help</b>
                 <p>
                     This <a href="javascript:helpEvent('joinShot')">page</a> allows you to join an existing game:
@@ -584,7 +582,7 @@
                 </div>
             </div>
             <div id=bidHelp>
-                <img class=blackClose src=icons/close.svg alt=close onclick=helpCloseEvent()>
+                <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Bid Help</b>
                 <p>
                     This <a href="javascript:helpEvent('bidShot')">page</a> allows you to bid this hand:
@@ -608,7 +606,7 @@
                 </div>
             </div>
             <div id=trumpHelp>
-                <img class=blackClose src=icons/close.svg alt=close onclick=helpCloseEvent()>
+                <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Trump Help</b>
                 <p>
                     This <a href="javascript:helpEvent('trumpShot')">page</a> allows you to pick trump:
@@ -630,7 +628,7 @@
                 </div>
             </div>
             <div id=tossHelp>
-                <img class=blackClose src=icons/close.svg alt=close onclick=helpCloseEvent()>
+                <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Toss Help</b>
                 <p>
                     This <a href="javascript:helpEvent('tossShot')">page</a> allows you to toss a hand:
@@ -640,7 +638,7 @@
                     <li>Note everyone's meld (white cards)</li>
                     <li>Note your unrevealed cards (gray)</li>
                     <li>Read the situation report</li>
-                    <li>Click OK to play the hand</li>
+                    <li>Click OK to continue</li>
                     <li>Click Toss to toss the hand</li>
                 </ul>
                 <p>
@@ -659,7 +657,7 @@
                 </div>
             </div>
             <div id=playHelp>
-                <img class=blackClose src=icons/close.svg alt=close onclick=helpCloseEvent()>
+                <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Play Help</b>
                 <p>
                     This <a href="javascript:helpEvent('playShot')">page</a> allows you to play cards:
@@ -687,7 +685,7 @@
                 </div>
             </div>
             <div id=handHelp>
-                <img class=blackClose src=icons/close.svg alt=close onclick=helpCloseEvent()>
+                <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Hand Help</b>
                 <p>
                     This <a href="javascript:helpEvent('handShot')">page</a> shows how the hand was scored:
