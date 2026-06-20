@@ -246,22 +246,24 @@ const dealTime  = 2000;                                 // milliseconds to deal 
 
 // ---------------------------------------Websocket Server Protocol--------------------------------------------
 //
-// From sender                                                  Server action
-// ===========                                                  =============
-// wsConnect(ws,req) req.url=wss://games.koyeb.app/ws/          pick ws.id; reply {op:"id", id:i}
-// wsConnect(ws,req) req.url=wss://games.koyeb.app/ws/i         set ws.id, ws.game; reply {op:"id", id:i}
+// From sender                                        In Game?  Server action
+// ===========                                        ========  =============
+// wsConnect(ws,req) req.url=wss://games.koyeb.app/ws/       ?  pick ws.id; reply {op:"id", id:i}
+// wsConnect(ws,req) req.url=wss://games.koyeb.app/ws/i      ?  set ws.id, ws.game; reply {op:"id", id:i}
 // wsClose(event)                                               set socket[ws.id] to null
 //
-// {op:"ping", turn:[t]}                                        update game; send {op:"do", turn:[t]} to sender
-// {op:"start", game:g}                                         create game; set ws.game
-// {op:"list"}                                                  send {op:"list", game:[g]} to sender
-// {op:"join", game:g, name:n}                                  add id; send {op:"join", name:n} to id[0]
+// {op:"ping", turn:[]}                                      N  reply {op:"pong", game:[g]}
+// {op:"ping", turn:[t]}                                     Y  update game; reply {op:"pong", turn:[t]}
+// {op:"start", game:g}                                      N  create game; set ws.game
+// {op:"join", game:g, name:n}                               N  add id; send {op:"join", name:n} to id[0]
 //
-// {op:"deal", name:[n], bot:[f], show:[f], value:[v]}          update game; send {op:"do", turn:[t]} to id
-// {op:"bid", bid:b}                                            update game; send {op:"do", turn:[t]} to id
-// {op:"declare", suit:s, toss:f}                               update game; send {op:"do", turn:[t]} to id
-// {op:"play", card:c}                                          update game; send {op:"do", turn:[t]} to id
-//
+// {op:"deal", name:[n], bot:[f], show:[f], value:[v]}       Y  update game; send {op:"pong", turn:[t]} to id[]
+// {op:"bid", bid:b}                                         Y  update game; send {op:"pong", turn:[t]} to id[]
+// {op:"declare", suit:s, toss:f}                            Y  update game; send {op:"pong", turn:[t]} to id[]
+// {op:"play", card:c}                                       Y  update game; send {op:"pong", turn:[t]} to id[]
+// {op:"quit", name:n}                                       Y  send {op:"quit", name:n} to id[]; delete game
+// {op:"quit", name:n}                                       N  ignore
+
 // Parameters                                                   Example
 // ==========                                                   =======
 // b = bidder's bid (none=-1, pass=0)                           bid:50
@@ -275,11 +277,9 @@ const dealTime  = 2000;                                 // milliseconds to deal 
 // v = card value (suit + rank=0..4 for JQKTA)                  value:[0, 0, 0, 0, ...19, 19, 19, 19]
 
 let websocket   = null;                                         // websocket object (or null)
-let wsIntervlID = null;                                         // websocket interval timer identifier (or null)
 let id          = none;                                         // id = websocket identifier
 let online      = false;                                        // true when online with a numbered connection
-let refreshList = false;                                        // true when joining a multiplayer game
-let ready       = true;                                         // ready to process turns
+let defer       = false;                                        // don't defer dealMsg, bidMsg, declareMsg, playMsg events
 let done        = 0;                                            // number of turns processed
 const turnOps   = ["deal", "bid", "declare", "play"];           // array of turn op codes
 const turn      = [];                                           // array of turn objects
@@ -288,20 +288,20 @@ const turn      = [];                                           // array of turn
 let helpStack   = [];                                   // stack of help pages
 let gameList    = [];                                   // list of game names from server
 let game        = "";                                   // game name (name of starter)
-let solo        = true;                                 // starter is only human player
+let solo        = false;                                // starter is only human player
 let shift       = 0;                                    // p3 is shift players left of starter
-let starter     = true;                                 // p3 is starter
+let starter     = false;                                // p3 is starter
 let joinList    = [];                                   // list of players trying to join game
 let name        = ["", "", "", ""];                     // name[p] = player p's name
-let bot         = [true, true, true, false];            // bot[p] = player p is a bot
-let show        = [true, false];                        // show[counts] and show[hands]
+let bot         = [false, false, false, false];         // bot[p] = player p is a bot
+let show        = [false, false];                       // show[counts] and show[hands]
 let card        = [                                     // card[c] = deck card c
     new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,
     new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,
     new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,
     new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C
 ];
-let dealer      = p3;                                   // the player who is dealing or last dealt
+let dealer      = none;                                 // the player who is dealing or last dealt
 let bidder      = none;                                 // the player who is bidding or won the bid
 let player      = none;                                 // the player who is choosing then playing a card
 let bid         = [none, none, none, none];             // bid[p] = player p's bid (or none or pass)
@@ -335,7 +335,7 @@ let iconw       = 0;                                    // icon width
 let iconh       = 0;                                    // icon height
 let pad         = 0;                                    // padding around display elements
 let hpad        = 0;                                    // horizontal padding for p2 and p0 hands
-let vpad        = 0;                                    // vertical padding for p1 and p3 hands
+let vpad        = 0;                                    // verright(tical padding for p1 and p3 hands
 let pitch1      = 0;                                    // horizontal card pitch for p1 hand
 let pitch3      = 0;                                    // horizontal card pitch for p3 hand
 let vpitch      = 0;                                    // vertical card pitch for p2 and p0 hands
@@ -347,6 +347,17 @@ let offsetX = 0;                                        // offset of pointer X f
 let offsetY = 0;                                        // offset of pointer Y from card Y
 let strt = "";                                          // start transform
 let fnsh = "";                                          // finish transform
+
+// Send msg if mutiplayer); trigger msgEvent if solo
+function sendMsg(msg) {
+    if (solo)                                                   // if playing solo,
+        setTimeout(msgEvent, 0, msg);                               // trigger msg event immediately
+    else {                                                      // otherwise,
+        if (turnOps.includes(msg.op))                               // if msg.op is a turn op,
+            turn.push(msg);                                             // append msg to turn object array
+        websocket.send(JSON.stringify(msg));                        // send message to server and await reply
+    }
+}
 
 // Compare function to sort in ascending order
 function up(a, b) {
@@ -366,25 +377,21 @@ function log(debugText = "") {
 // Return p rotated clockwise by "shift" players; if shift is 1, p0 returns p1 and [p0,p1,p2,p3] returns [p1,p2,p3,p0]
 function left(p) {
     if (typeof p == "number")
-        p = (p + shift) % players;
-    else {
-        const temp = [...p];
-        for (let i=0; i<players; i++)
-            p[i] = temp[(i + shift) % players];
-    }
-    return p;
+        return (p + shift) % players;
+    const temp = Array(p.length);
+    for (let i=0; i<players; i++)
+        temp[i] = p[(i + shift) % players];
+    return temp;
 }
 
 // Return p rotated counter-clockwise by "shift" players; if shift is 1, p1 returns p0 and [p1,p2,p3,p0] returns [p0,p1,p2,p3]
 function right(p) {
     if (typeof p == "number")
-        p = (p + (players-shift)) % players;
-    else {
-        const temp = [...p];
-        for (let i=0; i<players; i++)
-            p[i] = temp[(i + (players-shift)) % players];
-    }
-    return p;
+        return (p + (players-shift)) % players;
+    const temp = Array(p.length);
+    for (let i=0; i<players; i++)
+        temp[i] = p[(i + (players-shift)) % players];
+    return temp;
 }
 
 // Return card c rotated clockwise by "shift" players; if shift is 1, c0 returns c20
@@ -395,17 +402,6 @@ function cardLeft(c) {
 // Return card c rotated clockwise by "shift" players; if shift is 1, c20 returns c0
 function cardRight(c) {
     return (c + (deckCards-shift*handCards)) % deckCards;
-}
-
-// Process new msg object
-function process(msg) {
-    if (turnOps.includes(msg.op))                               // if msg.op is a turn op,
-        turn.push(msg);                                             // append msg to turn object array
-    if (solo) {                                                 // if solo,
-        turnMsgEvent(msg);                                      // process message immediately
-        done++;
-    } else                                                      // otherwise,
-        websocket.send(JSON.stringify(msg));                        // send message to server and await echo
 }
 
 // Return true if the suit of card value v is trump
@@ -1005,10 +1001,10 @@ function botCard() {
 
 // Relocate cards and p0/p2 infoName, infoBid and infoHint
 function relocate() {
-    const r0 = [+Math.PI/2, +Math.PI/2, -Math.PI/2, -Math.PI/2][dealer];
-    const r1 = [0,          0,          0,          0         ][dealer];
-    const r2 = [+Math.PI/2, -Math.PI/2, -Math.PI/2, +Math.PI/2][dealer];
-    const r3 = [+Math.PI,   0,          -Math.PI,   0         ][dealer];
+    const r0 = [+Math.PI/2, +Math.PI/2, -Math.PI/2, -Math.PI/2][dealer] ?? 0;
+    const r1 = [0,          0,          0,          0         ][dealer] ?? 0;
+    const r2 = [+Math.PI/2, -Math.PI/2, -Math.PI/2, +Math.PI/2][dealer] ?? 0;
+    const r3 = [+Math.PI,   0,          -Math.PI,   0         ][dealer] ?? 0;
     const maxY = [vh*0.475, 0, vh*0.475, 0];
     let n = 0;                                                  // n = number of semi-exposed cards
     let v = 0;                                                  // v = visible card number
@@ -1143,6 +1139,15 @@ function updateEst(newBid) {
 //                     EVENT HANDLERS                      //
 /////////////////////////////////////////////////////////////
 
+// If user confirms: send quitMsg, close app, and, if close fails, reload app
+function appCloseEvent() {
+    if (confirm(`Terminate the game?`)) {
+        sendMsg({op:"quit", name:name[p3]});
+        window.close();
+        location.reload();
+    }
+}
+
 // Hide current helpPage (if any); display new helpPage topic
 function helpEvent(topic) {
     for (const div of helpPage)
@@ -1185,29 +1190,28 @@ function infoCloseEvent() {
     infoText.style.display = "none";
 }
 
-// Display "waiting"; advance dealer; restart app(game over); process dealMsg(starter); do/await dealMsgEvent  
+// Display "waiting"; advance dealer; restart app(game over); send dealMsg(my/my bot's deal); await dealMsgEvent  
 function handBtnEvent() {
-    handBtn.style.display = "none";
+    defer = false;                                              // stop deferring dealMsg events
+    while (done < turn.length)                                  // trigger any deferred dealMsg events
+        setTimeout(msgEvent, 0, turn[done++]);
+    handBtn.style.display = "none";                             // replace handBtn with handWait
     handWait.style.display = "inline";
-    dealer = next[dealer];
-    if (takeO==50 || takeE==50 || scoreO>=500 || scoreE>=500)
-        loadEvent();
-    else if (starter) {
-        let v = Array(deckCards).fill(0).map((v,i,a)=>i%handCards);
+    dealer = next[dealer];                                      // advance dealer
+    if (takeO==50 || takeE==50 || scoreO>=500 || scoreE>=500)   // if game is over,
+        loadEvent();                                                // reload game
+    else if (dealer==p3 || starter&&bot[dealer]) {              // if I'm the new dealer or my bot's the new dealer,
+        let v = Array(deckCards).fill(0).map((v,i,a)=>i%handCards); // send a new dealMsg
         shuffleArray(v, deckCards);
         v = [...v.slice(0,20).sort(down), ...v.slice(20,40).sort(down), ...v.slice(40,60).sort(down), ...v.slice(60,80).sort(down)];
-        process({op:"deal", name:name, bot:bot, show:show, value:v});
-    } else {
-        ready = true;
-        while (done<turn.length)
-            turnMsgEvent(turn[done++]);
-    }
+        sendMsg({op:"deal", name:right(name), bot:right(bot), show:show, value:v});
+    }                                                           // await dealMsg event
 }
 
 // Display handText, defer any dealMsg, then await handBtnEvent
 function handEndedEvent() {
     const tossO = teamO[bidder] && toss;
-    const tossE = teamO[bidder] && toss;
+    const tossE = teamE[bidder] && toss;
     const bidO = Math.max(bid[p1], bid[p3]);
     const bidE = Math.max(bid[p0], bid[p2]);
     handCell[4].innerHTML = scoreO;
@@ -1218,9 +1222,9 @@ function handEndedEvent() {
     meldO = meldO<20||(!tossE&&takeO<20)? 0 : meldO;
     handCell[11].innerHTML = meldE<20||(!tossO&&takeE<20)||(teamE[bidder]&&meldE+takeE<bidE)? `<s>&nbsp;${meldE}&nbsp;</s>` : meldE;
     meldE = meldE<20||(!tossO&&takeE<20)? 0 : meldE;
-    handCell[13].innerHTML = takeO<20||(teamO[bidder]&&meldO+takeO<bidO)? `<u><s>&nbsp;${takeO}&nbsp;</s></u>` : `<u>${takeO}</u>`;
+    handCell[13].innerHTML = takeO>0&&(takeO<20||(teamO[bidder]&&meldO+takeO<bidO))? `<u><s>&nbsp;${takeO}&nbsp;</s></u>` : `<u>${takeO}</u>`;
     takeO = takeO<20? 0 : takeO;
-    handCell[14].innerHTML = takeE<20||(teamE[bidder]&&meldE+takeE<bidE)? `<u><s>&nbsp;${takeE}&nbsp;</s></u>` : `<u>${takeE}</u>`;
+    handCell[14].innerHTML = takeE>0&&(takeE<20||(teamE[bidder]&&meldE+takeE<bidE))? `<u><s>&nbsp;${takeE}&nbsp;</s></u>` : `<u>${takeE}</u>`;
     takeE = takeE<20? 0 : takeE;
     scoreO += teamO[bidder]&&meldO+takeO<bidO? -bidO : meldO+takeO;
     scoreE += teamE[bidder]&&meldE+takeE<bidE? -bidE : meldE+takeE;
@@ -1235,7 +1239,7 @@ function handEndedEvent() {
     handBtn.style.display = "inline";
     handWait.style.display = "none";
     handText.style.display = "block";
-    ready = false;
+    defer = true;                                               // defer dealMsg event until OK'd
 }
 
 // Pull trick; if cards, set player then await refannedEvent; if no cards, award bonus then await handEndedEvent
@@ -1345,7 +1349,7 @@ function pointerMoveEvent(event) {
     };
 };
 
-// If click or big move to center, move card to center, process playMsgEvent; otherwise return card to hand
+// If click or big move to center, move card to center, send playMsg; otherwise return card to hand
 function pointerUpEvent(event) {
     const deltaY = card[pickedC].hand.y - (event.clientY - offsetY);
     event.preventDefault();
@@ -1360,7 +1364,7 @@ function pointerUpEvent(event) {
                 cardImg[c].onpointerdown = cardImg[c].onpointermove = cardImg[c].onpointerup = "";
                 cardImg[c].style.filter = card[c].g==hand? "brightness(70%)" : "brightness(100%)";
             }
-            process({op:"play", card:cardLeft(pickedC)});
+            sendMsg({op:"play", card:cardLeft(pickedC)});
         } else {
             strt = fnsh;
             fnsh = `translate(${card[pickedC].hand.x}px, ${card[pickedC].hand.y}px)`;
@@ -1370,14 +1374,14 @@ function pointerUpEvent(event) {
     }
 }
 
-// Do any pending turns; if my bot, choose card & process, then await pointerDown/pointerMove/pointerDown/playMsg events
+// If my bot, choose card & send playMsg, then await pointerDown/pointerMove/pointerDown/playMsg events
 function refannedEvent() {
-    ready = true;
-    while (done<turn.length)
-        turnMsgEvent(turn[done++]);
+    defer = false;                                              // stop deferring playMsg/dealMsg events
+    while (done<turn.length)                                    // trigger any deferred playMsg/dealMsg events
+        setTimeout(msgEvent, 0, turn[done++]);
     gameHelp.onclick = function () {helpEvent('playHelp')};
     showHints();
-    gameText.textContent = nGroup(play)==0? `Waiting for ${name[player]}.` : ``;
+    gameText.textContent = nGroup(play)==0? `Waiting for ${player==p3?"you":name[player]}.` : ``;
     for (const c of cpArray[p3]) {
         if (player>=nGroup(play) && card[c].g==hand)
             cardImg[c].style.filter = `brightness(${legal(c)?"100%":"70%"})`;
@@ -1389,7 +1393,7 @@ function refannedEvent() {
     }
     if (starter && bot[player]) {
         chosen = botCard();
-        process({op:"play", card:cardLeft(chosen)});
+        sendMsg({op:"play", card:cardLeft(chosen)});
     }
 }
 
@@ -1425,9 +1429,9 @@ function okBtnEvent() {
         setTimeout(meldGatheredEvent, dealTime/10);                 // await meldGathered event
 }
 
-// Process declareMsg, clear needText, brighten/gather meld, then await meldGatheredEvent
+// Send declareMsg, clear needText, brighten/gather meld, then await meldGatheredEvent
 function playBtnEvent() {
-    process({op:"declare", suit:trump, toss:false});            // declare trump suit and toss flag
+    sendMsg({op:"declare", suit:trump, toss:false});            // declare trump suit and toss flag
     needText.style.display = "none";                            // clear play text
     for (const c of cArray) {                                   // brighten and gather meld cards
         cardImg[c].style.filter = "brightness(100%)";
@@ -1436,9 +1440,9 @@ function playBtnEvent() {
     setTimeout(meldGatheredEvent, dealTime/10);                 // await meldGathered event
 }
 
-// Process declareMsg, clear needText, brighten/gather meld, then await handEndedEvent
+// Send declareMsg, clear needText, brighten/gather meld, then await handEndedEvent
 function tossBtnEvent() {
-    process({op:"declare", suit:trump, toss:true});
+    sendMsg({op:"declare", suit:trump, toss:true});
     needText.style.display = "none";
     for (const c of cArray) {
         cardImg[c].style.filter = "brightness(100%)";
@@ -1454,12 +1458,12 @@ function meldFannedEvent() {
     if (marriages(bidder,trump)==0)
         needPara[2].innerHTML = `${bidder==p3?"You must toss":name[bidder]+" tossed"} due to no marriage.`;
     else if (toss)
-        needPara[2].innerHTML = `${name[bidder]} tossed due to insufficient meld.`;
+        needPara[2].innerHTML = `${name[bidder]} tossed the hand.`;
     else
         needPara[2].innerHTML = `You need ${needO} points.<br>They need ${needE} points.`;
     okBtn.style.display = bidder!=p3? "inline" : "none";
     playBtn.style.display = bidder==p3 && marriages(p3,trump)!=0? "inline" : "none";
-    tossBtn.style.display = bidder==p3 && marriages(p3,trump)==0? "inline" : "none";
+    tossBtn.style.display = bidder==p3? "inline" : "none";
     needText.style.display = "flex";
     gameHelp.onclick = function () {helpEvent('tossHelp')};
 }
@@ -1478,11 +1482,13 @@ function regatheredEvent() {
 
 // Set trump/toss, tag meld, and, if I'm not the bid winner, clear bid text, gather hands then await regathered event
 function declareMsgEvent(msg) {
+    if (bidder != p3)                                           // if I didn't win the bid,
+        defer = true;                                               // defer playMsg and dealMsg events until OK'd
     log(`(${name[bidder]}) op:declare, suit:${suit$[msg.suit]}, toss:${msg.toss}`);
     trump = msg.suit;                                           // set trump suit and toss flag
     toss = msg.toss;
-    tagMeld();                                                  // tag the meld cards
-    if (bidder != p3) {                                        // if bid winner isn't me,
+    if (bidder != p3) {                                         // if bid winner isn't me,
+        tagMeld();                                                  // tag the meld cards
         bidText.style.display = "none";                             // clear bid text
         for (const c of cArray)                                     // gather hands
             moveCard(c, hand, 0, gone, -c, false, dealTime/10);
@@ -1510,7 +1516,7 @@ function bidMsgEvent(msg) {
     setTimeout(fannedEvent);
 }
 
-// Adjust bid values or make my bid
+// Adjust bid values or send bidMsg
 function bidBtnEvent(n) {
     const v = bidBtn[n].value;
     const highBid = Math.max(...bid);
@@ -1526,11 +1532,11 @@ function bidBtnEvent(n) {
     default:
         const b = v=="Pass"? pass : Number(v);
         logBid(b, "Undisclosed");
-        process({op:"bid", bid:b});
+        sendMsg({op:"bid", bid:b});
     }
 }
 
-// Make my bot's next bid
+// Send my bot's next bidMsg
 function botBidEvent() {
     const lefty   = next[bidder];
     const partner = next[lefty];
@@ -1559,11 +1565,15 @@ function botBidEvent() {
             b = logBid(pass, "Bad quality");
         else
             b = logBid(pass, "Too high");
-    process({op:"bid", bid:b});
+    sendMsg({op:"bid", bid:b});
 }
 
-// Display bidText, handle situation, then await trumpBtnEvent, declareMsgEvent, botBidEvent, bidBtnEvent or bidMsgEvent
+// Display bidText, handle situation, then await trumpBtn, declareMsg, botBid, bidBtn or bidMsg event
 function fannedEvent() {
+    if (nPass() == 3)                                           // if others passed, bidder is the remaining player
+        for (bidder of pArray)
+            if (bid[bidder] != pass)
+                break;
     meldSpan[0].textContent = meld(p3, spades);                 // display bidText
     meldSpan[1].textContent = meld(p3, hearts);
     meldSpan[2].textContent = meld(p3, clubs);
@@ -1596,13 +1606,14 @@ function fannedEvent() {
             trumpText.style.display = "flex";
             gameHelp.onclick = function () {helpEvent('trumpHelp')};
         } else if (starter && bot[bidder])                          // otherwise, if my bot won the bid,
-            process({op:"declare", suit:botSuit(), toss:botToss()});    // declare bot's trump suit and toss decision
+            sendMsg({op:"declare", suit:botSuit(), toss:botToss()});    // send my bot's declareMsg
         else                                                        // otherwise,
-            bidPrompt.textContent = `Waiting for ${name[bidder]}.`;     // await declareMsgEvent
+            bidWait.textContent = `Waiting for ${name[bidder]}.`;       // await declareMsgEvent
     } else if (bidder==p3 && bid[p3]==pass) {                   // otherwise, if it's my bid and I've already passed,
         logBid(pass, "Repeat");                                     // pass again
-        process({op:"bid", bid:pass});
+        sendMsg({op:"bid", bid:pass});                              // resend my bidMsg
     } else if (starter && bot[bidder]) {                        // otherwise, if it's my bot's bid,
+        log(`starter:${starter}, bidder:${bidder}, bot[bidder]:${bot[bidder]}`);
         setTimeout(botBidEvent, bid[bidder]==pass?0:dealTime/4);    // await botBidEvent (quick if repeat pass)
     }                                                           // otherwise, await bidBtnEvent or bidMsgEvent
 }
@@ -1629,9 +1640,19 @@ function dealtEvent() {
 
 // Initialize hands, clear pages, display gamePage, deal cards, then await dealtEvent
 function dealMsgEvent(msg) {
+    if (msg.name[p3] == name[p3])                               // set shift based on position of my name in msg.name
+        shift = 0;
+    else if (msg.name[p2] == name[p3])
+        shift = 3;
+    else if (msg.name[p1] == name[p3])
+        shift = 2;
+    else
+        shift = 1;
+    if (dealer == none)                                         // if dealer is unknown,
+        dealer = right(p3);                                         // dealer is shift positions to my right
+    starter = shift==0;                                         // I'm the starter if shift is 0
     log(`(${name[dealer]}) op:deal, name:[${msg.name}], bot:[${msg.bot}], show:[${msg.show}], value:[...]`);
-    shift = (msg.name.indexOf(name[p3])+1) % players;           // shift is number of players left of starter
-    starter = shift==0;                                         // p3 is starter if shift is 0
+    //shift = (msg.name.indexOf(name[p3])+1) % players;           // shift is number of players left of starter
     for (const c of cArray) {                                   // deck is from msg.value, offset to my perspective
         card[c].c = c;
         card[c].p = plyr[c];
@@ -1650,7 +1671,6 @@ function dealMsgEvent(msg) {
     name = left(msg.name);                                      // name array is from msg.name, offset to my perspective
     bot = left(msg.bot);                                        // bot array if from msg.bot, offset to my perspective
     show = msg.show;                                            // show array is from msg.show
-    dealer = turn.length==0? right(p3) : dealer;                // dealer = starter for game's first deal
     bidder = next[dealer];                                      // bidder is left of dealer
     bid.fill(none);                                             // no bids yet
     est.fill(typical)                                           // no jump bids yet
@@ -1660,8 +1680,8 @@ function dealMsgEvent(msg) {
     logHands();
     startPage.style.display = "none";
     joinPage.style.display = "none";
-    handText.style.display = "none";
     gamePage.style.display = "block";
+    handText.style.display = "none";
     for (const p of pArray) {
         infoBid[p].innerHTML = "";
         infoBid[p].style.display = "inline";
@@ -1680,6 +1700,20 @@ function dealMsgEvent(msg) {
     }
     playZ = -1000;
     setTimeout(dealtEvent, dealTime);
+}
+
+// Dispatch legal deal, bid, declare, and play message events; log other message events
+function msgEvent(msg) {
+    if (msg.op=="deal" && "name" in msg && "bot" in msg && "show" in msg && "value" in msg)
+        dealMsgEvent(msg);
+    else if (msg.op=="bid" && "bid" in msg)
+        bidMsgEvent(msg);
+    else if (msg.op=="declare" && "suit" in msg && "toss" in msg)
+        declareMsgEvent(msg);
+    else if (msg.op=="play" && "card" in msg)
+        playMsgEvent(msg);
+    else
+        log(JSON.stringify(msg));
 }
 
 // Handle name select event for player p (p0, p1, p2, p3, pj, pg)
@@ -1774,14 +1808,14 @@ function nameSelEvent(event, p) {
     case "":
         break;
     default:
-        if (p == p3) {
-            game = name[p3];
-            process({op:"start", game:game});
+        if (!solo && game=="" && nameSel[p3].value!="") {           // if necessary,
+            game = nameSel[p3].value;                                   // start game
+            sendMsg({op:"start", game:game});
         }
     }
 }
 
-// Validate input, initialize game, display "waiting", process joinMsg, then await dealMsgEvent
+// Validate input, initialize game, display "waiting", send joinMsg, then await dealMsgEvent
 function joinBtnEvent(event) {
     event.preventDefault();
     if (nameSel[pj].value == "") {
@@ -1797,18 +1831,16 @@ function joinBtnEvent(event) {
     name[p3] = nameSel[pj].value;
     game = nameSel[pg].value;
     localStorage.self = name[p3];
-    sessionStorage.game = game;
-    solo = false;
     nameSel[pj].disabled = true;
     nameSel[pg].disabled = true;
     joinBtn.style.display = "none";
     joinWait.style.display = "inline";
-    refreshList = false;
-    process({op:"join", game:game, name:name[p3]});
+    sendMsg({op:"join", game:game, name:name[p3]});
 }
 
-// Clear loadPage, display joinPage, process listMsg, then await listMsgEvent, nameSelEvent and joinBtnEvent
+// Clear loadPage, display joinPage, then await pingMsgEvent, nameSelEvent and joinBtnEvent
 function joinGBtnEvent() {
+    starter = false;
     loadPage.style.display = "none";
     const aliasList = localStorage.aliasList? JSON.parse(localStorage.aliasList) : [];
     setNameSelOptions();
@@ -1825,11 +1857,10 @@ function joinGBtnEvent() {
     else
         nameSel[pg].focus();
     joinPage.style.display = "grid";
-    refreshList = true;
-    process({op:"list"});
+    solo = false;
 }
 
-// Validate names, initialize game, process deal message, then await bidMsg event
+// Validate names, initialize game, send dealMsg, then await bidMsg event
 function startBtnEvent(event) {
     event.preventDefault();
     for (const p of pArray)
@@ -1843,12 +1874,10 @@ function startBtnEvent(event) {
     localStorage.name = JSON.stringify(name);
     localStorage.bot  = JSON.stringify(bot);
     localStorage.show = JSON.stringify(show);
-    game = name[p3];
-    solo = bot[p0] && bot[p1] && bot[p2];
     let v = Array(deckCards).fill(0).map((v,i,a)=>i%handCards);
     shuffleArray(v, deckCards);
     v = [...v.slice(0,20).sort(down), ...v.slice(20,40).sort(down), ...v.slice(40,60).sort(down), ...v.slice(60,80).sort(down)];
-    process({op:"deal", name:name, bot:bot, show:show, value:v});
+    sendMsg({op:"deal", name:name, bot:bot, show:show, value:v});
 }
 
 // Toggle bot[p] and nameIco[p], hide startCtr if all bots, update nameSel options, force player p selection
@@ -1860,6 +1889,10 @@ function nameIcoEvent(event, p) {
     startCtr.style.visibility = solo? "hidden" : "visible";
     setNameSelOptions();
     nameSel[p].value = "";
+    if (!solo && game=="" && nameSel[p3].value!="") {           // if necessary,
+        game = nameSel[p3].value;                                   // start game
+        sendMsg({op:"start", game:game});
+    }
 }
 
 // Toggle show[b] and assistBox[b] icon
@@ -1869,8 +1902,9 @@ function assistBoxEvent(event, b) {
     assistBox[b].src = show[b]? checked : unchecked;
 }
 
-// Clear loadPage, display startPage, process startMsg, then await joinMsg, nameSel, nameIco, assistBox, and startBtn events
+// Clear loadPage, display startPage, send startMsg, then await joinMsg, nameSel, nameIco, assistBox, and startBtn events
 function startGBtnEvent() {
+    starter = true;
     loadPage.style.display = "none";
     const aliasList = localStorage.aliasList? JSON.parse(localStorage.aliasList) : [];
     const botList = localStorage.botList? JSON.parse(localStorage.botList) : [];
@@ -1908,8 +1942,10 @@ function startGBtnEvent() {
     startDel.style.display = "none";
     startAdd.style.visibility = startDel.style.visibility = "hidden";
     startPage.style.display = "flex";
-    game = name[p3];
-    process({op:"start", game:game});
+    if (!solo && game=="" && nameSel[p3].value!="") {           // if necessary,
+        game = nameSel[p3].value;                                   // start game
+        sendMsg({op:"start", game:game});
+    }
 }
 
 // Process websocket close events
@@ -1924,49 +1960,51 @@ function wsErrorEvent(event) {
     log(`wsErrorEvent! id:${id}`);
 }
 
-// Dispatch turn (deal, bid, declare, play) message event; ignore other message events
-function turnMsgEvent(msg) {
-    if (msg.op == "deal")
-        dealMsgEvent(msg);
-    else if (msg.op == "bid")
-        bidMsgEvent(msg);
-    else if (msg.op == "declare")
-        declareMsgEvent(msg);
-    else if (msg.op == "play")
-        playMsgEvent(msg);
-}
-
 // Handle incoming websocket message events
 function wsMessageEvent(event) {
     const msg = JSON.parse(event.data);                         // parse the event data
-    switch (msg.id) {
-    case "id":                                                  // if {op:"id", id:i},
+    if (msg.op=="id" && "id" in msg) {                          // if legal idMsg,
+        log(`op:id, id:${msg.id}`);
         if (id == none) {                                           // if first id of this session,
-            sessionStorage.id = msg.id;                                 // save the id offered by our anonymous connection
-            websocket.close();                                          // close this websocket
-            break;                                                      // await numbered reconnection through heartbeat
+            sessionStorage.id = msg.id;                                 // save id offered by our anonymous connection
+            websocket.close();                                          // close websocket
+            return;                                                     // await wsInterval event
         }
-        if (msg.id != id) {                                         // otherwise, if new id,
-            id = msg.id;                                                // save new id (may impact comms)
-            sessionStorage.id = id;                                     
-        }
-        online = true;                                              // note that we're online with numbered connection
-        joinGBtn.disabled = false;                                  // note that we're online
-        break;
-    case "do":                                                  // if {op:"do", turn:[t]},
+        id = msg.id;                                                // save new id (may impact comms)
+        sessionStorage.id = id;                                     
+        online = true;                                              // note that we're online
+        joinGBtn.disabled = false;                                  // enable joinG button
+        return;
+    }
+    if (msg.op=="pong" && "game" in msg) {                      // if legal pongGameMsg,
+        //log(`op:pong, game:[${msg.game}]`);
+        gameList = [...msg.game];                                   // save gameList
+        setNameSelOptions();                                        // update nameSel options
+        return;
+    }
+    if (msg.op=="pong" && "turn" in msg) {                      // if legal pongTurnMsg,
+        //log(`op:pong, turn:[${msg.turn}]`);
         for (let i=turn.length; i<msg.turn.length; i++)             // add any missing turns
             turn[i] = msg.turn[i];
-        while (ready && done<turn.length)                           // if ready, do any pending turns
-            turnMsgEvent(turn[done++]);
-    case "list":                                                // if {op:"list", game:[g]},
-        gameList = [...msg.game];                                   // save game list
-        setNameSelOptions();                                        // update nameSel options
-        break;
-    case "join":                                                // if {op:"join", name:n}, (only received by starter)
+        while (!defer && done<turn.length)                          // if not deferred, trigger any pending turns
+            setTimeout(msgEvent, 0, turn[done++]);
+        return;
+    }
+    if (starter && msg.op=="join" && "name" in msg) {           // if starter and legal joinMsg,
+        log(`op:join, name:${msg.name}`);
         joinList.push(msg.name);                                    // add name to join list
         startCtr.textContent = `Players joining: ${joinList.length}`;
         setNameSelOptions();                                        // update nameSel options
+        return;
     }
+    if (msg.op=="quit" && "name" in msg) {                      // if legal quitMsg,
+        log(`op:quit, name:${msg.name}`);
+        alert(`${msg.name} terminated the game.`);                  // alert player
+        window.close();                                             // close app
+        location.reload();                                          // if close fails, reload app
+        return;
+    }
+    log(event.data);                                            // log undecipherable event data 
 }
 
 // Ignore websocket open events
@@ -1981,15 +2019,14 @@ function wsIntervalEvent() {
         log(`wsIntervalEvent, connecting`);                         // log event
         break;
     case WebSocket.OPEN:                                        // if websocket open,
-        process({op:"ping", turn:turn});                            // send {op:"ping", turn:[t]} to server (in case turn lost)
-        if (refreshList)                                            // if trying to join a game,
-            process({op:"list"});                                       // resend {op:"list"} to server
+        //log(`wsIntervalEvent, open`);                             // log event
+        sendMsg({op:"ping", turn:turn});                            // send pingMsg (in case my turn was lost)
         break;
     case WebSocket.CLOSING:                                     // if websocket closing,
-        log(`wsIntervalEvent, closing`);                            // log event
+        log(`wsIntervalEvent: closing`);                            // log event
         break;
     case WebSocket.CLOSED:                                      // if websocket closed,
-        log(`wsIntervalEvent, closed`);                             // log event
+        log(`wsIntervalEvent: closed`);                             // log event
         online = false;                                             // note websocket is offline
         joinGBtn.disabled = true;                                   // disable join button
         if (navigator.onLine && location.hostname) {                // if browser is online and not running from debugger,
@@ -2000,8 +2037,8 @@ function wsIntervalEvent() {
             websocket.onclose = wsCloseEvent;
             websocket.onerror = wsErrorEvent;
             websocket.onmessage = wsMessageEvent;
-            websocket.onopen = wsOpenEvent;                             // prepare for events
-            log(`wsIntervalEvent, reconnecting to url:${url}`);         // log event
+            websocket.onopen = wsOpenEvent;
+            log(`Reconnecting to url:${url}`);
         }
     }
 }
@@ -2028,10 +2065,9 @@ function loadEvent() {
     vh0 = vh;
     vw0 = vw;
     onresize = resizeEvent;
-    relocate();                                                 // initialize card and info text locations
-    for (const c of cArray) {                                   // initialize cards 
+    for (const c of cArray) {                                   // initialize card images and location
         cardImg[c].src = backImg[0].src;
-        moveCard(c, gone, 0, gone, 0, false, 0, cpArray[p3][0], c);
+        cardImg[c].style.transform = "translate(-2.8em, -2em)";
     }
     trumpIco.style.display = "none";                            // initialize display
     trumpOut.textContent = "";
@@ -2041,7 +2077,10 @@ function loadEvent() {
     online = false;                                             // initialize websocket
     turn.length = 0;                                            // initialize turn object storage
     done = 0;
-    ready = true;
+    defer = false;
+    game = "";
+    starter = false;
+    dealer = none;
     joinGBtn.disabled = true;
     if (navigator.onLine && location.hostname) {                // if online and not running from debugger,
         let url = location.hostname=="localhost"? `ws://localhost:3000/` : `wss://${location.hostname}/ws/`;

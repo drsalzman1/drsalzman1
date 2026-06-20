@@ -13,7 +13,7 @@
     <body id=body>
         <div id=loadPage>
             <img class=helpIco src=icons/help.svg alt=help onclick="helpEvent('loadHelp')">
-            <img class=whiteCloseIco src=icons/close.svg alt=close onclick=window.close()>
+            <img class=whiteCloseIco src=icons/close.svg alt=close onclick=appCloseEvent()>
             Welcome to Double Deck Pinochle!<br>
             <br>
             <input type=button value="Start Game" onclick=startGBtnEvent()>
@@ -22,7 +22,7 @@
         </div>
         <div id=startPage>
             <img class=helpIco src=icons/help.svg alt=help onclick="helpEvent('startHelp')">
-            <img class=whiteCloseIco src=icons/close.svg alt=close onclick=window.location.reload()>
+            <img class=whiteCloseIco src=icons/close.svg alt=close onclick=appCloseEvent()>
             <form id=startForm onsubmit=startBtnEvent(event)>
                 <div id=startCtr>
                     0 players are joining game number 0
@@ -65,7 +65,7 @@
         </div>
         <div id=joinPage>
             <img class=helpIco src=icons/help.svg alt=help onclick="helpEvent('joinHelp')">
-            <img class=whiteCloseIco src=icons/close.svg alt=close onclick=window.location.reload()>
+            <img class=whiteCloseIco src=icons/close.svg alt=close onclick=appCloseEvent()>
             <form id=joinForm onsubmit=joinBtnEvent(event)>
                 <label for=joinSel>Your name:</label><br>
                 <select id=joinSel class=nameSel onchange=nameSelEvent(event,4)></select><br>
@@ -94,7 +94,7 @@
             <img id=gameHelp class=helpIco src=icons/help.svg alt=help onclick="helpEvent('bidHelp')">
             <img id=trumpIco src=suits/club.svg alt=info onclick=infoEvent()>
             <div id=trumpOut></div> 
-            <img class=whiteCloseIco src=icons/close.svg alt=close onclick=window.location.reload()>
+            <img class=whiteCloseIco src=icons/close.svg alt=close onclick=appCloseEvent()>
             <div id=textArea>
                 <div id=bidText>
                     <div id=meldTable>
@@ -132,7 +132,7 @@
                     <p>You need 30 points.<br>They need 20 points.</p>
                     <div id=needBtns>
                         <input id=okBtn type=button value=OK onclick=okBtnEvent()>
-                        <input id=playBtn type=button value=OK onclick=playBtnEvent()>
+                        <input id=playBtn type=button value=Play onclick=playBtnEvent()>
                         <input id=tossBtn type=button value=Toss onclick=tossBtnEvent()>
                     </div>
                 </div>

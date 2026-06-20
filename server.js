@@ -33,22 +33,24 @@ hs.listen(hsPort, hsListening);
 
 // ---------------------------------------Websocket Server Protocol--------------------------------------------
 //
-// From sender                                                  Server action
-// ===========                                                  =============
-// wsConnect(ws,req) req.url=wss://games.koyeb.app/ws/          pick ws.id; reply {op:"id", id:i}
-// wsConnect(ws,req) req.url=wss://games.koyeb.app/ws/i         set ws.id, ws.game; reply {op:"id", id:i}
+// From sender                                        In Game?  Server action
+// ===========                                        ========  =============
+// wsConnect(ws,req) req.url=wss://games.koyeb.app/ws/       ?  pick ws.id; reply {op:"id", id:i}
+// wsConnect(ws,req) req.url=wss://games.koyeb.app/ws/i      ?  set ws.id, ws.game; reply {op:"id", id:i}
 // wsClose(event)                                               set socket[ws.id] to null
 //
-// {op:"ping", turn:[t]}                                        update game; send {op:"do", turn:[t]} to sender
-// {op:"start", game:g}                                         create game; set ws.game
-// {op:"list"}                                                  send {op:"list", game:[g]} to sender
-// {op:"join", game:g, name:n}                                  add id; send {op:"join", name:n} to id[0]
+// {op:"ping", turn:[]}                                      N  reply {op:"pong", game:[g]}
+// {op:"ping", turn:[t]}                                     Y  update game; reply {op:"pong", turn:[t]}
+// {op:"start", game:g}                                      N  create game; set ws.game
+// {op:"join", game:g, name:n}                               N  add id; send {op:"join", name:n} to id[0]
 //
-// {op:"deal", name:[n], bot:[f], show:[f], value:[v]}          update game; send {op:"do", turn:[t]} to id
-// {op:"bid", bid:b}                                            update game; send {op:"do", turn:[t]} to id
-// {op:"declare", suit:s, toss:f}                               update game; send {op:"do", turn:[t]} to id
-// {op:"play", card:c}                                          update game; send {op:"do", turn:[t]} to id
-//
+// {op:"deal", name:[n], bot:[f], show:[f], value:[v]}       Y  update game; send {op:"pong", turn:[t]} to id[]
+// {op:"bid", bid:b}                                         Y  update game; send {op:"pong", turn:[t]} to id[]
+// {op:"declare", suit:s, toss:f}                            Y  update game; send {op:"pong", turn:[t]} to id[]
+// {op:"play", card:c}                                       Y  update game; send {op:"pong", turn:[t]} to id[]
+// {op:"quit", name:n}                                       Y  send {op:"quit", name:n} to id[]; delete game
+// {op:"quit", name:n}                                       N  ignore
+
 // Parameters                                                   Example
 // ==========                                                   =======
 // b = bidder's bid (none=-1, pass=0)                           bid:50
@@ -71,6 +73,14 @@ const game = {};                                                // {g1:{id:[i], 
 // Web Socket //
 ////////////////
 
+// Send or queue message object
+function sendMsg(id, msg) {
+    if (socket[id])                                             // if id is online, send stringified msg object
+        socket[id].send(JSON.stringify(msg));
+    else
+        queue[id].push(JSON.stringify(msg));                    // otherwise, queue stringified msg object
+}
+
 // Handle a websocket's close event
 function wsClose(event) {
     const ws = event.target;                                    // recall websocket
@@ -88,53 +98,103 @@ function wsError(event) {
 function wsMessage(event) {
     const ws = event.target;                                    // recall this websocket
     const msg = JSON.parse(event.data);                         // parse message data
-    switch (msg.op) {
-    case "ping":                                                // if {op:"ping", turn[t]},
-        if (ws.game) {                                              // if client is in a game,
-            if (game[ws.game].turn.length < msg.turn.length)            // if game missed client's turn(s),
-                game[ws.game].turn = [...msg.turn];                         // update game's turn array
-            ws.send(JSON.stringify({op:"do",turn:game[ws.game].turn})); // send {op:"do", turn:[t]} to client incl. lost turns
-        } else                                                      // otherwise,
-            ws.send(JSON.stringify({op:"do",turn:[]}));                 // send {op:"do", turn:[]} to client
-        break;
-    case "start":                                               // if {op:"start", game:g},
-        console.log(`wsConnect: op:start, game:${msg.game} from ${ws.id}`);
-        delete game[msg.game];                                      // delete old game (if any)
-        game[msg.game] = {id:[ws.id], date:Date.now(), msg:[]};     // add new game property to game object
-        ws.game = msg.game;                                         // add game name to ws object
-        break;
-    case "list":                                                // if {op:"list"},
+    const wGame = "game" in ws;                                 // wGame if ws.game is defined
+    const mTurn = "turn" in msg;                                // mTurn if msg.turn is defined
+    const mGame = "game" in msg;                                // mGame if msg.Game is defined
+    const mName = "name" in msg;                                // mName if msg.name is defined
+    const gGame = msg.game in game;                             // gGame if game[msg.game] is defined
+    const mBot = "bot" in msg;                                  // mBot if msg.bot is defined
+    const mShow = "show" in msg;                                // mShow if msg.show is defined
+    const mValue = "value" in msg;                              // mValue if msg.value is defined
+    const mBid = "bid" in msg;                                  // mBid if msg.bid is defined
+    const mSuit = "suit" in msg;                                // mSuit if msg.suit is defined
+    const mToss = "toss" in msg;                                // mToss if msg.toss is defined
+    const mCard = "card" in msg;                                // mCard if msg.card is defined
+    if (!("id" in ws)) {                                        // if no id,
+        console.log(`(undefined) data:${event.data}`);              // log error
+        return;                                                     // return
+    }
+    if (!("op" in msg)) {                                       // if no op,
+        console.log(`(${ws.game}.${ws.id}) data:${event.data}`);    // log error
+        return;                                                     // return
+    }
+    if (msg.op=="ping" && mTurn && !wGame) {                    // if legal pingMsg and ws isn't in a game,
+        //console.log(`(${ws.game}.${ws.id}) op:ping, turn:[${msg.turn}]`);
         const list = [];
         for (const g in game)                                       // for each existing game,
             if (game[g].date < Date.now()+5*60*1000)                    // if game was born less than 5 minutes ago,
                 list.push(g);                                               // add game to list
             else if (game[g].date > Date.now()+24*60*60*1000)           // if game was born more than 24 hours ago,
                 delete game[g];                                             // delete game altogether
-        ws.send(JSON.stringify({op:"list", game:list}));            // reply {op:"list", game:[g]}
-        console.log(`wsConnect: op:list, game:${list} to ${ws.id}`);
-        break;
-    case "join":                                                // if {op:"join", game:g, player:p},
-        console.log(`wsMessage: op:join, game:${msg.game}, player:${msg.player} from id:${ws.id}`);
-        if (!game[msg.game] || game[msg.game].id.includes(ws.id))   // if joining non-existent game or already joined,
-            return;                                                     // ignore join message
+        sendMsg(ws.id, {op:"pong", game:list});                     // reply with pongGameMsg
+        return;                                                     // return
+    }
+    if (msg.op=="ping" && mTurn && wGame) {                     // if legal pingMsg and ws is in a game,
+        //console.log(`(${ws.game}.${ws.id}) op:ping, turn:[${msg.turn}]`);
+        for (let i=game[ws.game].turn.length;i<msg.turn.length;i++) // add any missed turns to game
+            game[ws.game].turn[i] = msg.turn[i];
+        const list = [...game[ws.game].turn];
+        sendMsg(ws.id, {op:"pong", turn:list});                     // reply with pongTurnMsg including any lost turns
+        return;                                                     // return
+    }
+    if (msg.op=="start" && mGame && !wGame) {                   // if legal startMsg and ws isn't in a game,
+        console.log(`(${ws.game}.${ws.id}) op:start, game:${msg.game}`);
+        delete game[msg.game];                                      // delete old game (if any)
+        game[msg.game] = {id:[ws.id], date:Date.now(), turn:[]};    // add new game property to game object
+        ws.game = msg.game;                                         // add game name to ws object
+        return;                                                     // return
+    }
+    if (msg.op=="join" && mGame && mName && !wGame && gGame) {  // if legal joinMsg, ws isn't in game & game in progress,
+        console.log(`(${ws.game}.${ws.id}) op:join, game:${msg.game}, name:${msg.name}`);
         game[msg.game].id.push(ws.id);                              // add this id to the game's id array
         ws.game = msg.game;                                         // add this game name to this ws
-        if (socket[game[msg.game].id[0]])                           // if starter is online, notify starter
-            socket[game[msg.game].id[0]].send(JSON.stringify({op:"join", player:msg.player}));
-        else                                                        // otherwise, queue notification for starter
-            queue[game[msg.game].id[0]].push(JSON.stringify({op:"join", player:msg.player}));
-        break;
-    default:                                                    // otherwise (turn),
-        if (ws.game) {                                              // if in game,
-            game[ws.game].turn.push(msg);                               // store turn object
-            for (const id of game[ws.game].id)                          // for each game id,
-                if (socket[id])                                             // send or queue {op:"do", turn:[t]} to id
-                    socket[id].send(JSON.stringify({op:"do",turn:game[ws.game].turn}));
-                else
-                    queue[id].push(JSON.stringify({op:"do",turn:game[ws.game].turn}));
-            console.log(`wsMessage: ${event.data} from ${ws.id} to ${game[ws.game].id}`);
-        }
+        sendMsg(game[msg.game].id[0], {op:"join", name:msg.name});  // send joinMsg to starter
+        return;                                                     // return
     }
+    if (msg.op=="deal"&&mName&&mBot&&mShow&&mValue && wGame) {  // if legal dealMsg and ws is in a game,
+        console.log(`(${ws.game}.${ws.id}) op:deal, name:[${msg.name}], bot:[${msg.bot}], show:[${msg.show}], value:[${msg.value}]`);
+        game[ws.game].turn.push(msg);                               // add msg to this game's turn array
+        for (const id of game[ws.game].id)                          // for each id associated with this game,
+            sendMsg(id, {op:"pong", turn:game[ws.game].turn});          // send a pongTurnMsg
+        return;                                                     // return
+    }
+    if (msg.op=="bid" && mBid && wGame) {                       // if legal bidMsg and ws is in a game,
+        console.log(`(${ws.game}.${ws.id}) op:bid, bid:${msg.bid}`);
+        game[ws.game].turn.push(msg);                               // add msg to this game's turn array
+        for (const id of game[ws.game].id)                          // for each id associated with this game,
+            sendMsg(id, {op:"pong", turn:game[ws.game].turn});          // send a pongTurnMsg
+        return;                                                     // return
+    }
+    if (msg.op=="declare" && mSuit && mToss && wGame) {         // legal declareMsg and ws is in a game,
+        console.log(`(${ws.game}.${ws.id}) op:declare, suit:${msg.suit}, toss:${msg.toss}`);
+        game[ws.game].turn.push(msg);                               // add msg to this game's turn array
+        for (const id of game[ws.game].id)                          // for each id associated with this game,
+            sendMsg(id, {op:"pong", turn:game[ws.game].turn});          // send a pongTurnMsg
+        return;                                                     // return
+    }
+    if (msg.op=="play" && mCard && wGame) {                     // if legal playMsg and ws is in a game,
+        console.log(`(${ws.game}.${ws.id}) op:play, card:${msg.card}`);
+        game[ws.game].turn.push(msg);                               // add msg to this game's turn array
+        for (const id of game[ws.game].id)                          // for each id associated with this game,
+            sendMsg(id, {op:"pong", turn:game[ws.game].turn});          // send a pongTurnMsg
+        return;                                                     // return
+    }
+    if (msg.op=="quit" && mName && wGame) {                     // if legal quitMsg and ws is in a game,
+        console.log(`(${ws.game}.${ws.id}) op:quit, name:${msg.name}`);
+        const wsGame = ws.game;
+        for (const id of game[wsGame].id) {                         // for each game id,
+            sendMsg(id, {op:"quit", name:msg.name});                    // send quitMsg to id
+            delete socket[id].game;                                     // delete id's game property
+        }                                       
+        delete game[wsGame];                                        // delete this game
+        return;                                                     // return
+    }
+    if (msg.op=="quit" && mName && !wGame) {                    // if legal quitMsg and ws isn't in a game,
+        console.log(`(${ws.game}.${ws.id}) op:quit, name:${msg.name}`);
+        return;                                                     // return
+    }
+    console.log(`(${ws.game}.${ws.id}) data:${event.data}`);    // log error
+    return;                                                     // return
 }
 
 // Handle a websocket's open event
@@ -161,21 +221,21 @@ function wssConnection(ws, req) {
         id = socket.indexOf(null);                                  // find first null socket
         if (id==none || id+500>socket.length)                       // if no null or first is too young, id is a new socket
             id = socket.length;
-        ws.game = "";                                               // save empty game name
+        ws.id = id;                                                 // store id in this object
         queue[id] = [];                                             // no messages are queued for this id
-        ws.send(JSON.stringify({op:"id", id:id}));                  // notify connector of their id
+        socket[id] = ws;                                            // save this ws
+        sendMsg(id, {op:"id", id:id});                              // send idMsg to client
     } else {                                                    // otherwise,
-        ws.game = "";                                               // save youngest game name that includes this id
+        ws.id = id;                                                 // store id in this object
         for (const g in game)
             if (game[g].id.includes(id) && (!ws.game || game[g].born>game[ws.game].born))
                 ws.game = g;
-        ws.send(JSON.stringify({op:"id", id:id}));                  // notify connector of their id
         queue[id] ??= [];                                           // don't crash when after server reboot
-        while (queue[id].length > 0)                                // send any queued messages
+        socket[id] = ws;                                            // save this ws
+        sendMsg(id, {op:"id", id:id});                              // send idMsg to client
+        while (queue[id].length > 0)                                // send any queued stringified messages
             ws.send(queue[id].pop());
     }
-    socket[id] = ws;                                            // save this ws
-    ws.id = id;                                                 // save id in this ws
     ws.onclose = wsClose;                                       // prepare callbacks
     ws.onerror = wsError;
     ws.onmessage = wsMessage;
