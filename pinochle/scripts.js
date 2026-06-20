@@ -279,7 +279,7 @@ const dealTime  = 2000;                                 // milliseconds to deal 
 let websocket   = null;                                         // websocket object (or null)
 let id          = none;                                         // id = websocket identifier
 let online      = false;                                        // true when online with a numbered connection
-let defer       = false;                                        // don't defer dealMsg, bidMsg, declareMsg, playMsg events
+let msgEvents   = false;                                        // true when msg events are allowed
 let done        = 0;                                            // number of turns processed
 const turnOps   = ["deal", "bid", "declare", "play"];           // array of turn op codes
 const turn      = [];                                           // array of turn objects
@@ -1192,9 +1192,6 @@ function infoCloseEvent() {
 
 // Display "waiting"; advance dealer; restart app(game over); send dealMsg(my/my bot's deal); await dealMsgEvent  
 function handBtnEvent() {
-    defer = false;                                              // stop deferring dealMsg events
-    while (done < turn.length)                                  // trigger any deferred dealMsg events
-        setTimeout(msgEvent, 0, turn[done++]);
     handBtn.style.display = "none";                             // replace handBtn with handWait
     handWait.style.display = "inline";
     dealer = next[dealer];                                      // advance dealer
@@ -1206,6 +1203,8 @@ function handBtnEvent() {
         v = [...v.slice(0,20).sort(down), ...v.slice(20,40).sort(down), ...v.slice(40,60).sort(down), ...v.slice(60,80).sort(down)];
         sendMsg({op:"deal", name:right(name), bot:right(bot), show:show, value:v});
     }                                                           // await dealMsg event
+    msgEvents = true;                                           // allow msg events
+    nextMsg();                                                  // trigger next pending msg
 }
 
 // Display handText, defer any dealMsg, then await handBtnEvent
@@ -1239,7 +1238,7 @@ function handEndedEvent() {
     handBtn.style.display = "inline";
     handWait.style.display = "none";
     handText.style.display = "block";
-    defer = true;                                               // defer dealMsg event until OK'd
+    msgEvents = false;                                          // defer msg events until OK'd
 }
 
 // Pull trick; if cards, set player then await refannedEvent; if no cards, award bonus then await handEndedEvent
@@ -1376,9 +1375,6 @@ function pointerUpEvent(event) {
 
 // If my bot, choose card & send playMsg, then await pointerDown/pointerMove/pointerDown/playMsg events
 function refannedEvent() {
-    defer = false;                                              // stop deferring playMsg/dealMsg events
-    while (done<turn.length)                                    // trigger any deferred playMsg/dealMsg events
-        setTimeout(msgEvent, 0, turn[done++]);
     gameHelp.onclick = function () {helpEvent('playHelp')};
     showHints();
     gameText.textContent = nGroup(play)==0? `Waiting for ${player==p3?"you":name[player]}.` : ``;
@@ -1395,6 +1391,8 @@ function refannedEvent() {
         chosen = botCard();
         sendMsg({op:"play", card:cardLeft(chosen)});
     }
+    msgEvents = true;                                           // allow msg events
+    nextMsg();                                                  // trigger next pending msg
 }
 
 // Refan hands, then await refannedEvent
@@ -1483,7 +1481,7 @@ function regatheredEvent() {
 // Set trump/toss, tag meld, and, if I'm not the bid winner, clear bid text, gather hands then await regathered event
 function declareMsgEvent(msg) {
     if (bidder != p3)                                           // if I didn't win the bid,
-        defer = true;                                               // defer playMsg and dealMsg events until OK'd
+        msgEvents = false;                                          // defer msg events until OK'd
     log(`(${name[bidder]}) op:declare, suit:${suit$[msg.suit]}, toss:${msg.toss}`);
     trump = msg.suit;                                           // set trump suit and toss flag
     toss = msg.toss;
@@ -1516,7 +1514,7 @@ function bidMsgEvent(msg) {
     setTimeout(fannedEvent);
 }
 
-// Adjust bid values or send bidMsg
+// Adjust bid values, or send bidMsg and await bidMsg or declareMsg
 function bidBtnEvent(n) {
     const v = bidBtn[n].value;
     const highBid = Math.max(...bid);
@@ -1533,10 +1531,12 @@ function bidBtnEvent(n) {
         const b = v=="Pass"? pass : Number(v);
         logBid(b, "Undisclosed");
         sendMsg({op:"bid", bid:b});
+        msgEvents = true;                                           // allow msg events
+        nextMsg();                                                  // trigger next pending msg events
     }
 }
 
-// Send my bot's next bidMsg
+// Send my bot's next bidMsg then await bidMsg or declareMsg
 function botBidEvent() {
     const lefty   = next[bidder];
     const partner = next[lefty];
@@ -1566,6 +1566,8 @@ function botBidEvent() {
         else
             b = logBid(pass, "Too high");
     sendMsg({op:"bid", bid:b});
+    msgEvents = true;                                           // allow msg events
+    nextMsg();                                                  // trigger next pending msg events
 }
 
 // Display bidText, handle situation, then await trumpBtn, declareMsg, botBid, bidBtn or bidMsg event
@@ -1613,9 +1615,11 @@ function fannedEvent() {
         logBid(pass, "Repeat");                                     // pass again
         sendMsg({op:"bid", bid:pass});                              // resend my bidMsg
     } else if (starter && bot[bidder]) {                        // otherwise, if it's my bot's bid,
-        log(`starter:${starter}, bidder:${bidder}, bot[bidder]:${bot[bidder]}`);
         setTimeout(botBidEvent, bid[bidder]==pass?0:dealTime/4);    // await botBidEvent (quick if repeat pass)
+        return;                                                     // defer msg events until my bot bids
     }                                                           // otherwise, await bidBtnEvent or bidMsgEvent
+    msgEvents = true;                                           // allow msg events
+    nextMsg();                                                  // trigger next pending msg events
 }
 
 // relocate hands and infoAreas, fan hands, then await fannedEvent
@@ -1704,7 +1708,9 @@ function dealMsgEvent(msg) {
 
 // Dispatch legal deal, bid, declare, and play message events; log other message events
 function msgEvent(msg) {
-    if (msg.op=="deal" && "name" in msg && "bot" in msg && "show" in msg && "value" in msg)
+    if (msg.op=="ping" && "turn" in msg)
+        return;
+    else if (msg.op=="deal" && "name" in msg && "bot" in msg && "show" in msg && "value" in msg)
         dealMsgEvent(msg);
     else if (msg.op=="bid" && "bid" in msg)
         bidMsgEvent(msg);
@@ -1712,8 +1718,18 @@ function msgEvent(msg) {
         declareMsgEvent(msg);
     else if (msg.op=="play" && "card" in msg)
         playMsgEvent(msg);
+    else if (msg.op=="quit" && "name" in msg)
+        return;
     else
         log(JSON.stringify(msg));
+}
+
+// If msg events are allowed, trigger first pending msg event then disable msg events
+function nextMsg() {
+    if (msgEvents && done<turn.length) {
+        setTimeout(msgEvent, 0, turn[done++]);
+        msgEvents = false;
+    }
 }
 
 // Handle name select event for player p (p0, p1, p2, p3, pj, pg)
@@ -1836,6 +1852,8 @@ function joinBtnEvent(event) {
     joinBtn.style.display = "none";
     joinWait.style.display = "inline";
     sendMsg({op:"join", game:game, name:name[p3]});
+    msgEvents = true;                                           // allow msg events
+    nextMsg();                                                  // trigger next pending msg events
 }
 
 // Clear loadPage, display joinPage, then await pingMsgEvent, nameSelEvent and joinBtnEvent
@@ -1860,7 +1878,7 @@ function joinGBtnEvent() {
     solo = false;
 }
 
-// Validate names, initialize game, send dealMsg, then await bidMsg event
+// Validate names, initialize game, send dealMsg, then await dealMsg event
 function startBtnEvent(event) {
     event.preventDefault();
     for (const p of pArray)
@@ -1878,6 +1896,8 @@ function startBtnEvent(event) {
     shuffleArray(v, deckCards);
     v = [...v.slice(0,20).sort(down), ...v.slice(20,40).sort(down), ...v.slice(40,60).sort(down), ...v.slice(60,80).sort(down)];
     sendMsg({op:"deal", name:name, bot:bot, show:show, value:v});
+    msgEvents = true;                                           // allow msg events
+    nextMsg();                                                  // trigger next pending msg events
 }
 
 // Toggle bot[p] and nameIco[p], hide startCtr if all bots, update nameSel options, force player p selection
@@ -1986,8 +2006,7 @@ function wsMessageEvent(event) {
         //log(`op:pong, turn:[${msg.turn}]`);
         for (let i=turn.length; i<msg.turn.length; i++)             // add any missing turns
             turn[i] = msg.turn[i];
-        while (!defer && done<turn.length)                          // if not deferred, trigger any pending turns
-            setTimeout(msgEvent, 0, turn[done++]);
+        nextMsg();                                                  // if allowed, trigger next pending msg
         return;
     }
     if (starter && msg.op=="join" && "name" in msg) {           // if starter and legal joinMsg,
@@ -2077,7 +2096,7 @@ function loadEvent() {
     online = false;                                             // initialize websocket
     turn.length = 0;                                            // initialize turn object storage
     done = 0;
-    defer = false;
+    msgEvents = false;
     game = "";
     starter = false;
     dealer = none;
