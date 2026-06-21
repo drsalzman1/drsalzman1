@@ -1932,6 +1932,8 @@ function startBtnEvent(event) {
 // Toggle bot[p] and nameIco[p], hide startCtr if all bots, update nameSel options, force player p selection
 function nameIcoEvent(event, p) {
     event.preventDefault();
+    if (bot[p] && !online)                                      // if bot and offline,
+        return;                                                     // don't allow toggle to human
     bot[p] = !bot[p];
     nameIco[p].src = bot[p]? robotSrc : humanSrc;
     solo = bot[p0] && bot[p1] && bot[p2];
@@ -1969,15 +1971,12 @@ function startGBtnEvent() {
         if (p==p3) {                                                // if player is p3,
             nameSel[p].value = name[p];                                 // default to old name
             nameIco[p].src = humanSrc;                                  // set name icon to human
-            nameIco[p].disabled = true;                                 // disallow name icon events
         } else if (bot[p]) {                                        // if player is a bot,
             nameSel[p].value = name[p];                                 // default to old name
             nameIco[p].src = robotSrc;                                  // set name icon to bot
-            nameIco[p].disabled = !online;                              // disallow name icon events if offline
         } else {                                                    // if player is human p0/p1/p2,
             nameSel[p].value = "";                                      // default to no name
             nameIco[p].src = humanSrc;                                  // set name icon to human
-            nameIco[p].disabled = false;                                // allow name icon eventse
         }
     joinList.length = 0;
     inviteBtn.disabled = solo || nameSel[p3]=="";
