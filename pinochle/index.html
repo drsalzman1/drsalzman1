@@ -48,13 +48,16 @@
                     <div>Show all hands:&nbsp;</div>
                     <input class=assistBox type=image onclick=assistBoxEvent(event,1)>
                 </div>
-                <div id=startBtns style=width:100%>
+                <div id=startBtns>
+                    <input id=inviteBtn type=button value=Invite onclick=inviteBtnEvent()>
                     <button id=startBtn>Start</button>
                 </div>
                 <div id=startEdit>
                     <div id=startAdd>
+                        <img id=startAImg class=whiteCloseIco src=icons/close.svg alt=close>
                         <label id=startALbl for=startAInp>New bot name:</label><br>
-                        <input id=startAInp type=text><br>
+                        <input id=startAInp type=text>
+                        <input id=startABtn type=button value=Add>
                     </div>
                     <div id=startDel>
                         <label id=startDLbl for=startDSel>Old bot name:</label><br>
@@ -76,12 +79,14 @@
                 <br>
                 <div id=joinBtns>
                     <button id=joinBtn>Join</button>
-                    <div id=joinWait>Please wait...</div>
+                    <div id=joinWait>Waiting for Grampy.</div>
                 </div>
                 <div id=joinEdit>
                     <div id=joinAdd>
+                        <img id=joinAImg class=whiteCloseIco src=icons/close.svg alt=close>
                         <label id=joinALbl for=joinAInp>New alias:</label><br>
-                        <input id=joinAInp type=text><br>
+                        <input id=joinAInp type=text>
+                        <input id=joinABtn type=button value=Add>
                     </div>
                     <div id=joinDel>
                         <label id=joinDLbl for=joinDSel>Old alias:</label><br>
@@ -159,7 +164,7 @@
                         <span>Aces</span>  <div>0</div> <div>1</div> <div>2</div> <div>3</div>
                         <span>Total</span> <div>4</div> <div>5</div> <div>6</div> <div>7</div>
                     </div>
-                    <div id=infoTake>You've takeen 15 of 20. They've taken 15 of 20.</div>
+                    <div id=infoTake>You've taken 15 of 20. They've taken 15 of 20.</div>
                 </div>
             </div>
             <div id=infoAreas>

@@ -183,9 +183,13 @@ const startCtr  = document.getElementById("startCtr");
 const nameSel   = document.querySelectorAll(".nameSel");
 const nameIco   = document.querySelectorAll(".nameIco");
 const assistBox = document.querySelectorAll(".assistBox");
+const inviteBtn = document.getElementById("inviteBtn");
+const startBtn  = document.getElementById("startBtn");
 const startAdd  = document.getElementById("startAdd");
+const startAImg = document.getElementById("startAImg");
 const startALbl = document.getElementById("startALbl");
 const startAInp = document.getElementById("startAInp");
+const startABtn = document.getElementById("startABtn");
 const startDel  = document.getElementById("startDel");
 const startDLbl = document.getElementById("startDLbl");
 const startDSel = document.getElementById("startDSel");
@@ -193,9 +197,11 @@ const joinPage  = document.getElementById("joinPage");
 const joinBtns  = document.getElementById("joinBtns");
 const joinWait  = document.getElementById("joinWait");
 const joinBtn   = document.getElementById("joinBtn");
+const joinAImg  = document.getElementById("joinAImg");
 const joinAdd   = document.getElementById("joinAdd");
 const joinALbl  = document.getElementById("joinALbl");
 const joinAInp  = document.getElementById("joinAInp");
+const joinABtn  = document.getElementById("joinABtn");
 const joinDel   = document.getElementById("joinDel");
 const joinDLbl  = document.getElementById("joinDLbl");
 const joinDSel  = document.getElementById("joinDSel");
@@ -254,14 +260,14 @@ const dealTime  = 2000;                                 // milliseconds to deal 
 //
 // {op:"ping", turn:[]}                                      N  reply {op:"pong", game:[g]}
 // {op:"ping", turn:[t]}                                     Y  update game; reply {op:"pong", turn:[t]}
-// {op:"start", game:g}                                      N  create game; set ws.game
+// {op:"create", game:g}                                     N  create game; set ws.game
 // {op:"join", game:g, name:n}                               N  add id; send {op:"join", name:n} to id[0]
 //
 // {op:"deal", name:[n], bot:[f], show:[f], value:[v]}       Y  update game; send {op:"pong", turn:[t]} to id[]
 // {op:"bid", bid:b}                                         Y  update game; send {op:"pong", turn:[t]} to id[]
 // {op:"declare", suit:s, toss:f}                            Y  update game; send {op:"pong", turn:[t]} to id[]
 // {op:"play", card:c}                                       Y  update game; send {op:"pong", turn:[t]} to id[]
-// {op:"quit", name:n}                                       Y  send {op:"quit", name:n} to id[]; delete game
+// {op:"quit", name:n}                                       Y  send {op:"quit", name:n} to others; delete game
 // {op:"quit", name:n}                                       N  ignore
 
 // Parameters                                                   Example
@@ -1734,39 +1740,61 @@ function nextMsg() {
 
 // Handle name select event for player p (p0, p1, p2, p3, pj, pg)
 function nameSelEvent(event, p) {
+    const addDiv = p==pj? joinAdd : startAdd;
+    const addImg = p==pj? joinAImg : startAImg;
+    const addLbl = p==pj? joinALbl : startALbl;
+    const addInp = p==pj? joinAInp : startAInp;
+    const addBtn = p==pj? joinABtn : startABtn;
+    const delDiv = p==pj? joinDel : startDel;
+    const delLbl = p==pj? joinDLbl : startDLbl;
+    const delDel = p==pj? joinDSel : startDSel;
 
-    function nameAddEvent(event) {                              // add input keyed: if entered name, add name to list
-        switch (event.key) {
-        case "Escape":
+    function addImgEvent() {                                    // add image (close icon) clicked
+        addInp.removeEventListener("keydown", addInpEvent);
+        addBtn.removeEventListener("click", addBtnEvent);
+        addImg.removeEventListener("click", addImgEvent);
+        addDiv.style.visibility = "hidden";
+        nameSel[p].value = "";
+        startBtn.disabled = true;
+        nameSel[p].focus();
+    }
+
+    function addBtnEvent() {                                    // add button clicked
+        addInp.removeEventListener("keydown", addInpEvent);
+        addBtn.removeEventListener("click", addBtnEvent);
+        addImg.removeEventListener("click", addImgEvent);
+        addDiv.style.visibility = "hidden";
+        const aliasList = localStorage.aliasList? JSON.parse(localStorage.aliasList) : [];
+        const botList = localStorage.botList? JSON.parse(localStorage.botList) : [];
+        const name = addInp.value.trim().substring(0,10);
+        if ((p==p3||p==pj) && name!="" && !aliasList.includes(name))
+            aliasList.push(name);
+        else if ((p==p0||p==p1||p==p2) && name!="" && !botList.includes(name))
+            botList.push(name);
+        aliasList.sort();
+        botList.sort();
+        localStorage.aliasList = JSON.stringify(aliasList);
+        localStorage.botList = JSON.stringify(botList);
+        setNameSelOptions();
+        nameSel[p].value = name;
+        startBtn.disabled = nameSel[p0].value=="" || nameSel[p1].value=="" || nameSel[p2].value=="" || nameSel[p3].value=="";
+        joinBtn.disabled = nameSel[pj].value=="" || nameSel[pg].value=="";
+        nameSel[p].focus();
+    }
+
+    function addInpEvent(event) {                               // add input keyed: if entered name, add name to list
+        if (event.key == "Escape") {
             event.preventDefault();
-            addDiv.style.visibility = "hidden";
-            nameSel[p].value = "";
-            nameSel[p].focus();
-            break;
-        case "Enter":
+            addImgEvent();
+        } else if (event.key == "Enter") {
             event.preventDefault();
-            addInp.removeEventListener("keydown", nameAddEvent);
-            addDiv.style.visibility = "hidden";
-            const aliasList = localStorage.aliasList? JSON.parse(localStorage.aliasList) : [];
-            const botList = localStorage.botList? JSON.parse(localStorage.botList) : [];
-            const name = addInp.value.trim().substring(0,10);
-            if ((p==p3||p==pj) && name!="" && !aliasList.includes(name))
-                aliasList.push(name);
-            else if ((p==p0||p==p1||p==p2) && name!="" && !botList.includes(name))
-                botList.push(name);
-            aliasList.sort();
-            botList.sort();
-            localStorage.aliasList = JSON.stringify(aliasList);
-            localStorage.botList = JSON.stringify(botList);
-            setNameSelOptions();
-            nameSel[p].value = name;
-            nameSel[p].focus();
+            addBtnEvent();
         }
     }
 
-    function nameDelEvent(event) {                              // delete select changed: delete selected name from list
+    function delSelEvent(event) {                               // delete select changed: delete selected name from list
         event.preventDefault();
-        delDel.removeEventListener("changed", nameDelEvent);
+        delDel.removeEventListener("changed", delSelEvent);
         delDiv.style.visibility = "hidden";
         const aliasList = localStorage.aliasList? JSON.parse(localStorage.aliasList) : [];
         const botList = localStorage.botList? JSON.parse(localStorage.botList) : [];
@@ -1779,32 +1807,31 @@ function nameSelEvent(event, p) {
         localStorage.botList = JSON.stringify(botList);
         setNameSelOptions();
         nameSel[p].value = "";
+        startBtn.disabled = true;
         nameSel[p].focus();
     }
 
-    const addDiv = p==pj? joinAdd : startAdd;
-    const addLbl = p==pj? joinALbl : startALbl;
-    const addInp = p==pj? joinAInp : startAInp;
-    const delDiv = p==pj? joinDel : startDel;
-    const delLbl = p==pj? joinDLbl : startDLbl;
-    const delDel = p==pj? joinDSel : startDSel;
     nameSel[p].style.color = "black";
     switch (nameSel[p].value) {
     case "(add)":
         nameSel[p].value = "";
+        startBtn.disabled = true;
         delDiv.style.display = "none";
         addDiv.style.display = "block";
         addDiv.style.visibility = "visible";
         addLbl.textContent = p==p3||p==pj? "New alias:" : "New bot name:";
         addInp.value = "";
         addInp.focus();
-        addInp.addEventListener("keydown", nameAddEvent);
+        addInp.addEventListener("keydown", addInpEvent);
+        addBtn.addEventListener("click", addBtnEvent);
+        addImg.addEventListener("click", addImgEvent);
         break;
     case "(delete)":
         const aliasList = localStorage.aliasList? JSON.parse(localStorage.aliasList) : [];
         const botList = localStorage.botList? JSON.parse(localStorage.botList) : [];
         const list = p==p3||p==pj? aliasList : botList;
         nameSel[p].value = "";
+        startBtn.disabled = true;
         addDiv.style.display = "none";
         delDiv.style.display = "block";
         delDiv.style.visibility = "visible";
@@ -1819,37 +1846,27 @@ function nameSelEvent(event, p) {
         for (const i of list)
             delDel.add(new Option(i));
         delDel.focus();
-        delDel.addEventListener("change", nameDelEvent);
+        delDel.addEventListener("change", delSelEvent);
         break;
     case "":
         break;
     default:
-        if (!solo && game=="" && nameSel[p3].value!="") {           // if necessary,
-            game = nameSel[p3].value;                                   // start game
-            sendMsg({op:"start", game:game});
-        }
+        startBtn.disabled = nameSel[p0].value=="" || nameSel[p1].value=="" || nameSel[p2].value=="" || nameSel[p3].value=="";
+        startCtr.style.visibility = solo || !inviteBtn.disabled? "hidden" : "visible";
+        joinBtn.disabled = nameSel[pg].value=="";
     }
 }
 
 // Validate input, initialize game, display "waiting", send joinMsg, then await dealMsgEvent
 function joinBtnEvent(event) {
     event.preventDefault();
-    if (nameSel[pj].value == "") {
-        nameSel[pj].style.color = "red";
-        nameSel[pj].focus();
-        return;
-    }
-    if (nameSel[pg].value == "") {
-        nameSel[pg].style.color = "red";
-        nameSel[pg].focus();
-        return;
-    }
     name[p3] = nameSel[pj].value;
     game = nameSel[pg].value;
     localStorage.self = name[p3];
     nameSel[pj].disabled = true;
     nameSel[pg].disabled = true;
     joinBtn.style.display = "none";
+    joinWait.textContent = `Waiting for ${game}.`;
     joinWait.style.display = "inline";
     sendMsg({op:"join", game:game, name:name[p3]});
     msgEvents = true;                                           // allow msg events
@@ -1864,6 +1881,7 @@ function joinGBtnEvent() {
     setNameSelOptions();
     nameSel[pj].value = localStorage.self? localStorage.self : "";
     nameSel[pg].value = "";
+    joinBtn.disabled = true;
     joinBtn.style.display = "inline";
     joinWait.style.display = "none";
     joinAdd.style.display = "none";
@@ -1878,17 +1896,28 @@ function joinGBtnEvent() {
     solo = false;
 }
 
+// Set game name and send createMsg
+function inviteBtnEvent() {
+    game = nameSel[p3].value;
+    sendMsg({op:"create", game:game});
+    inviteBtn.disabled = true;
+    startCtr.textContent = `0 invitation responses`;
+    startCtr.style.visibility = "visible";
+    nameSel[p3].disabled = true;
+}
+
 // Validate names, initialize game, send dealMsg, then await dealMsg event
 function startBtnEvent(event) {
     event.preventDefault();
-    for (const p of pArray)
-        if (nameSel[p].value == "") {
-            nameSel[p].style.color = "red";
-            nameSel[p].focus();
+    name.fill("");
+    for (const p of pArray) {
+        if (name.includes(nameSel[p].value)) {
+            startCtr.textContent = `Duplicate name! Please restart game.`;
+            startCtr.style.visibility = "visible";
             return;
         }
-    for (const p of pArray)
         name[p] = nameSel[p].value;
+    }
     localStorage.name = JSON.stringify(name);
     localStorage.bot  = JSON.stringify(bot);
     localStorage.show = JSON.stringify(show);
@@ -1906,13 +1935,11 @@ function nameIcoEvent(event, p) {
     bot[p] = !bot[p];
     nameIco[p].src = bot[p]? robotSrc : humanSrc;
     solo = bot[p0] && bot[p1] && bot[p2];
-    startCtr.style.visibility = solo? "hidden" : "visible";
-    setNameSelOptions();
     nameSel[p].value = "";
-    if (!solo && game=="" && nameSel[p3].value!="") {           // if necessary,
-        game = nameSel[p3].value;                                   // start game
-        sendMsg({op:"start", game:game});
-    }
+    inviteBtn.disabled = solo || nameSel[p3]=="" || game!="";
+    startBtn.disabled = nameSel[p0].value=="" || nameSel[p1].value=="" || nameSel[p2].value=="" || nameSel[p3].value=="";
+    startCtr.style.visibility = solo || !inviteBtn.disabled? "hidden" : "visible";
+    setNameSelOptions();
 }
 
 // Toggle show[b] and assistBox[b] icon
@@ -1922,7 +1949,7 @@ function assistBoxEvent(event, b) {
     assistBox[b].src = show[b]? checked : unchecked;
 }
 
-// Clear loadPage, display startPage, send startMsg, then await joinMsg, nameSel, nameIco, assistBox, and startBtn events
+// Clear loadPage, display startPage, then await nameSel, nameIco, assistBox, inviteBtn, and startBtn events
 function startGBtnEvent() {
     starter = true;
     loadPage.style.display = "none";
@@ -1953,19 +1980,17 @@ function startGBtnEvent() {
             nameIco[p].disabled = false;                                // allow name icon eventse
         }
     joinList.length = 0;
-    startCtr.textContent = `Players joining: ${joinList.length}`;
-    startCtr.style.visibility = bot[p0]&&bot[p1]&&bot[p2]? "hidden" : "visible";
+    inviteBtn.disabled = solo || nameSel[p3]=="";
+    startBtn.disabled = nameSel[p0].value=="" || nameSel[p1].value=="" || nameSel[p2].value=="" || nameSel[p3].value=="";
+    startCtr.style.visibility = "hidden";
     assistBox[counts].src = show[counts]? checked : unchecked;
     assistBox[hands].src = show[hands]? checked : unchecked;
     assistBox[counts].disabled = assistBox[hands].disabled = false;
     startAdd.style.display = "block";
     startDel.style.display = "none";
     startAdd.style.visibility = startDel.style.visibility = "hidden";
+    nameSel[p3].disabled = false;
     startPage.style.display = "flex";
-    if (!solo && game=="" && nameSel[p3].value!="") {           // if necessary,
-        game = nameSel[p3].value;                                   // start game
-        sendMsg({op:"start", game:game});
-    }
 }
 
 // Process websocket close events
@@ -2012,7 +2037,7 @@ function wsMessageEvent(event) {
     if (starter && msg.op=="join" && "name" in msg) {           // if starter and legal joinMsg,
         log(`op:join, name:${msg.name}`);
         joinList.push(msg.name);                                    // add name to join list
-        startCtr.textContent = `Players joining: ${joinList.length}`;
+        startCtr.textContent = `${joinList.length} invitation response${joinList.length!=1?"s":""}`;
         setNameSelOptions();                                        // update nameSel options
         return;
     }
