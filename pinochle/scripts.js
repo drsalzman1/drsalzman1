@@ -197,6 +197,7 @@ const joinPage  = document.getElementById("joinPage");
 const joinBtns  = document.getElementById("joinBtns");
 const joinWait  = document.getElementById("joinWait");
 const joinBtn   = document.getElementById("joinBtn");
+const checkBtn  = document.getElementById("checkBtn");
 const joinAImg  = document.getElementById("joinAImg");
 const joinAdd   = document.getElementById("joinAdd");
 const joinALbl  = document.getElementById("joinALbl");
@@ -254,21 +255,22 @@ const dealTime  = 2000;                                 // milliseconds to deal 
 //
 // From sender                                        In Game?  Server action
 // ===========                                        ========  =============
-// wsConnect(ws,req) req.url=wss://games.koyeb.app/ws/       ?  pick ws.id; reply {op:"id", id:i}
-// wsConnect(ws,req) req.url=wss://games.koyeb.app/ws/i      ?  set ws.id, ws.game; reply {op:"id", id:i}
+// wsConnect(ws,req) req.url=wss://games.koyeb.app/ws/      ?   pick ws.id; reply {op:"id", id:i}
+// wsConnect(ws,req) req.url=wss://games.koyeb.app/ws/i     ?   set ws.id, ws.game; reply {op:"id", id:i}
 // wsClose(event)                                               set socket[ws.id] to null
 //
-// {op:"ping", turn:[]}                                      N  reply {op:"pong", game:[g]}
-// {op:"ping", turn:[t]}                                     Y  update game; reply {op:"pong", turn:[t]}
-// {op:"create", game:g}                                     N  create game; set ws.game
-// {op:"join", game:g, name:n}                               N  add id; send {op:"join", name:n} to id[0]
+// {op:"ping", turn:[]}                                     N   reply {op:"pong", turn:[]}
+// {op:"ping", turn:[t]}                                    Y   update game; reply {op:"pong", turn:[t]}
+// {op:"create", game:g}                                    N   create game; set ws.game
+// {op:"list"}                                              N   reply {op:"list", game:[g]}
+// {op:"join", game:g, name:n}                              N   add id; send {op:"join", name:n} to id[0]
 //
-// {op:"deal", name:[n], bot:[f], show:[f], value:[v]}       Y  update game; send {op:"pong", turn:[t]} to id[]
-// {op:"bid", bid:b}                                         Y  update game; send {op:"pong", turn:[t]} to id[]
-// {op:"declare", suit:s, toss:f}                            Y  update game; send {op:"pong", turn:[t]} to id[]
-// {op:"play", card:c}                                       Y  update game; send {op:"pong", turn:[t]} to id[]
-// {op:"quit", name:n}                                       Y  send {op:"quit", name:n} to others; delete game
-// {op:"quit", name:n}                                       N  ignore
+// {op:"deal", name:[n], bot:[f], show:[f], value:[v]}      Y   update game; send {op:"pong", turn:[t]} to id[]
+// {op:"bid", bid:b}                                        Y   update game; send {op:"pong", turn:[t]} to id[]
+// {op:"declare", suit:s, toss:f}                           Y   update game; send {op:"pong", turn:[t]} to id[]
+// {op:"play", card:c}                                      Y   update game; send {op:"pong", turn:[t]} to id[]
+// {op:"quit", name:n}                                      Y   send {op:"quit", name:n} to others; delete game
+// {op:"quit", name:n}                                      N   ignore
 
 // Parameters                                                   Example
 // ==========                                                   =======
@@ -1853,8 +1855,13 @@ function nameSelEvent(event, p) {
     default:
         startBtn.disabled = nameSel[p0].value=="" || nameSel[p1].value=="" || nameSel[p2].value=="" || nameSel[p3].value=="";
         startCtr.style.visibility = solo || !inviteBtn.disabled? "hidden" : "visible";
-        joinBtn.disabled = nameSel[pg].value=="";
+        joinBtn.textContent = nameSel[pg].value==""? "Check" : "Join";
     }
+}
+
+// Validate input, initialize game, display "waiting", send joinMsg, then await dealMsgEvent
+function checkBtnEvent(event) {
+    sendMsg({op:"list"});
 }
 
 // Validate input, initialize game, display "waiting", send joinMsg, then await dealMsgEvent
@@ -1865,6 +1872,7 @@ function joinBtnEvent(event) {
     localStorage.self = name[p3];
     nameSel[pj].disabled = true;
     nameSel[pg].disabled = true;
+    checkBtn.style.display = "none";
     joinBtn.style.display = "none";
     joinWait.textContent = `Waiting for ${game}.`;
     joinWait.style.display = "inline";
@@ -1873,7 +1881,7 @@ function joinBtnEvent(event) {
     nextMsg();                                                  // trigger next pending msg events
 }
 
-// Clear loadPage, display joinPage, then await pingMsgEvent, nameSelEvent and joinBtnEvent
+// Clear loadPage, display joinPage, send listMsg, then await listMsgEvent, nameSelEvent and joinBtnEvent
 function joinGBtnEvent() {
     starter = false;
     loadPage.style.display = "none";
@@ -1881,6 +1889,7 @@ function joinGBtnEvent() {
     setNameSelOptions();
     nameSel[pj].value = localStorage.self? localStorage.self : "";
     nameSel[pg].value = "";
+    checkBtn.style.display = "inline";
     joinBtn.disabled = true;
     joinBtn.style.display = "inline";
     joinWait.style.display = "none";
@@ -1894,6 +1903,7 @@ function joinGBtnEvent() {
         nameSel[pg].focus();
     joinPage.style.display = "grid";
     solo = false;
+    sendMsg({op:"list"});
 }
 
 // Set game name and send createMsg
@@ -2020,17 +2030,20 @@ function wsMessageEvent(event) {
         joinGBtn.disabled = false;                                  // enable joinG button
         return;
     }
-    if (msg.op=="pong" && "game" in msg) {                      // if legal pongGameMsg,
-        //log(`op:pong, game:[${msg.game}]`);
-        gameList = [...msg.game];                                   // save gameList
-        setNameSelOptions();                                        // update nameSel options
-        return;
-    }
-    if (msg.op=="pong" && "turn" in msg) {                      // if legal pongTurnMsg,
-        //log(`op:pong, turn:[${msg.turn}]`);
+    if (msg.op=="pong" && "turn" in msg) {                      // if legal pongMsg,
+        //log(`op:pong, turn.length:${msg.turn.length}`);
         for (let i=turn.length; i<msg.turn.length; i++)             // add any missing turns
             turn[i] = msg.turn[i];
         nextMsg();                                                  // if allowed, trigger next pending msg
+        return;
+    }
+    if (msg.op=="list" && "game" in msg) {                      // if legal listMsg,
+        log(`op:list, game:[${msg.game}]`);
+        gameList = [...msg.game];                                   // update game list
+        setNameSelOptions();                                        // update nameSel options
+        nameSel[pg].value = gameList[0];                            // default to first game
+        if (nameSel[pj].value!="" && nameSel[pg].value!="")         // if join fields have values,
+            joinBtn.disabled = false;                                   // enable join button
         return;
     }
     if (starter && msg.op=="join" && "name" in msg) {           // if starter and legal joinMsg,
@@ -2038,6 +2051,11 @@ function wsMessageEvent(event) {
         joinList.push(msg.name);                                    // add name to join list
         startCtr.textContent = `${joinList.length} invitation response${joinList.length!=1?"s":""}`;
         setNameSelOptions();                                        // update nameSel options
+        let j = 0;
+        for (const p of [p0, p1, p2])                               // prefill human player names
+            if (j<joinList.length && !bot[p])
+                nameSel[p].value = joinList[j++];
+        startBtn.disabled = nameSel[p0].value==""||nameSel[p1].value==""||nameSel[p2].value==""||nameSel[p3].value=="";
         return;
     }
     if (msg.op=="quit" && "name" in msg) {                      // if legal quitMsg,

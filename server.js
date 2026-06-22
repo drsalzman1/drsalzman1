@@ -35,21 +35,22 @@ hs.listen(hsPort, hsListening);
 //
 // From sender                                        In Game?  Server action
 // ===========                                        ========  =============
-// wsConnect(ws,req) req.url=wss://games.koyeb.app/ws/       ?  pick ws.id; reply {op:"id", id:i}
-// wsConnect(ws,req) req.url=wss://games.koyeb.app/ws/i      ?  set ws.id, ws.game; reply {op:"id", id:i}
+// wsConnect(ws,req) req.url=wss://games.koyeb.app/ws/      ?   pick ws.id; reply {op:"id", id:i}
+// wsConnect(ws,req) req.url=wss://games.koyeb.app/ws/i     ?   set ws.id, ws.game; reply {op:"id", id:i}
 // wsClose(event)                                               set socket[ws.id] to null
 //
-// {op:"ping", turn:[]}                                      N  reply {op:"pong", game:[g]}
-// {op:"ping", turn:[t]}                                     Y  update game; reply {op:"pong", turn:[t]}
-// {op:"create", game:g}                                     N  create game; set ws.game
-// {op:"join", game:g, name:n}                               N  add id; send {op:"join", name:n} to id[0]
+// {op:"ping", turn:[]}                                     N   reply {op:"pong", turn:[]}
+// {op:"ping", turn:[t]}                                    Y   update game; reply {op:"pong", turn:[t]}
+// {op:"create", game:g}                                    N   create game; set ws.game
+// {op:"list"}                                              N   reply {op:"list", game:[g]}
+// {op:"join", game:g, name:n}                              N   add id; send {op:"join", name:n} to id[0]
 //
-// {op:"deal", name:[n], bot:[f], show:[f], value:[v]}       Y  update game; send {op:"pong", turn:[t]} to id[]
-// {op:"bid", bid:b}                                         Y  update game; send {op:"pong", turn:[t]} to id[]
-// {op:"declare", suit:s, toss:f}                            Y  update game; send {op:"pong", turn:[t]} to id[]
-// {op:"play", card:c}                                       Y  update game; send {op:"pong", turn:[t]} to id[]
-// {op:"quit", name:n}                                       Y  send {op:"quit", name:n} to others; delete game
-// {op:"quit", name:n}                                       N  ignore
+// {op:"deal", name:[n], bot:[f], show:[f], value:[v]}      Y   update game; send {op:"pong", turn:[t]} to id[]
+// {op:"bid", bid:b}                                        Y   update game; send {op:"pong", turn:[t]} to id[]
+// {op:"declare", suit:s, toss:f}                           Y   update game; send {op:"pong", turn:[t]} to id[]
+// {op:"play", card:c}                                      Y   update game; send {op:"pong", turn:[t]} to id[]
+// {op:"quit", name:n}                                      Y   send {op:"quit", name:n} to others; delete game
+// {op:"quit", name:n}                                      N   ignore
 
 // Parameters                                                   Example
 // ==========                                                   =======
@@ -120,13 +121,7 @@ function wsMessage(event) {
     }
     if (msg.op=="ping" && mTurn && !wGame) {                    // if legal pingMsg and ws isn't in a game,
         //console.log(`(${ws.game}.${ws.id}) op:ping, turn.length:${msg.turn.length}`);
-        const list = [];
-        for (const g in game)                                       // for each existing game,
-            if (game[g].date < Date.now()+5*60*1000)                    // if game was born less than 5 minutes ago,
-                list.push(g);                                               // add game to list
-            else if (game[g].date > Date.now()+24*60*60*1000)           // if game was born more than 24 hours ago,
-                delete game[g];                                             // delete game altogether
-        sendMsg(ws.id, {op:"pong", game:list});                     // reply with pongGameMsg
+        sendMsg(ws.id, {op:"pong"});                                // reply with pongMsg
         return;                                                     // return
     }
     if (msg.op=="ping" && mTurn && wGame) {                     // if legal pingMsg and ws is in a game,
@@ -142,6 +137,17 @@ function wsMessage(event) {
         delete game[msg.game];                                      // delete old game (if any)
         game[msg.game] = {id:[ws.id], date:Date.now(), turn:[]};    // add new game property to game object
         ws.game = msg.game;                                         // add game name to ws object
+        return;                                                     // return
+    }
+    if (msg.op=="list" && !wGame) {                             // if legal listMsg and ws isn't in a game,
+        console.log(`(${ws.game}.${ws.id}) op:list`);
+        const list = [];
+        for (const g in game)                                       // for each existing game,
+            if (game[g].date < Date.now()+5*60*1000)                    // if game was born less than 5 minutes ago,
+                list.push(g);                                               // add game to list
+            else if (game[g].date > Date.now()+24*60*60*1000)           // if game was born more than 24 hours ago,
+                delete game[g];                                             // delete game altogether
+        sendMsg(ws.id, {op:"list", game:list});                     // reply with listMsg
         return;                                                     // return
     }
     if (msg.op=="join" && mGame && mName && !wGame && gGame) {  // if legal joinMsg, ws isn't in game & game in progress,

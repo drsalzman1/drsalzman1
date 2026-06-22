@@ -149,6 +149,7 @@ body {
 
 #startBtns {
     width: 100%;
+    text-align: center;
 }
 
 #startBtn, #inviteBtn {
@@ -205,12 +206,11 @@ body {
 }
 
 #joinBtns {
-    display: grid;
-    place-items: center;
+    width: 100%;
 }
 
-#joinBtn {
-    width: 5em;
+#joinBtn, #checkBtn {
+    width: 4.85em;
     height: 1.3em;
     border: none;
     background-color: white;
