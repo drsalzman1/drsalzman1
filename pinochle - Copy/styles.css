@@ -125,10 +125,9 @@ body {
 
 .nameIco {
     position: relative;
-    top: -0.25em;
-    height: 1.8em;
+    background-color: white;
+    height: 1.3em;
     width: 100%;
-    filter: invert(100%);
 }
 
 #assistanceGrid {
@@ -425,6 +424,7 @@ body {
 
 .infoHint img {
     height: 0.8em;
+    filter: invert(100%);
 }
 
 #infoArea0 .infoName {
@@ -441,8 +441,12 @@ body {
 
 #infoArea0 .infoHint {
     position: absolute;
+    margin-top: -0.2em;
+    font-size: 0.85em;
+    line-height: 1.5em;
     left: 0.4em;
-    width: 5.6em;
+    width: 7em;
+    
 }
 
 #infoArea1 {
@@ -453,6 +457,12 @@ body {
     display: flex;
     flex-direction: row;
     justify-content: center;
+}
+
+#infoArea1 .infoHint {
+    margin-top: 0.1em;
+    font-size: 0.85em;
+    line-height: 1.2em;
 }
 
 #infoArea2 .infoName {
@@ -469,8 +479,11 @@ body {
 
 #infoArea2 .infoHint {
     position: absolute;
-    left: calc(100svw - 6em);
-    width: 5.6em;
+    margin-top: -0.2em;
+    font-size: 0.85em;
+    line-height: 1.5em;
+    left: calc(100svw - 7.4em);
+    width: 7em;
 }
 
 #infoArea3 {
