@@ -41,7 +41,7 @@ hs.listen(hsPort, hsListening);
 //
 // {op:"ping", turn:[]}                                     N   reply {op:"pong", turn:[]}
 // {op:"ping", turn:[t]}                                    Y   update game; reply {op:"pong", turn:[t]}
-// {op:"create", game:g}                                    N   create game; set ws.game
+// {op:"create", game:g}                                    N   if dupe, reply quitMsg; otherwise, create game
 // {op:"list"}                                              N   reply {op:"list", game:[g]}
 // {op:"join", game:g, name:n}                              N   add id; send {op:"join", name:n} to id[0]
 //
@@ -121,7 +121,7 @@ function wsMessage(event) {
     }
     if (msg.op=="ping" && mTurn && !wGame) {                    // if legal pingMsg and ws isn't in a game,
         //console.log(`(${ws.game}.${ws.id}) op:ping, turn.length:${msg.turn.length}`);
-        sendMsg(ws.id, {op:"pong"});                                // reply with pongMsg
+        sendMsg(ws.id, {op:"pong", turn:[]});                       // reply with pongMsg
         return;                                                     // return
     }
     if (msg.op=="ping" && mTurn && wGame) {                     // if legal pingMsg and ws is in a game,
@@ -132,9 +132,13 @@ function wsMessage(event) {
         sendMsg(ws.id, {op:"pong", turn:list});                     // reply with pongTurnMsg including any lost turns
         return;                                                     // return
     }
-    if (msg.op=="create" && mGame && !wGame) {                  // if legal createMsg and ws isn't in a game,
-        console.log(`(${ws.game}.${ws.id}) op:create, game:${msg.game}`);
-        delete game[msg.game];                                      // delete old game (if any)
+    if (msg.op=="create" && mGame && gGame) {                   // if legal createMsg and game already created,
+        console.log(`(${ws.game}.${ws.id}) op:create, game:${msg.game}, gGame:${gGame}`);
+        sendMsg(ws.id, {op:"quit", name:msg.game});                 // reject this createMsg
+        return;                                                     // return
+    }
+    if (msg.op=="create" && mGame && !wGame && !gGame) {        // if legal createMsg, ws isn't in game and game undefined,
+        console.log(`(${ws.game}.${ws.id}) op:create, game:${msg.game}, gGame:${gGame}`);
         game[msg.game] = {id:[ws.id], date:Date.now(), turn:[]};    // add new game property to game object
         ws.game = msg.game;                                         // add game name to ws object
         return;                                                     // return

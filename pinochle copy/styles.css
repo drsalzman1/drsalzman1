@@ -147,8 +147,13 @@ body {
     filter: invert(100%);
 }
 
-#startBtn {
-    width: 5em;
+#startBtns {
+    width: 100%;
+    text-align: center;
+}
+
+#startBtn, #inviteBtn {
+    width: 4.4em;
     height: 1.3em;
     margin-top: 0.8em;
     border: none;
@@ -163,17 +168,27 @@ body {
 }
 
 #startAdd, #startDel, #joinAdd, #joinDel {
+    position: relative;
     margin-top: 1.2em;
-    width: 9.2em;
-    padding: 0.4em;
+    padding-top: 0.8em;
+    padding-left: 0.4em;
+    padding-bottom: 0.4em;
+    width: 11em;
     border: 2px solid;
     text-align: left;
 }
 
 #startAInp, #startDSel, #joinAInp, #joinDSel {
-    width: 100%;
+    width: 69%;
     height: 1.3em;
     padding-left: 0.4em;
+    border: none;
+    background-color: white;
+}
+
+#startABtn, #joinABtn {
+    width: 25%;
+    height: 1.3em;
     border: none;
     background-color: white;
 }
@@ -191,12 +206,11 @@ body {
 }
 
 #joinBtns {
-    display: grid;
-    place-items: center;
+    width: 100%;
 }
 
-#joinBtn {
-    width: 5em;
+#joinBtn, #checkBtn {
+    width: 4.85em;
     height: 1.3em;
     border: none;
     background-color: white;
@@ -358,10 +372,13 @@ body {
 
 #handBtn {
     width: 4em;
-    margin-top: 0.4em;
     height: 1.3em;
     border: none;
     background-color: white;
+}
+
+#handWait {
+    height: 1.3em;
 }
 
 #infoText {
@@ -408,8 +425,6 @@ body {
 
 .infoHint img {
     height: 0.8em;
-    filter: invert(100%);
-    opacity: 100%;
 }
 
 #infoArea0 .infoName {

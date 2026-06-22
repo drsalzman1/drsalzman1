@@ -13,7 +13,7 @@
     <body id=body>
         <div id=loadPage>
             <img class=helpIco src=icons/help.svg alt=help onclick="helpEvent('loadHelp')">
-            <img class=whiteCloseIco src=icons/close.svg alt=close onclick=window.close()>
+            <img class=whiteCloseIco src=icons/close.svg alt=close onclick=appCloseEvent()>
             Welcome to Double Deck Pinochle!<br>
             <br>
             <input type=button value="Start Game" onclick=startGBtnEvent()>
@@ -22,7 +22,7 @@
         </div>
         <div id=startPage>
             <img class=helpIco src=icons/help.svg alt=help onclick="helpEvent('startHelp')">
-            <img class=whiteCloseIco src=icons/close.svg alt=close onclick=window.location.reload()>
+            <img class=whiteCloseIco src=icons/close.svg alt=close onclick=appCloseEvent()>
             <form id=startForm onsubmit=startBtnEvent(event)>
                 <div id=startCtr>
                     0 players are joining game number 0
@@ -39,7 +39,7 @@
                     <input  id=nameIco2 class=nameIco type=image onclick=nameIcoEvent(event,2)>
                     <label  id=nameLbl3 for=nameSel3>Your name:</label>
                     <select id=nameSel3 class=nameSel onchange=nameSelEvent(event,3)></select>
-                    <input  id=nameIco3 class=nameIco type=image onclick=nameIcoEvent(event,3)>
+                    <input  id=nameIco3 class=nameIco type=image>
                 </div>
                 <div id=assistanceGrid>
                     <div>Show card counts:&nbsp;</div>
@@ -48,13 +48,16 @@
                     <div>Show all hands:&nbsp;</div>
                     <input class=assistBox type=image onclick=assistBoxEvent(event,1)>
                 </div>
-                <div id=startBtns style=width:100%>
+                <div id=startBtns>
+                    <input id=inviteBtn type=button value=Invite onclick=inviteBtnEvent()>
                     <button id=startBtn>Start</button>
                 </div>
                 <div id=startEdit>
                     <div id=startAdd>
+                        <img id=startAImg class=whiteCloseIco src=icons/close.svg alt=close>
                         <label id=startALbl for=startAInp>New bot name:</label><br>
-                        <input id=startAInp type=text><br>
+                        <input id=startAInp type=text>
+                        <input id=startABtn type=button value=Add>
                     </div>
                     <div id=startDel>
                         <label id=startDLbl for=startDSel>Old bot name:</label><br>
@@ -65,7 +68,7 @@
         </div>
         <div id=joinPage>
             <img class=helpIco src=icons/help.svg alt=help onclick="helpEvent('joinHelp')">
-            <img class=whiteCloseIco src=icons/close.svg alt=close onclick=window.location.reload()>
+            <img class=whiteCloseIco src=icons/close.svg alt=close onclick=appCloseEvent()>
             <form id=joinForm onsubmit=joinBtnEvent(event)>
                 <label for=joinSel>Your name:</label><br>
                 <select id=joinSel class=nameSel onchange=nameSelEvent(event,4)></select><br>
@@ -75,13 +78,16 @@
                 <br>
                 <br>
                 <div id=joinBtns>
+                    <input id=checkBtn type=button value=Check onclick=checkBtnEvent()>
                     <button id=joinBtn>Join</button>
-                    <div id=joinWait>Please wait...</div>
+                    <div id=joinWait>Waiting for Grampy.</div>
                 </div>
                 <div id=joinEdit>
                     <div id=joinAdd>
+                        <img id=joinAImg class=whiteCloseIco src=icons/close.svg alt=close>
                         <label id=joinALbl for=joinAInp>New alias:</label><br>
-                        <input id=joinAInp type=text><br>
+                        <input id=joinAInp type=text>
+                        <input id=joinABtn type=button value=Add>
                     </div>
                     <div id=joinDel>
                         <label id=joinDLbl for=joinDSel>Old alias:</label><br>
@@ -94,7 +100,7 @@
             <img id=gameHelp class=helpIco src=icons/help.svg alt=help onclick="helpEvent('bidHelp')">
             <img id=trumpIco src=suits/club.svg alt=info onclick=infoEvent()>
             <div id=trumpOut></div> 
-            <img class=whiteCloseIco src=icons/close.svg alt=close onclick=window.location.reload()>
+            <img class=whiteCloseIco src=icons/close.svg alt=close onclick=appCloseEvent()>
             <div id=textArea>
                 <div id=bidText>
                     <div id=meldTable>
@@ -132,7 +138,7 @@
                     <p>You need 30 points.<br>They need 20 points.</p>
                     <div id=needBtns>
                         <input id=okBtn type=button value=OK onclick=okBtnEvent()>
-                        <input id=playBtn type=button value=OK onclick=playBtnEvent()>
+                        <input id=playBtn type=button value=Play onclick=playBtnEvent()>
                         <input id=tossBtn type=button value=Toss onclick=tossBtnEvent()>
                     </div>
                 </div>
@@ -159,7 +165,7 @@
                         <span>Aces</span>  <div>0</div> <div>1</div> <div>2</div> <div>3</div>
                         <span>Total</span> <div>4</div> <div>5</div> <div>6</div> <div>7</div>
                     </div>
-                    <div id=infoTake>You've takeen 15 of 20. They've taken 15 of 20.</div>
+                    <div id=infoTake>You've taken 15 of 20. They've taken 15 of 20.</div>
                 </div>
             </div>
             <div id=infoAreas>
@@ -167,10 +173,10 @@
                     <div class=infoName></div>
                     <div class=infoBid></div>
                     <div class=infoHint>
-                        <img src=suits/spade.svg> 
-                        <img src=suits/heart.svg> 
-                        <img src=suits/club.svg> 
-                        <img src=suits/diamond.svg>
+                        <img src=suits/spade3.svg><img src=suits/spade2.svg><img src=suits/spade1.svg><img src=suits/spade0.svg>   
+                        <img src=suits/heart3.svg><img src=suits/heart2.svg><img src=suits/heart1.svg><img src=suits/heart0.svg> 
+                        <img src=suits/club3.svg><img src=suits/club2.svg><img src=suits/club1.svg><img src=suits/club0.svg> 
+                        <img src=suits/diamond3.svg><img src=suits/diamond2.svg><img src=suits/diamond1.svg><img src=suits/diamond0.svg>
                     </div>
                 </div>
                 <div id=infoArea1>
@@ -178,20 +184,20 @@
                     <span class=infoBid></span>
                     <span class=infoHint>
                         &nbsp- 
-                        <img src=suits/spade.svg> 
-                        <img src=suits/heart.svg> 
-                        <img src=suits/club.svg> 
-                        <img src=suits/diamond.svg>
+                        <img src=suits/spade3.svg><img src=suits/spade2.svg><img src=suits/spade1.svg><img src=suits/spade0.svg>   
+                        <img src=suits/heart3.svg><img src=suits/heart2.svg><img src=suits/heart1.svg><img src=suits/heart0.svg> 
+                        <img src=suits/club3.svg><img src=suits/club2.svg><img src=suits/club1.svg><img src=suits/club0.svg> 
+                        <img src=suits/diamond3.svg><img src=suits/diamond2.svg><img src=suits/diamond1.svg><img src=suits/diamond0.svg>
                     </span>
                 </div>
                 <div id=infoArea2>
                     <div class=infoName></div>
                     <div class=infoBid></div>
                     <div class=infoHint>
-                        <img src=suits/spade.svg> 
-                        <img src=suits/heart.svg> 
-                        <img src=suits/club.svg> 
-                        <img src=suits/diamond.svg>
+                        <img src=suits/spade3.svg><img src=suits/spade2.svg><img src=suits/spade1.svg><img src=suits/spade0.svg>   
+                        <img src=suits/heart3.svg><img src=suits/heart2.svg><img src=suits/heart1.svg><img src=suits/heart0.svg> 
+                        <img src=suits/club3.svg><img src=suits/club2.svg><img src=suits/club1.svg><img src=suits/club0.svg> 
+                        <img src=suits/diamond3.svg><img src=suits/diamond2.svg><img src=suits/diamond1.svg><img src=suits/diamond0.svg>
                     </div>
                 </div>
                 <div id=infoArea3>
@@ -218,7 +224,7 @@
         <div id=helpPage>
             <div id=loadHelp>
                 <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
-                <b>Double Deck Pinochle v2.20</b>
+                <b>Double Deck Pinochle v2.50</b>
                 <p>
                     This <a href="javascript:helpEvent('loadShot')">page</a> allows you to start or join a game:
                 </p>

@@ -218,6 +218,7 @@ const infoAreas = document.getElementById("infoAreas");
 const infoName  = document.querySelectorAll(".infoName");
 const infoBid   = document.querySelectorAll(".infoBid");
 const infoHint  = document.querySelectorAll(".infoHint");
+const infoChr   = document.querySelectorAll(".infoHint span");
 const infoIco   = document.querySelectorAll(".infoHint img");
 const trumpText = document.getElementById("trumpText");
 const trumpBtn  = document.querySelectorAll("#trumpText input");
@@ -810,19 +811,17 @@ function showHints() {
         trumpOut.textContent = n;
         for (const p of [p0, p1, p2]) {
             for (const s of sArray) {
-                let n = 0;
+                n = 0;
                 for (const r of rArray)
                     n += capMaxCards(p, r+s, p3);
-                infoIco[i+0].style.display = infoIco[i+1].style.display = infoIco[i+2].style.display = infoIco[i+3].style.display = "none";
-                if (minCards[p][ace+s]>0)
-                    infoIco[i+0].style.display = "inline";
-                else if (capMaxCards(p,ace+s,p3)>0)
-                    infoIco[i+1].style.display = "inline";
-                else if (n>0)
-                    infoIco[i+2].style.display = "inline";
-                else
-                    infoIco[i+3].style.display = "inline";
-                i += 4;
+                if (n==0)                                                   // if no cards in suit, display "X"
+                    infoChr[i++].innerHTML = "X";
+                else if (minCards[p][ace+s]>0)                              // otherwise, if ace in suit, display "A"
+                    infoChr[i++].innerHTML = "A";
+                else if (capMaxCards(p,ace+s,p3)==0)                        // otherwise, if no ace in suit, display "↓"
+                    infoChr[i++].innerHTML = "&#129031;";
+                else                                                        // otherwise, display "?"
+                    infoChr[i++].innerHTML = "?";
             }
             infoHint[p].style.display = nCards(p)>0? "inline" : "none";
         }
@@ -1221,6 +1220,7 @@ function handEndedEvent() {
     const tossE = teamE[bidder] && toss;
     const bidO = Math.max(bid[p1], bid[p3]);
     const bidE = Math.max(bid[p0], bid[p2]);
+    relocate();
     handCell[4].innerHTML = scoreO;
     handCell[5].innerHTML = scoreE;
     handCell[7].innerHTML = teamO[bidder]? bidO : "Pass";
@@ -2060,7 +2060,10 @@ function wsMessageEvent(event) {
     }
     if (msg.op=="quit" && "name" in msg) {                      // if legal quitMsg,
         log(`op:quit, name:${msg.name}`);
-        alert(`${msg.name} terminated the game.`);                  // alert player
+        if (msg.name == name[p3])                                   // if my create was rejected, alert me of such
+            alert(`The old "${name[p3]}" game will soon expire. In the meantime, please restart with a new name.`);
+        else                                                        // otherwise, alert me that someone quit
+            alert(`${msg.name} terminated the game.`);
         window.close();                                             // close app
         location.reload();                                          // if close fails, reload app
         return;

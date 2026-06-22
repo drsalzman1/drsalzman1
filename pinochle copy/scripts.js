@@ -183,9 +183,13 @@ const startCtr  = document.getElementById("startCtr");
 const nameSel   = document.querySelectorAll(".nameSel");
 const nameIco   = document.querySelectorAll(".nameIco");
 const assistBox = document.querySelectorAll(".assistBox");
+const inviteBtn = document.getElementById("inviteBtn");
+const startBtn  = document.getElementById("startBtn");
 const startAdd  = document.getElementById("startAdd");
+const startAImg = document.getElementById("startAImg");
 const startALbl = document.getElementById("startALbl");
 const startAInp = document.getElementById("startAInp");
+const startABtn = document.getElementById("startABtn");
 const startDel  = document.getElementById("startDel");
 const startDLbl = document.getElementById("startDLbl");
 const startDSel = document.getElementById("startDSel");
@@ -193,9 +197,12 @@ const joinPage  = document.getElementById("joinPage");
 const joinBtns  = document.getElementById("joinBtns");
 const joinWait  = document.getElementById("joinWait");
 const joinBtn   = document.getElementById("joinBtn");
+const checkBtn  = document.getElementById("checkBtn");
+const joinAImg  = document.getElementById("joinAImg");
 const joinAdd   = document.getElementById("joinAdd");
 const joinALbl  = document.getElementById("joinALbl");
 const joinAInp  = document.getElementById("joinAInp");
+const joinABtn  = document.getElementById("joinABtn");
 const joinDel   = document.getElementById("joinDel");
 const joinDLbl  = document.getElementById("joinDLbl");
 const joinDSel  = document.getElementById("joinDSel");
@@ -246,22 +253,25 @@ const dealTime  = 2000;                                 // milliseconds to deal 
 
 // ---------------------------------------Websocket Server Protocol--------------------------------------------
 //
-// From sender                                                  Server action
-// ===========                                                  =============
-// wsConnect(ws,req) req.url=wss://games.koyeb.app/ws/          pick ws.id; reply {op:"id", id:i}
-// wsConnect(ws,req) req.url=wss://games.koyeb.app/ws/i         set ws.id, ws.game; reply {op:"id", id:i}
+// From sender                                        In Game?  Server action
+// ===========                                        ========  =============
+// wsConnect(ws,req) req.url=wss://games.koyeb.app/ws/      ?   pick ws.id; reply {op:"id", id:i}
+// wsConnect(ws,req) req.url=wss://games.koyeb.app/ws/i     ?   set ws.id, ws.game; reply {op:"id", id:i}
 // wsClose(event)                                               set socket[ws.id] to null
 //
-// {op:"ping", turn:[t]}                                        update game; send {op:"do", turn:[t]} to sender
-// {op:"start", game:g}                                         create game; set ws.game
-// {op:"list"}                                                  send {op:"list", game:[g]} to sender
-// {op:"join", game:g, player:p}                                add id; send {op:"join", player:p} to id[0]
+// {op:"ping", turn:[]}                                     N   reply {op:"pong", turn:[]}
+// {op:"ping", turn:[t]}                                    Y   update game; reply {op:"pong", turn:[t]}
+// {op:"create", game:g}                                    N   create game; set ws.game
+// {op:"list"}                                              N   reply {op:"list", game:[g]}
+// {op:"join", game:g, name:n}                              N   add id; send {op:"join", name:n} to id[0]
 //
-// {op:"deal", player:[p], bot:[f], show:[f], value:[v]}        update game; send {op:"do", turn:[t]} to id
-// {op:"bid", bid:b}                                            update game; send {op:"do", turn:[t]} to id
-// {op:"declare", suit:s, toss:f}                               update game; send {op:"do", turn:[t]} to id
-// {op:"play", card:c}                                          update game; send {op:"do", turn:[t]} to id
-//
+// {op:"deal", name:[n], bot:[f], show:[f], value:[v]}      Y   update game; send {op:"pong", turn:[t]} to id[]
+// {op:"bid", bid:b}                                        Y   update game; send {op:"pong", turn:[t]} to id[]
+// {op:"declare", suit:s, toss:f}                           Y   update game; send {op:"pong", turn:[t]} to id[]
+// {op:"play", card:c}                                      Y   update game; send {op:"pong", turn:[t]} to id[]
+// {op:"quit", name:n}                                      Y   send {op:"quit", name:n} to others; delete game
+// {op:"quit", name:n}                                      N   ignore
+
 // Parameters                                                   Example
 // ==========                                                   =======
 // b = bidder's bid (none=-1, pass=0)                           bid:50
@@ -269,17 +279,15 @@ const dealTime  = 2000;                                 // milliseconds to deal 
 // f = flag (true, false)                                       toss:false
 // g = game name (game starter's name)                          game:"Grampy"
 // i = socket index                                             id:1234
-// p = player name                                              player:"Grampy"
+// n = player name                                              name:"Grampy"
 // s = suit value (diamonds=0, clubs=5, hearts=10, spades=15)   suit:0
 // t = turn object                                              turn:[{op:"bid", bid:50}]
 // v = card value (suit + rank=0..4 for JQKTA)                  value:[0, 0, 0, 0, ...19, 19, 19, 19]
 
 let websocket   = null;                                         // websocket object (or null)
-let wsIntervlID = null;                                         // websocket interval timer identifier (or null)
 let id          = none;                                         // id = websocket identifier
 let online      = false;                                        // true when online with a numbered connection
-let refreshList = false;                                        // true when joining a multiplayer game
-let ready       = true;                                         // ready to process turns
+let msgEvents   = false;                                        // true when msg events are allowed
 let done        = 0;                                            // number of turns processed
 const turnOps   = ["deal", "bid", "declare", "play"];           // array of turn op codes
 const turn      = [];                                           // array of turn objects
@@ -288,22 +296,22 @@ const turn      = [];                                           // array of turn
 let helpStack   = [];                                   // stack of help pages
 let gameList    = [];                                   // list of game names from server
 let game        = "";                                   // game name (name of starter)
-let solo        = true;                                 // starter is only human player
+let solo        = false;                                // starter is only human player
 let shift       = 0;                                    // p3 is shift players left of starter
-let starter     = true;                                 // p3 is starter
+let starter     = false;                                // p3 is starter
 let joinList    = [];                                   // list of players trying to join game
-let player      = ["", "", "", ""];                     // player[p] = player p's name
-let bot         = [true, true, true, false];            // bot[p] = player p is a bot (include pj)
-let show        = [true, false];                        // show[counts] and show[hands]
+let name        = ["", "", "", ""];                     // name[p] = player p's name
+let bot         = [false, false, false, false];         // bot[p] = player p is a bot
+let show        = [false, false];                       // show[counts] and show[hands]
 let card        = [                                     // card[c] = deck card c
     new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,
     new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,
     new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,
     new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C,new C
 ];
-let dealerP     = p3;                                   // the player who is dealing or last dealt
-let bidderP     = none;                                 // the player who is bidding or won the bid
-let playerP     = none;                                 // the player who is choosing then playing a card
+let dealer      = none;                                 // the player who is dealing or last dealt
+let bidder      = none;                                 // the player who is bidding or won the bid
+let player      = none;                                 // the player who is choosing then playing a card
 let bid         = [none, none, none, none];             // bid[p] = player p's bid (or none or pass)
 let est         = [typical, typical, typical, typical]; // est[p] = player p's estimated meld based on jump bids
 let trump       = none;                                 // the bidder's trump suit
@@ -335,7 +343,7 @@ let iconw       = 0;                                    // icon width
 let iconh       = 0;                                    // icon height
 let pad         = 0;                                    // padding around display elements
 let hpad        = 0;                                    // horizontal padding for p2 and p0 hands
-let vpad        = 0;                                    // vertical padding for p1 and p3 hands
+let vpad        = 0;                                    // verright(tical padding for p1 and p3 hands
 let pitch1      = 0;                                    // horizontal card pitch for p1 hand
 let pitch3      = 0;                                    // horizontal card pitch for p3 hand
 let vpitch      = 0;                                    // vertical card pitch for p2 and p0 hands
@@ -347,6 +355,17 @@ let offsetX = 0;                                        // offset of pointer X f
 let offsetY = 0;                                        // offset of pointer Y from card Y
 let strt = "";                                          // start transform
 let fnsh = "";                                          // finish transform
+
+// Send msg if mutiplayer); trigger msgEvent if solo
+function sendMsg(msg) {
+    if (solo)                                                   // if playing solo,
+        setTimeout(msgEvent, 0, msg);                               // trigger msg event immediately
+    else {                                                      // otherwise,
+        if (turnOps.includes(msg.op))                               // if msg.op is a turn op,
+            turn.push(msg);                                             // append msg to turn object array
+        websocket.send(JSON.stringify(msg));                        // send message to server and await reply
+    }
+}
 
 // Compare function to sort in ascending order
 function up(a, b) {
@@ -366,25 +385,21 @@ function log(debugText = "") {
 // Return p rotated clockwise by "shift" players; if shift is 1, p0 returns p1 and [p0,p1,p2,p3] returns [p1,p2,p3,p0]
 function left(p) {
     if (typeof p == "number")
-        p = (p + shift) % players;
-    else {
-        const temp = [...p];
-        for (let i=0; i<players; i++)
-            p[i] = temp[(i + shift) % players];
-    }
-    return p;
+        return (p + shift) % players;
+    const temp = Array(p.length);
+    for (let i=0; i<players; i++)
+        temp[i] = p[(i + shift) % players];
+    return temp;
 }
 
 // Return p rotated counter-clockwise by "shift" players; if shift is 1, p1 returns p0 and [p1,p2,p3,p0] returns [p0,p1,p2,p3]
 function right(p) {
     if (typeof p == "number")
-        p = (p + (players-shift)) % players;
-    else {
-        const temp = [...p];
-        for (let i=0; i<players; i++)
-            p[i] = temp[(i + (players-shift)) % players];
-    }
-    return p;
+        return (p + (players-shift)) % players;
+    const temp = Array(p.length);
+    for (let i=0; i<players; i++)
+        temp[i] = p[(i + (players-shift)) % players];
+    return temp;
 }
 
 // Return card c rotated clockwise by "shift" players; if shift is 1, c0 returns c20
@@ -395,17 +410,6 @@ function cardLeft(c) {
 // Return card c rotated clockwise by "shift" players; if shift is 1, c20 returns c0
 function cardRight(c) {
     return (c + (deckCards-shift*handCards)) % deckCards;
-}
-
-// Process new msg object
-function process(msg) {
-    if (turnOps.includes(msg.op))                               // if msg.op is a turn op,
-        turn.push(msg);                                             // append msg to turn object array
-    if (solo) {                                                 // if solo,
-        turnMsgEvent(msg);                                      // process message immediately
-        done++;
-    } else                                                      // otherwise,
-        websocket.send(JSON.stringify(msg));                        // send message to server and await echo
 }
 
 // Return true if the suit of card value v is trump
@@ -546,13 +550,13 @@ function nKnown(p, v) {
 function tagMeld() {
     meldO = meld(p1, trump) + meld(p3, trump);
     meldE = meld(p0, trump) + meld(p2, trump);
-    needO = teamE[bidderP]? 20 : (meldO<20? bid[bidderP] : Math.max(20,bid[bidderP]-meldO));
-    needE = teamO[bidderP]? 20 : (meldE<20? bid[bidderP] : Math.max(20,bid[bidderP]-meldE));
+    needO = teamE[bidder]? 20 : (meldO<20? bid[bidder] : Math.max(20,bid[bidder]-meldO));
+    needE = teamO[bidder]? 20 : (meldE<20? bid[bidder] : Math.max(20,bid[bidder]-meldE));
     for (const c of cArray)
         card[c].m = card[c].s==trump;
     for (const p of pArray) {                                   // for each player,
         if ((teamO[p] && meldO<20) || (teamE[p] && meldE<20)) {     // if player's team can't keep their meld,
-            if (p == bidderP)                                            // if player won the bid,
+            if (p == bidder)                                            // if player won the bid,
                 for (const r of [queen, king])                               // tag one trump marriage (if possible, to allow play)
                     tagCards(p, r+trump, Math.min(marriages(p, trump)), 1);
             for (const s of sArray)                                     // show any aces around (house rule?)
@@ -636,15 +640,15 @@ function bidString(p) {
         return `${teamO[p]? "&nbsp;-&nbsp;" : ""}${bid[p]==pass? "Pass" : String(bid[p])}`;
 }
 
-// Log bidder's bid, quality(bidderP), minMeld(bidderP), maxMeld(bidderP), est[partner] and reason (returns bid)
+// Log bidder's bid, quality(bidder), minMeld(bidder), maxMeld(bidder), est[partner] and reason (returns bid)
 function logBid(bid, reason) {
-    const partner = next[next[bidderP]];
+    const partner = next[next[bidder]];
     let t = "  ";
-    t += `bid[${player[bidderP][0]}]:`.padEnd(7) + `${bid==pass?"Pass":bid},`.padEnd(6);
-    t += `quality(${player[bidderP][0]}):${(quality(bidderP)>=0?"+":"")+quality(bidderP)},`.padEnd(16);
-    t += `minMeld(${player[bidderP][0]}):${minMeld(bidderP)},`.padEnd(16);
-    t += `maxMeld(${player[bidderP][0]}):${maxMeld(bidderP)},`.padEnd(16);
-    t += `est[${player[partner][0]}]:${est[partner]},`.padEnd(12);
+    t += `bid[${name[bidder][0]}]:`.padEnd(7) + `${bid==pass?"Pass":bid},`.padEnd(6);
+    t += `quality(${name[bidder][0]}):${(quality(bidder)>=0?"+":"")+quality(bidder)},`.padEnd(16);
+    t += `minMeld(${name[bidder][0]}):${minMeld(bidder)},`.padEnd(16);
+    t += `maxMeld(${name[bidder][0]}):${maxMeld(bidder)},`.padEnd(16);
+    t += `est[${name[partner][0]}]:${est[partner]},`.padEnd(12);
     t += `reason:${reason}`;
     log(t);
     return(bid);
@@ -662,40 +666,40 @@ function run(p) {
 
 // Return bot's trump suit
 function botSuit() {
-    const partner = next[next[bidderP]];
+    const partner = next[next[bidder]];
     let n = 0, t;
-    if (nRank(bidderP,king) + nRank(bidderP,queen) == 0)        // if no kings or queens (must toss),
+    if (nRank(bidder,king) + nRank(bidder,queen) == 0)          // if no kings or queens (must toss),
         for (const s of sArray) {                                   // pick suit with most aces then tens then jacks
-            if (nValue(bidderP, ace+s) > n) {
-                n = nValue(bidderP, ace+s);
+            if (nValue(bidder, ace+s) > n) {
+                n = nValue(bidder, ace+s);
                 t = s;
             }
-            if (nValue(bidderP, ten+s) > n) {
-                n = nValue(bidderP, ten+s);
+            if (nValue(bidder, ten+s) > n) {
+                n = nValue(bidder, ten+s);
                 t = s;
             }
-            if (nValue(bidderP, jack+s) > n) {
-                n = nValue(bidderP, jack+s);
+            if (nValue(bidder, jack+s) > n) {
+                n = nValue(bidder, jack+s);
                 t = s;
             }
         }
-    else if (noMarriages(bidderP))                              // if no marriages (must toss),
+    else if (noMarriages(bidder))                               // if no marriages (must toss),
         for (const s of sArray) {                                   // pick suit with most kings then queens
-            if (nValue(bidderP, king+s) > n) {
-                n = nValue(bidderP, king+s);
+            if (nValue(bidder, king+s) > n) {
+                n = nValue(bidder, king+s);
                 t = s;
             }
-            if (nValue(bidderP, queen+s) > n) {
-                n = nValue(bidderP, queen+s);
+            if (nValue(bidder, queen+s) > n) {
+                n = nValue(bidder, queen+s);
                 t = s;
             }
         }
-    else if (bid[bidderP]>maxMeld(bidderP)+est[partner]+20 && run(bidderP))    // if stretching a run,
-        t = maxSuit(bidderP);                                       // pick suit with most meld
+    else if (bid[bidder]>maxMeld(bidder)+est[partner]+20 && run(bidder)) // if stretching a run,
+        t = maxSuit(bidder);                                        // pick suit with most meld
     else                                                        // all other cases
         for (const s of sArray) {                                   // pick suit w/ marriage and most cards + most aces
-            if (marriages(bidderP,s)>0 && nSuit(bidderP,s)+nValue(bidderP,ace+s)>n) {
-                n = nSuit(bidderP,s) + nValue(bidderP, ace+s);
+            if (marriages(bidder,s)>0 && nSuit(bidder,s)+nValue(bidder,ace+s)>n) {
+                n = nSuit(bidder,s) + nValue(bidder, ace+s);
                 t = s;
             }
         }
@@ -706,10 +710,10 @@ function botSuit() {
 function botToss() {
     const trump = botSuit();                                    // must preview trump/meld/need to know to play/toss
     const meldO = meld(p1, trump) + meld(p3, trump);
-    const needO = meldO<20? bid[bidderP] : Math.max(20,bid[bidderP]-meldO);
+    const needO = meldO<20? bid[bidder] : Math.max(20,bid[bidder]-meldO);
     const meldE = meld(p0, trump) + meld(p2, trump);
-    const needE = meldE<20? bid[bidderP] : Math.max(20,bid[bidderP]-meldE);
-    return marriages(bidderP,trump)==0 || (teamO[bidderP]?needO:needE)>maxTake;
+    const needE = meldE<20? bid[bidder] : Math.max(20,bid[bidder]-meldE);
+    return marriages(bidder,trump)==0 || (teamO[bidder]?needO:needE)>maxTake;
 }
 
 // Return true if card c can be chosen based on leadCard, highCard, and trump (disturbing nothing)
@@ -721,33 +725,33 @@ function legal(c) {
     if (!card[leadCard].m && card[highCard].m) {                // If non-trump lead was trumped, 
         if (card[c].s == card[leadCard].s)                          // if c follows the lead, c's legal
             return true;
-        for (const i of cpArray[card[c].p])                          // if player can follow but doesn't, c's illegal
+        for (const i of cpArray[card[c].p])                         // if player can follow but doesn't, c's illegal
             if (card[i].g==hand && card[i].s==card[leadCard].s)
                 return false;
         if (card[c].m && card[c].r>card[highCard].r)                // if player overtrumps, c's legal
             return true;
-        for (const i of cpArray[card[c].p])                          // if player can overtrump but doesn't, c's illegal
+        for (const i of cpArray[card[c].p])                         // if player can overtrump but doesn't, c's illegal
             if (card[i].g==hand && card[i].m && card[i].r>card[highCard].r)
                 return false;
         if (card[c].m)                                              // if c's trump, c's legal
             return true;
-        for (const i of cpArray[card[c].p])                          // if player can trump but doesn't, c's illegal
+        for (const i of cpArray[card[c].p])                         // if player can trump but doesn't, c's illegal
             if (card[i].g==hand && card[i].m)
                 return false;
     } else {                                                    // If trump was lead or high card isn't trump,
         if (card[c].s==card[leadCard].s && card[c].r>card[highCard].r) // if c follows lead and beats high, c's legal
             return true;
-        for (const i of cpArray[card[c].p])                          // if player can follow lead & beat high but doesn't, c's illegal
+        for (const i of cpArray[card[c].p])                         // if player can follow lead & beat high but doesn't, c's illegal
             if (card[i].g==hand && card[i].s==card[leadCard].s && card[i].r>card[highCard].r)
                 return false;
         if (card[c].s == card[leadCard].s)                          // if c follows lead, c's legal
             return true;
-        for (const i of cpArray[card[c].p])                          // if player can follow lead but doesn't, c's illegal
+        for (const i of cpArray[card[c].p])                         // if player can follow lead but doesn't, c's illegal
             if (card[i].g==hand && card[i].s==card[leadCard].s)
                 return false;
         if (card[c].m)                                              // if card is (first) trump, c's legal
             return true;
-        for (const i of cpArray[card[c].p])                          // if player can trump but doesn't, c's illegal
+        for (const i of cpArray[card[c].p])                         // if player can trump but doesn't, c's illegal
             if (card[i].g==hand && card[i].m)
                 return false;
     }
@@ -770,7 +774,7 @@ function shuffleArray(a, n) {
 function logHands() {
     let t = "";
     for (const p of pArray) {
-        t = `  ${player[p][0]}:`;
+        t = `  ${name[p][0]}:`;
         for (const c of cpArray[p])
             t += card[c].g==hand? ` ${value$[card[c].v]}` : ` --`;
         log(t);
@@ -782,7 +786,7 @@ function logStats() {
     let t = "";
     log("     J♦ Q♦ K♦ T♦ A♦ J♣ Q♣ K♣ T♣ A♣ J♥ Q♥ K♥ T♥ A♥ J♠ Q♠ K♠ T♠ A♠");
     for (const p of pArray) {
-        t = `  ${player[p][0]}:`;
+        t = `  ${name[p][0]}:`;
         for (let v = 0; v < values; v++)
             t += ` ${minCards[p][v]}${maxCards[p][v]}`;
         log(t);
@@ -809,8 +813,16 @@ function showHints() {
                 let n = 0;
                 for (const r of rArray)
                     n += capMaxCards(p, r+s, p3);
-                const f = minCards[p][ace+s]>0? 1 : (capMaxCards(p,ace+s,p3)>0? 0.7 : (n>0? 0.4 : 0));
-                infoIco[i++].style.filter = `invert(${f})`;
+                infoIco[i+0].style.display = infoIco[i+1].style.display = infoIco[i+2].style.display = infoIco[i+3].style.display = "none";
+                if (minCards[p][ace+s]>0)
+                    infoIco[i+0].style.display = "inline";
+                else if (capMaxCards(p,ace+s,p3)>0)
+                    infoIco[i+1].style.display = "inline";
+                else if (n>0)
+                    infoIco[i+2].style.display = "inline";
+                else
+                    infoIco[i+3].style.display = "inline";
+                i += 4;
             }
             infoHint[p].style.display = nCards(p)>0? "inline" : "none";
         }
@@ -839,7 +851,7 @@ function getPlausible(cardV) {
     const unknown = Array(deckCards).fill(0);
     let u = 0;
     for (const c of cArray)
-        if (card[c].g==hand && card[c].p!=playerP && !card[c].k)
+        if (card[c].g==hand && card[c].p!=player && !card[c].k)
             unknown[u++] = card[c].v;
 
     // Until compliant: shuffle list, fill in cardV, and test for compliance
@@ -847,7 +859,7 @@ function getPlausible(cardV) {
         shuffleArray(unknown, u);
         u = 0;
         for (const c of cArray)
-            if (card[c].g==hand && card[c].p!=playerP && !card[c].k)
+            if (card[c].g==hand && card[c].p!=player && !card[c].k)
                 cardV[c] = unknown[u++];
             else
                 cardV[c] = card[c].g==gone? absent : card[c].v;
@@ -857,7 +869,7 @@ function getPlausible(cardV) {
                 for (const c of cpArray[p])
                     if (card[c].g==hand && cardV[c]==v)
                         nV++;
-                if (nV > capMaxCards(p, v, playerP))
+                if (nV > capMaxCards(p, v, player))
                     continue nextTry;
             }
     } while (false);
@@ -869,7 +881,7 @@ function bestMerit(v, bestC, playC, p, leadCard0, highCard0, nPlayed) {
     let h = highCard0;
     let merit = 0;
     let bestM = -100;
-    nextC: for (const c of cpArray[p]) {           // For all of player p's cards,
+    nextC: for (const c of cpArray[p]) {                        // For all of player p's cards,
         if (v[c] != absent) {                                       // if card is in hand,
             if (l == none)                                              // if no lead card,
                 l = h = c;                                                  // lead and high cards are now this card
@@ -982,8 +994,8 @@ function botCard() {
                 playC[card[c].p] = c;
             }
         getPlausible(cardV);
-        bestMerit(cardV, bestC, playC, playerP, leadCard, highCard, nPlayed);
-        results[bestC[playerP]].n++;
+        bestMerit(cardV, bestC, playC, player, leadCard, highCard, nPlayed);
+        results[bestC[player]].n++;
         cycles++;
     }
     results.sort((a,b)=>b.n-a.n);
@@ -997,10 +1009,10 @@ function botCard() {
 
 // Relocate cards and p0/p2 infoName, infoBid and infoHint
 function relocate() {
-    const r0 = [+Math.PI/2, +Math.PI/2, -Math.PI/2, -Math.PI/2][dealerP];
-    const r1 = [0,          0,          0,          0         ][dealerP];
-    const r2 = [+Math.PI/2, -Math.PI/2, -Math.PI/2, +Math.PI/2][dealerP];
-    const r3 = [+Math.PI,   0,          -Math.PI,   0         ][dealerP];
+    const r0 = [+Math.PI/2, +Math.PI/2, -Math.PI/2, -Math.PI/2][dealer] ?? 0;
+    const r1 = [0,          0,          0,          0         ][dealer] ?? 0;
+    const r2 = [+Math.PI/2, -Math.PI/2, -Math.PI/2, +Math.PI/2][dealer] ?? 0;
+    const r3 = [+Math.PI,   0,          -Math.PI,   0         ][dealer] ?? 0;
     const maxY = [vh*0.475, 0, vh*0.475, 0];
     let n = 0;                                                  // n = number of semi-exposed cards
     let v = 0;                                                  // v = visible card number
@@ -1030,7 +1042,7 @@ function relocate() {
         card[c].gone.r = [r0, r1, r2, r3][p];
         card[c].heap.x = Math.round([cardw+hpad, vw/2, vw-cardw-hpad, vw/2][p] + (Math.random()-0.5)*cardw/2);
         card[c].heap.y = Math.round([vh/2, cardw+vpad, vh/2, vh-cardw-vpad][p] + (Math.random()-0.5)*cardw/2);
-        card[c].heap.r = [Math.PI/2, 0, -Math.PI/2, 0][dealerP] + (Math.random()-0.5)*Math.PI/4;
+        card[c].heap.r = [Math.PI/2, 0, -Math.PI/2, 0][dealer] + (Math.random()-0.5)*Math.PI/4;
         card[c].hand.x = Math.round([cardh/2+hpad, vw/2-pitch1*(v-n/2), vw-cardh/2-hpad, vw/2+pitch3*(v-n/2)][p]);
         card[c].hand.y = Math.round([vh*0.475+vpitch*(v-n/2), cardh/2+vpad, vh*0.475-vpitch*(v-n/2), vh-cardh/2-vpad][p]);
         card[c].hand.r = [r0, r1, r2, r3][p];
@@ -1124,16 +1136,25 @@ function setNameSelOptions() {
     }
 }
 
-// Update everyone's estimate of bidderP's meld if jump bid
+// Update everyone's estimate of bidder's meld if jump bid
 function updateEst(newBid) {
     const max0 = Math.max(50, ...bid);                          // note high bid so far
-    if (bid[bidderP]==none && newBid>max0+1 && newBid<60)       // if jump bid,
-        est[bidderP] = (newBid - max0) * 10;                        // adjust everyone's estimate of bidderP's meld
+    if (bid[bidder]==none && newBid>max0+1 && newBid<60)        // if jump bid,
+        est[bidder] = (newBid - max0) * 10;                         // adjust everyone's estimate of bidder's meld
 }
 
 /////////////////////////////////////////////////////////////
 //                     EVENT HANDLERS                      //
 /////////////////////////////////////////////////////////////
+
+// If user confirms: send quitMsg, close app, and, if close fails, reload app
+function appCloseEvent() {
+    if (confirm(`Terminate the game?`)) {
+        sendMsg({op:"quit", name:name[p3]});
+        window.close();
+        location.reload();
+    }
+}
 
 // Hide current helpPage (if any); display new helpPage topic
 function helpEvent(topic) {
@@ -1157,7 +1178,7 @@ function helpCloseEvent() {
 
 // Display infoText
 function infoEvent() {
-    infoBiddr.textContent = `${player[bidderP]} won bid.`;
+    infoBiddr.textContent = `${name[bidder]} won bid.`;
     let i = 0;
     for (const s of sArray)
         infoCell[i++].textContent = remaining[ace+s] - nValue(p3,ace+s);
@@ -1177,66 +1198,64 @@ function infoCloseEvent() {
     infoText.style.display = "none";
 }
 
-// Display "waiting"; advance dealerP; restart app(game over); process dealMsg(starter); do/await dealMsgEvent  
+// Display "waiting"; advance dealer; restart app(game over); send dealMsg(my/my bot's deal); await dealMsgEvent  
 function handBtnEvent() {
-    handBtn.style.display = "none";
+    handBtn.style.display = "none";                             // replace handBtn with handWait
     handWait.style.display = "inline";
-    dealerP = next[dealerP];
-    if (takeO==50 || takeE==50 || scoreO>=500 || scoreE>=500)
-        loadEvent();
-    else if (starter) {
-        let v = Array(deckCards).fill(0).map((v,i,a)=>i%handCards);
+    dealer = next[dealer];                                      // advance dealer
+    if (takeO==50 || takeE==50 || scoreO>=500 || scoreE>=500)   // if game is over,
+        loadEvent();                                                // reload game
+    else if (dealer==p3 || starter&&bot[dealer]) {              // if I'm the new dealer or my bot's the new dealer,
+        let v = Array(deckCards).fill(0).map((v,i,a)=>i%handCards); // send a new dealMsg
         shuffleArray(v, deckCards);
         v = [...v.slice(0,20).sort(down), ...v.slice(20,40).sort(down), ...v.slice(40,60).sort(down), ...v.slice(60,80).sort(down)];
-        process({op:"deal", player:player, bot:bot, show:show, value:v});
-    } else {
-        ready = true;
-        while (done<turn.length)
-            turnMsgEvent(turn[done++]);
-    }
+        sendMsg({op:"deal", name:right(name), bot:right(bot), show:show, value:v});
+    }                                                           // await dealMsg event
+    msgEvents = true;                                           // allow msg events
+    nextMsg();                                                  // trigger next pending msg
 }
 
 // Display handText, defer any dealMsg, then await handBtnEvent
 function handEndedEvent() {
-    const tossO = teamO[bidderP] && toss;
-    const tossE = teamO[bidderP] && toss;
+    const tossO = teamO[bidder] && toss;
+    const tossE = teamE[bidder] && toss;
     const bidO = Math.max(bid[p1], bid[p3]);
     const bidE = Math.max(bid[p0], bid[p2]);
     handCell[4].innerHTML = scoreO;
     handCell[5].innerHTML = scoreE;
-    handCell[7].innerHTML = teamO[bidderP]? bidO : "Pass";
-    handCell[8].innerHTML = teamE[bidderP]? bidE : "Pass";
-    handCell[10].innerHTML = meldO<20||(!tossE&&takeO<20)||(teamO[bidderP]&&meldO+takeO<bidO)? `<s>&nbsp;${meldO}&nbsp;</s>` : meldO;
+    handCell[7].innerHTML = teamO[bidder]? bidO : "Pass";
+    handCell[8].innerHTML = teamE[bidder]? bidE : "Pass";
+    handCell[10].innerHTML = meldO<20||(!tossE&&takeO<20)||(teamO[bidder]&&meldO+takeO<bidO)? `<s>&nbsp;${meldO}&nbsp;</s>` : meldO;
     meldO = meldO<20||(!tossE&&takeO<20)? 0 : meldO;
-    handCell[11].innerHTML = meldE<20||(!tossO&&takeE<20)||(teamE[bidderP]&&meldE+takeE<bidE)? `<s>&nbsp;${meldE}&nbsp;</s>` : meldE;
+    handCell[11].innerHTML = meldE<20||(!tossO&&takeE<20)||(teamE[bidder]&&meldE+takeE<bidE)? `<s>&nbsp;${meldE}&nbsp;</s>` : meldE;
     meldE = meldE<20||(!tossO&&takeE<20)? 0 : meldE;
-    handCell[13].innerHTML = takeO<20||(teamO[bidderP]&&meldO+takeO<bidO)? `<u><s>&nbsp;${takeO}&nbsp;</s></u>` : `<u>${takeO}</u>`;
+    handCell[13].innerHTML = takeO>0&&(takeO<20||(teamO[bidder]&&meldO+takeO<bidO))? `<u><s>&nbsp;${takeO}&nbsp;</s></u>` : `<u>${takeO}</u>`;
     takeO = takeO<20? 0 : takeO;
-    handCell[14].innerHTML = takeE<20||(teamE[bidderP]&&meldE+takeE<bidE)? `<u><s>&nbsp;${takeE}&nbsp;</s></u>` : `<u>${takeE}</u>`;
+    handCell[14].innerHTML = takeE>0&&(takeE<20||(teamE[bidder]&&meldE+takeE<bidE))? `<u><s>&nbsp;${takeE}&nbsp;</s></u>` : `<u>${takeE}</u>`;
     takeE = takeE<20? 0 : takeE;
-    scoreO += teamO[bidderP]&&meldO+takeO<bidO? -bidO : meldO+takeO;
-    scoreE += teamE[bidderP]&&meldE+takeE<bidE? -bidE : meldE+takeE;
+    scoreO += teamO[bidder]&&meldO+takeO<bidO? -bidO : meldO+takeO;
+    scoreE += teamE[bidder]&&meldE+takeE<bidE? -bidE : meldE+takeE;
     handCell[16].innerHTML = scoreO;
     handCell[17].innerHTML = scoreE;
-    if (takeE==50 || (scoreE>=500 && scoreO<500) || (scoreO>=500 && scoreE>=500 && teamE[bidderP]))
+    if (takeE==50 || (scoreE>=500 && scoreO<500) || (scoreO>=500 && scoreE>=500 && teamE[bidder]))
         handPara.textContent = `Boohoo! You lose!`;
-    else if (takeO==50 || (scoreO>=500 && scoreE<500) || (scoreO>=500 && scoreE>=500 && teamO[bidderP]))
+    else if (takeO==50 || (scoreO>=500 && scoreE<500) || (scoreO>=500 && scoreE>=500 && teamO[bidder]))
         handPara.textContent = `Woohoo! You win!`;
     else
-        handPara.textContent = `${player[dealerP]} deals next.`;
+        handPara.textContent = `${name[next[dealer]]} deals next.`;
     handBtn.style.display = "inline";
     handWait.style.display = "none";
     handText.style.display = "block";
-    ready = false;
+    msgEvents = false;                                          // defer msg events until OK'd
 }
 
-// Pull trick; if cards, set playerP then await refannedEvent; if no cards, award bonus then await handEndedEvent
+// Pull trick; if cards, set player then await refannedEvent; if no cards, award bonus then await handEndedEvent
 function trickViewedEvent() {
     for (const c of cArray)
         if (card[c].g == play)
             moveCard(c, play, 0, gone, 100, false, dealTime/10, c, cpArray[card[highCard].p][0]);
     if (nGroup(hand) > 0) {
-        playerP = card[highCard].p;
+        player = card[highCard].p;
         chosen = leadCard = highCard = none;
         setTimeout(refannedEvent, dealTime/10);
     } else {
@@ -1258,12 +1277,12 @@ function trickPlayedEvent() {
     setTimeout(trickViewedEvent, dealTime/4);
 }
 
-// Close hand, advance playerP, then await trickPlayedEvent(all played) or refannedEvent
+// Close hand, advance player, then await trickPlayedEvent(all played) or refannedEvent
 function cardPlayedEvent() {
     relocate();
-    for (const c of cpArray[playerP])
+    for (const c of cpArray[player])
         moveCard(c, card[c].g, 0, card[c].g, card[c].z, card[c].f, 0);
-    playerP = next[playerP];
+    player = next[player];
     if (nGroup(play) == players)
         setTimeout(trickPlayedEvent, 100);
     else
@@ -1274,18 +1293,18 @@ function cardPlayedEvent() {
 function playMsgEvent(msg) {
     gameText.textContent = ``;
     chosen = cardRight(msg.card);
-    log(`(${player[playerP]}) op:play, card:${value$[card[chosen].v]}`);
+    log(`(${name[player]}) op:play, card:${value$[card[chosen].v]}`);
     // if chosen card is in high suit and doesn't beat non-ace high card, player must not have any cards that can beat the high card 
     if (highCard!=none && card[chosen].s==card[highCard].s && card[highCard].r!=ace && card[chosen].r<=card[highCard].r)
         for (let v = card[highCard].v+1; v<=ace+card[highCard].s; v++)
-            maxCards[playerP][v] = 0;
+            maxCards[player][v] = 0;
     // if no lead card, chosen card must be the lead card and the high card
     if (leadCard == none)
         leadCard = highCard = chosen;
     // if chosen card is in trump and trump wasn't led, player must be out of the first suit
     if (card[chosen].m && !card[leadCard].m)
         for (let v = jack+card[leadCard].s; v <= ace+card[leadCard].s; v++)
-            maxCards[playerP][v] = 0;
+            maxCards[player][v] = 0;
     // if chosen card is in high suit and beats high card, we have a new high card
     if (card[chosen].s==card[highCard].s && card[chosen].r>card[highCard].r)
         highCard = chosen;
@@ -1295,15 +1314,15 @@ function playMsgEvent(msg) {
     // if chosen card doesn't follow the lead and isn't trump, player must be out of lead suit and trump
     if (card[chosen].s!=card[leadCard].s && !card[chosen].m)
         for (const r of rArray)
-            maxCards[playerP][r+card[leadCard].s] = maxCards[playerP][r+trump] = 0;
+            maxCards[player][r+card[leadCard].s] = maxCards[player][r+trump] = 0;
     remaining[card[chosen].v]--;
-    minCards[playerP][card[chosen].v] = Math.max(minCards[playerP][card[chosen].v] - 1, 0);
+    minCards[player][card[chosen].v] = Math.max(minCards[player][card[chosen].v] - 1, 0);
     let loose = remaining[card[chosen].v]
     for (const p of pArray)
         loose -= minCards[p][card[chosen].v];
     for (const p of pArray)
         maxCards[p][card[chosen].v] = Math.min(maxCards[p][card[chosen].v], minCards[p][card[chosen].v] + loose);
-    if (playerP != p3)
+    if (player != p3)
         moveCard(chosen, card[chosen].g, 0, play, playZ++, true, dealTime/10);
     setTimeout(cardPlayedEvent, dealTime/10);
 }
@@ -1337,7 +1356,7 @@ function pointerMoveEvent(event) {
     };
 };
 
-// If click or big move to center, move card to center, process playMsgEvent; otherwise return card to hand
+// If click or big move to center, move card to center, send playMsg; otherwise return card to hand
 function pointerUpEvent(event) {
     const deltaY = card[pickedC].hand.y - (event.clientY - offsetY);
     event.preventDefault();
@@ -1352,7 +1371,7 @@ function pointerUpEvent(event) {
                 cardImg[c].onpointerdown = cardImg[c].onpointermove = cardImg[c].onpointerup = "";
                 cardImg[c].style.filter = card[c].g==hand? "brightness(70%)" : "brightness(100%)";
             }
-            process({op:"play", card:cardLeft(pickedC)});
+            sendMsg({op:"play", card:cardLeft(pickedC)});
         } else {
             strt = fnsh;
             fnsh = `translate(${card[pickedC].hand.x}px, ${card[pickedC].hand.y}px)`;
@@ -1362,27 +1381,26 @@ function pointerUpEvent(event) {
     }
 }
 
-// Do any pending turns; if my bot, choose card & process, then await pointerDown/pointerMove/pointerDown/playMsg events
+// If my bot, choose card & send playMsg, then await pointerDown/pointerMove/pointerDown/playMsg events
 function refannedEvent() {
-    ready = true;
-    while (done<turn.length)
-        turnMsgEvent(turn[done++]);
     gameHelp.onclick = function () {helpEvent('playHelp')};
     showHints();
-    gameText.textContent = nGroup(play)==0? `Waiting for ${player[playerP]}.` : ``;
+    gameText.textContent = nGroup(play)==0? `Waiting for ${player==p3?"you":name[player]}.` : ``;
     for (const c of cpArray[p3]) {
-        if (playerP>=nGroup(play) && card[c].g==hand)
+        if (player>=nGroup(play) && card[c].g==hand)
             cardImg[c].style.filter = `brightness(${legal(c)?"100%":"70%"})`;
-        if (playerP==p3 && legal(c)) {
+        if (player==p3 && legal(c)) {
             cardImg[c].onpointerdown = pointerDownEvent;
             cardImg[c].onpointermove = pointerMoveEvent;
             cardImg[c].onpointerup = pointerUpEvent;
         }
     }
-    if (starter && bot[playerP]) {
+    if (starter && bot[player]) {
         chosen = botCard();
-        process({op:"play", card:cardLeft(chosen)});
+        sendMsg({op:"play", card:cardLeft(chosen)});
     }
+    msgEvents = true;                                           // allow msg events
+    nextMsg();                                                  // trigger next pending msg
 }
 
 // Refan hands, then await refannedEvent
@@ -1417,9 +1435,9 @@ function okBtnEvent() {
         setTimeout(meldGatheredEvent, dealTime/10);                 // await meldGathered event
 }
 
-// Process declareMsg, clear needText, brighten/gather meld, then await meldGatheredEvent
+// Send declareMsg, clear needText, brighten/gather meld, then await meldGatheredEvent
 function playBtnEvent() {
-    process({op:"declare", suit:trump, toss:false});            // declare trump suit and toss flag
+    sendMsg({op:"declare", suit:trump, toss:false});            // declare trump suit and toss flag
     needText.style.display = "none";                            // clear play text
     for (const c of cArray) {                                   // brighten and gather meld cards
         cardImg[c].style.filter = "brightness(100%)";
@@ -1428,9 +1446,9 @@ function playBtnEvent() {
     setTimeout(meldGatheredEvent, dealTime/10);                 // await meldGathered event
 }
 
-// Process declareMsg, clear needText, brighten/gather meld, then await handEndedEvent
+// Send declareMsg, clear needText, brighten/gather meld, then await handEndedEvent
 function tossBtnEvent() {
-    process({op:"declare", suit:trump, toss:true});
+    sendMsg({op:"declare", suit:trump, toss:true});
     needText.style.display = "none";
     for (const c of cArray) {
         cardImg[c].style.filter = "brightness(100%)";
@@ -1441,17 +1459,17 @@ function tossBtnEvent() {
 
 // Display needText, then await okBtnEvent(!p3), playBtnEvent(p3) or tossBtnEvent(p3)
 function meldFannedEvent() {
-    needPara[0].innerHTML = `${bidderP==p3?"You":player[bidderP]} picked ${suit$[trump]}.`;
+    needPara[0].innerHTML = `${bidder==p3?"You":name[bidder]} picked ${suit$[trump]}.`;
     needPara[1].innerHTML = `Your meld is ${meldO<20?"<20":meldO}.<br>Their meld is ${meldE<20?"<20":meldE}.`;
-    if (marriages(bidderP,trump)==0)
-        needPara[2].innerHTML = `${bidderP==p3?"You must toss":player[bidderP]+" tossed"} due to no marriage.`;
+    if (marriages(bidder,trump)==0)
+        needPara[2].innerHTML = `${bidder==p3?"You must toss":name[bidder]+" tossed"} due to no marriage.`;
     else if (toss)
-        needPara[2].innerHTML = `${player[bidderP]} tossed due to insufficient meld.`;
+        needPara[2].innerHTML = `${name[bidder]} tossed the hand.`;
     else
         needPara[2].innerHTML = `You need ${needO} points.<br>They need ${needE} points.`;
-    okBtn.style.display = bidderP!=p3? "inline" : "none";
-    playBtn.style.display = bidderP==p3 && marriages(p3,trump)!=0? "inline" : "none";
-    tossBtn.style.display = bidderP==p3 && marriages(p3,trump)==0? "inline" : "none";
+    okBtn.style.display = bidder!=p3? "inline" : "none";
+    playBtn.style.display = bidder==p3 && marriages(p3,trump)!=0? "inline" : "none";
+    tossBtn.style.display = bidder==p3? "inline" : "none";
     needText.style.display = "flex";
     gameHelp.onclick = function () {helpEvent('tossHelp')};
 }
@@ -1470,11 +1488,13 @@ function regatheredEvent() {
 
 // Set trump/toss, tag meld, and, if I'm not the bid winner, clear bid text, gather hands then await regathered event
 function declareMsgEvent(msg) {
-    log(`(${player[bidderP]}) op:declare, suit:${suit$[msg.suit]}, toss:${msg.toss}`);
+    if (bidder != p3)                                           // if I didn't win the bid,
+        msgEvents = false;                                          // defer msg events until OK'd
+    log(`(${name[bidder]}) op:declare, suit:${suit$[msg.suit]}, toss:${msg.toss}`);
     trump = msg.suit;                                           // set trump suit and toss flag
     toss = msg.toss;
-    tagMeld();                                                  // tag the meld cards
-    if (bidderP != p3) {                                        // if bid winner isn't me,
+    if (bidder != p3) {                                         // if bid winner isn't me,
+        tagMeld();                                                  // tag the meld cards
         bidText.style.display = "none";                             // clear bid text
         for (const c of cArray)                                     // gather hands
             moveCard(c, hand, 0, gone, -c, false, dealTime/10);
@@ -1494,15 +1514,15 @@ function trumpBtnEvent(s) {
 
 // Note bid, advance bidder, then retrigger fannedEvent
 function bidMsgEvent(msg) {
-    log(`(${player[bidderP]}) op:bid, bid:${msg.bid==pass?"Pass":msg.bid}`);
+    log(`(${name[bidder]}) op:bid, bid:${msg.bid==pass?"Pass":msg.bid}`);
     updateEst(msg.bid);
-    bid[bidderP] = msg.bid;
-    infoBid[bidderP].innerHTML = bidString(bidderP);
-    bidderP = next[bidderP];
+    bid[bidder] = msg.bid;
+    infoBid[bidder].innerHTML = bidString(bidder);
+    bidder = next[bidder];
     setTimeout(fannedEvent);
 }
 
-// Adjust bid values or make my bid
+// Adjust bid values, or send bidMsg and await bidMsg or declareMsg
 function bidBtnEvent(n) {
     const v = bidBtn[n].value;
     const highBid = Math.max(...bid);
@@ -1518,85 +1538,96 @@ function bidBtnEvent(n) {
     default:
         const b = v=="Pass"? pass : Number(v);
         logBid(b, "Undisclosed");
-        process({op:"bid", bid:b});
+        sendMsg({op:"bid", bid:b});
+        msgEvents = true;                                           // allow msg events
+        nextMsg();                                                  // trigger next pending msg events
     }
 }
 
-// Make my bot's next bid
+// Send my bot's next bidMsg then await bidMsg or declareMsg
 function botBidEvent() {
-    const lefty   = next[bidderP];
+    const lefty   = next[bidder];
     const partner = next[lefty];
     const right   = next[partner];
     const highBid = Math.max(...bid);
-    const maxBid  = maxMeld(bidderP) + est[partner] + 20 + quality(bidderP);
-    let b = bid[bidderP];
+    const maxBid  = maxMeld(bidder) + est[partner] + 20 + quality(bidder);
+    let b = bid[bidder];
     if (b == pass)
         b = logBid(pass, "Repeat");
     else
         if (nPass() == 3)
             b = logBid(Math.max(b, 50), "Last bid");
-        else if (noMarriages(bidderP))
+        else if (noMarriages(bidder))
             b = logBid(pass, "No marriage");
-        else if (bid[lefty]==none && bid[right]!=pass && highBid<60 && quality(bidderP)>0 && maxBid>=60)
+        else if (bid[lefty]==none && bid[right]!=pass && highBid<60 && quality(bidder)>0 && maxBid>=60)
             b = logBid(60, "Block bid");
-        else if (b==none && bid[partner]!=pass && highBid<58 && minMeld(bidderP)>15)
-            b = logBid(Math.min(Math.max(50, ...bid) + Math.round(minMeld(bidderP)/10), 59), "Jump bid");
-        else if (highBid<60 && quality(bidderP)>=0 && maxBid>=60 && maxBid<70)
+        else if (b==none && bid[partner]!=pass && highBid<58 && minMeld(bidder)>15)
+            b = logBid(Math.min(Math.max(50, ...bid) + Math.round(minMeld(bidder)/10), 59), "Jump bid");
+        else if (highBid<60 && quality(bidder)>=0 && maxBid>=60 && maxBid<70)
             b = logBid(60, "Worried");
-        else if (quality(bidderP)>=0 && nextBid() <= maxBid)
+        else if (quality(bidder)>=0 && nextBid() <= maxBid)
             b = logBid(nextBid(), "Want bid");
-        else if (highBid<50 && partner==dealerP)
+        else if (highBid<50 && partner==dealer)
             b = logBid(50, "Save");
-        else if (quality(bidderP) < 0)
+        else if (quality(bidder) < 0)
             b = logBid(pass, "Bad quality");
         else
             b = logBid(pass, "Too high");
-    process({op:"bid", bid:b});
+    sendMsg({op:"bid", bid:b});
+    msgEvents = true;                                           // allow msg events
+    nextMsg();                                                  // trigger next pending msg events
 }
 
-// Display bidText, handle situation, then await trumpBtnEvent, declareMsgEvent, botBidEvent, bidBtnEvent or bidMsgEvent
+// Display bidText, handle situation, then await trumpBtn, declareMsg, botBid, bidBtn or bidMsg event
 function fannedEvent() {
+    if (nPass() == 3)                                           // if others passed, bidder is the remaining player
+        for (bidder of pArray)
+            if (bid[bidder] != pass)
+                break;
     meldSpan[0].textContent = meld(p3, spades);                 // display bidText
     meldSpan[1].textContent = meld(p3, hearts);
     meldSpan[2].textContent = meld(p3, clubs);
     meldSpan[3].textContent = meld(p3, diamonds);
     bidBtn[0].value = "Pass";
-    bidBtn[0].style.display = bidderP==p3 && nPass()<3? "inline" : "none";
+    bidBtn[0].style.display = bidder==p3 && nPass()<3? "inline" : "none";
     bidBtn[1].value = nextBid();
-    bidBtn[1].style.display = bidderP==p3? "inline" : "none";
+    bidBtn[1].style.display = bidder==p3? "inline" : "none";
     bidBtn[2].value = ">";
-    bidBtn[2].style.display = bidderP==p3 && nPass()<3? "inline" : "none";
-    bidWait.textContent = `Waiting for ${player[bidderP]}.`;
-    bidWait.style.display = bidderP!=p3? "inline" : "none";
+    bidBtn[2].style.display = bidder==p3 && nPass()<3? "inline" : "none";
+    bidWait.textContent = `Waiting for ${name[bidder]}.`;
+    bidWait.style.display = bidder!=p3? "inline" : "none";
     bidText.style.display = "flex";
-    if (nPass()==3 && bid[bidderP]!=none) {                     // if bidding is complete,
-        for (bidderP of pArray)                                     // find bid winner
-            if (bid[bidderP] > pass)
+    if (nPass()==3 && bid[bidder]!=none) {                      // if bidding is complete,
+        for (bidder of pArray)                                      // find bid winner
+            if (bid[bidder] > pass)
                 break;
-        playerP = bidderP;                                          // first player will be the bid winner
+        player = bidder;                                            // first player will be the bid winner
         toss = false;                                               // hand is not tossed yet
-        if (bidderP == p3) {                                        // if I won the bid,
+        if (bidder == p3) {                                         // if I won the bid,
             bidText.style.display = "none";                             // clear bid text
             trumpBtn[0].value = `Spades (${meld(p3, spades)})`;         // display trump text and await trumpBtnEvent
             trumpBtn[1].value = `Hearts (${meld(p3, hearts)})`;
             trumpBtn[2].value = `Clubs (${meld(p3, clubs)})`;
             trumpBtn[3].value = `Diamonds (${meld(p3, diamonds)})`;
-            trumpBtn[0].disabled = marriages(p3,spades)==0 && !noMarriages(bidderP);
-            trumpBtn[1].disabled = marriages(p3,hearts)==0 && !noMarriages(bidderP);
-            trumpBtn[2].disabled = marriages(p3,clubs)==0 && !noMarriages(bidderP);
-            trumpBtn[3].disabled = marriages(p3,diamonds)==0 && !noMarriages(bidderP);
+            trumpBtn[0].disabled = marriages(p3,spades)==0 && !noMarriages(bidder);
+            trumpBtn[1].disabled = marriages(p3,hearts)==0 && !noMarriages(bidder);
+            trumpBtn[2].disabled = marriages(p3,clubs)==0 && !noMarriages(bidder);
+            trumpBtn[3].disabled = marriages(p3,diamonds)==0 && !noMarriages(bidder);
             trumpText.style.display = "flex";
             gameHelp.onclick = function () {helpEvent('trumpHelp')};
-        } else if (starter && bot[bidderP])                         // otherwise, if my bot won the bid,
-            process({op:"declare", suit:botSuit(), toss:botToss()});    // declare bot's trump suit and toss decision
+        } else if (starter && bot[bidder])                          // otherwise, if my bot won the bid,
+            sendMsg({op:"declare", suit:botSuit(), toss:botToss()});    // send my bot's declareMsg
         else                                                        // otherwise,
-            bidPrompt.textContent = `Waiting for ${player[bidderP]}.`;  // await declareMsgEvent
-    } else if (bidderP==p3 && bid[p3]==pass) {                  // otherwise, if it's my bid and I've already passed,
+            bidWait.textContent = `Waiting for ${name[bidder]}.`;       // await declareMsgEvent
+    } else if (bidder==p3 && bid[p3]==pass) {                   // otherwise, if it's my bid and I've already passed,
         logBid(pass, "Repeat");                                     // pass again
-        process({op:"bid", bid:pass});
-    } else if (starter && bot[bidderP]) {                       // otherwise, if it's my bot's bid,
-        setTimeout(botBidEvent, bid[bidderP]==pass?0:dealTime/4);   // await botBidEvent (quick if repeat pass)
+        sendMsg({op:"bid", bid:pass});                              // resend my bidMsg
+    } else if (starter && bot[bidder]) {                        // otherwise, if it's my bot's bid,
+        setTimeout(botBidEvent, bid[bidder]==pass?0:dealTime/4);    // await botBidEvent (quick if repeat pass)
+        return;                                                     // defer msg events until my bot bids
     }                                                           // otherwise, await bidBtnEvent or bidMsgEvent
+    msgEvents = true;                                           // allow msg events
+    nextMsg();                                                  // trigger next pending msg events
 }
 
 // relocate hands and infoAreas, fan hands, then await fannedEvent
@@ -1621,9 +1652,19 @@ function dealtEvent() {
 
 // Initialize hands, clear pages, display gamePage, deal cards, then await dealtEvent
 function dealMsgEvent(msg) {
-    log(`(${player[dealerP]}) op:deal, player:[${msg.player}], bot:[${msg.bot}], show:[${msg.show}], value:[...]`);
-    shift = (msg.player.indexOf(player[p3])+1) % players;       // shift is number of players left of starter
-    starter = shift==0;                                         // p3 is starter if shift is 0
+    if (msg.name[p3] == name[p3])                               // set shift based on position of my name in msg.name
+        shift = 0;
+    else if (msg.name[p2] == name[p3])
+        shift = 3;
+    else if (msg.name[p1] == name[p3])
+        shift = 2;
+    else
+        shift = 1;
+    if (dealer == none)                                         // if dealer is unknown,
+        dealer = right(p3);                                         // dealer is shift positions to my right
+    starter = shift==0;                                         // I'm the starter if shift is 0
+    log(`(${name[dealer]}) op:deal, name:[${msg.name}], bot:[${msg.bot}], show:[${msg.show}], value:[...]`);
+    //shift = (msg.name.indexOf(name[p3])+1) % players;           // shift is number of players left of starter
     for (const c of cArray) {                                   // deck is from msg.value, offset to my perspective
         card[c].c = c;
         card[c].p = plyr[c];
@@ -1639,11 +1680,10 @@ function dealMsgEvent(msg) {
         card[c].k = false;
         cardImg[c].style.filter = "brightness(100%)";
     }
-    player = left(msg.player);                                  // player array is from msg.player, offset to my perspective
+    name = left(msg.name);                                      // name array is from msg.name, offset to my perspective
     bot = left(msg.bot);                                        // bot array if from msg.bot, offset to my perspective
     show = msg.show;                                            // show array is from msg.show
-    dealerP = turn.length==0? right(p3) : dealerP;              // dealerP = starter for game's first deal
-    bidderP = next[dealerP];                                    // bidder is left of dealer
+    bidder = next[dealer];                                      // bidder is left of dealer
     bid.fill(none);                                             // no bids yet
     est.fill(typical)                                           // no jump bids yet
     remaining.fill(4);                                          // no cards played
@@ -1652,21 +1692,21 @@ function dealMsgEvent(msg) {
     logHands();
     startPage.style.display = "none";
     joinPage.style.display = "none";
-    handText.style.display = "none";
     gamePage.style.display = "block";
+    handText.style.display = "none";
     for (const p of pArray) {
         infoBid[p].innerHTML = "";
         infoBid[p].style.display = "inline";
-        infoName[p].textContent = player[p];
+        infoName[p].textContent = name[p];
     }
     infoAreas.style.display = "block";
     card[0].g = heap;                                           // ensure infoName is not under heap
     relocate();
     let d = 0;
-    let p = next[dealerP];
+    let p = next[dealer];
     for (const z of cArray) {
         const c = cpArray[p][0] + Math.floor(z/players);
-        moveCard(c, gone, d, heap, z, false, dealTime/20, cpArray[dealerP][0], c);
+        moveCard(c, gone, d, heap, z, false, dealTime/20, cpArray[dealer][0], c);
         d += (dealTime - dealTime / 20) / deckCards;
         p = next[p];
     }
@@ -1674,41 +1714,89 @@ function dealMsgEvent(msg) {
     setTimeout(dealtEvent, dealTime);
 }
 
+// Dispatch legal deal, bid, declare, and play message events; log other message events
+function msgEvent(msg) {
+    if (msg.op=="ping" && "turn" in msg)
+        return;
+    else if (msg.op=="deal" && "name" in msg && "bot" in msg && "show" in msg && "value" in msg)
+        dealMsgEvent(msg);
+    else if (msg.op=="bid" && "bid" in msg)
+        bidMsgEvent(msg);
+    else if (msg.op=="declare" && "suit" in msg && "toss" in msg)
+        declareMsgEvent(msg);
+    else if (msg.op=="play" && "card" in msg)
+        playMsgEvent(msg);
+    else if (msg.op=="quit" && "name" in msg)
+        return;
+    else
+        log(JSON.stringify(msg));
+}
+
+// If msg events are allowed, trigger first pending msg event then disable msg events
+function nextMsg() {
+    if (msgEvents && done<turn.length) {
+        setTimeout(msgEvent, 0, turn[done++]);
+        msgEvents = false;
+    }
+}
+
 // Handle name select event for player p (p0, p1, p2, p3, pj, pg)
 function nameSelEvent(event, p) {
+    const addDiv = p==pj? joinAdd : startAdd;
+    const addImg = p==pj? joinAImg : startAImg;
+    const addLbl = p==pj? joinALbl : startALbl;
+    const addInp = p==pj? joinAInp : startAInp;
+    const addBtn = p==pj? joinABtn : startABtn;
+    const delDiv = p==pj? joinDel : startDel;
+    const delLbl = p==pj? joinDLbl : startDLbl;
+    const delDel = p==pj? joinDSel : startDSel;
 
-    function nameAddEvent(event) {                              // add input keyed: if entered name, add name to list
-        switch (event.key) {
-        case "Escape":
+    function addImgEvent() {                                    // add image (close icon) clicked
+        addInp.removeEventListener("keydown", addInpEvent);
+        addBtn.removeEventListener("click", addBtnEvent);
+        addImg.removeEventListener("click", addImgEvent);
+        addDiv.style.visibility = "hidden";
+        nameSel[p].value = "";
+        startBtn.disabled = true;
+        nameSel[p].focus();
+    }
+
+    function addBtnEvent() {                                    // add button clicked
+        addInp.removeEventListener("keydown", addInpEvent);
+        addBtn.removeEventListener("click", addBtnEvent);
+        addImg.removeEventListener("click", addImgEvent);
+        addDiv.style.visibility = "hidden";
+        const aliasList = localStorage.aliasList? JSON.parse(localStorage.aliasList) : [];
+        const botList = localStorage.botList? JSON.parse(localStorage.botList) : [];
+        const name = addInp.value.trim().substring(0,10);
+        if ((p==p3||p==pj) && name!="" && !aliasList.includes(name))
+            aliasList.push(name);
+        else if ((p==p0||p==p1||p==p2) && name!="" && !botList.includes(name))
+            botList.push(name);
+        aliasList.sort();
+        botList.sort();
+        localStorage.aliasList = JSON.stringify(aliasList);
+        localStorage.botList = JSON.stringify(botList);
+        setNameSelOptions();
+        nameSel[p].value = name;
+        startBtn.disabled = nameSel[p0].value=="" || nameSel[p1].value=="" || nameSel[p2].value=="" || nameSel[p3].value=="";
+        joinBtn.disabled = nameSel[pj].value=="" || nameSel[pg].value=="";
+        nameSel[p].focus();
+    }
+
+    function addInpEvent(event) {                               // add input keyed: if entered name, add name to list
+        if (event.key == "Escape") {
             event.preventDefault();
-            addDiv.style.visibility = "hidden";
-            nameSel[p].value = "";
-            nameSel[p].focus();
-            break;
-        case "Enter":
+            addImgEvent();
+        } else if (event.key == "Enter") {
             event.preventDefault();
-            addInp.removeEventListener("keydown", nameAddEvent);
-            addDiv.style.visibility = "hidden";
-            const aliasList = localStorage.aliasList? JSON.parse(localStorage.aliasList) : [];
-            const botList = localStorage.botList? JSON.parse(localStorage.botList) : [];
-            const name = addInp.value.trim().substring(0,10);
-            if ((p==p3||p==pj) && name!="" && !aliasList.includes(name))
-                aliasList.push(name);
-            else if ((p==p0||p==p1||p==p2) && name!="" && !botList.includes(name))
-                botList.push(name);
-            aliasList.sort();
-            botList.sort();
-            localStorage.aliasList = JSON.stringify(aliasList);
-            localStorage.botList = JSON.stringify(botList);
-            setNameSelOptions();
-            nameSel[p].value = name;
-            nameSel[p].focus();
+            addBtnEvent();
         }
     }
 
-    function nameDelEvent(event) {                              // delete select changed: delete selected name from list
+    function delSelEvent(event) {                               // delete select changed: delete selected name from list
         event.preventDefault();
-        delDel.removeEventListener("changed", nameDelEvent);
+        delDel.removeEventListener("changed", delSelEvent);
         delDiv.style.visibility = "hidden";
         const aliasList = localStorage.aliasList? JSON.parse(localStorage.aliasList) : [];
         const botList = localStorage.botList? JSON.parse(localStorage.botList) : [];
@@ -1721,32 +1809,31 @@ function nameSelEvent(event, p) {
         localStorage.botList = JSON.stringify(botList);
         setNameSelOptions();
         nameSel[p].value = "";
+        startBtn.disabled = true;
         nameSel[p].focus();
     }
 
-    const addDiv = p==pj? joinAdd : startAdd;
-    const addLbl = p==pj? joinALbl : startALbl;
-    const addInp = p==pj? joinAInp : startAInp;
-    const delDiv = p==pj? joinDel : startDel;
-    const delLbl = p==pj? joinDLbl : startDLbl;
-    const delDel = p==pj? joinDSel : startDSel;
     nameSel[p].style.color = "black";
     switch (nameSel[p].value) {
     case "(add)":
         nameSel[p].value = "";
+        startBtn.disabled = true;
         delDiv.style.display = "none";
         addDiv.style.display = "block";
         addDiv.style.visibility = "visible";
         addLbl.textContent = p==p3||p==pj? "New alias:" : "New bot name:";
         addInp.value = "";
         addInp.focus();
-        addInp.addEventListener("keydown", nameAddEvent);
+        addInp.addEventListener("keydown", addInpEvent);
+        addBtn.addEventListener("click", addBtnEvent);
+        addImg.addEventListener("click", addImgEvent);
         break;
     case "(delete)":
         const aliasList = localStorage.aliasList? JSON.parse(localStorage.aliasList) : [];
         const botList = localStorage.botList? JSON.parse(localStorage.botList) : [];
         const list = p==p3||p==pj? aliasList : botList;
         nameSel[p].value = "";
+        startBtn.disabled = true;
         addDiv.style.display = "none";
         delDiv.style.display = "block";
         delDiv.style.visibility = "visible";
@@ -1761,51 +1848,49 @@ function nameSelEvent(event, p) {
         for (const i of list)
             delDel.add(new Option(i));
         delDel.focus();
-        delDel.addEventListener("change", nameDelEvent);
+        delDel.addEventListener("change", delSelEvent);
         break;
     case "":
         break;
     default:
-        if (p == p3) {
-            game = player[p3];
-            process({op:"start", game:game});
-        }
+        startBtn.disabled = nameSel[p0].value=="" || nameSel[p1].value=="" || nameSel[p2].value=="" || nameSel[p3].value=="";
+        startCtr.style.visibility = solo || !inviteBtn.disabled? "hidden" : "visible";
+        joinBtn.textContent = nameSel[pg].value==""? "Check" : "Join";
     }
 }
 
-// Validate input, initialize game, display "waiting", process joinMsg, then await dealMsgEvent
+// Validate input, initialize game, display "waiting", send joinMsg, then await dealMsgEvent
+function checkBtnEvent(event) {
+    sendMsg({op:"list"});
+}
+
+// Validate input, initialize game, display "waiting", send joinMsg, then await dealMsgEvent
 function joinBtnEvent(event) {
     event.preventDefault();
-    if (nameSel[pj].value == "") {
-        nameSel[pj].style.color = "red";
-        nameSel[pj].focus();
-        return;
-    }
-    if (nameSel[pg].value == "") {
-        nameSel[pg].style.color = "red";
-        nameSel[pg].focus();
-        return;
-    }
-    player[p3] = nameSel[pj].value;
+    name[p3] = nameSel[pj].value;
     game = nameSel[pg].value;
-    localStorage.self = player[p3];
-    sessionStorage.game = game;
-    solo = false;
+    localStorage.self = name[p3];
     nameSel[pj].disabled = true;
     nameSel[pg].disabled = true;
+    checkBtn.style.display = "none";
     joinBtn.style.display = "none";
+    joinWait.textContent = `Waiting for ${game}.`;
     joinWait.style.display = "inline";
-    refreshList = false;
-    process({op:"join", game:game, player:player[p3]});
+    sendMsg({op:"join", game:game, name:name[p3]});
+    msgEvents = true;                                           // allow msg events
+    nextMsg();                                                  // trigger next pending msg events
 }
 
-// Clear loadPage, display joinPage, process listMsg, then await listMsgEvent, nameSelEvent and joinBtnEvent
+// Clear loadPage, display joinPage, send listMsg, then await listMsgEvent, nameSelEvent and joinBtnEvent
 function joinGBtnEvent() {
+    starter = false;
     loadPage.style.display = "none";
     const aliasList = localStorage.aliasList? JSON.parse(localStorage.aliasList) : [];
     setNameSelOptions();
     nameSel[pj].value = localStorage.self? localStorage.self : "";
     nameSel[pg].value = "";
+    checkBtn.style.display = "inline";
+    joinBtn.disabled = true;
     joinBtn.style.display = "inline";
     joinWait.style.display = "none";
     joinAdd.style.display = "none";
@@ -1817,41 +1902,56 @@ function joinGBtnEvent() {
     else
         nameSel[pg].focus();
     joinPage.style.display = "grid";
-    refreshList = true;
-    process({op:"list"});
+    solo = false;
+    sendMsg({op:"list"});
 }
 
-// Validate names, initialize game, process deal message, then await bidMsg event
+// Set game name and send createMsg
+function inviteBtnEvent() {
+    game = nameSel[p3].value;
+    sendMsg({op:"create", game:game});
+    inviteBtn.disabled = true;
+    startCtr.textContent = `0 invitation responses`;
+    startCtr.style.visibility = "visible";
+    nameSel[p3].disabled = true;
+}
+
+// Validate names, initialize game, send dealMsg, then await dealMsg event
 function startBtnEvent(event) {
     event.preventDefault();
-    for (const p of pArray)
-        if (nameSel[p].value == "") {
-            nameSel[p].style.color = "red";
-            nameSel[p].focus();
+    name.fill("");
+    for (const p of pArray) {
+        if (name.includes(nameSel[p].value)) {
+            startCtr.textContent = `Duplicate name! Please restart game.`;
+            startCtr.style.visibility = "visible";
             return;
         }
-    for (const p of pArray)
-        player[p] = nameSel[p].value;
-    localStorage.player = JSON.stringify(player);
-    localStorage.bot    = JSON.stringify(bot);
-    localStorage.show   = JSON.stringify(show);
-    game = player[p3];
-    solo = bot[p0] && bot[p1] && bot[p2];
+        name[p] = nameSel[p].value;
+    }
+    localStorage.name = JSON.stringify(name);
+    localStorage.bot  = JSON.stringify(bot);
+    localStorage.show = JSON.stringify(show);
     let v = Array(deckCards).fill(0).map((v,i,a)=>i%handCards);
     shuffleArray(v, deckCards);
     v = [...v.slice(0,20).sort(down), ...v.slice(20,40).sort(down), ...v.slice(40,60).sort(down), ...v.slice(60,80).sort(down)];
-    process({op:"deal", player:player, bot:bot, show:show, value:v});
+    sendMsg({op:"deal", name:name, bot:bot, show:show, value:v});
+    msgEvents = true;                                           // allow msg events
+    nextMsg();                                                  // trigger next pending msg events
 }
 
 // Toggle bot[p] and nameIco[p], hide startCtr if all bots, update nameSel options, force player p selection
 function nameIcoEvent(event, p) {
     event.preventDefault();
+    if (bot[p] && !online)                                      // if bot and offline,
+        return;                                                     // don't allow toggle to human
     bot[p] = !bot[p];
     nameIco[p].src = bot[p]? robotSrc : humanSrc;
     solo = bot[p0] && bot[p1] && bot[p2];
-    startCtr.style.visibility = solo? "hidden" : "visible";
-    setNameSelOptions();
     nameSel[p].value = "";
+    inviteBtn.disabled = solo || nameSel[p3]=="" || game!="";
+    startBtn.disabled = nameSel[p0].value=="" || nameSel[p1].value=="" || nameSel[p2].value=="" || nameSel[p3].value=="";
+    startCtr.style.visibility = solo || !inviteBtn.disabled? "hidden" : "visible";
+    setNameSelOptions();
 }
 
 // Toggle show[b] and assistBox[b] icon
@@ -1861,47 +1961,45 @@ function assistBoxEvent(event, b) {
     assistBox[b].src = show[b]? checked : unchecked;
 }
 
-// Clear loadPage, display startPage, process startMsg, then await joinMsg, nameSel, nameIco, assistBox, and startBtn events
+// Clear loadPage, display startPage, then await nameSel, nameIco, assistBox, inviteBtn, and startBtn events
 function startGBtnEvent() {
+    starter = true;
     loadPage.style.display = "none";
     const aliasList = localStorage.aliasList? JSON.parse(localStorage.aliasList) : [];
     const botList = localStorage.botList? JSON.parse(localStorage.botList) : [];
-    player = localStorage.player? JSON.parse(localStorage.player) : player;
+    name = localStorage.name? JSON.parse(localStorage.name) : name;
     bot = localStorage.bot? JSON.parse(localStorage.bot) : bot;
     show = localStorage.show? JSON.parse(localStorage.show) : show;
     for (const p of pArray) {                                   // for each player,
         bot[p] = bot[p] || (p==p0||p==p1||p==p2)&&!online;          // player is a bot if was a bot or is an offline p0/p1/p2
         const list = bot[p]? botList : (p==p3? aliasList : null);   // select botList, aliasList or no list
-        player[p] = list&&list.includes(player[p])? player[p] : ""; // keep old name if it's in list, otherwise clear name
+        name[p] = list&&list.includes(name[p])? name[p] : "";       // keep old name if it's in list, otherwise clear name
     }
     solo = bot[p0] && bot[p1] && bot[p2];
     setNameSelOptions();
     for (const p of pArray)                                     // for every player,
         if (p==p3) {                                                // if player is p3,
-            nameSel[p].value = player[p];                               // default to old name
+            nameSel[p].value = name[p];                                 // default to old name
             nameIco[p].src = humanSrc;                                  // set name icon to human
-            nameIco[p].disabled = true;                                 // disallow name icon events
         } else if (bot[p]) {                                        // if player is a bot,
-            nameSel[p].value = player[p];                               // default to old name
+            nameSel[p].value = name[p];                                 // default to old name
             nameIco[p].src = robotSrc;                                  // set name icon to bot
-            nameIco[p].disabled = !online;                              // disallow name icon events if offline
         } else {                                                    // if player is human p0/p1/p2,
             nameSel[p].value = "";                                      // default to no name
             nameIco[p].src = humanSrc;                                  // set name icon to human
-            nameIco[p].disabled = false;                                // allow name icon eventse
         }
     joinList.length = 0;
-    startCtr.textContent = `Players joining: ${joinList.length}`;
-    startCtr.style.visibility = bot[p0]&&bot[p1]&&bot[p2]? "hidden" : "visible";
+    inviteBtn.disabled = solo || nameSel[p3]=="";
+    startBtn.disabled = nameSel[p0].value=="" || nameSel[p1].value=="" || nameSel[p2].value=="" || nameSel[p3].value=="";
+    startCtr.style.visibility = "hidden";
     assistBox[counts].src = show[counts]? checked : unchecked;
     assistBox[hands].src = show[hands]? checked : unchecked;
     assistBox[counts].disabled = assistBox[hands].disabled = false;
     startAdd.style.display = "block";
     startDel.style.display = "none";
     startAdd.style.visibility = startDel.style.visibility = "hidden";
+    nameSel[p3].disabled = false;
     startPage.style.display = "flex";
-    game = player[p3];
-    process({op:"start", game:game});
 }
 
 // Process websocket close events
@@ -1916,49 +2014,58 @@ function wsErrorEvent(event) {
     log(`wsErrorEvent! id:${id}`);
 }
 
-// Dispatch turn (deal, bid, declare, play) message event; ignore other message events
-function turnMsgEvent(msg) {
-    if (msg.op == "deal")
-        dealMsgEvent(msg);
-    else if (msg.op == "bid")
-        bidMsgEvent(msg);
-    else if (msg.op == "declare")
-        declareMsgEvent(msg);
-    else if (msg.op == "play")
-        playMsgEvent(msg);
-}
-
 // Handle incoming websocket message events
 function wsMessageEvent(event) {
     const msg = JSON.parse(event.data);                         // parse the event data
-    switch (msg.id) {
-    case "id":                                                  // if {op:"id", id:i},
+    if (msg.op=="id" && "id" in msg) {                          // if legal idMsg,
+        log(`op:id, id:${msg.id}`);
         if (id == none) {                                           // if first id of this session,
-            sessionStorage.id = msg.id;                                 // save the id offered by our anonymous connection
-            websocket.close();                                          // close this websocket
-            break;                                                      // await numbered reconnection through heartbeat
+            sessionStorage.id = msg.id;                                 // save id offered by our anonymous connection
+            websocket.close();                                          // close websocket
+            return;                                                     // await wsInterval event
         }
-        if (msg.id != id) {                                         // otherwise, if new id,
-            id = msg.id;                                                // save new id (may impact comms)
-            sessionStorage.id = id;                                     
-        }
-        online = true;                                              // note that we're online with numbered connection
-        joinGBtn.disabled = false;                                  // note that we're online
-        break;
-    case "do":                                                  // if {op:"do", turn:[t]},
+        id = msg.id;                                                // save new id (may impact comms)
+        sessionStorage.id = id;                                     
+        online = true;                                              // note that we're online
+        joinGBtn.disabled = false;                                  // enable joinG button
+        return;
+    }
+    if (msg.op=="pong" && "turn" in msg) {                      // if legal pongMsg,
+        //log(`op:pong, turn.length:${msg.turn.length}`);
         for (let i=turn.length; i<msg.turn.length; i++)             // add any missing turns
             turn[i] = msg.turn[i];
-        while (ready && done<turn.length)                           // if ready, do any pending turns
-            turnMsgEvent(turn[done++]);
-    case "list":                                                // if {op:"list", game:[g]},
-        gameList = [...msg.game];                                   // save game list
-        setNameSelOptions();                                        // update nameSel options
-        break;
-    case "join":                                                // if {op:"join", player:p}, (only received by starter)
-        joinList.push(msg.player);                                  // add player to join list
-        startCtr.textContent = `Players joining: ${joinList.length}`;
-        setNameSelOptions();                                        // update nameSel options
+        nextMsg();                                                  // if allowed, trigger next pending msg
+        return;
     }
+    if (msg.op=="list" && "game" in msg) {                      // if legal listMsg,
+        log(`op:list, game:[${msg.game}]`);
+        gameList = [...msg.game];                                   // update game list
+        setNameSelOptions();                                        // update nameSel options
+        nameSel[pg].value = gameList[0];                            // default to first game
+        if (nameSel[pj].value!="" && nameSel[pg].value!="")         // if join fields have values,
+            joinBtn.disabled = false;                                   // enable join button
+        return;
+    }
+    if (starter && msg.op=="join" && "name" in msg) {           // if starter and legal joinMsg,
+        log(`op:join, name:${msg.name}`);
+        joinList.push(msg.name);                                    // add name to join list
+        startCtr.textContent = `${joinList.length} invitation response${joinList.length!=1?"s":""}`;
+        setNameSelOptions();                                        // update nameSel options
+        let j = 0;
+        for (const p of [p0, p1, p2])                               // prefill human player names
+            if (j<joinList.length && !bot[p])
+                nameSel[p].value = joinList[j++];
+        startBtn.disabled = nameSel[p0].value==""||nameSel[p1].value==""||nameSel[p2].value==""||nameSel[p3].value=="";
+        return;
+    }
+    if (msg.op=="quit" && "name" in msg) {                      // if legal quitMsg,
+        log(`op:quit, name:${msg.name}`);
+        alert(`${msg.name} terminated the game.`);                  // alert player
+        window.close();                                             // close app
+        location.reload();                                          // if close fails, reload app
+        return;
+    }
+    log(event.data);                                            // log undecipherable event data 
 }
 
 // Ignore websocket open events
@@ -1973,15 +2080,14 @@ function wsIntervalEvent() {
         log(`wsIntervalEvent, connecting`);                         // log event
         break;
     case WebSocket.OPEN:                                        // if websocket open,
-        process({op:"ping", turn:turn});                            // send {op:"ping", turn:[t]} to server (in case turn lost)
-        if (refreshList)                                            // if trying to join a game,
-            process({op:"list"});                                       // resend {op:"list"} to server
+        //log(`wsIntervalEvent, open`);                             // log event
+        sendMsg({op:"ping", turn:turn});                            // send pingMsg (in case my turn was lost)
         break;
     case WebSocket.CLOSING:                                     // if websocket closing,
-        log(`wsIntervalEvent, closing`);                            // log event
+        log(`wsIntervalEvent: closing`);                            // log event
         break;
     case WebSocket.CLOSED:                                      // if websocket closed,
-        log(`wsIntervalEvent, closed`);                             // log event
+        log(`wsIntervalEvent: closed`);                             // log event
         online = false;                                             // note websocket is offline
         joinGBtn.disabled = true;                                   // disable join button
         if (navigator.onLine && location.hostname) {                // if browser is online and not running from debugger,
@@ -1992,8 +2098,8 @@ function wsIntervalEvent() {
             websocket.onclose = wsCloseEvent;
             websocket.onerror = wsErrorEvent;
             websocket.onmessage = wsMessageEvent;
-            websocket.onopen = wsOpenEvent;                             // prepare for events
-            log(`wsIntervalEvent, reconnecting to url:${url}`);         // log event
+            websocket.onopen = wsOpenEvent;
+            log(`Reconnecting to url:${url}`);
         }
     }
 }
@@ -2020,10 +2126,9 @@ function loadEvent() {
     vh0 = vh;
     vw0 = vw;
     onresize = resizeEvent;
-    relocate();                                                 // initialize card and info text locations
-    for (const c of cArray) {                                   // initialize cards 
+    for (const c of cArray) {                                   // initialize card images and location
         cardImg[c].src = backImg[0].src;
-        moveCard(c, gone, 0, gone, 0, false, 0, cpArray[p3][0], c);
+        cardImg[c].style.transform = "translate(-2.8em, -2em)";
     }
     trumpIco.style.display = "none";                            // initialize display
     trumpOut.textContent = "";
@@ -2033,7 +2138,10 @@ function loadEvent() {
     online = false;                                             // initialize websocket
     turn.length = 0;                                            // initialize turn object storage
     done = 0;
-    ready = true;
+    msgEvents = false;
+    game = "";
+    starter = false;
+    dealer = none;
     joinGBtn.disabled = true;
     if (navigator.onLine && location.hostname) {                // if online and not running from debugger,
         let url = location.hostname=="localhost"? `ws://localhost:3000/` : `wss://${location.hostname}/ws/`;
