@@ -122,12 +122,12 @@ function wsMessage(e) {
         return;                                                     // return
     }
     if (m.op=="ping" && mTurn && !inGame) {                     // if legal pingMsg and not in game,
-        //console.log(`(${w.game}.${w.id}) op:ping, turn.length:${m.turn.length}`);
+        console.log(`(${w.game}.${w.id}) op:ping, turn.length:${m.turn.length}`);
         sendMsg(w.id, {op:"pong", turn:[]});                        // reply with empty pongMsg
         return;                                                     // return
     }
     if (m.op=="ping" && mTurn && inGame) {                      // if legal pingMsg and in game,
-        //console.log(`(${w.game}.${w.id}) op:ping, turn.length:${m.turn.length}`);
+        console.log(`(${w.game}.${w.id}) op:ping, turn.length:${m.turn.length}`);
         for (let i=game[w.game].turn.length; i<m.turn.length; i++)  // add any missed turns to game
             game[w.game].turn[i] = m.turn[i];
         sendMsg(w.id, {op:"pong", turn:[...game[w.game].turn]});    // reply with pongMsg including any lost turns
