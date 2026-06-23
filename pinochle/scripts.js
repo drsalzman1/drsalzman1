@@ -2024,12 +2024,15 @@ function wsMessageEvent(event) {
     if (msg.op=="id" && "id" in msg) {                          // if legal idMsg,
         log(`op:id, id:${msg.id}`);
         if (id == none) {                                           // if first id of this session,
-            sessionStorage.id = msg.id;                                 // save id offered by our anonymous connection
+            id = msg.id;                                                // id is id offered by our anonymous connection
+            sessionStorage.id = id;                                     // store id in case of page refresh
             websocket.close();                                          // close websocket
             return;                                                     // await wsInterval event
         }
+        if (msg.id != id)                                           // if id is not what was expected,
+            console.error(`Unexpected id !`);                           // log error
         id = msg.id;                                                // save new id (may impact comms)
-        sessionStorage.id = id;                                     
+        sessionStorage.id = id;                                     // store id in case of page refresh
         online = true;                                              // note that we're online
         netDlg.close();
         joinGBtn.disabled = false;                                  // enable joinG button

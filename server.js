@@ -222,25 +222,27 @@ function wssClose() {
     console.log(`wssClose:`);
 }
 
-// Handle a websocket server's connection event for websocket w and request r
+// Handle a websocket server's connection event for websocket w and request r (w.id and w.game start undefined)
 function wssConnection(w, r) {
     const bn = basename(r.url);                                 // bn is the request url's basename
     let id = /^\d+$/.test(bn)? Number(bn) : none;               // id is from valid bn (or none)
-    if (id==none || socket[id]) {                               // if id invalid or that socket is already open,
+    if (id == none) {                                           // if id is invalid,
         id = socket.indexOf(null);                                  // find first null socket
         if (id==none || id+500>socket.length)                       // if no null or first is too young, id is a new socket
             id = socket.length;
         w.id = id;                                                  // store id in this object
         queue[id] = [];                                             // no messages are queued for this id
         socket[id] = w;                                             // save this w
-        sendMsg(id, {op:"id", id:id});                              // send idMsg to client
+        sendMsg(id, {op:"id", id:id});                              // send idMsg to client and await proper connection
     } else {                                                    // otherwise,
+        if (socket[id])                                             // if id's socket is already open,
+            socket[id].close();                                         // close that socket
         w.id = id;                                                  // store id in this object
-        for (const g in game)
+        for (const g in game)                                       // w.game = youngest game with this id (or undefined)
             if (game[g].id.includes(id) && (!w.game || game[g].born>game[w.game].born))
                 w.game = g;
         queue[id] ??= [];                                           // don't crash when after server reboot
-        socket[id] = w;                                             // save this w
+        socket[id] = w;                                             // (re)set socket[id]
         sendMsg(id, {op:"id", id:id});                              // send idMsg to client
         while (queue[id].length > 0)                                // send any queued stringified messages
             w.send(queue[id].pop());
