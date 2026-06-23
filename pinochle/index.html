@@ -99,7 +99,7 @@
         <div id=gamePage>
             <img id=gameHelp class=helpIco src=icons/help.svg alt=help onclick="helpEvent('bidHelp')">
             <img id=trumpIco src=suits/club.svg alt=info onclick=infoEvent()>
-            <div id=trumpOut></div> 
+            <div id=trumpOut></div>
             <img class=whiteCloseIco src=icons/close.svg alt=close onclick=appCloseEvent()>
             <div id=textArea>
                 <div id=bidText>
@@ -713,5 +713,10 @@
                 </div>
             </div>
         </div>
+        <dialog id=netDlg>
+            Network connection lost.<br>
+            Please wait.
+            <div id=spinner></div>
+        </dialog>
     </body>
 </html>
