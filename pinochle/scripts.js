@@ -2092,7 +2092,7 @@ function wsIntervalEvent() {
         break;
     case WebSocket.OPEN:                                        // if websocket open,
         log(`wsIntervalEvent, open`);                             // log event
-        sendMsg({op:"ping", turn:turn});                            // send pingMsg (in case my turn was lost)
+        websocket.send(JSON.stringify({op:"ping", turn:turn}));   // send pingMsg (in case my turn was lost)
         break;
     case WebSocket.CLOSING:                                     // if websocket closing,
         log(`wsIntervalEvent: closing`);                            // log event
