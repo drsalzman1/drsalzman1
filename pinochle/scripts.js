@@ -2039,7 +2039,7 @@ function wsMessageEvent(event) {
         return;
     }
     if (msg.op=="pong" && "turn" in msg) {                      // if legal pongMsg,
-        //log(`op:pong, turn.length:${msg.turn.length}`);
+        log(`op:pong, turn.length:${msg.turn.length}`);
         for (let i=turn.length; i<msg.turn.length; i++)             // add any missing turns
             turn[i] = msg.turn[i];
         nextMsg();                                                  // if allowed, trigger next pending msg
@@ -2091,7 +2091,7 @@ function wsIntervalEvent() {
         log(`wsIntervalEvent, connecting`);                         // log event
         break;
     case WebSocket.OPEN:                                        // if websocket open,
-        //log(`wsIntervalEvent, open`);                             // log event
+        log(`wsIntervalEvent, open`);                             // log event
         sendMsg({op:"ping", turn:turn});                            // send pingMsg (in case my turn was lost)
         break;
     case WebSocket.CLOSING:                                     // if websocket closing,
