@@ -248,6 +248,7 @@ const infoGrid  = document.getElementById("infoGrid");
 const infoCell  = document.querySelectorAll("#infoGrid div");
 const infoTake  = document.getElementById("infoTake");
 const helpPage  = document.querySelectorAll("#helpPage div");
+const netDlg    = document.getElementById("netDlg");
 
 // Animation constants
 const dealTime  = 2000;                                 // milliseconds to deal all cards
@@ -364,7 +365,8 @@ function sendMsg(msg) {
     else {                                                      // otherwise,
         if (turnOps.includes(msg.op))                               // if msg.op is a turn op,
             turn.push(msg);                                             // append msg to turn object array
-        websocket.send(JSON.stringify(msg));                        // send message to server and await reply
+        if (online)                                                 // if online,
+            websocket.send(JSON.stringify(msg));                        // send message to server and await reply
     }
 }
 
@@ -2006,6 +2008,8 @@ function startGBtnEvent() {
 function wsCloseEvent(event) {
     log(`wsCloseEvent, id:${id}`);
     online = false;
+    if (!solo)
+        netDlg.showModal();
     joinGBtn.disabled = true;
 }
 
@@ -2020,13 +2024,17 @@ function wsMessageEvent(event) {
     if (msg.op=="id" && "id" in msg) {                          // if legal idMsg,
         log(`op:id, id:${msg.id}`);
         if (id == none) {                                           // if first id of this session,
-            sessionStorage.id = msg.id;                                 // save id offered by our anonymous connection
+            id = msg.id;                                                // id is id offered by our anonymous connection
+            sessionStorage.id = id;                                     // store id in case of page refresh
             websocket.close();                                          // close websocket
             return;                                                     // await wsInterval event
         }
+        if (msg.id != id)                                           // if id is not what was expected,
+            console.error(`Unexpected id !`);                           // log error
         id = msg.id;                                                // save new id (may impact comms)
-        sessionStorage.id = id;                                     
+        sessionStorage.id = id;                                     // store id in case of page refresh
         online = true;                                              // note that we're online
+        netDlg.close();
         joinGBtn.disabled = false;                                  // enable joinG button
         return;
     }
@@ -2084,15 +2092,13 @@ function wsIntervalEvent() {
         break;
     case WebSocket.OPEN:                                        // if websocket open,
         //log(`wsIntervalEvent, open`);                             // log event
-        sendMsg({op:"ping", turn:turn});                            // send pingMsg (in case my turn was lost)
+        websocket.send(JSON.stringify({op:"ping", turn:turn}));   // send pingMsg (in case my turn was lost)
         break;
     case WebSocket.CLOSING:                                     // if websocket closing,
         log(`wsIntervalEvent: closing`);                            // log event
         break;
     case WebSocket.CLOSED:                                      // if websocket closed,
         log(`wsIntervalEvent: closed`);                             // log event
-        online = false;                                             // note websocket is offline
-        joinGBtn.disabled = true;                                   // disable join button
         if (navigator.onLine && location.hostname) {                // if browser is online and not running from debugger,
             let url = location.hostname=="localhost"? `ws://localhost:3000/` : `wss://${location.hostname}/ws/`;
             id = sessionStorage.id? sessionStorage.id : none;           // did this session already have an id?
@@ -2144,6 +2150,7 @@ function loadEvent() {
     msgEvents = false;
     game = "";
     starter = false;
+    solo = true;
     dealer = none;
     joinGBtn.disabled = true;
     if (navigator.onLine && location.hostname) {                // if online and not running from debugger,

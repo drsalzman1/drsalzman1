@@ -249,6 +249,7 @@ const infoCell  = document.querySelectorAll("#infoGrid div");
 const infoTake  = document.getElementById("infoTake");
 const helpPage  = document.querySelectorAll("#helpPage div");
 const netDlg    = document.getElementById("netDlg");
+const debugTxt  = document.getElementById("debugTxt");
 
 // Animation constants
 const dealTime  = 2000;                                 // milliseconds to deal all cards
@@ -2099,8 +2100,9 @@ function wsIntervalEvent() {
         break;
     case WebSocket.CLOSED:                                      // if websocket closed,
         log(`wsIntervalEvent: closed`);                             // log event
-        if (navigator.onLine && location.hostname) {                // if browser is online and not running from debugger,
-            let url = location.hostname=="localhost"? `ws://localhost:3000/` : `wss://${location.hostname}/ws/`;
+        const hostname = location.hostname;
+        if (navigator.onLine && hostname) {                     // if browser is online and not running from debugger,
+            let url = hostname=="games.koyeb.app"? `wss://${hostname}/ws/` : `ws://${hostname}:3000/`;
             id = sessionStorage.id? sessionStorage.id : none;           // did this session already have an id?
             url = id==none? url : url+id;                               // if so, try to get it again
             websocket = new WebSocket(url);                             // create a new websocket
@@ -2153,8 +2155,10 @@ function loadEvent() {
     solo = true;
     dealer = none;
     joinGBtn.disabled = true;
-    if (navigator.onLine && location.hostname) {                // if online and not running from debugger,
-        let url = location.hostname=="localhost"? `ws://localhost:3000/` : `wss://${location.hostname}/ws/`;
+    debugTxt.textContent = `navigator.onLine:${navigator.onLine}, location.hostname:${location.hostname}`;
+    const hostname = location.hostname;
+    if (navigator.onLine && hostname) {                         // if online and not running from debugger,
+        let url = hostname=="games.koyeb.app"? `wss://${hostname}/ws/` : `ws://${hostname}:3000/`;
         id = sessionStorage.id? sessionStorage.id : none;           // did this session already have an id?
         url = id==none? url : url+id;                               // if so, try to get it again
         websocket = new WebSocket(url);                             // create a new websocket
