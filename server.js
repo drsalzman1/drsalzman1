@@ -6,7 +6,7 @@ import { WebSocketServer } from 'ws';
 
 //-------------------- http server ---------------------------
 
-const hsPort = 80;
+const hsPort = 8080;
 
 // Handle the http server's request e
 function hsRequest(request, response) {
