@@ -4,7 +4,6 @@ import { join, basename } from 'path';
 import { lookup } from 'mime-types';
 import { WebSocketServer } from 'ws';
 import { networkInterfaces } from 'os';
-import clipboard from 'clipboardy';
 
 //-------------------- http server ---------------------------
 
@@ -273,11 +272,7 @@ wss.on("wsClientError", wssWsClientError);
 
 // Get local URLs
 const nets = networkInterfaces();
-for (const key of Object.keys(nets)) {
+for (const key of Object.keys(nets))
     for (const net of nets[key])
-        if (net.family== 'IPv4' && !net.internal) {
-            const url = `http://${net.address}:8080/pinochle/index.html`;
-            clipboard.write(url);
-            console.log(`${key} URL: "${url}" written to clipboard`);
-        }
-}
+        if (net.family== 'IPv4' && !net.internal)
+            console.log(`${key} URL: http://${net.address}:8080/pinochle/index.html`);
