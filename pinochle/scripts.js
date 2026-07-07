@@ -2174,3 +2174,4 @@ function loadEvent() {
 }
 
 onload = loadEvent;
+navigator.wr

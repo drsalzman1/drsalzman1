@@ -3,6 +3,8 @@ import { readFile } from 'fs';
 import { join, basename } from 'path';
 import { lookup } from 'mime-types';
 import { WebSocketServer } from 'ws';
+import { networkInterfaces } from 'os';
+import clipboard from 'clipboardy';
 
 //-------------------- http server ---------------------------
 
@@ -24,7 +26,7 @@ function hsRequest(request, response) {
 
 // Handle the http server's listening e
 function hsListening() {
-    console.log(`HTTP file server listening to port:${hsPort}`);
+    console.log(`HTTP file server listening to port: ${hsPort}`);
 }
 
 // initialize http server
@@ -252,7 +254,7 @@ function wssHeaders(headers, request) {
 
 // Handle the websocket server's listening event
 function wssListening() {
-    console.log(`websocket server listening to port:${wssPort}`);
+    console.log(`websocket server listening to port: ${wssPort}`);
 }
 
 // Handle the websocket server's wsClientError event
@@ -268,3 +270,14 @@ wss.on("error", wssError);
 wss.on("headers", wssHeaders);
 wss.on("listening", wssListening);
 wss.on("wsClientError", wssWsClientError);
+
+// Get local URLs
+const nets = networkInterfaces();
+for (const key of Object.keys(nets)) {
+    for (const net of nets[key])
+        if (net.family== 'IPv4' && !net.internal) {
+            const url = `http://${net.address}:8080/pinochle/index.html`;
+            clipboard.write(url);
+            console.log(`${key} URL: "${url}" written to clipboard`);
+        }
+}
