@@ -2103,7 +2103,7 @@ function wsIntervalEvent() {
         if (navigator.onLine && location.hostname) {                // if browser online and not running from debugger,
             id = sessionStorage.id? sessionStorage.id : none;           // recall id (or none)
             const hst = location.hostname;
-            const url = hst=="games.koyeb.app"? `wss://${hst}/ws/${id}` : `ws://${hst}:3000/${id}`;
+            const url = hst=="pinochle.koyeb.app"? `wss://${hst}/ws/${id}` : `ws://${hst}:3000/${id}`;
             websocket = new WebSocket(url);                             // create a new websocket
             websocket.onclose = wsCloseEvent;
             websocket.onerror = wsErrorEvent;
@@ -2159,7 +2159,7 @@ function loadEvent() {
     if (navigator.onLine && location.hostname) {                // if browser is online and not running from debugger,
         id = sessionStorage.id? sessionStorage.id : none;           // recall id (or none)
         const hst = location.hostname;
-        const url = hst=="games.koyeb.app"? `wss://${hst}/ws/${id}` : `ws://${hst}:3000/${id}`;
+        const url = hst=="pinochle.koyeb.app"? `wss://${hst}/ws/${id}` : `ws://${hst}:3000/${id}`;
         websocket = new WebSocket(url);                             // create a new websocket
         websocket.onclose = wsCloseEvent;
         websocket.onerror = wsErrorEvent;
@@ -2175,4 +2175,3 @@ function loadEvent() {
 }
 
 onload = loadEvent;
-navigator.wr
