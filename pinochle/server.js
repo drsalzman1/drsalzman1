@@ -12,6 +12,7 @@ const hsPort = 8080;
 // Handle the http server's request e
 function hsRequest(request, response) {
     const filePath = join(import.meta.dirname, request.url=='/'?'index.html':request.url);
+    console.log(filePath);
     readFile(filePath, (error, content) => {
         if (error) {
             response.writeHead(404, {'Content-Type': 'text/html'});
