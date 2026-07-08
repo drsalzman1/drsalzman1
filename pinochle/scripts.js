@@ -384,6 +384,7 @@ function down(a, b) {
 // Log debugText on console (comment out when done debugging)
 function log(debugText = "") {
     console.log(debugText);
+    return debugText;
 }
 
 // Return p rotated clockwise by "shift" players; if shift is 1, p0 returns p1 and [p0,p1,p2,p3] returns [p1,p2,p3,p0]
@@ -2109,8 +2110,7 @@ function wsIntervalEvent() {
             websocket.onerror = wsErrorEvent;
             websocket.onmessage = wsMessageEvent;
             websocket.onopen = wsOpenEvent;
-            hrefTxt.textContent = location.href;
-            log(location.href);
+            hrefTxt.textContent = log(`${location.protocol}//${hst}:${location.port}`);
             log(url);
         }
     }
@@ -2166,8 +2166,7 @@ function loadEvent() {
         websocket.onmessage = wsMessageEvent;
         websocket.onopen = wsOpenEvent;
         setInterval(wsIntervalEvent, 1000);                         // start heartbeat
-        hrefTxt.textContent = location.href;
-        log(location.href);
+        hrefTxt.textContent = log(`${location.protocol}//${hst}:${location.port}`);
         log(url);
     }
     /*if (location.origin != "file://")                               // if not running from debugger, start service worker
