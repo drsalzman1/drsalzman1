@@ -1,0 +1,25 @@
+{
+  "name": "games",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/drsalzman1/drsalzman1.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/drsalzman1/drsalzman1/issues"
+  },
+  "homepage": "https://github.com/drsalzman1/drsalzman1#readme",
+  "dependencies": {
+    "mime-types": "^3.0.1",
+    "ws": "^8.18.3"
+  }
+}
