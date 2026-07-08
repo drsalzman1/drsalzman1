@@ -275,4 +275,4 @@ const nets = networkInterfaces();
 for (const key of Object.keys(nets))
     for (const net of nets[key])
         if (net.family== 'IPv4' && !net.internal)
-            console.log(`${key} URL: http://${net.address}:8080/pinochle/index.html`);
+            console.log(`${key} URL: http://${net.address}:8080`);

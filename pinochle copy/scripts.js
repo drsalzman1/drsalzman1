@@ -249,6 +249,7 @@ const infoCell  = document.querySelectorAll("#infoGrid div");
 const infoTake  = document.getElementById("infoTake");
 const helpPage  = document.querySelectorAll("#helpPage div");
 const netDlg    = document.getElementById("netDlg");
+const hrefTxt   = document.getElementById("hrefTxt");
 
 // Animation constants
 const dealTime  = 2000;                                 // milliseconds to deal all cards
@@ -2006,7 +2007,7 @@ function startGBtnEvent() {
 
 // Process websocket close events
 function wsCloseEvent(event) {
-    log(`wsCloseEvent, id:${id}`);
+    log(`wsCloseEvent: id:${id}`);
     online = false;
     if (!solo)
         netDlg.showModal();
@@ -2081,17 +2082,17 @@ function wsMessageEvent(event) {
 
 // Ignore websocket open events
 function wsOpenEvent(event) {
-    log(`wsOpenEvent, id:${id}`);
+    log(`wsOpenEvent: id:${id}`);
 }
 
 // Send periodic websocket pings and make periodic websocket reconnect attempts
 function wsIntervalEvent() {
     switch (websocket.readyState) {
     case WebSocket.CONNECTING:                                  // if websocket connecting,
-        log(`wsIntervalEvent, connecting`);                         // log event
+        log(`wsIntervalEvent: connecting`);                         // log event
         break;
     case WebSocket.OPEN:                                        // if websocket open,
-        //log(`wsIntervalEvent, open`);                             // log event
+        //log(`wsIntervalEvent: open`);                             // log event
         websocket.send(JSON.stringify({op:"ping", turn:turn}));   // send pingMsg (in case my turn was lost)
         break;
     case WebSocket.CLOSING:                                     // if websocket closing,
@@ -2099,16 +2100,18 @@ function wsIntervalEvent() {
         break;
     case WebSocket.CLOSED:                                      // if websocket closed,
         log(`wsIntervalEvent: closed`);                             // log event
-        if (navigator.onLine && location.hostname) {                // if browser is online and not running from debugger,
-            let url = location.hostname=="localhost"? `ws://localhost:3000/` : `wss://${location.hostname}/ws/`;
-            id = sessionStorage.id? sessionStorage.id : none;           // did this session already have an id?
-            url = id==none? url : url+id;                               // if so, try to get it again
+        if (navigator.onLine && location.hostname) {                // if browser online and not running from debugger,
+            id = sessionStorage.id? sessionStorage.id : none;           // recall id (or none)
+            const hst = location.hostname;
+            const url = hst=="pinochle.koyeb.app"? `wss://${hst}/ws/${id}` : `ws://${hst}:3000/${id}`;
             websocket = new WebSocket(url);                             // create a new websocket
             websocket.onclose = wsCloseEvent;
             websocket.onerror = wsErrorEvent;
             websocket.onmessage = wsMessageEvent;
             websocket.onopen = wsOpenEvent;
-            log(`Reconnecting to url:${url}`);
+            hrefTxt.textContent = location.href;
+            log(location.href);
+            log(url);
         }
     }
 }
@@ -2153,17 +2156,19 @@ function loadEvent() {
     solo = true;
     dealer = none;
     joinGBtn.disabled = true;
-    if (navigator.onLine && location.hostname) {                // if online and not running from debugger,
-        let url = location.hostname=="localhost"? `ws://localhost:3000/` : `wss://${location.hostname}/ws/`;
-        id = sessionStorage.id? sessionStorage.id : none;           // did this session already have an id?
-        url = id==none? url : url+id;                               // if so, try to get it again
+    if (navigator.onLine && location.hostname) {                // if browser is online and not running from debugger,
+        id = sessionStorage.id? sessionStorage.id : none;           // recall id (or none)
+        const hst = location.hostname;
+        const url = hst=="pinochle.koyeb.app"? `wss://${hst}/ws/${id}` : `ws://${hst}:3000/${id}`;
         websocket = new WebSocket(url);                             // create a new websocket
         websocket.onclose = wsCloseEvent;
         websocket.onerror = wsErrorEvent;
         websocket.onmessage = wsMessageEvent;
         websocket.onopen = wsOpenEvent;
         setInterval(wsIntervalEvent, 1000);                         // start heartbeat
-        log(`Connecting to url:${url}`);
+        hrefTxt.textContent = location.href;
+        log(location.href);
+        log(url);
     }
     /*if (location.origin != "file://")                               // if not running from debugger, start service worker
         navigator.serviceWorker.register("service-worker.js", {updateViaCache: "none"});*/
