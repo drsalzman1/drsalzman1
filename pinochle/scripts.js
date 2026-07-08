@@ -2100,18 +2100,18 @@ function wsIntervalEvent() {
         break;
     case WebSocket.CLOSED:                                      // if websocket closed,
         log(`wsIntervalEvent: closed`);                             // log event
-        const hostname = location.hostname;
-        if (navigator.onLine && hostname) {                         // if browser is online and not running from debugger,
+        if (navigator.onLine && location.hostname) {                // if browser online and not running from debugger,
             id = sessionStorage.id? sessionStorage.id : none;           // recall id (or none)
-            const url = hostname=="games.koyeb.app"? `wss://${hostname}/ws/${id}` : `ws://${hostname}:3000/${id}`;
+            const hst = location.hostname;
+            const url = hst=="games.koyeb.app"? `wss://${hst}/ws/${id}` : `ws://${hst}:3000/${id}`;
             websocket = new WebSocket(url);                             // create a new websocket
             websocket.onclose = wsCloseEvent;
             websocket.onerror = wsErrorEvent;
             websocket.onmessage = wsMessageEvent;
             websocket.onopen = wsOpenEvent;
-            log(`${location.href}`);
-            log(`Reconnecting to url: ${url}`);
             hrefTxt.textContent = location.href;
+            log(location.href);
+            log(url);
         }
     }
 }
@@ -2156,19 +2156,18 @@ function loadEvent() {
     solo = true;
     dealer = none;
     joinGBtn.disabled = true;
-    const hostname = location.hostname;
-    if (navigator.onLine && hostname) {                         // if online and not running from debugger,
+    if (navigator.onLine && location.hostname) {                // if browser is online and not running from debugger,
         id = sessionStorage.id? sessionStorage.id : none;           // recall id (or none)
-        const url = hostname=="games.koyeb.app"? `wss://${hostname}/ws/${id}` : `ws://${hostname}:3000/${id}`;
+        const hst = location.hostname;
+        const url = hst=="games.koyeb.app"? `wss://${hst}/ws/${id}` : `ws://${hst}:3000/${id}`;
         websocket = new WebSocket(url);                             // create a new websocket
         websocket.onclose = wsCloseEvent;
         websocket.onerror = wsErrorEvent;
         websocket.onmessage = wsMessageEvent;
         websocket.onopen = wsOpenEvent;
-        setInterval(wsIntervalEvent, 1000);                         // start heartbeat
-        log(`${location.href}`);
-        log(`Connecting to url: ${url}`);
         hrefTxt.textContent = location.href;
+        log(location.href);
+        log(url);
     }
     /*if (location.origin != "file://")                               // if not running from debugger, start service worker
         navigator.serviceWorker.register("service-worker.js", {updateViaCache: "none"});*/
