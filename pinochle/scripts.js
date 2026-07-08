@@ -2110,7 +2110,7 @@ function wsIntervalEvent() {
             websocket.onerror = wsErrorEvent;
             websocket.onmessage = wsMessageEvent;
             websocket.onopen = wsOpenEvent;
-            hrefTxt.textContent = log(`${location.protocol}//${hst}:${location.port}`);
+            hrefTxt.textContent = log(`${location.protocol}//${hst}${location.port?(":"+location.port):""}`);
             log(url);
         }
     }
@@ -2166,7 +2166,7 @@ function loadEvent() {
         websocket.onmessage = wsMessageEvent;
         websocket.onopen = wsOpenEvent;
         setInterval(wsIntervalEvent, 1000);                         // start heartbeat
-        hrefTxt.textContent = log(`${location.protocol}//${hst}:${location.port}`);
+        hrefTxt.textContent = log(`${location.protocol}//${hst}${location.port?(":"+location.port):""}`);
         log(url);
     }
     /*if (location.origin != "file://")                               // if not running from debugger, start service worker
