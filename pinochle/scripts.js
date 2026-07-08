@@ -2165,6 +2165,7 @@ function loadEvent() {
         websocket.onerror = wsErrorEvent;
         websocket.onmessage = wsMessageEvent;
         websocket.onopen = wsOpenEvent;
+        setInterval(wsIntervalEvent, 1000);                         // start heartbeat
         hrefTxt.textContent = location.href;
         log(location.href);
         log(url);
