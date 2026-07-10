@@ -247,19 +247,6 @@ body {
     text-align: left;
 }
 
-#cardImg img, #faceImg img, #backImg img {
-    position: absolute;
-    width: round(4em, 1px);
-    height: round(5.6em, 1px);
-    top: round(-2.8em, 1px);
-    left: round(-2em, 1px);
-    touch-action: none;
-}
-
-#faceImg, #backImg {
-    display: none;
-}
-
 #textArea {
     position: absolute;
     top: calc(50svh - 4.28em);
@@ -303,8 +290,9 @@ body {
 }
 
 #bidBtns input {
-    width: 3em;
     height: 1.3em;
+    padding-left: 0.4em;
+    padding-right: 0.4em;
     border: none;
     background-color: white;
 }
@@ -424,11 +412,6 @@ body {
     z-index: -1000;
 }
 
-.infoHint img {
-    height: 0.8em;
-    filter: invert(100%);
-}
-
 #infoArea0 .infoName {
     position: absolute;
     left: 0.4em;
@@ -443,12 +426,15 @@ body {
 
 #infoArea0 .infoHint {
     position: absolute;
-    margin-top: -0.2em;
     font-size: 0.85em;
-    line-height: 1.5em;
+    line-height: 1.2em;
     left: 0.4em;
     width: 7em;
-    
+}
+
+#infoArea0 img {
+    height: 0.73em;
+    filter: invert(100%);
 }
 
 #infoArea1 {
@@ -461,10 +447,17 @@ body {
     justify-content: center;
 }
 
+#infoArea1 .infoBid {
+    margin-left: 0.5em;
+}
+
 #infoArea1 .infoHint {
-    margin-top: 0.1em;
-    font-size: 0.85em;
-    line-height: 1.2em;
+    margin-left: 0.5em;
+}
+
+#infoArea1 img {
+    height: 0.73em;
+    filter: invert(100%);
 }
 
 #infoArea2 .infoName {
@@ -481,11 +474,15 @@ body {
 
 #infoArea2 .infoHint {
     position: absolute;
-    margin-top: -0.2em;
     font-size: 0.85em;
-    line-height: 1.5em;
+    line-height: 1.2em;
     left: calc(100svw - 7.4em);
     width: 7em;
+}
+
+#infoArea2 img {
+    height: 0.73em;
+    filter: invert(100%);
 }
 
 #infoArea3 {
@@ -498,10 +495,53 @@ body {
     justify-content: center;
 }
 
-@keyframes blink {
-    0% {opacity:1}
-    50% {opacity:0}
-    100% {opacity:1}
+#infoArea3 .infoBid {
+    margin-left: 0.5em;
+}
+
+#slide0, #slide1, #slide2, #slide3 {
+    position: absolute;
+    height: 3.9em;
+    width: 1.9em;
+    filter: invert(100%);
+    opacity: 0;
+    z-index: -1000;
+}
+
+#slide0 {
+    top: calc(50svh - 1.95em);
+    left: calc(50svw - 4.3em);
+    transform: rotate(180deg);
+}
+
+#slide1 {
+    top: calc(50svh - 5.3em);
+    left: calc(50svw - 0.95em);
+    transform: rotate(270deg);
+}
+
+#slide2 {
+    top: calc(50svh - 1.95em);
+    left: calc(50svw + 2.3em);
+}
+
+#slide3 {
+    top: calc(50svh + 1.3em);
+    left: calc(50svw - 0.95em);
+    transform: rotate(90deg);
+}
+
+#cardImg img, #faceImg img, #backImg img {
+    position: absolute;
+    width: round(4em, 1px);
+    height: round(5.6em, 1px);
+    top: round(-2.8em, 1px);
+    left: round(-2em, 1px);
+    touch-action: none;
+}
+
+#faceImg, #backImg {
+    display: none;
 }
 
 #helpPage>div {

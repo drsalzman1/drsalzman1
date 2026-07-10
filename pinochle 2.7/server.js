@@ -12,6 +12,7 @@ const hsPort = 8080;
 // Handle the http server's request e
 function hsRequest(request, response) {
     const filePath = join(import.meta.dirname, request.url=='/'?'index.html':request.url);
+    //console.log(filePath);
     readFile(filePath, (error, content) => {
         if (error) {
             response.writeHead(404, {'Content-Type': 'text/html'});
@@ -275,4 +276,4 @@ const nets = networkInterfaces();
 for (const key of Object.keys(nets))
     for (const net of nets[key])
         if (net.family== 'IPv4' && !net.internal)
-            console.log(`${key} URL: http://${net.address}:8080/pinochle/index.html`);
+            console.log(`${key} URL: http://${net.address}:8080`);
