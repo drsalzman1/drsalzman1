@@ -105,14 +105,14 @@
                 <div id=bidText>
                     <div id=meldTable>
                         <div id=trumpColumn>
-                            Trump<br>
+                            If Trump<br>
                             <img src=suits/spade.svg alt=spade><br>
                             <img src=suits/heart.svg alt=heart><br>
                             <img src=suits/club.svg alt=club><br>
                             <img src=suits/diamond.svg>
                         </div>
                         <div id=meldColumn>
-                            Meld<br>
+                            Total Meld<br>
                             <span></span><br>
                             <span></span><br>
                             <span></span><br>
@@ -120,9 +120,10 @@
                         </div>
                     </div>
                     <div id=bidBtns>
-                        <input type=button value="Pass" onclick=bidBtnEvent(0)>
-                        <input type=button value="50" onclick=bidBtnEvent(1)>
-                        <input type=button value=">" onclick=bidBtnEvent(2)>
+                        <input id=passBtn type=button value="Pass" onclick=passBtnEvent()>
+                        <input id=lessBtn type=button value="<" onclick=lessBtnEvent()>
+                        <input id=bidBtn type=button value="50" onclick=bidBtnEvent()>
+                        <input id=moreBtn type=button value=">" onclick=moreBtnEvent()>
                         <div id=bidWait>Waiting for Bender.</div>
                     </div>
                 </div>
@@ -141,8 +142,6 @@
                         <input id=playBtn type=button value=Play onclick=playBtnEvent()>
                         <input id=tossBtn type=button value=Toss onclick=tossBtnEvent()>
                     </div>
-                </div>
-                <div id=gameText>
                 </div>
                 <div id=handText>
                     <div id=handGrid>
@@ -174,8 +173,8 @@
                     <div class=infoBid></div>
                     <div class=infoHint>
                         <span>A</span><img src=suits/spade.svg>
-                        <span>?</span><img src=suits/heart.svg>
-                        <span>&#129031;</span><img src=suits/club.svg>
+                        <span>A</span><img src=suits/heart.svg>
+                        <span>?</span><img src=suits/club.svg>
                         <span>X</span><img src=suits/diamond.svg>
                     </div>
                 </div>
@@ -183,10 +182,9 @@
                     <span class=infoName></span>
                     <span class=infoBid></span>
                     <span class=infoHint>
-                        &nbsp- 
                         <span>A</span><img src=suits/spade.svg>
-                        <span>?</span><img src=suits/heart.svg>
-                        <span>&#129031;</span><img src=suits/club.svg>
+                        <span><img src=icons/down.svg></span><img src=suits/heart.svg>
+                        <span>?</span><img src=suits/club.svg>
                         <span>X</span><img src=suits/diamond.svg>
                     </span>
                 </div>
@@ -195,8 +193,8 @@
                     <div class=infoBid></div>
                     <div class=infoHint>
                         <span>A</span><img src=suits/spade.svg>
-                        <span>?</span><img src=suits/heart.svg>
-                        <span>&#129031;</span><img src=suits/club.svg>
+                        <span>L</span><img src=suits/heart.svg>
+                        <span>?</span><img src=suits/club.svg>
                         <span>X</span><img src=suits/diamond.svg>
                     </div>
                 </div>
@@ -204,6 +202,12 @@
                     <span class=infoName></span>
                     <span class=infoBid></span>
                 </div>
+            </div>
+            <div id=slideImg>
+                <img id=slide0 src=icons/slide.svg alt=slide>
+                <img id=slide1 src=icons/slide.svg alt=slide>
+                <img id=slide2 src=icons/slide.svg alt=slide>
+                <img id=slide3 src=icons/slide.svg alt=slide>
             </div>
             <div id=cardImg>
                 <img><img><img><img><img><img><img><img><img><img><img><img><img><img><img><img><img><img><img><img>
@@ -218,13 +222,13 @@
                 <img src=cards/js.svg><img src=cards/qs.svg><img src=cards/ks.svg><img src=cards/ts.svg><img src=cards/as.svg>
             </div>
             <div id=backImg>
-                <img src=cards/gb.svg>
+                <img src=cards/cb.svg>
             </div>
         </div>
         <div id=helpPage>
             <div id=loadHelp>
                 <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
-                <b>Double Deck Pinochle v2.63</b>
+                <b>Double Deck Pinochle v2.7</b>
                 <p>
                     This <a href="javascript:helpEvent('loadShot')">page</a> allows you to start or join a game:
                 </p>

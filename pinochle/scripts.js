@@ -212,13 +212,16 @@ const trumpIco  = document.getElementById("trumpIco");
 const trumpOut  = document.getElementById("trumpOut");
 const bidText   = document.getElementById("bidText");
 const meldSpan  = document.querySelectorAll("#meldColumn span");
-const bidBtn    = document.querySelectorAll("#bidBtns input");
+const passBtn   = document.getElementById("passBtn");
+const lessBtn   = document.getElementById("lessBtn");
+const bidBtn    = document.getElementById("bidBtn");
+const moreBtn   = document.getElementById("moreBtn");
 const bidWait   = document.getElementById("bidWait");
 const infoAreas = document.getElementById("infoAreas");
 const infoName  = document.querySelectorAll(".infoName");
 const infoBid   = document.querySelectorAll(".infoBid");
 const infoHint  = document.querySelectorAll(".infoHint");
-const infoChr   = document.querySelectorAll(".infoHint span");
+const infoChr   = document.querySelectorAll(".infoHint>span");
 const infoIco   = document.querySelectorAll(".infoHint img");
 const trumpText = document.getElementById("trumpText");
 const trumpBtn  = document.querySelectorAll("#trumpText input");
@@ -227,7 +230,6 @@ const needPara  = document.querySelectorAll("#needText p");
 const okBtn     = document.getElementById("okBtn");
 const playBtn   = document.getElementById("playBtn");
 const tossBtn   = document.getElementById("tossBtn");
-const gameText  = document.getElementById("gameText");
 const handText  = document.getElementById("handText");
 const handCell  = document.querySelectorAll("#handGrid div");
 const handPara  = document.getElementById("handPara");
@@ -237,6 +239,7 @@ const spadesT   = document.getElementById("spadesT");
 const heartsT   = document.getElementById("heartsT");
 const clubsT    = document.getElementById("clubsT");
 const diamondsT = document.getElementById("diamondsT");
+const slideImg  = document.querySelectorAll("#slideImg img");
 const cardImg   = document.querySelectorAll("#cardImg img");
 const faceImg   = document.querySelectorAll("#faceImg img");
 const backImg   = document.querySelectorAll("#backImg img");
@@ -287,13 +290,13 @@ const dealTime  = 2000;                                 // milliseconds to deal 
 // t = turn object                                              turn:[{op:"bid", bid:50}]
 // v = card value (suit + rank=0..4 for JQKTA)                  value:[0, 0, 0, 0, ...19, 19, 19, 19]
 
-let websocket   = null;                                         // websocket object (or null)
-let id          = none;                                         // id = websocket identifier
-let online      = false;                                        // true when online with a numbered connection
-let msgEvents   = false;                                        // true when msg events are allowed
-let done        = 0;                                            // number of turns processed
-const turnOps   = ["deal", "bid", "declare", "play"];           // array of turn op codes
-const turn      = [];                                           // array of turn objects
+let websocket   = null;                                 // websocket object (or null)
+let id          = none;                                 // id = websocket identifier
+let online      = false;                                // true when online with a numbered connection
+let msgEvents   = false;                                // true when msg events are allowed
+let done        = 0;                                    // number of turns processed
+const turnOps   = ["deal", "bid", "declare", "play"];   // array of turn op codes
+const turn      = [];                                   // array of turn objects
 
 // Game variables from this player's perspective
 let helpStack   = [];                                   // stack of help pages
@@ -358,6 +361,9 @@ let offsetX = 0;                                        // offset of pointer X f
 let offsetY = 0;                                        // offset of pointer Y from card Y
 let strt = "";                                          // start transform
 let fnsh = "";                                          // finish transform
+
+// Animation varaiables
+let timeoutId = 0;                                      // Id of opacityEvent timer
 
 // Send msg if mutiplayer); trigger msgEvent if solo
 function sendMsg(msg) {
@@ -642,7 +648,7 @@ function bidString(p) {
     if (bid[p] == none)
         return "";
     else
-        return `${teamO[p]? "&nbsp;-&nbsp;" : ""}${bid[p]==pass? "Pass" : String(bid[p])}`;
+        return `${bid[p]==pass? "Pass" : bid[p]}`;
 }
 
 // Log bidder's bid, quality(bidder), minMeld(bidder), maxMeld(bidder), est[partner] and reason (returns bid)
@@ -823,7 +829,7 @@ function showHints() {
                 else if (minCards[p][ace+s]>0)                              // otherwise, if ace in suit, display "A"
                     infoChr[i++].innerHTML = "A";
                 else if (capMaxCards(p,ace+s,p3)==0)                        // otherwise, if no ace in suit, display "↓"
-                    infoChr[i++].innerHTML = "&#129031;";
+                    infoChr[i++].innerHTML = "<img src=icons/down.svg>";
                 else                                                        // otherwise, display "?"
                     infoChr[i++].innerHTML = "?";
             }
@@ -1154,7 +1160,6 @@ function updateEst(newBid) {
 function appCloseEvent() {
     if (confirm(`Terminate the game?`)) {
         sendMsg({op:"quit", name:name[p3]});
-        window.close();
         location.reload();
     }
 }
@@ -1293,11 +1298,12 @@ function cardPlayedEvent() {
         setTimeout(refannedEvent, 100);
 }
 
-// Clear gameText, note chosen card, update stats, play chosen card(!p3), then await cardPlayedEvent
+// Clear slide, note chosen card, update stats, play chosen card(!p3), then await cardPlayedEvent
 function playMsgEvent(msg) {
-    gameText.textContent = ``;
     chosen = cardRight(msg.card);
     log(`(${name[player]}) op:play, card:${value$[card[chosen].v]}`);
+    clearTimeout(timeoutId);
+    slideImg[p0].style.opacity = slideImg[p1].style.opacity = slideImg[p2].style.opacity = slideImg[p3].style.opacity = "0";
     // if chosen card is in high suit and doesn't beat non-ace high card, player must not have any cards that can beat the high card 
     if (highCard!=none && card[chosen].s==card[highCard].s && card[highCard].r!=ace && card[chosen].r<=card[highCard].r)
         for (let v = card[highCard].v+1; v<=ace+card[highCard].s; v++)
@@ -1387,9 +1393,9 @@ function pointerUpEvent(event) {
 
 // If my bot, choose card & send playMsg, then await pointerDown/pointerMove/pointerDown/playMsg events
 function refannedEvent() {
-    gameHelp.onclick = function () {helpEvent('playHelp')};
+    gameHelp.onclick = ()=>{helpEvent('playHelp')};
     showHints();
-    gameText.textContent = nGroup(play)==0? `Waiting for ${player==p3?"you":name[player]}.` : ``;
+    timeoutId = setTimeout(()=>{slideImg[player].style.opacity="1"}, 5000);
     for (const c of cpArray[p3]) {
         if (player>=nGroup(play) && card[c].g==hand)
             cardImg[c].style.filter = `brightness(${legal(c)?"100%":"70%"})`;
@@ -1475,7 +1481,7 @@ function meldFannedEvent() {
     playBtn.style.display = bidder==p3 && marriages(p3,trump)!=0? "inline" : "none";
     tossBtn.style.display = bidder==p3? "inline" : "none";
     needText.style.display = "flex";
-    gameHelp.onclick = function () {helpEvent('tossHelp')};
+    gameHelp.onclick = ()=>{helpEvent('tossHelp')};
 }
 
 // Dim/display meld, then await meldFanned event
@@ -1526,26 +1532,31 @@ function bidMsgEvent(msg) {
     setTimeout(fannedEvent);
 }
 
-// Adjust bid values, or send bidMsg and await bidMsg or declareMsg
-function bidBtnEvent(n) {
-    const v = bidBtn[n].value;
-    const highBid = Math.max(...bid);
-    switch (v) {
-    case ">":
-        bidBtn[1].value = Number(bidBtn[1].value) + (highBid<60?1:5);
-        bidBtn[0].value = "<";
-        break;
-    case "<": 
-        bidBtn[1].value = Number(bidBtn[1].value) - (highBid<60?1:5);
-        bidBtn[0].value = bidBtn[1].value==nextBid()? "Pass" : bidBtn[0].value;
-        break;
-    default:
-        const b = v=="Pass"? pass : Number(v);
-        logBid(b, "Undisclosed");
-        sendMsg({op:"bid", bid:b});
-        msgEvents = true;                                           // allow msg events
-        nextMsg();                                                  // trigger next pending msg events
-    }
+// Send bidMsg, then await bidMsg or declareMsg
+function passBtnEvent() {
+    logBid(pass, "Undisclosed");
+    sendMsg({op:"bid", bid:pass});
+    msgEvents = true;                                           // allow msg events
+    nextMsg();                                                  // trigger next pending msg events
+}
+
+// Decrease bid button value, then await passBtn, lessBtn, bidBtn or moreBtn
+function lessBtnEvent() {
+    bidBtn.value = Number(bidBtn.value) - (Math.max(...bid,Number(bidBtn.value))<=60?1:5);
+    lessBtn.disabled = Number(bidBtn.value) == Math.max(...bid,49)+1;
+}
+// Send bidMsg, then await bidMsg or declareMsg
+function bidBtnEvent() {
+    logBid(Number(bidBtn.value), "Undisclosed");
+    sendMsg({op:"bid", bid:Number(bidBtn.value)});
+    msgEvents = true;                                           // allow msg events
+    nextMsg();                                                  // trigger next pending msg events
+}
+
+// Increase bid button value, then await passBtn, lessBtn, bidBtn or moreBtn
+function moreBtnEvent() {
+    bidBtn.value = Number(bidBtn.value) + (Math.max(...bid,Number(bidBtn.value))>=60?5:1);
+    lessBtn.disabled = false;
 }
 
 // Send my bot's next bidMsg then await bidMsg or declareMsg
@@ -1582,7 +1593,7 @@ function botBidEvent() {
     nextMsg();                                                  // trigger next pending msg events
 }
 
-// Display bidText, handle situation, then await trumpBtn, declareMsg, botBid, bidBtn or bidMsg event
+// Display bidText, handle situation, then await trumpBtn, declareMsg, botBid, passBtn, lessBtn, bidBtn, moreBtn or bidMsg event
 function fannedEvent() {
     if (nPass() == 3)                                           // if others passed, bidder is the remaining player
         for (bidder of pArray)
@@ -1592,12 +1603,10 @@ function fannedEvent() {
     meldSpan[1].textContent = meld(p3, hearts);
     meldSpan[2].textContent = meld(p3, clubs);
     meldSpan[3].textContent = meld(p3, diamonds);
-    bidBtn[0].value = "Pass";
-    bidBtn[0].style.display = bidder==p3 && nPass()<3? "inline" : "none";
-    bidBtn[1].value = nextBid();
-    bidBtn[1].style.display = bidder==p3? "inline" : "none";
-    bidBtn[2].value = ">";
-    bidBtn[2].style.display = bidder==p3 && nPass()<3? "inline" : "none";
+    bidBtn.value = nextBid();
+    bidBtn.style.display = bidder==p3? "inline" : "none";
+    passBtn.style.display = lessBtn.style.display = moreBtn.style.display = bidder==p3&&nPass()<3? "inline" : "none";
+    lessBtn.disabled = true;
     bidWait.textContent = `Waiting for ${name[bidder]}.`;
     bidWait.style.display = bidder!=p3? "inline" : "none";
     bidText.style.display = "flex";
@@ -1618,7 +1627,7 @@ function fannedEvent() {
             trumpBtn[2].disabled = marriages(p3,clubs)==0 && !noMarriages(bidder);
             trumpBtn[3].disabled = marriages(p3,diamonds)==0 && !noMarriages(bidder);
             trumpText.style.display = "flex";
-            gameHelp.onclick = function () {helpEvent('trumpHelp')};
+            gameHelp.onclick = ()=>{helpEvent('trumpHelp')};
         } else if (starter && bot[bidder])                          // otherwise, if my bot won the bid,
             sendMsg({op:"declare", suit:botSuit(), toss:botToss()});    // send my bot's declareMsg
         else                                                        // otherwise,
@@ -2145,6 +2154,7 @@ function loadEvent() {
     trumpIco.style.display = "none";                            // initialize display
     trumpOut.textContent = "";
     infoHint[p0].style.display = infoHint[p1].style.display = infoHint[p2].style.display = "none";
+    slideImg[p0].style.opacity = slideImg[p1].style.opacity = slideImg[p2].style.opacity = slideImg[p3].style.opacity = "0";
     gamePage.style.display = "none";
     loadPage.style.display = "flex";
     online = false;                                             // initialize websocket
@@ -2173,4 +2183,9 @@ function loadEvent() {
         navigator.serviceWorker.register("service-worker.js", {updateViaCache: "none"});*/
 }
 
+function contextEvent(event) {
+    event.preventDefault();
+}
+
 onload = loadEvent;
+oncontextmenu = contextEvent;
