@@ -1,0 +1,740 @@
+@media (orientation: portrait) {
+    :root {
+        font-size:      min(4.25svw, 2.55svh);
+    }
+}
+
+@media (orientation: landscape) {
+    :root {
+        font-size:      min(4.25svh, 2.575svw);
+   }
+}
+
+* {
+    font-family: sans-serif;
+    font-size: 1em;
+    box-sizing: border-box;
+    margin: 0em;
+    padding: 0em;
+}
+
+body {
+    position: absolute;
+    width: 100svw;
+    height: 100svh;
+    display: grid;
+    place-items: center;
+    background-color: darkgreen;
+    color: white;
+    -webkit-user-select: none;
+    user-select: none;
+    touch-action: none;
+    overflow: hidden;
+}
+
+#loadPage {
+    position: absolute;
+    width: 100svw;
+    height: 100svh;
+    padding: 0.4em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    overflow: hidden;
+}
+
+#loadTitle {
+    margin-bottom: 3em;
+}
+
+.helpIco {
+    position: absolute;
+    top: 0.5em;
+    left: 0.4em;
+    height: 1.05em;
+    filter: invert(100%);
+}
+
+.whiteCloseIco {
+    position: absolute;
+    top: 0.3em;
+    right: 0.3em;
+    height: 1.3em;
+    filter: invert(100%);
+}
+
+#roleGrid, #showGrid {
+    width: 22em;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    justify-content: center;
+    text-align: right;
+}
+
+#roleGrid img, #showGrid img {
+    height: 0.8em;
+    filter: invert(100%);
+}
+
+#nameGrid {
+    position: relative;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    display: grid;
+    grid-template-columns: auto auto;
+    column-gap: 1em;
+    row-gap: 1em;
+    text-align: left;
+}
+
+#nameGrid input {
+    width: 10.5em;
+    height: 1.3em;
+    border: none;
+    background-color: white;
+    padding-left: 0.4em;
+    outline: none;
+    border-bottom: 1px solid darkgreen;
+}
+
+#nameGrid input::placeholder {
+    font-style: italic;
+}
+
+.nameLst {
+    position: absolute;
+    width: 10.5em;
+    padding: 0.4em;
+    color: black;
+    background-color: white;
+    overflow-y: auto;
+    z-index: 1000;
+    visibility: hidden;
+}
+
+#nameLst3, #nameLst0 {
+    max-height: calc(50svh - 0em);
+}
+
+#nameLst1, #nameLst2 {
+    max-height: calc(50svh - 3.4em);
+}
+
+.listCat {
+    height: 2em;
+    text-decoration-line: underline;
+}
+
+.listItm {
+    height: 2em;
+    text-indent: 1em;
+}
+
+#nameGrid img {
+    position: absolute;
+    right: 0.4em;
+    height: 0.9em;
+}
+
+#loadBtns {
+    margin-top: 3em;
+}
+
+#createBtn, #joinBtn {
+    height: 1.3em;
+    border: none;
+    background-color: white;
+    padding-left: 0.4em;
+    padding-right: 0.4em;
+}
+
+#joinBtn {
+    display: none;
+}
+
+#loadWait {
+    height: 1.3em;
+    display: none;
+}
+
+#startPage {
+    position: absolute;
+    height: 100svh;
+    width: 100svw;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+#startForm {
+    display: flex;
+    width: 20em;
+    flex-direction: column;
+    justify-content: center;
+    align-items: end;
+    text-align: center;
+}
+
+#startCtr {
+    width: 100%;
+    line-height: 1.5em;
+    border: 2px solid;
+}
+
+#playersGrid {
+    margin-top: 1em;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(11, 1fr);
+    grid-template-rows: 1.3em 1.3em 0.4em 1.3em 1.3em 0.4em 1.3em 1.3em;
+    text-align: left;
+}
+
+#nameLbl0 {grid-area: 04/01/04/05}
+#nameSel0 {grid-area: 05/01/05/05}
+#nameIco0 {grid-area: 05/05/05/05}
+#nameLbl1 {grid-area: 01/04/01/08}
+#nameSel1 {grid-area: 02/04/02/08}
+#nameIco1 {grid-area: 02/08/02/08}
+#nameLbl2 {grid-area: 04/07/04/11}
+#nameSel2 {grid-area: 05/07/05/11}
+#nameIco2 {grid-area: 05/11/05/11}
+#nameLbl3 {grid-area: 07/04/07/08}
+#nameSel3 {grid-area: 08/04/08/08}
+#nameIco3 {grid-area: 08/08/08/08}
+
+.nameSel {
+    width: 100%;
+    height: 1.3em;
+    border: none;
+    padding-left: 0.4em;
+    text-align: left;
+    background-color: white;
+}
+
+.nameIco {
+    position: relative;
+    background-color: white;
+    height: 1.3em;
+    width: 100%;
+}
+
+#assistanceGrid {
+    margin-top: 1em;
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto auto 1fr auto auto;
+    justify-content: center;
+    text-align: right;
+}
+
+.assistBox {
+    position: relative;
+    bottom: 0.1em;
+    height: 1.3em;
+    filter: invert(100%);
+}
+
+#startBtns {
+    width: 100%;
+    text-align: center;
+}
+
+#startBtn, #inviteBtn {
+    width: 4.4em;
+    height: 1.3em;
+    margin-top: 0.8em;
+    border: none;
+    background-color: white;
+    text-align: center;
+}
+
+#startEdit, #joinEdit {
+    width: 100%;
+    display: grid;
+    justify-items: center;
+}
+
+#startAdd, #startDel, #joinAdd, #joinDel {
+    position: relative;
+    margin-top: 1.2em;
+    padding-top: 0.8em;
+    padding-left: 0.4em;
+    padding-bottom: 0.4em;
+    width: 11em;
+    border: 2px solid;
+    text-align: left;
+}
+
+#startAInp, #startDSel, #joinAInp, #joinDSel {
+    width: 69%;
+    height: 1.3em;
+    padding-left: 0.4em;
+    border: none;
+    background-color: white;
+}
+
+#startABtn, #joinABtn {
+    width: 25%;
+    height: 1.3em;
+    border: none;
+    background-color: white;
+}
+
+#joinPage {
+    height: 100svh;
+    width: 100svw;
+    display: none;
+    place-items: center;
+    overflow: hidden;
+}
+
+#joinForm {
+    width: 10em;
+}
+
+#joinBtns {
+    width: 100%;
+}
+
+/*#joinBtn, #checkBtn {
+    width: 4.85em;
+    height: 1.3em;
+    border: none;
+    background-color: white;
+    text-align: center;
+}*/
+
+#joinWait {
+    height: 1.3em;
+}
+
+#gamePage {
+    position: absolute;
+    width: 100svw;
+    height: 100svh;
+    display: none;
+    overflow: hidden;
+}
+
+#trumpIco {
+    position: absolute;
+    left: 1.8em;
+    top: 0.6em;
+    height: 0.8em;
+    filter: invert(100%);
+    display: none;
+}
+
+#trumpOut {
+    position: absolute;
+    left: 2.9em;
+    top: 0.4em;
+    width: 1.4em;
+    text-align: left;
+}
+
+#textArea {
+    position: absolute;
+    top: calc(50svh - 4.28em);
+    left: calc(50svw - 5.52em);
+    width: 11.04em;
+    height: 8.56em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#bidText {
+    width: 100%;
+    height: 100%;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+
+#meldTable {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    text-align: center;
+}
+
+#trumpColumn img {
+    height: 0.8em;
+    filter: invert(100%);
+}
+
+#bidBtns {
+    width: 100%;
+    margin-top: 0.4em;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+#bidBtns input {
+    height: 1.3em;
+    padding-left: 0.4em;
+    padding-right: 0.4em;
+    border: none;
+    background-color: white;
+}
+
+#bidWait {
+    height: 1.3em;
+}
+
+#trumpText {
+    width: 100%;
+    height: 100%;
+    display: none;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    text-align: center;
+}
+
+#trumpText input {
+    width: 8em;
+    height: 1.3em;
+    border: none;
+    background-color: white;
+}
+
+#needText {
+    width: 100%;
+    height: 100%;
+    display: none;
+    flex-direction: column;
+    justify-content: space-around;
+    text-align: center;
+}
+
+#needBtns {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+#okBtn, #playBtn, #tossBtn {
+    width: 4em;
+    height: 1.3em;
+    border: none;
+    background-color: white;
+}
+
+#handText {
+    width: 80svw;
+    display: none;
+    text-align: center;
+}
+
+#handPara {
+    margin-bottom: 0.8em;
+}
+
+#handGrid {
+    display: grid;
+    justify-content: center;
+    grid-template-columns: 3em 3em 3em;
+    margin-bottom: 0.8em;
+}
+
+#handBtn {
+    width: 4em;
+    height: 1.3em;
+    border: none;
+    background-color: white;
+}
+
+#handWait {
+    height: 1.3em;
+}
+
+#infoText {
+    position: absolute;
+    width: 100%;
+    height: 105%;
+    padding: 0.4em;
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: left;
+    color: black;
+    background-color: white;
+}
+
+.blackCloseIco {
+    position: absolute;
+    top: 0.26em;
+    right: 0.26em;
+    height: 1.32em;
+}
+
+#infoText #infoGrid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto 1.5em 1.5em 1.5em 1.5em;
+    justify-content: space-between;
+    text-align: center;
+}
+
+#infoText #infoGrid img {
+    position: relative;
+    top: 0.1em;
+    left: 0.3em;
+    height: 0.9em;
+}
+
+#infoAreas {
+    position: absolute;
+    text-align: center;
+    display: none;
+    z-index: -1000;
+}
+
+#infoArea0 .infoName {
+    position: absolute;
+    left: 0.4em;
+    width: 5.6em;
+}
+
+#infoArea0 .infoBid {
+    position: absolute;
+    left: 0.4em;
+    width: 5.6em;
+}
+
+#infoArea0 .infoHint {
+    position: absolute;
+    font-size: 0.85em;
+    line-height: 1.2em;
+    left: 0.4em;
+    width: 7em;
+}
+
+#infoArea0 img {
+    height: 0.73em;
+    filter: invert(100%);
+}
+
+#infoArea1 {
+    position: absolute;
+    top: 0.44em;
+    left: calc(50svw - 10em);
+    width: 20em;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+#infoArea1 .infoBid {
+    margin-left: 0.5em;
+}
+
+#infoArea1 .infoHint {
+    margin-left: 0.5em;
+}
+
+#infoArea1 img {
+    height: 0.73em;
+    filter: invert(100%);
+}
+
+#infoArea2 .infoName {
+    position: absolute;
+    left: calc(100svw - 6em);
+    width: 5.6em;
+}
+
+#infoArea2 .infoBid {
+    position: absolute;
+    left: calc(100svw - 6em);
+    width: 5.6em;
+}
+
+#infoArea2 .infoHint {
+    position: absolute;
+    font-size: 0.85em;
+    line-height: 1.2em;
+    left: calc(100svw - 7.4em);
+    width: 7em;
+}
+
+#infoArea2 img {
+    height: 0.73em;
+    filter: invert(100%);
+}
+
+#infoArea3 {
+    position: absolute;
+    top: calc(100svh - 1.6em);
+    left: calc(50svw - 10em);
+    width: 20em;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+#infoArea3 .infoBid {
+    margin-left: 0.5em;
+}
+
+#slide0, #slide1, #slide2, #slide3 {
+    position: absolute;
+    height: 3.9em;
+    width: 1.9em;
+    filter: invert(100%);
+    opacity: 0;
+    z-index: -1000;
+}
+
+#slide0 {
+    top: calc(50svh - 1.95em);
+    left: calc(50svw - 4.3em);
+    transform: rotate(180deg);
+}
+
+#slide1 {
+    top: calc(50svh - 5.3em);
+    left: calc(50svw - 0.95em);
+    transform: rotate(270deg);
+}
+
+#slide2 {
+    top: calc(50svh - 1.95em);
+    left: calc(50svw + 2.3em);
+}
+
+#slide3 {
+    top: calc(50svh + 1.3em);
+    left: calc(50svw - 0.95em);
+    transform: rotate(90deg);
+}
+
+#cardImg img, #faceImg img, #backImg img {
+    position: absolute;
+    width: round(4em, 1px);
+    height: round(5.6em, 1px);
+    top: round(-2.8em, 1px);
+    left: round(-2em, 1px);
+    touch-action: none;
+}
+
+#faceImg, #backImg {
+    display: none;
+}
+
+#helpPage>div {
+    position: absolute;
+    top: 0em;
+    left: 0em;
+    padding: 0.4em;
+    width: 100%;
+    color: black;
+    background-color: white;
+    z-index: 1000;
+    display: none;
+}
+
+#helpPage>div>b {
+    display: block;
+}
+
+#helpPage>div>p {
+    margin-top: 0.8em;
+}
+
+#helpPage>div>ul {
+    margin-top: 0.5em;
+    margin-left: 1.6em;
+}
+
+#helpPage>div>ul>li>ul {
+    margin-left: 1.6em;
+}
+
+#helpPage>div>ul img {
+    position: relative;
+    height: 1em;
+    top: 0.2em;
+}
+
+#helpPage>div>.links {
+    margin-top: 0.8em;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 4.2em);
+    column-gap: 0.4em;
+}
+
+#helpPage>.screenshot {
+    padding: 0em !important;
+    height: 100svh;
+    width: 100svw;
+    background-color: black !important;
+}
+
+#helpPage>.screenshot>div {
+    display: grid;
+    justify-content: center;
+}
+
+#helpPage>.screenshot>div>img {
+    max-height: 100svh;
+    max-width: 100svw;
+}
+
+#helpPage #meldGrid {
+    margin-top: 0.8em;
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    grid-template-rows: 1.3em repeat(8, auto);
+    column-gap: 0.5em;
+    justify-content: center;
+    text-align: center;
+}
+
+#helpPage #meldGrid img {
+    height: 0.8em;
+}
+
+#netDlg {
+    margin: auto;
+    background-color: white;
+    border: solid black;
+    color: black;
+    padding: 0.44em;
+    -webkit-user-select: none;
+    user-select: none;
+    touch-action: none;
+}
+
+#netDlg:focus-visible {
+    border: solid black;
+    outline: none;
+}
+
+#spinner {
+    margin: 0.44em auto 0em auto;
+    border: 0.3em solid lightgray;
+    border-top: 0.3em solid black;
+    border-radius: 50%;
+    width: 2em;
+    height: 2em;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

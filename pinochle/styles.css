@@ -1,12 +1,12 @@
 @media (orientation: portrait) {
     :root {
-        font-size:      min(4.25svw, 2.55svh);
+        font-size: min(4.25svw, 2.55svh);
     }
 }
 
 @media (orientation: landscape) {
     :root {
-        font-size:      min(4.25svh, 2.575svw);
+        font-size: min(4.25svh, 2.575svw);
    }
 }
 
@@ -32,7 +32,7 @@ body {
     overflow: hidden;
 }
 
-#loadPage {
+#playPag {
     position: absolute;
     width: 100svw;
     height: 100svh;
@@ -47,182 +47,165 @@ body {
 
 .helpIco {
     position: absolute;
-    top: 0.5em;
+    top: 0.55em;
     left: 0.4em;
-    height: 1.05em;
+    height: 0.9em;
+    filter: invert(100%);
+}
+
+#playIco, #gameIco {
+    position: absolute;
+    top: 0.55em;
+    right: 2em;
+    height: 0.98em;
     filter: invert(100%);
 }
 
 .whiteCloseIco {
     position: absolute;
-    top: 0.3em;
-    right: 0.3em;
-    height: 1.3em;
+    top: 0.6em;
+    right: 0.4em;
+    height: 0.8em;
     filter: invert(100%);
 }
 
-#loadPage input {
-    width: 7em;
-    height: 1.3em;
-    border: none;
-    background-color: white;
+#playTtl {
+    font-size: larger;
 }
 
-#startPage {
-    position: absolute;
-    height: 100svh;
-    width: 100svw;
-    display: none;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-}
-
-#startForm {
-    display: flex;
-    width: 20em;
-    flex-direction: column;
-    justify-content: center;
-    align-items: end;
-    text-align: center;
-}
-
-#startCtr {
-    width: 100%;
-    line-height: 1.5em;
-    border: 2px solid;
-}
-
-#playersGrid {
-    margin-top: 1em;
-    width: 100%;
+#roleGrd {
+    margin-top: 3em;
+    width: 22.3em;
     display: grid;
-    grid-template-columns: repeat(11, 1fr);
-    grid-template-rows: 1.3em 1.3em 0.4em 1.3em 1.3em 0.4em 1.3em 1.3em;
-    text-align: left;
-}
-
-#nameLbl0 {grid-area: 04/01/04/05}
-#nameSel0 {grid-area: 05/01/05/05}
-#nameIco0 {grid-area: 05/05/05/05}
-#nameLbl1 {grid-area: 01/04/01/08}
-#nameSel1 {grid-area: 02/04/02/08}
-#nameIco1 {grid-area: 02/08/02/08}
-#nameLbl2 {grid-area: 04/07/04/11}
-#nameSel2 {grid-area: 05/07/05/11}
-#nameIco2 {grid-area: 05/11/05/11}
-#nameLbl3 {grid-area: 07/04/07/08}
-#nameSel3 {grid-area: 08/04/08/08}
-#nameIco3 {grid-area: 08/08/08/08}
-
-.nameSel {
-    width: 100%;
-    height: 1.3em;
-    border: none;
-    padding-left: 0.4em;
-    text-align: left;
-    background-color: white;
-}
-
-.nameIco {
-    position: relative;
-    background-color: white;
-    height: 1.3em;
-    width: 100%;
-}
-
-#assistanceGrid {
-    margin-top: 1em;
-    width: 100%;
-    display: grid;
-    grid-template-columns: auto auto 1fr auto auto;
+    grid-template-columns: auto 1fr auto 1fr auto;
     justify-content: center;
     text-align: right;
 }
 
-.assistBox {
-    position: relative;
-    bottom: 0.1em;
-    height: 1.3em;
+#roleGrd input {
+    height: 0.8em;
     filter: invert(100%);
 }
 
-#startBtns {
-    width: 100%;
-    text-align: center;
-}
-
-#startBtn, #inviteBtn {
-    width: 4.4em;
-    height: 1.3em;
-    margin-top: 0.8em;
-    border: none;
-    background-color: white;
-    text-align: center;
-}
-
-#startEdit, #joinEdit {
-    width: 100%;
+#nameGrd {
+    margin-top: 1em;
+    margin-bottom: 1em;
     display: grid;
-    justify-items: center;
-}
-
-#startAdd, #startDel, #joinAdd, #joinDel {
-    position: relative;
-    margin-top: 1.2em;
-    padding-top: 0.8em;
-    padding-left: 0.4em;
-    padding-bottom: 0.4em;
-    width: 11em;
-    border: 2px solid;
+    grid-template-columns: auto auto;
+    column-gap: 0.3em;
+    row-gap: 1em;
     text-align: left;
 }
 
-#startAInp, #startDSel, #joinAInp, #joinDSel {
-    width: 69%;
+.nameBlk {
+    position: relative;
+}
+
+#nameGrd button {
+    width: 11em;
     height: 1.3em;
+    border: none;
+    background-color: white;
     padding-left: 0.4em;
-    border: none;
-    background-color: white;
+    padding-right: 0.1em;
+    text-align: left;
 }
 
-#startABtn, #joinABtn {
-    width: 25%;
+#nameGrd button img {
+    height: 1.2em;
+    float: right;
+}
+
+#nameGrd input {
+    width: 11em;
     height: 1.3em;
     border: none;
     background-color: white;
-}
-
-#joinPage {
-    height: 100svh;
-    width: 100svw;
+    padding-left: 0.4em;
     display: none;
-    place-items: center;
-    overflow: hidden;
 }
 
-#joinForm {
-    width: 10em;
+.nameLst {
+    position: absolute;
+    width: calc(11em + 2px);
+    left: -1px;
+    padding-top: 0.2em;
+    padding-bottom: 0.2em;
+    color: black;
+    background-color: white;
+    border: 1px solid darkgreen;
+    overflow-y: auto;
+    z-index: 1;
+    visibility: hidden;
 }
 
-#joinBtns {
-    width: 100%;
+#nameLst3, #nameLst0 {
+    max-height: calc(50svh + 1em);
 }
 
-#joinBtn, #checkBtn {
-    width: 4.85em;
+#nameLst1, #nameLst2 {
+    max-height: calc(50svh - 2.3em);
+}
+
+.nameLst img {
+    position: relative;
+    top: 0.6em;
+    height: 0.7em;
+}
+
+.listCat {
+    padding-left: 0.4em;
+    padding-right: 0.4em;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    line-height: 2em;
+    font-style: italic;
+}
+
+#robotCat {
+    border-top: 1px solid darkgreen;
+}
+
+.listItm {
+    padding-left: 0.4em;
+    padding-right: 0.4em;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    line-height: 2em;
+}
+
+#showGrd {
+    width: 22.3em;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    justify-content: center;
+    text-align: right;
+}
+
+#showGrd input {
+    height: 0.8em;
+    filter: invert(100%);
+}
+
+#playBtns {
+    margin-top: 3em;
+}
+
+#playBtns button {
     height: 1.3em;
+    width: 4em;
     border: none;
     background-color: white;
-    text-align: center;
+    padding-left: 0.4em;
+    padding-right: 0.4em;
 }
 
-#joinWait {
+#playMsg {
     height: 1.3em;
+    display: none;
 }
 
-#gamePage {
+#gamePag {
     position: absolute;
     width: 100svw;
     height: 100svh;
@@ -239,7 +222,7 @@ body {
     display: none;
 }
 
-#trumpOut {
+#trumpMsg {
     position: absolute;
     left: 2.9em;
     top: 0.4em;
@@ -247,7 +230,7 @@ body {
     text-align: left;
 }
 
-#textArea {
+#gameTxt {
     position: absolute;
     top: calc(50svh - 4.28em);
     left: calc(50svw - 5.52em);
@@ -259,7 +242,7 @@ body {
     align-items: center;
 }
 
-#bidText {
+#bidTxt {
     width: 100%;
     height: 100%;
     display: none;
@@ -268,7 +251,7 @@ body {
     text-align: center;
 }
 
-#meldTable {
+#meldTbl {
     width: 100%;
     display: flex;
     flex-direction: row;
@@ -276,7 +259,7 @@ body {
     text-align: center;
 }
 
-#trumpColumn img {
+#trumpCol img {
     height: 0.8em;
     filter: invert(100%);
 }
@@ -286,22 +269,29 @@ body {
     margin-top: 0.4em;
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: space-evenly;
 }
 
-#bidBtns input {
+#lessBtn, #moreBtn {
     height: 1.3em;
-    padding-left: 0.4em;
-    padding-right: 0.4em;
+    width: 1.3em;
     border: none;
     background-color: white;
 }
 
-#bidWait {
+#bidBtn {
     height: 1.3em;
+    width: 5em;
+    border: none;
+    background-color: white;
 }
 
-#trumpText {
+#bidMsg {
+    height: 1.3em;
+    width: 100%;
+}
+
+#trumpTxt {
     width: 100%;
     height: 100%;
     display: none;
@@ -311,14 +301,14 @@ body {
     text-align: center;
 }
 
-#trumpText input {
+#trumpTxt input {
     width: 8em;
     height: 1.3em;
     border: none;
     background-color: white;
 }
 
-#needText {
+#needTxt {
     width: 100%;
     height: 100%;
     display: none;
@@ -335,24 +325,29 @@ body {
     justify-content: space-around;
 }
 
-#okBtn, #playBtn, #tossBtn {
+#okBtn, #tossBtn {
     width: 4em;
     height: 1.3em;
     border: none;
     background-color: white;
 }
 
-#handText {
+#needMsg {
+    height: 1.3em;
+    display: none;
+}
+
+#handTxt {
     width: 80svw;
     display: none;
     text-align: center;
 }
 
-#handPara {
+#handPar {
     margin-bottom: 0.8em;
 }
 
-#handGrid {
+#handGrd {
     display: grid;
     justify-content: center;
     grid-template-columns: 3em 3em 3em;
@@ -366,11 +361,11 @@ body {
     background-color: white;
 }
 
-#handWait {
+#handMsg {
     height: 1.3em;
 }
 
-#infoText {
+#infoTxt {
     position: absolute;
     width: 100%;
     height: 105%;
@@ -385,12 +380,12 @@ body {
 
 .blackCloseIco {
     position: absolute;
-    top: 0.26em;
-    right: 0.26em;
-    height: 1.32em;
+    top: 0.55em;
+    right: 0.4em;
+    height: 0.8em;
 }
 
-#infoText #infoGrid {
+#infoTxt #infoGrd {
     width: 100%;
     display: grid;
     grid-template-columns: auto 1.5em 1.5em 1.5em 1.5em;
@@ -398,33 +393,33 @@ body {
     text-align: center;
 }
 
-#infoText #infoGrid img {
+#infoTxt #infoGrd img {
     position: relative;
     top: 0.1em;
     left: 0.3em;
     height: 0.9em;
 }
 
-#infoAreas {
+#infoBlks {
     position: absolute;
     text-align: center;
     display: none;
     z-index: -1000;
 }
 
-#infoArea0 .infoName {
+#infoBlk0 .infoNam {
     position: absolute;
     left: 0.4em;
     width: 5.6em;
 }
 
-#infoArea0 .infoBid {
+#infoBlk0 .infoBid {
     position: absolute;
     left: 0.4em;
     width: 5.6em;
 }
 
-#infoArea0 .infoHint {
+#infoBlk0 .infoHnt {
     position: absolute;
     font-size: 0.85em;
     line-height: 1.2em;
@@ -432,12 +427,12 @@ body {
     width: 7em;
 }
 
-#infoArea0 img {
+#infoBlk0 img {
     height: 0.73em;
     filter: invert(100%);
 }
 
-#infoArea1 {
+#infoBlk1 {
     position: absolute;
     top: 0.44em;
     left: calc(50svw - 10em);
@@ -447,32 +442,32 @@ body {
     justify-content: center;
 }
 
-#infoArea1 .infoBid {
+#infoBlk1 .infoBid {
     margin-left: 0.5em;
 }
 
-#infoArea1 .infoHint {
+#infoBlk1 .infoHnt {
     margin-left: 0.5em;
 }
 
-#infoArea1 img {
+#infoBlk1 img {
     height: 0.73em;
     filter: invert(100%);
 }
 
-#infoArea2 .infoName {
+#infoBlk2 .infoNam {
     position: absolute;
     left: calc(100svw - 6em);
     width: 5.6em;
 }
 
-#infoArea2 .infoBid {
+#infoBlk2 .infoBid {
     position: absolute;
     left: calc(100svw - 6em);
     width: 5.6em;
 }
 
-#infoArea2 .infoHint {
+#infoBlk2 .infoHnt {
     position: absolute;
     font-size: 0.85em;
     line-height: 1.2em;
@@ -480,12 +475,12 @@ body {
     width: 7em;
 }
 
-#infoArea2 img {
+#infoBlk2 img {
     height: 0.73em;
     filter: invert(100%);
 }
 
-#infoArea3 {
+#infoBlk3 {
     position: absolute;
     top: calc(100svh - 1.6em);
     left: calc(50svw - 10em);
@@ -495,7 +490,7 @@ body {
     justify-content: center;
 }
 
-#infoArea3 .infoBid {
+#infoBlk3 .infoBid {
     margin-left: 0.5em;
 }
 
@@ -544,7 +539,7 @@ body {
     display: none;
 }
 
-#helpPage>div {
+#helpPag>div {
     position: absolute;
     top: 0em;
     left: 0em;
@@ -556,54 +551,54 @@ body {
     display: none;
 }
 
-#helpPage>div>b {
+#helpPag>div>b {
     display: block;
 }
 
-#helpPage>div>p {
+#helpPag>div>p {
     margin-top: 0.8em;
 }
 
-#helpPage>div>ul {
+#helpPag>div>ul {
     margin-top: 0.5em;
     margin-left: 1.6em;
 }
 
-#helpPage>div>ul>li>ul {
+#helpPag>div>ul>li>ul {
     margin-left: 1.6em;
 }
 
-#helpPage>div>ul img {
+#helpPag>div>ul img {
     position: relative;
     height: 1em;
     top: 0.2em;
 }
 
-#helpPage>div>.links {
+#helpPag>div>.links {
     margin-top: 0.8em;
     display: grid;
     grid-template-columns: repeat(auto-fit, 4.2em);
     column-gap: 0.4em;
 }
 
-#helpPage>.screenshot {
+#helpPag>.screenshot {
     padding: 0em !important;
     height: 100svh;
     width: 100svw;
     background-color: black !important;
 }
 
-#helpPage>.screenshot>div {
+#helpPag>.screenshot>div {
     display: grid;
     justify-content: center;
 }
 
-#helpPage>.screenshot>div>img {
+#helpPag>.screenshot>div>img {
     max-height: 100svh;
     max-width: 100svw;
 }
 
-#helpPage #meldGrid {
+#helpPag #meldGrd {
     margin-top: 0.8em;
     display: grid;
     grid-template-columns: repeat(4, auto);
@@ -613,30 +608,40 @@ body {
     text-align: center;
 }
 
-#helpPage #meldGrid img {
+#helpPag #meldGrd img {
     height: 0.8em;
 }
 
-#netDlg {
+dialog {
     margin: auto;
-    background-color: white;
-    border: solid black;
-    color: black;
+    border: none;
+    background: transparent;
+    color: white;
     padding: 0.44em;
-    -webkit-user-select: none;
+    text-align: center;
     user-select: none;
     touch-action: none;
 }
 
-#netDlg:focus-visible {
-    border: solid black;
+dialog button {
+    height: 1.3em;
+    padding-left: 0.44em;
+    padding-right: 0.44em;
+}
+
+dialog::backdrop {
+    backdrop-filter: blur(6px);
+    background-color: rgba(0,100,0,0.7);
+}
+
+dialog:focus-visible {
     outline: none;
 }
 
 #spinner {
     margin: 0.44em auto 0em auto;
-    border: 0.3em solid lightgray;
-    border-top: 0.3em solid black;
+    border: 0.3em solid white;
+    border-top: 0.3em solid rgba(0,100,0,0);
     border-radius: 50%;
     width: 2em;
     height: 2em;
