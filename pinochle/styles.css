@@ -20,8 +20,8 @@
 
 body {
     position: absolute;
-    width: 100svw;
-    height: 100svh;
+    width: 100dvw;
+    height: 100dvh;
     display: grid;
     place-items: center;
     background-color: darkgreen;
@@ -34,8 +34,8 @@ body {
 
 #playPag {
     position: absolute;
-    width: 100svw;
-    height: 100svh;
+    width: 100dvw;
+    height: 100dvh;
     padding: 0.4em;
     display: flex;
     flex-direction: column;
