@@ -48,7 +48,7 @@ body {
 .helpIco {
     position: absolute;
     top: 0.55em;
-    left: 1em; /*0.4em;*/
+    left: 1.2em; /*0.4em;*/
     height: 0.9em;
     filter: invert(100%);
 }
