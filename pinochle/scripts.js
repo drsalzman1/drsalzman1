@@ -2156,7 +2156,8 @@ function loadEvent() {
     /*
     if (location.origin != 'file://')                           // if not running from debugger, start service worker
         navigator.serviceWorker.register('service-worker.js', {updateViaCache: 'none'});*/
-    setTimeout(resizeEvent);                                    // initialize size variables and card locations
+    window.dispatchEvent(new Event('resize'));                  // trigger resize to go fullscreen
+    //setTimeout(resizeEvent);                                    // initialize size variables and card locations
 }
 
 onload        = loadEvent;                                  // prepare for load event
