@@ -2158,11 +2158,9 @@ function loadEvent() {
         navigator.serviceWorker.register('service-worker.js', {updateViaCache: 'none'});*/
     setTimeout(resizeEvent);                                    // initialize size variables and card locations
     setTimeout(() => {
-        // Toggling the body's display property forces Chromium to recalculate 
-        // viewport-fit and safe-area insets instantly.
-        document.body.style.display = 'none';
-        document.body.offsetHeight; // Forces a reflow
-        document.body.style.display = '';
+        document.body.style.paddingTop = '1px';
+        document.body.offsetHeight; // Forces layout recalculation
+        document.body.style.paddingTop = ''; // Reverts back to your CSS env() rule
     }, 5000);
 }
 
