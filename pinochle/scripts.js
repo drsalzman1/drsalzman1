@@ -2162,22 +2162,3 @@ function loadEvent() {
 onload        = loadEvent;                                  // prepare for load event
 onresize      = resizeEvent;                                // prepare for resize event
 oncontextmenu = contextmenuEvent;                           // prepare for context (right-click or long-press) menu events
-
-window.addEventListener('DOMContentLoaded', () => {
-  // Check if running as an installed PWA on Android
-  const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-  const isAndroid = /Android/i.test(navigator.userAgent);
-
-  if (isStandalone && isAndroid) {
-    // 1. Force a repaint by toggling the body display or height slightly
-    document.body.style.transform = 'scale(0.999)';
-    
-    setTimeout(() => {
-      document.body.style.transform = 'none';
-      // 2. Trigger a micro-scroll to force Chrome's top browser controls to flush insets
-      window.scrollTo(0, 1);
-      window.scrollTo(0, 0);
-      document.body.style.backgroundColor = 'blue';
-    }, 100);
-  }
-});
