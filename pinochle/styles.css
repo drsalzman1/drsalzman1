@@ -24,7 +24,7 @@ body {
     height: 100dvh;
     display: grid;
     place-items: center;
-    background-color: darkgreen;
+    /*background-color: darkgreen;*/
     color: white;
     -webkit-user-select: none;
     user-select: none;
