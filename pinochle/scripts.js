@@ -2156,12 +2156,12 @@ function loadEvent() {
     /*
     if (location.origin != 'file://')                           // if not running from debugger, start service worker
         navigator.serviceWorker.register('service-worker.js', {updateViaCache: 'none'});*/
-    //setTimeout(resizeEvent);                                    // initialize size variables and card locations
+    setTimeout(resizeEvent);                                    // initialize size variables and card locations
 
     // A 50ms-100ms delay ensures Chrome has finished its flawed initial paint pass
     setTimeout(() => {
         // Force Chromium to recalculate layouts by triggering a synthetic resize
-        window.dispatchEvent(new Event('resize'));
+        // window.dispatchEvent(new Event('resize'));
         
         // Secondary fallback: Subtly nudge the body height to force a hard reflow
         document.documentElement.style.height = '100.1dvh';
