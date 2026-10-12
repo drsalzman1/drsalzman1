@@ -8,7 +8,7 @@
   "short_name": "Pinochle",
   "start_url": "index.html",
   "id": "pinochle",
-  "theme_color": "black",
+  /*"theme_color": "black",*/
   "icons": [
     {
       "src": "icons/maskable.png",
