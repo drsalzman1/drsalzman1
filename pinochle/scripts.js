@@ -2158,11 +2158,17 @@ function loadEvent() {
         navigator.serviceWorker.register('service-worker.js', {updateViaCache: 'none'});*/
     setTimeout(resizeEvent);                                    // initialize size variables and card locations
     setTimeout(() => {
-        document.body.style.paddingTop = '1px';
-        document.body.offsetHeight; // Forces layout recalculation
-        document.body.style.paddingTop = ''; // Reverts back to your CSS env() rule
-        document.body.style.backgroundColor = 'green';
-    }, 5000);
+        const metaViewport = document.querySelector('meta[name="viewport"]');
+        if (metaViewport) {
+        // 1. Temporarily drop the scale to force an aggressive layout redraw
+        metaViewport.setAttribute('content', 'width=device-width, initial-scale=0.99, viewport-fit=cover');
+        
+        // 2. Immediately snap it back to normal on the next animation frame
+        requestAnimationFrame(() => {
+            metaViewport.setAttribute('content', 'width=device-width, initial-scale=1.0, viewport-fit=cover');
+        });
+        }
+    }, 100);
 }
 
 onload        = loadEvent;                                  // prepare for load event
