@@ -2168,8 +2168,8 @@ function loadEvent() {
         
         setTimeout(() => {
             document.documentElement.style.height = '100dvh';
-        }, 5000);
-    }, 100);
+        }, 20);
+    }, 5000);
 }
 
 onload        = loadEvent;                                  // prepare for load event
