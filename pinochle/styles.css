@@ -26,10 +26,10 @@ body {
     place-items: center;
     background-color: darkgreen;
     color: white;
-    -webkit-user-select: none;
+    /*-webkit-user-select: none;
     user-select: none;
     touch-action: none;
-    overflow: hidden;
+    overflow: hidden;*/
 }
 
 #playPag {
@@ -42,7 +42,7 @@ body {
     justify-content: center;
     align-items: center;
     text-align: center;
-    overflow: hidden;
+    /*overflow: hidden;*/
 }
 
 .helpIco {
