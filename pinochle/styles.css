@@ -36,8 +36,7 @@ body {
     position: absolute;
     width: 100svw;
     height: 100svh;
-    padding: env(safe-area-inset-top, 0px) env(safe-area-inset-bottom, 0px);
-    /*padding: 0.4em;*/
+    padding: 0.4em;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -49,7 +48,7 @@ body {
 .helpIco {
     position: absolute;
     top: 0.55em;
-    left: 0.4em;
+    left: 1em; /*0.4em;*/
     height: 0.9em;
     filter: invert(100%);
 }
