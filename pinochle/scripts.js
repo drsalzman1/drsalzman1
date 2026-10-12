@@ -2161,7 +2161,7 @@ function loadEvent() {
         const metaViewport = document.querySelector('meta[name="viewport"]');
         if (metaViewport) {
             // 1. Temporarily drop the scale to force an aggressive layout redraw
-            metaViewport.setAttribute('content', 'width=device-width, initial-scale=0.5, viewport-fit=cover');
+            metaViewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
             
             // 2. Immediately snap it back to normal on the next animation frame
             setTimeout(() => {
