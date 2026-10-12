@@ -2168,7 +2168,7 @@ function loadEvent() {
         
         setTimeout(() => {
             document.documentElement.style.height = '100dvh';
-        }, 20);
+        }, 5000);
     }, 100);
 }
 
