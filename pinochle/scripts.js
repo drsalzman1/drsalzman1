@@ -2164,7 +2164,7 @@ function loadEvent() {
         // window.dispatchEvent(new Event('resize'));
         
         // Secondary fallback: Subtly nudge the body height to force a hard reflow
-        document.documentElement.style.height = '100.1dvh';
+        document.documentElement.style.height = '200dvh';
         
         setTimeout(() => {
             document.documentElement.style.height = '100dvh';
