@@ -21,7 +21,7 @@
 body {
     position: absolute;
     width: 100svw;
-    height: 100svh;
+    height: 100dvh; /*svh;*/
     display: grid;
     place-items: center;
     background-color: darkgreen;
