@@ -2160,14 +2160,14 @@ function loadEvent() {
     setTimeout(() => {
         const metaViewport = document.querySelector('meta[name="viewport"]');
         if (metaViewport) {
-        // 1. Temporarily drop the scale to force an aggressive layout redraw
-        metaViewport.setAttribute('content', 'width=device-width, initial-scale=0.99, viewport-fit=cover');
-        
-        // 2. Immediately snap it back to normal on the next animation frame
-        requestAnimationFrame(() => {
-            metaViewport.setAttribute('content', 'width=device-width, initial-scale=1.0, viewport-fit=cover');
-            body.style.backgroundColor = 'blue';
-        });
+            // 1. Temporarily drop the scale to force an aggressive layout redraw
+            metaViewport.setAttribute('content', 'width=device-width, initial-scale=0.5, viewport-fit=cover');
+            
+            // 2. Immediately snap it back to normal on the next animation frame
+            setTimeout(() => {
+                metaViewport.setAttribute('content', 'width=device-width, initial-scale=1.0, viewport-fit=cover');
+                body.style.backgroundColor = 'blue';
+            }, 1000);
         }
     }, 5000);
 }
