@@ -2166,9 +2166,10 @@ function loadEvent() {
         // 2. Immediately snap it back to normal on the next animation frame
         requestAnimationFrame(() => {
             metaViewport.setAttribute('content', 'width=device-width, initial-scale=1.0, viewport-fit=cover');
+            body.style.backgroundColor = 'blue';
         });
         }
-    }, 100);
+    }, 5000);
 }
 
 onload        = loadEvent;                                  // prepare for load event
