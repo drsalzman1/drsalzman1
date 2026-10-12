@@ -2157,11 +2157,18 @@ function loadEvent() {
     if (location.origin != 'file://')                           // if not running from debugger, start service worker
         navigator.serviceWorker.register('service-worker.js', {updateViaCache: 'none'});*/
     setTimeout(resizeEvent);                                    // initialize size variables and card locations
-    window.history.pushState({}, '', '#_viewport_fix');
-    
-    // Immediately navigate backwards to the original state
+  
+    // Temporarily add 1px of extra room to ensure scrolling is possible
+    const originalMinHeight = document.documentElement.style.minHeight;
+    document.documentElement.style.minHeight = 'calc(100dvh + 1px)';
+
+    // Scroll down 1 pixel to wake up Chrome's dynamic address/status bar engine
+    window.scrollTo(0, 1);
+
     requestAnimationFrame(() => {
-        window.history.back();
+        // Instantly snap it back to absolute normal
+        window.scrollTo(0, 0);
+        document.documentElement.style.minHeight = originalMinHeight;
     });
 }
 
