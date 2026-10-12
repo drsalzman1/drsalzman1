@@ -2157,18 +2157,12 @@ function loadEvent() {
     if (location.origin != 'file://')                           // if not running from debugger, start service worker
         navigator.serviceWorker.register('service-worker.js', {updateViaCache: 'none'});*/
     setTimeout(resizeEvent);                                    // initialize size variables and card locations
-    setTimeout(() => {
-        const metaViewport = document.querySelector('meta[name="viewport"]');
-        if (metaViewport) {
-            // 1. Temporarily drop the scale to force an aggressive layout redraw
-            metaViewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
-            
-            // 2. Immediately snap it back to normal on the next animation frame
-            setTimeout(() => {
-                metaViewport.setAttribute('content', 'width=device-width, initial-scale=1.0, viewport-fit=cover');
-            }, 1000);
-        }
-    }, 5000);
+    window.history.pushState({}, '', '#_viewport_fix');
+    
+    // Immediately navigate backwards to the original state
+    requestAnimationFrame(() => {
+        window.history.back();
+    });
 }
 
 onload        = loadEvent;                                  // prepare for load event
