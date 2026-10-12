@@ -1,12 +1,12 @@
 {
   "background_color": "darkgreen",
   "dir": "ltr",
-  "display": "standalone",
+  "display": "fullscreen",
   "name": "Pinochle",
   "description": "This is a simple double-deck Pinochle game that I wrote to learn HTML, CSS and Javascript.",
   "orientation": "any",
   "short_name": "Pinochle",
-  "start_url": "index.html",
+  "start_url": "index.html?fullscreen=true",
   "id": "pinochle",
   "icons": [
     {
