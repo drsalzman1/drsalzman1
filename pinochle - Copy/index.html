@@ -3,7 +3,7 @@
     <head>
         <meta charset=utf-8>
         <title>Pinochle</title>
-        <meta name=viewport content="width=device-width, initial-scale=1, viewport-fit=cover">
+        <meta name=viewport content='width=device-width, initial-scale=1, viewport-fit=cover'>
         <meta name=theme-color content=darkgreen>
         <link rel=manifest href=pinochle.webmanifest>
         <link rel=icon href=icons/any.png>
@@ -11,252 +11,89 @@
         <script src=scripts.js defer></script>
     </head>
     <body id=body>
-        <div id=loadPage>
-            <img class=helpIco src=icons/help.svg alt=help onclick="helpEvent('loadHelp')">
+        <div id=playPag>
+            <img class=helpIco src=icons/help.svg alt=help onclick="helpEvent('playHelp')">
+            <img id=playIco src=icons/offline.svg alt=offline>
             <img class=whiteCloseIco src=icons/close.svg alt=close onclick=appCloseEvent()>
-            <div id=loadTitle>
+            <div id=playTtl>
                 Welcome to Double Deck Pinochle!
             </div>
-            <div id=roleGrid>
+            <div id=roleGrd>
                 <div>
-                    Game creator:
-                    <img src=icons/checked.svg onclick=roleImgEvent()>
-                </div>
-                <div>
-                </div>
-                <div>
-                    Game joiner:
-                    <img src=icons/unchecked.svg onclick=roleImgEvent()>
-                </div>
-            </div>
-            <div id=nameGrid>
-                <div>
-                    Your name:
-                    <div>
-                        <input id=nameInp3 onclick=nameClickEvent(3) onkeydown=nameKeydownEvent(3)>
-                        <div id=nameLst3 class=nameLst>
-                            <div class=listCat onclick=catEvent(event)>
-                                Aliases
-                                <img src=icons/add.svg onclick=addEvent(event)>
-                            </div>
-                            <div class=listItm onclick=itmEvent(event)>
-                                Dave
-                                <img src=icons/del.svg onclick=delEvent(event)>
-                            </div>
-                            <div class=listItm onclick=itmEvent(event)>
-                                David
-                                <img src=icons/del.svg onclick=delEvent(event)>
-                            </div>
-                            <div class=listItm onclick=itmEvent(event)>
-                                Grampy
-                                <img src=icons/del.svg onclick=delEvent(event)>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    Left name:
-                    <div>
-                        <input id=nameInp0 onclick=nameClickEvent(0) onkeydown=nameKeydownEvent(0)>
-                        <div id=nameLst0 class=nameLst>
-                            <div class=listCat onclick=catEvent(event)>
-                                Friends
-                                <img src=icons/add.svg onclick=addEvent(event)>
-                            </div>
-                            <div class=listItm onclick=itmEvent(event)>
-                                Adam
-                                <img src=icons/del.svg onclick=delEvent(event)>
-                            </div>
-                            <div class=listItm onclick=itmEvent(event)>
-                                Alisha
-                                <img src=icons/del.svg onclick=delEvent(event)>
-                            </div>
-                            <div class=listItm onclick=itmEvent(event)>
-                                Brandi
-                                <img src=icons/del.svg onclick=delEvent(event)>
-                            </div>
-                            <div class=listItm onclick=itmEvent(event)>
-                                Carter
-                                <img src=icons/del.svg onclick=delEvent(event)>
-                            </div>
-                            <div class=listItm onclick=itmEvent(event)>
-                                Catherine
-                                <img src=icons/del.svg onclick=delEvent(event)>
-                            </div>
-                            <div class=listItm onclick=itmEvent(event)>
-                                Elizabeth
-                                <img src=icons/del.svg onclick=delEvent(event)>
-                            </div>
-                            <div class=listItm onclick=itmEvent(event)>
-                                Everett
-                                <img src=icons/del.svg onclick=delEvent(event)>
-                            </div>
-                            <div class=listItm onclick=itmEvent(event)>
-                                Grammy
-                                <img src=icons/del.svg onclick=delEvent(event)>
-                            </div>
-                            <div class=listItm onclick=itmEvent(event)>
-                                Mason
-                                <img src=icons/del.svg onclick=delEvent(event)>
-                            </div>
-                            <div class=listItm onclick=itmEvent(event)>
-                                Malachi
-                                <img src=icons/del.svg onclick=delEvent(event)>
-                            </div>
-                            <div class=listItm onclick=itmEvent(event)>
-                                Micah
-                                <img src=icons/del.svg onclick=delEvent(event)>
-                            </div>
-                            <div class=listItm onclick=itmEvent(event)>
-                                Mike
-                                <img src=icons/del.svg onclick=delEvent(event)>
-                            </div>
-                            <div class=listItm onclick=itmEvent(event)>
-                                Natalie
-                                <img src=icons/del.svg onclick=delEvent(event)>
-                            </div>
-                            <div class=listItm onclick=itmEvent(event)>
-                                Sam
-                                <img src=icons/del.svg onclick=delEvent(event)>
-                            </div>
-                            <div class=listCat onclick=catEvent(event)>
-                                Robots
-                                <img src=icons/add.svg onclick=addEvent(event)>
-                            </div>
-                            <div class=listItm onclick=itmEvent(event)>
-                                Bender
-                                <img src=icons/del.svg onclick=delEvent(event)>
-                            </div>
-                            <div class=listItm onclick=itmEvent(event)>
-                                Data
-                                <img src=icons/del.svg onclick=delEvent(event)>
-                            </div>
-                            <div class=listItm onclick=itmEvent(event)>
-                                Jarvis
-                                <img src=icons/del.svg onclick=delEvent(event)>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    Across name:
-                    <div>
-                        <input id=nameInp1 onclick=nameClickEvent(1) onkeydown=nameKeydownEvent(1)>
-                        <div id=nameLst1 class=nameLst>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    Right name:
-                    <div>
-                        <input id=nameInp2 onclick=nameClickEvent(2) onkeydown=nameKeydownEvent(2)>
-                        <div id=nameLst2 class=nameLst>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div id=showGrid>
-                <div>
-                    Show counts:
-                    <img src=icons/checked.svg onclick=showImgEvent(0)>
+                    <label for=soloBox>Play single:</label>
+                    <input id=soloBox type=image src=icons/checked.svg onclick="roleEvent('solo')">
                 </div>
                 <div></div>
                 <div>
-                    Show hands:
-                    <img src=icons/unchecked.svg onclick=showImgEvent(1)>
+                    <label for=makeBox>Start multi:</label>
+                    <input id=makeBox type=image src=icons/unchecked.svg onclick="roleEvent('make')">
+                </div>
+                <div></div>
+                <div>
+                    <label for=joinBox>Join multi:</label>
+                    <input id=joinBox type=image src=icons/unchecked.svg onclick="roleEvent('join')">
                 </div>
             </div>
-            <div id=loadBtns>
-                <button id=createBtn onclick=createBtnEvent()>Create</button>
-                <button id=joinBtn onclick=joinBtnEvent()>Join</button>
-                <div id=loadWait>Waiting for others</div>
+            <div id=nameGrd>
+                <div class=nameBlk>
+                    <label for=nameInp3>Your name:</label>
+                    <div>
+                        <button onclick=nameBtnEvent(event)><span>&nbsp;</span><img src=icons/drop.svg></button>
+                        <input id=nameInp3 onkeydown=nameInpKeyEvent(event) onblur=nameInpBlurEvent(event)>
+                        <div id=nameLst3 class=nameLst></div>
+                    </div>
+                </div>
+                <div class=nameBlk>
+                    <label for=nameInp0>Left name:</label>
+                    <div>
+                        <button onclick=nameBtnEvent(event)><span>&nbsp;</span><img src=icons/drop.svg></button>
+                        <input id=nameInp0 onkeydown=nameInpKeyEvent(event) onblur=nameInpBlurEvent(event)>
+                        <div id=nameLst0 class=nameLst></div>
+                    </div>
+                </div>
+                <div class=nameBlk>
+                    <label for=nameInp1>Across name:</label>
+                    <div>
+                        <button onclick=nameBtnEvent(event)><span>&nbsp;</span><img src=icons/drop.svg></button>
+                        <input id=nameInp1 onkeydown=nameInpKeyEvent(event) onblur=nameInpBlurEvent(event)>
+                        <div id=nameLst1 class=nameLst></div>
+                    </div>
+                </div>
+                <div class=nameBlk>
+                    <label for=nameInp2>Right name:</label>
+                    <div>
+                        <button onclick=nameBtnEvent(event)><span>&nbsp;</span><img src=icons/drop.svg></button>
+                        <input id=nameInp2 onkeydown=nameInpKeyEvent(event) onblur=nameInpBlurEvent(event)>
+                        <div id=nameLst2 class=nameLst></div>
+                    </div>
+                </div>
+            </div>
+            <div id=showGrd>
+                <div>
+                    <label for=countsBox>Show counts:</label>
+                    <input id=countsBox type=image src=icons/checked.svg onclick=showEvent(event)>
+                </div>
+                <div></div>
+                <div>
+                    <label for=handsBox>Show hands:</label>
+                    <input id=handsBox type=image src=icons/unchecked.svg onclick=showEvent(event)>
+                </div>
+            </div>
+            <div id=playBtns>
+                <button id=playBtn onclick=playBtnEvent()>&nbsp;</button>
+                <div id=playMsg>Waiting for others</div>
             </div>
         </div>
-        <div id=startPage>
-            <img class=helpIco src=icons/help.svg alt=help onclick="helpEvent('startHelp')">
-            <img class=whiteCloseIco src=icons/close.svg alt=close onclick=appCloseEvent()>
-            <form id=startForm onsubmit=startBtnEvent(event)>
-                <div id=startCtr>
-                    0 players are joining game number 0
-                </div>
-                <div id=playersGrid>
-                    <label  id=nameLbl0 for=nameSel0>Left name:</label>
-                    <select id=nameSel0 class=nameSel onchange=nameSelEvent(event,0)></select>
-                    <input  id=nameIco0 class=nameIco type=image onclick=nameIcoEvent(event,0)>
-                    <label  id=nameLbl1 for=nameSel1>Across name:</label>
-                    <select id=nameSel1 class=nameSel onchange=nameSelEvent(event,1)></select>
-                    <input  id=nameIco1 class=nameIco type=image onclick=nameIcoEvent(event,1)>
-                    <label  id=nameLbl2 for=nameSel2>Right name:</label>
-                    <select id=nameSel2 class=nameSel onchange=nameSelEvent(event,2)></select>
-                    <input  id=nameIco2 class=nameIco type=image onclick=nameIcoEvent(event,2)>
-                    <label  id=nameLbl3 for=nameSel3>Your name:</label>
-                    <select id=nameSel3 class=nameSel onchange=nameSelEvent(event,3)></select>
-                    <input  id=nameIco3 class=nameIco type=image>
-                </div>
-                <div id=assistanceGrid>
-                    <div>Show card counts:&nbsp;</div>
-                    <input class=assistBox type=image onclick=assistBoxEvent(event,0)>
-                    <div></div>
-                    <div>Show all hands:&nbsp;</div>
-                    <input class=assistBox type=image onclick=assistBoxEvent(event,1)>
-                </div>
-                <div id=startBtns>
-                    <input id=inviteBtn type=button value=Invite onclick=inviteBtnEvent()>
-                    <button id=startBtn>Start</button>
-                </div>
-                <div id=startEdit>
-                    <div id=startAdd>
-                        <img id=startAImg class=whiteCloseIco src=icons/close.svg alt=close>
-                        <label id=startALbl for=startAInp>New bot name:</label><br>
-                        <input id=startAInp type=text>
-                        <input id=startABtn type=button value=Add>
-                    </div>
-                    <div id=startDel>
-                        <label id=startDLbl for=startDSel>Old bot name:</label><br>
-                        <select id=startDSel type=text></select><br>
-                    </div>
-                </div>
-            </form>
-        </div>
-        <div id=joinPage>
-            <img class=helpIco src=icons/help.svg alt=help onclick="helpEvent('joinHelp')">
-            <img class=whiteCloseIco src=icons/close.svg alt=close onclick=appCloseEvent()>
-            <form id=joinForm onsubmit=joinBtnEvent(event)>
-                <label for=joinSel>Your name:</label><br>
-                <select id=joinSel class=nameSel onchange=nameSelEvent(event,4)></select><br>
-                <br>
-                <label for=gameSel>Game name:</label><br>
-                <select id=gameSel class=nameSel onchange=nameSelEvent(event,5)></select><br>
-                <br>
-                <br>
-                <div id=joinBtns>
-                    <input id=checkBtn type=button value=Check onclick=checkBtnEvent()>
-                    <button id=joinBtn>Join</button>
-                    <div id=joinWait>Waiting for Grampy.</div>
-                </div>
-                <div id=joinEdit>
-                    <div id=joinAdd>
-                        <img id=joinAImg class=whiteCloseIco src=icons/close.svg alt=close>
-                        <label id=joinALbl for=joinAInp>New alias:</label><br>
-                        <input id=joinAInp type=text>
-                        <input id=joinABtn type=button value=Add>
-                    </div>
-                    <div id=joinDel>
-                        <label id=joinDLbl for=joinDSel>Old alias:</label><br>
-                        <select id=joinDSel type=text></select><br>
-                    </div>
-                </div>
-            </form>
-        </div>
-        <div id=gamePage>
+        <div id=gamePag>
             <img id=gameHelp class=helpIco src=icons/help.svg alt=help onclick="helpEvent('bidHelp')">
             <img id=trumpIco src=suits/club.svg alt=info onclick=infoEvent()>
-            <div id=trumpOut></div>
+            <div id=trumpMsg></div>
+            <img id=gameIco src=icons/offline.svg alt=offline>
             <img class=whiteCloseIco src=icons/close.svg alt=close onclick=appCloseEvent()>
-            <div id=textArea>
-                <div id=bidText>
-                    <div id=meldTable>
-                        <div id=trumpColumn>
+            <div id=gameTxt>
+                <div id=bidTxt>
+                    <div id=meldTbl>
+                        <div id=trumpCol>
                             If Trump<br>
                             <img src=suits/spade.svg alt=spade><br>
                             <img src=suits/heart.svg alt=heart><br>
@@ -272,31 +109,31 @@
                         </div>
                     </div>
                     <div id=bidBtns>
-                        <input id=passBtn type=button value="Pass" onclick=passBtnEvent()>
-                        <input id=lessBtn type=button value="<" onclick=lessBtnEvent()>
-                        <input id=bidBtn type=button value="50" onclick=bidBtnEvent()>
-                        <input id=moreBtn type=button value=">" onclick=moreBtnEvent()>
-                        <div id=bidWait>Waiting for Bender.</div>
+                        <input id=passBtn type=button value='Pass' onclick=passBtnEvent()>
+                        <input id=lessBtn type=button value='<' onclick=lessBtnEvent()>
+                        <input id=bidBtn type=button value='50' onclick=bidBtnEvent()>
+                        <input id=moreBtn type=button value='>' onclick=moreBtnEvent()>
+                        <div id=bidMsg>Waiting for others</div>
                     </div>
                 </div>
-                <div id=trumpText>
+                <div id=trumpTxt>
                     <div><input type=button value=Spades onclick=trumpBtnEvent(15)></div>
                     <div><input type=button value=Hearts onclick=trumpBtnEvent(10)></div>
                     <div><input type=button value=Clubs onclick=trumpBtnEvent(5)></div>
                     <div><input type=button value=Diamonds onclick=trumpBtnEvent(0) ></div>
                 </div>
-                <div id=needText>
+                <div id=needTxt>
                     <p>You picked hearts.</p>
                     <p>Your meld is 20.<br>Their meld is 20.</p>
                     <p>You need 30 points.<br>They need 20 points.</p>
                     <div id=needBtns>
                         <input id=okBtn type=button value=OK onclick=okBtnEvent()>
-                        <input id=playBtn type=button value=Play onclick=playBtnEvent()>
                         <input id=tossBtn type=button value=Toss onclick=tossBtnEvent()>
+                        <div id=needMsg>Waiting for others</div>
                     </div>
                 </div>
-                <div id=handText>
-                    <div id=handGrid>
+                <div id=handTxt>
+                    <div id=handGrd>
                           <div></div>   <div><u>Your</u></div> <div><u>Their</u></div>
                         <div>Old</div>       <div></div>           <div></div>
                         <div>Bid</div>       <div></div>           <div></div>
@@ -304,14 +141,14 @@
                         <div>Take</div>      <div></div>           <div></div>
                         <div>New</div>       <div></div>           <div></div>
                     </div>
-                    <p id=handPara></p>
+                    <p id=handPar></p>
                     <input id=handBtn type=button value=OK onclick=handBtnEvent()>
-                    <div id=handWait>Awaiting other players</div>
+                    <div id=handMsg>Waiting for others</div>
                 </div>
-                <div id=infoText>
+                <div id=infoTxt>
                     <img class=blackCloseIco src=icons/close.svg alt=close onclick=infoCloseEvent()>
                     <div id=infoBiddr>Grampy won bid.</div>
-                    <div id=infoGrid>
+                    <div id=infoGrd>
                         <u>Out</u><img src=suits/spade.svg><img src=suits/heart.svg><img src=suits/club.svg><img src=suits/diamond.svg>
                         <span>Aces</span>  <div>0</div> <div>1</div> <div>2</div> <div>3</div>
                         <span>Total</span> <div>4</div> <div>5</div> <div>6</div> <div>7</div>
@@ -319,39 +156,39 @@
                     <div id=infoTake>You've taken 15 of 20. They've taken 15 of 20.</div>
                 </div>
             </div>
-            <div id=infoAreas>
-                <div id=infoArea0>
-                    <div class=infoName></div>
+            <div id=infoBlks>
+                <div id=infoBlk0>
+                    <div class=infoNam></div>
                     <div class=infoBid></div>
-                    <div class=infoHint>
+                    <div class=infoHnt>
                         <span>A</span><img src=suits/spade.svg>
                         <span>A</span><img src=suits/heart.svg>
                         <span>?</span><img src=suits/club.svg>
                         <span>X</span><img src=suits/diamond.svg>
                     </div>
                 </div>
-                <div id=infoArea1>
-                    <span class=infoName></span>
+                <div id=infoBlk1>
+                    <span class=infoNam></span>
                     <span class=infoBid></span>
-                    <span class=infoHint>
+                    <span class=infoHnt>
                         <span>A</span><img src=suits/spade.svg>
                         <span><img src=icons/down.svg></span><img src=suits/heart.svg>
                         <span>?</span><img src=suits/club.svg>
                         <span>X</span><img src=suits/diamond.svg>
                     </span>
                 </div>
-                <div id=infoArea2>
-                    <div class=infoName></div>
+                <div id=infoBlk2>
+                    <div class=infoNam></div>
                     <div class=infoBid></div>
-                    <div class=infoHint>
+                    <div class=infoHnt>
                         <span>A</span><img src=suits/spade.svg>
                         <span>L</span><img src=suits/heart.svg>
                         <span>?</span><img src=suits/club.svg>
                         <span>X</span><img src=suits/diamond.svg>
                     </div>
                 </div>
-                <div id=infoArea3>
-                    <span class=infoName></span>
+                <div id=infoBlk3>
+                    <span class=infoNam></span>
                     <span class=infoBid></span>
                 </div>
             </div>
@@ -377,10 +214,10 @@
                 <img src=cards/cb.svg>
             </div>
         </div>
-        <div id=helpPage>
-            <div id=loadHelp>
+        <div id=helpPag>
+            <div id=playHelp>
                 <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
-                <b>Double Deck Pinochle v2.7</b>
+                <b>Double Deck Pinochle v3.0</b>
                 <p>
                     This <a href="javascript:helpEvent('loadShot')">page</a> allows you to start or join a game:
                 </p>
@@ -403,7 +240,7 @@
             </div>
             <div id=loadShot class=screenshot>
                 <div>
-                    <img src="screens/loadpage.png" alt="loadpage" onclick=helpCloseEvent()>
+                    <img src='screens/loadpage.png' alt='loadpage' onclick=helpCloseEvent()>
                 </div>
             </div>
             <div id=tutorial>
@@ -431,7 +268,7 @@
                 </p>
                 <ul>
                     <li>Select your name to identify yourself</li>
-                    <li>Select bot/human (<img src=icons/robot.svg alt=bot>/<img src=icons/human.svg alt=bot>) to identify type</li>
+                    <li>Select bot/human to identify type</li>
                     <li>Select bot names, if any, to identify bots</li>
                     <li>Announce the game number to inform humans</li>
                     <li>Check/uncheck options to show assistance</li>
@@ -639,7 +476,7 @@
                 <p>
                     The valuable sets of cards in your hand.
                 </p>
-                <div id="meldGrid">
+                <div id='meldGrd'>
                     <div><u>Card Set in Hand</u></div><div><u>Single</u></div><div><u>Double</u></div><div><u>Triple</u></div>
                     <div>
                         Aces around 
@@ -701,7 +538,7 @@
                 </p>
                 <ul>
                     <li>Select your name to identify yourself</li>
-                    <li>Select bot/human (<img src=icons/robot.svg alt=bot>/<img src=icons/human.svg alt=bot>) to identify type</li>
+                    <li>Select bot/human to identify type</li>
                     <li>Select bot names, if any, to identify bots</li>
                     <li>Announce the game number to inform humans</li>
                     <li>Check/uncheck options to show assistance</li>
@@ -718,7 +555,7 @@
             </div>
             <div id=startShot class=screenshot>
                 <div>
-                    <img src="screens/startpage.png" alt="startpage" onclick=helpCloseEvent()>
+                    <img src=screens/startpage.png alt=startpage onclick=helpCloseEvent()>
                 </div>
             </div>
             <div id=joinHelp>
@@ -740,7 +577,7 @@
             </div>
             <div id=joinShot class=screenshot>
                 <div>
-                    <img src="screens/joinpage.png" alt="joinpage" onclick=helpCloseEvent()>
+                    <img src=screens/joinpage.png alt=joinpage onclick=helpCloseEvent()>
                 </div>
             </div>
             <div id=bidHelp>
@@ -764,7 +601,7 @@
             </div>
             <div id=bidShot class=screenshot>
                 <div>
-                    <img src="screens/bidpage.png" alt="bidpage" onclick=helpCloseEvent()>
+                    <img src=screens/bidpage.png alt=bidpage onclick=helpCloseEvent()>
                 </div>
             </div>
             <div id=trumpHelp>
@@ -786,7 +623,7 @@
             </div>
             <div id=trumpShot class=screenshot>
                 <div>
-                    <img src="screens/trumppage.png" alt="trumppage" onclick=helpCloseEvent()>
+                    <img src=screens/trumppage.png alt=trumppage onclick=helpCloseEvent()>
                 </div>
             </div>
             <div id=tossHelp>
@@ -815,7 +652,7 @@
             </div>
             <div id=tossShot class=screenshot>
                 <div>
-                    <img src="screens/tosspage.png" alt="tosspage" onclick=helpCloseEvent()>
+                    <img src=screens/tosspage.png alt=tosspage onclick=helpCloseEvent()>
                 </div>
             </div>
             <div id=playHelp>
@@ -843,7 +680,7 @@
             </div>
             <div id=playShot class=screenshot>
                 <div>
-                    <img src="screens/playpage.png" alt="playpage" onclick=helpCloseEvent()>
+                    <img src=screens/playpage.png alt=playpage onclick=helpCloseEvent()>
                 </div>
             </div>
             <div id=handHelp>
@@ -865,7 +702,7 @@
             </div>
             <div id=handShot class=screenshot>
                 <div>
-                    <img src="screens/handpage.png" alt="handpage" onclick=helpCloseEvent()>
+                    <img src=screens/handpage.png alt=handpage onclick=helpCloseEvent()>
                 </div>
             </div>
         </div>
@@ -873,6 +710,15 @@
             Network connection lost.<br>
             Please wait.
             <div id=spinner></div>
+        </dialog>
+        <dialog id=termDlg>
+            Terminate this game?<br><br>
+            <button onclick=termOkEvent()>Ok</button>&nbsp;
+            <button onclick=termCancelEvent()>Cancel</button>
+        </dialog>
+        <dialog id=quitDlg>
+            <span id=quitNam>Grampy</span> terminated this game.<br><br>
+            <button onclick=quitOkEvent()>Ok</button>
         </dialog>
     </body>
 </html>

@@ -92,16 +92,19 @@ body {
     margin-bottom: 1em;
     display: grid;
     grid-template-columns: auto auto;
-    column-gap: 0.3em;
+    column-gap: 1em;
     row-gap: 1em;
-    text-align: left;
+    text-align: right;
 }
 
 .nameBlk {
     position: relative;
+    display: grid;
+    grid-template-columns: 4em auto;
+    column-gap: 0.3em;
 }
 
-#nameGrd button {
+.nameBlk button {
     width: 11em;
     height: 1.3em;
     border: none;
@@ -111,12 +114,12 @@ body {
     text-align: left;
 }
 
-#nameGrd button img {
+.nameBlk button img {
     height: 1.2em;
     float: right;
 }
 
-#nameGrd input {
+.nameBlk input {
     width: 11em;
     height: 1.3em;
     border: none;
@@ -128,9 +131,10 @@ body {
 .nameLst {
     position: absolute;
     width: calc(11em + 2px);
-    left: -1px;
+    right: -1px;
     padding-top: 0.2em;
     padding-bottom: 0.2em;
+    text-align: left;
     color: black;
     background-color: white;
     border: 1px solid darkgreen;
@@ -147,31 +151,23 @@ body {
     max-height: calc(50svh - 2.3em);
 }
 
+.nameLst div {
+    padding-left: 0.4em;
+    padding-right: 0.4em;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    line-height: 2em;
+}
+
 .nameLst img {
     position: relative;
     top: 0.6em;
     height: 0.7em;
 }
 
-.listCat {
-    padding-left: 0.4em;
-    padding-right: 0.4em;
-    display: grid;
-    grid-template-columns: 1fr auto;
-    line-height: 2em;
-    font-style: italic;
-}
-
-#robotCat {
-    border-top: 1px solid darkgreen;
-}
-
-.listItm {
-    padding-left: 0.4em;
-    padding-right: 0.4em;
-    display: grid;
-    grid-template-columns: 1fr auto;
-    line-height: 2em;
+.botBlk input {
+    height: 0.8em;
+    filter: invert(100%);
 }
 
 #showGrd {
@@ -269,19 +265,13 @@ body {
     margin-top: 0.4em;
     display: flex;
     flex-direction: row;
-    justify-content: space-evenly;
+    justify-content: space-between;
 }
 
-#lessBtn, #moreBtn {
+#bidBtns input {
     height: 1.3em;
-    width: 1.3em;
-    border: none;
-    background-color: white;
-}
-
-#bidBtn {
-    height: 1.3em;
-    width: 5em;
+    padding-left: 0.4em;
+    padding-right: 0.4em;
     border: none;
     background-color: white;
 }

@@ -36,36 +36,52 @@
             </div>
             <div id=nameGrd>
                 <div class=nameBlk>
-                    <label for=nameInp3>Your name:</label>
+                    <label for=nameInp3>You:</label>
                     <div>
                         <button onclick=nameBtnEvent(event)><span>&nbsp;</span><img src=icons/drop.svg></button>
                         <input id=nameInp3 onkeydown=nameInpKeyEvent(event) onblur=nameInpBlurEvent(event)>
                         <div id=nameLst3 class=nameLst></div>
                     </div>
                 </div>
+                <div class=botBlk>
+                    <label for=botBox3 style=display:none>Robot:</label>
+                    <input id=botBox3 type=image src=icons/checked.svg onclick=botBoxEvent(3) style=display:none>
+                </div>
                 <div class=nameBlk>
-                    <label for=nameInp0>Left name:</label>
+                    <label for=nameInp0>Left:</label>
                     <div>
                         <button onclick=nameBtnEvent(event)><span>&nbsp;</span><img src=icons/drop.svg></button>
                         <input id=nameInp0 onkeydown=nameInpKeyEvent(event) onblur=nameInpBlurEvent(event)>
                         <div id=nameLst0 class=nameLst></div>
                     </div>
                 </div>
+                <div class=botBlk>
+                    <label for=botBox0>Robot:</label>
+                    <input id=botBox0 type=image src=icons/checked.svg onclick=botBoxEvent(0)>
+                </div>
                 <div class=nameBlk>
-                    <label for=nameInp1>Across name:</label>
+                    <label for=nameInp1>Across:</label>
                     <div>
                         <button onclick=nameBtnEvent(event)><span>&nbsp;</span><img src=icons/drop.svg></button>
                         <input id=nameInp1 onkeydown=nameInpKeyEvent(event) onblur=nameInpBlurEvent(event)>
                         <div id=nameLst1 class=nameLst></div>
                     </div>
                 </div>
+                <div class=botBlk>
+                    <label for=botBox1>Robot:</label>
+                    <input id=botBox1 type=image src=icons/checked.svg onclick=botBoxEvent(1)>
+                </div>
                 <div class=nameBlk>
-                    <label for=nameInp2>Right name:</label>
+                    <label for=nameInp2>Right:</label>
                     <div>
                         <button onclick=nameBtnEvent(event)><span>&nbsp;</span><img src=icons/drop.svg></button>
                         <input id=nameInp2 onkeydown=nameInpKeyEvent(event) onblur=nameInpBlurEvent(event)>
                         <div id=nameLst2 class=nameLst></div>
                     </div>
+                </div>
+                <div class=botBlk>
+                    <label for=botBox2>Robot:</label>
+                    <input id=botBox2 type=image src=icons/checked.svg onclick=botBoxEvent(2)>
                 </div>
             </div>
             <div id=showGrd>
@@ -109,6 +125,7 @@
                         </div>
                     </div>
                     <div id=bidBtns>
+                        <input id=passBtn type=button value='Pass' onclick=passBtnEvent()>
                         <input id=lessBtn type=button value='<' onclick=lessBtnEvent()>
                         <input id=bidBtn type=button value='50' onclick=bidBtnEvent()>
                         <input id=moreBtn type=button value='>' onclick=moreBtnEvent()>
