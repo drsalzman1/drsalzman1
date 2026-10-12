@@ -2157,6 +2157,13 @@ function loadEvent() {
     if (location.origin != 'file://')                           // if not running from debugger, start service worker
         navigator.serviceWorker.register('service-worker.js', {updateViaCache: 'none'});*/
     setTimeout(resizeEvent);                                    // initialize size variables and card locations
+    setTimeout(() => {
+        // Toggling the body's display property forces Chromium to recalculate 
+        // viewport-fit and safe-area insets instantly.
+        document.body.style.display = 'none';
+        document.body.offsetHeight; // Forces a reflow
+        document.body.style.display = '';
+    }, 5000);
 }
 
 onload        = loadEvent;                                  // prepare for load event
