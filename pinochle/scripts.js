@@ -2161,6 +2161,7 @@ function loadEvent() {
         document.body.style.paddingTop = '1px';
         document.body.offsetHeight; // Forces layout recalculation
         document.body.style.paddingTop = ''; // Reverts back to your CSS env() rule
+        document.body.style.backgroundColor = 'green';
     }, 5000);
 }
 
