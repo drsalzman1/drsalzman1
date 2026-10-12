@@ -2158,7 +2158,7 @@ function loadEvent() {
         navigator.serviceWorker.register('service-worker.js', {updateViaCache: 'none'});*/
     setTimeout(resizeEvent);                                    // initialize size variables and card locations
   
-    // Temporarily add 1px of extra room to ensure scrolling is possible
+    /*// Temporarily add 1px of extra room to ensure scrolling is possible
     const originalMinHeight = document.documentElement.style.minHeight;
     document.documentElement.style.minHeight = 'calc(100dvh + 1px)';
 
@@ -2169,7 +2169,7 @@ function loadEvent() {
         // Instantly snap it back to absolute normal
         window.scrollTo(0, 0);
         document.documentElement.style.minHeight = originalMinHeight;
-    });
+    });*/
 }
 
 onload        = loadEvent;                                  // prepare for load event
