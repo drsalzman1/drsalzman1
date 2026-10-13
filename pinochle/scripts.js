@@ -2160,8 +2160,8 @@ function loadEvent() {
     setTimeout(resizeEvent);                                    // initialize size variables and card locations
     const cur = screen.orientation.type;
     const tmp = cur=='portrait-primary'||cur=='portrait-secondary'? 'landscape' : 'portrait';
-    setTimeout(()=>{screen.orientation.lock(tmp)}, 0);
-    setTimeout(()=>{screen.orientation.unlock()}, 0);
+    screen.orientation.lock(tmp);
+    screen.orientation.unlock();
 }
 
 onload        = loadEvent;                                  // prepare for load event
