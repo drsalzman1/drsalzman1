@@ -56,7 +56,7 @@ body {
 #playIco, #gameIco {
     position: absolute;
     top: 0.55em;
-    right: 2em;
+    right: 3.4em; /*2em;*/
     height: 0.98em;
     filter: invert(100%);
 }
@@ -64,7 +64,7 @@ body {
 .whiteCloseIco {
     position: absolute;
     top: 0.6em;
-    right: 0.4em;
+    right: 1.8em; /*0.4em;*/
     height: 0.8em;
     filter: invert(100%);
 }
@@ -211,7 +211,7 @@ body {
 
 #trumpIco {
     position: absolute;
-    left: 1.8em;
+    left: 3.2em; /*1.8em;*/
     top: 0.6em;
     height: 0.8em;
     filter: invert(100%);
@@ -220,7 +220,7 @@ body {
 
 #trumpMsg {
     position: absolute;
-    left: 2.9em;
+    left: 4.3em; /*2.9em;*/
     top: 0.4em;
     width: 1.4em;
     text-align: left;
