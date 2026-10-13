@@ -61,7 +61,7 @@ body {
     filter: invert(100%);
 }
 
-.whiteCloseIco {
+.appCloseIco {
     position: absolute;
     top: 0.6em;
     right: 1.8em; /*0.4em;*/
@@ -368,7 +368,7 @@ body {
     background-color: white;
 }
 
-.blackCloseIco {
+#infoTxt>img {
     position: absolute;
     top: 0.55em;
     right: 0.4em;
@@ -541,8 +541,16 @@ body {
     display: none;
 }
 
+#helpPag>div>img {
+    position: absolute;
+    top: 0.55em;
+    right: 1.8em; /*0.4em;*/
+    height: 0.8em;
+}
+
 #helpPag>div>b {
     display: block;
+    text-align: center;
 }
 
 #helpPag>div>p {

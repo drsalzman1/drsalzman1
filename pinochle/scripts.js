@@ -2158,7 +2158,6 @@ function loadEvent() {
     if (location.origin != 'file://')                           // if not running from debugger, start service worker
         navigator.serviceWorker.register('service-worker.js', {updateViaCache: 'none'});*/
     setTimeout(resizeEvent);                                    // initialize size variables and card locations
-    setTimeout(orientationEvent);                               // initialize padding
 }
 
 onload        = loadEvent;                                  // prepare for load event
