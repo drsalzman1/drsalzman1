@@ -2117,30 +2117,6 @@ function resizeEvent() {
     }
 }
 
-// Set padding when device orientation changes
-function orientationEvent() {
-    const orientation = screen.orientation.type;
-    let top    = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--safe-area-inset-top'));
-    let right  = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--safe-area-inset-right'));
-    let bottom = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--safe-area-inset-bottom'));
-    let left   = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--safe-area-inset-left'));
-    switch (orientation) {
-    case 'portrait-primary':
-        bottom = top==0? 66 : top;
-        break;
-    case 'landscape-primary':
-        right = left==0? 66 : left;
-        break;
-    case 'portrait-secondary':
-        top = bottom==0? 66 : bottom;
-        break;
-    case 'landscape-secondary':
-        left = right==0? 66 : right;
-        break;
-    }
-    playTtl.textContent = `${orientation}, ${top}, ${right}, ${bottom}, ${left}, ${vw|0}, ${vh|0}`;
-}
-
 // Initialize app, then await events
 function loadEvent() {
     console.clear();                                            // clear console
@@ -2188,4 +2164,3 @@ function loadEvent() {
 onload        = loadEvent;                                  // prepare for load event
 onresize      = resizeEvent;                                // prepare for resize event
 oncontextmenu = contextmenuEvent;                           // prepare for context (right-click or long-press) menu events
-screen.orientation.addEventListener("change", orientationEvent);
