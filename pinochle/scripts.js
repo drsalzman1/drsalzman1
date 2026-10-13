@@ -2168,7 +2168,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     setTimeout(async () => {
         await screen.orientation.lock('landscape');
         setTimeout(async () => {
-            await screen.orientation.lock('portrait'); 
+            await screen.orientation.unlock(); 
         }, 5000);
     }, 5000);
 });
