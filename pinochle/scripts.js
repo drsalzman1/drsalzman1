@@ -2161,15 +2161,14 @@ function loadEvent() {
         navigator.serviceWorker.register('service-worker.js', {updateViaCache: 'none'});*/
     
     // work around fullscreen rendering bug
-    try {
+    /*try {
         if (screen.orientation.type=='portrait-primary'||screen.orientation.type=='portrait-secondary')
             screen.orientation.lock('landscape');
         else
             screen.orientation.lock('portrait');
         screen.orientation.unlock();
     } catch {
-        playTtl.textContent = 'Unsupported';
-    };
+    };*/
 }
 
 onload        = loadEvent;                                  // prepare for load event
