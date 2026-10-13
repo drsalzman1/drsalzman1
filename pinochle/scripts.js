@@ -2164,11 +2164,11 @@ onload        = loadEvent;                                  // prepare for load 
 onresize      = resizeEvent;                                // prepare for resize event
 oncontextmenu = contextmenuEvent;                           // prepare for context (right-click or long-press) menu events
 
-window.addEventListener('DOMContentLoaded', async () => {
-    setTimeout(async () => {
-        await screen.orientation.lock('landscape');
-        setTimeout(async () => {
-            await screen.orientation.lock('portrait'); 
+window.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        screen.orientation.lock('landscape');
+        setTimeout(() => {
+            screen.orientation.lock('portrait'); 
             screen.orientation.unlock(); 
         }, 5000);
     }, 5000);
