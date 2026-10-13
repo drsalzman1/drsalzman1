@@ -35,6 +35,7 @@ body {
 #playPag {
     position: absolute;
     top: env(safe-area-inset-top, 0px);
+    bottom: env(safe-area-inset-bottom, 0px);
     width: 100svw;
     height: 100svh;
     padding: 0.4em;
@@ -204,6 +205,8 @@ body {
 
 #gamePag {
     position: absolute;
+    top: env(safe-area-inset-top, 0px);
+    bottom: env(safe-area-inset-bottom, 0px);
     width: 100svw;
     height: 100svh;
     display: none;
