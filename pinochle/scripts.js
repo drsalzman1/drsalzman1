@@ -2120,7 +2120,8 @@ function resizeEvent() {
     const rightInsetStr  = computedStyle.getPropertyValue('--safe-area-inset-right').trim();
     const bottomInsetStr = computedStyle.getPropertyValue('--safe-area-inset-bottom').trim();
     const leftInsetStr   = computedStyle.getPropertyValue('--safe-area-inset-left').trim();
-    playTtl.textContent = `top:${topInsetStr}, right:${rightInsetStr}, bottom:${bottomInsetStr}, left:${leftInsetStr}`;
+    const orientation    = screen.orientation.type;
+    playTtl.textContent = `${topInsetStr}, ${rightInsetStr}, ${bottomInsetStr}, ${leftInsetStr}, ${orientation}`;
 
     // 2. Parse the string into a numeric pixel integer
     // const bottomInsetPx = parseInt(bottomInsetStr, 10) || 0;
