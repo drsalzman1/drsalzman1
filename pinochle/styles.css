@@ -1,12 +1,12 @@
 @media (orientation: portrait) {
     :root {
-        font-size: min(4.25svw, 2.55svh);
+        font-size: min(4.25dvw, 2.55dvh);
     }
 }
 
 @media (orientation: landscape) {
     :root {
-        font-size: min(4.25svh, 2.575svw);
+        font-size: min(4.25dvh, 2.575dvw);
    }
 }
 
@@ -34,8 +34,8 @@ body {
 
 #playPag {
     position: absolute;
-    width: 100svw;
-    height: 100svh;
+    width: 100%;
+    height: 100%;
     padding: 0.4em;
     display: flex;
     flex-direction: column;
@@ -144,11 +144,11 @@ body {
 }
 
 #nameLst3, #nameLst0 {
-    max-height: calc(50svh + 1em);
+    max-height: calc(50dvh + 1em);
 }
 
 #nameLst1, #nameLst2 {
-    max-height: calc(50svh - 2.3em);
+    max-height: calc(50dvh - 2.3em);
 }
 
 .nameLst div {
@@ -203,8 +203,8 @@ body {
 
 #gamePag {
     position: absolute;
-    width: 100svw;
-    height: 100svh;
+    width: 100%;
+    height: 100%;
     display: none;
     overflow: hidden;
 }
@@ -228,8 +228,8 @@ body {
 
 #gameTxt {
     position: absolute;
-    top: calc(50svh - 4.28em);
-    left: calc(50svw - 5.52em);
+    top: calc(50dvh - 4.28em);
+    left: calc(50dvw - 5.52em);
     width: 11.04em;
     height: 8.56em;
     display: flex;
@@ -328,7 +328,7 @@ body {
 }
 
 #handTxt {
-    width: 80svw;
+    width: 80dvw;
     display: none;
     text-align: center;
 }
@@ -425,7 +425,7 @@ body {
 #infoBlk1 {
     position: absolute;
     top: 0.44em;
-    left: calc(50svw - 10em);
+    left: calc(50dvw - 10em);
     width: 20em;
     display: flex;
     flex-direction: row;
@@ -447,13 +447,13 @@ body {
 
 #infoBlk2 .infoNam {
     position: absolute;
-    left: calc(100svw - 6em);
+    left: calc(100dvw - 6em);
     width: 5.6em;
 }
 
 #infoBlk2 .infoBid {
     position: absolute;
-    left: calc(100svw - 6em);
+    left: calc(100dvw - 6em);
     width: 5.6em;
 }
 
@@ -461,7 +461,7 @@ body {
     position: absolute;
     font-size: 0.85em;
     line-height: 1.2em;
-    left: calc(100svw - 7.4em);
+    left: calc(100dvw - 7.4em);
     width: 7em;
 }
 
@@ -472,8 +472,8 @@ body {
 
 #infoBlk3 {
     position: absolute;
-    top: calc(100svh - 1.6em);
-    left: calc(50svw - 10em);
+    top: calc(100dvh - 1.6em);
+    left: calc(50dvw - 10em);
     width: 20em;
     display: flex;
     flex-direction: row;
@@ -494,25 +494,25 @@ body {
 }
 
 #slide0 {
-    top: calc(50svh - 1.95em);
-    left: calc(50svw - 4.3em);
+    top: calc(50dvh - 1.95em);
+    left: calc(50dvw - 4.3em);
     transform: rotate(180deg);
 }
 
 #slide1 {
-    top: calc(50svh - 5.3em);
-    left: calc(50svw - 0.95em);
+    top: calc(50dvh - 5.3em);
+    left: calc(50dvw - 0.95em);
     transform: rotate(270deg);
 }
 
 #slide2 {
-    top: calc(50svh - 1.95em);
-    left: calc(50svw + 2.3em);
+    top: calc(50dvh - 1.95em);
+    left: calc(50dvw + 2.3em);
 }
 
 #slide3 {
-    top: calc(50svh + 1.3em);
-    left: calc(50svw - 0.95em);
+    top: calc(50dvh + 1.3em);
+    left: calc(50dvw - 0.95em);
     transform: rotate(90deg);
 }
 
@@ -581,8 +581,8 @@ body {
 
 #helpPag>.screenshot {
     padding: 0em !important;
-    height: 100svh;
-    width: 100svw;
+    height: 100%;
+    width: 100%;
     background-color: black !important;
 }
 
@@ -592,8 +592,8 @@ body {
 }
 
 #helpPag>.screenshot>div>img {
-    max-height: 100svh;
-    max-width: 100svw;
+    max-height: 100%;
+    max-width: 100%;
 }
 
 #helpPag #meldGrd {
