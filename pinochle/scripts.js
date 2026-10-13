@@ -2165,22 +2165,10 @@ onresize      = resizeEvent;                                // prepare for resiz
 oncontextmenu = contextmenuEvent;                           // prepare for context (right-click or long-press) menu events
 
 window.addEventListener('DOMContentLoaded', async () => {
-  // Wait for the initial window container layout to settle
-  setTimeout(async () => {
-    try {
-      if (screen.orientation && screen.orientation.lock) {
-        // 1. Force a quick flip to landscape
+    setTimeout(async () => {
         await screen.orientation.lock('landscape');
-        
-        // 2. Small delay to let Chromium flush the display cutout layout bounds
         setTimeout(async () => {
-          // 3. Return to standard portrait (or unlock it to follow system settings)
-          await screen.orientation.lock('portrait'); 
-          // screen.orientation.unlock(); // Alternative: unlock to system preference
+            await screen.orientation.lock('portrait'); 
         }, 100);
-      }
-    } catch (error) {
-      playTtl.textContent = "Orientation lock blocked or not supported on this device cycle:";
-    }
-  }, 400); // Executed shortly after launch animation finishes
+    }, 400);
 });
