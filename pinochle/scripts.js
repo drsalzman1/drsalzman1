@@ -2158,14 +2158,11 @@ function loadEvent() {
     if (location.origin != 'file://')                           // if not running from debugger, start service worker
         navigator.serviceWorker.register('service-worker.js', {updateViaCache: 'none'});*/
     setTimeout(resizeEvent);                                    // initialize size variables and card locations
+    setTimeout(()=>{screen.orientation.lock('landscape')}, 1000);
+    setTimeout(()=>{screen.orientation.lock('portrait')}, 2000);
+    setTimeout(()=>{screen.orientation.unlock()}, 3000);
 }
 
 onload        = loadEvent;                                  // prepare for load event
 onresize      = resizeEvent;                                // prepare for resize event
 oncontextmenu = contextmenuEvent;                           // prepare for context (right-click or long-press) menu events
-
-window.addEventListener('DOMContentLoaded', () => {
-    setTimeout(()=>{screen.orientation.lock('landscape')}, 1000);
-    //setTimeout(()=>{screen.orientation.lock('portrait')}, 2000);
-    setTimeout(()=>{screen.orientation.unlock()}, 3000);
-});
