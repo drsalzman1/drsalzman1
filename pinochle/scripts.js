@@ -2134,7 +2134,7 @@ function resizeEvent() {
         left = right==0? 66 : right;
         break;
     }
-    playTtl.textContent = `${type}, ${top}, ${right}, ${bottom}, ${left}, ${vw}, ${vh}`;
+    playTtl.textContent = `${orientation}, ${top}, ${right}, ${bottom}, ${left}, ${vw}, ${vh}`;
 
     // 2. Parse the string into a numeric pixel integer
     // const bottomInsetPx = parseInt(bottomInsetStr, 10) || 0;
