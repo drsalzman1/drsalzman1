@@ -2118,7 +2118,7 @@ function resizeEvent() {
 }
 
 // Initialize app, then await events
-function loadEvent() {
+async function loadEvent() {
     console.clear();                                            // clear console
     for (const img of document.querySelectorAll('img'))         // prevent user from dragging images
         img.draggable = false;
@@ -2142,6 +2142,7 @@ function loadEvent() {
     gamePag.style.display = 'none';
     playPag.style.display = 'flex';
     nameBtn[p3].focus();
+    setTimeout(resizeEvent);                                    // initialize size variables and card locations
 
     if (navigator.onLine && location.hostname) {                // if browser is online and not running from debugger,
         const hst = location.hostname;
@@ -2161,11 +2162,10 @@ function loadEvent() {
     
     // work around fullscreen rendering bug
     if (screen.orientation.type=='portrait-primary'||screen.orientation.type=='portrait-secondary')
-        screen.orientation.lock('landscape');
+        await screen.orientation.lock('landscape');
     else
-        screen.orientation.lock('portrait');
+        await screen.orientation.lock('portrait');
     screen.orientation.unlock();
-    setTimeout(resizeEvent);                                    // initialize size variables and card locations
 }
 
 onload        = loadEvent;                                  // prepare for load event
