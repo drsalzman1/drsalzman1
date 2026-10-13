@@ -34,7 +34,7 @@ body {
 
 #playPag {
     position: absolute;
-    top: 20px;
+    top: env(safe-area-inset-top, 0px);
     width: 100svw;
     height: 100svh;
     padding: 0.4em;
