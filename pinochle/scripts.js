@@ -2161,11 +2161,15 @@ async function loadEvent() {
         navigator.serviceWorker.register('service-worker.js', {updateViaCache: 'none'});*/
     
     // work around fullscreen rendering bug
-    if (screen.orientation.type=='portrait-primary'||screen.orientation.type=='portrait-secondary')
-        await screen.orientation.lock('landscape');
-    else
-        await screen.orientation.lock('portrait');
-    screen.orientation.unlock();
+    try {
+        if (screen.orientation.type=='portrait-primary'||screen.orientation.type=='portrait-secondary')
+            await screen.orientation.lock('landscape');
+        else
+            await screen.orientation.lock('portrait');
+        screen.orientation.unlock();
+    } catch {
+        playTtl.textContent = 'Unsupported';
+    };
 }
 
 onload        = loadEvent;                                  // prepare for load event
