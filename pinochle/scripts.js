@@ -2158,8 +2158,10 @@ function loadEvent() {
     if (location.origin != 'file://')                           // if not running from debugger, start service worker
         navigator.serviceWorker.register('service-worker.js', {updateViaCache: 'none'});*/
     setTimeout(resizeEvent);                                    // initialize size variables and card locations
-    setTimeout(()=>{screen.orientation.lock('landscape')}, 1000);
-    setTimeout(()=>{screen.orientation.lock('portrait')}, 2000);
+    const cur = screen.orientation.type;
+    const tmp = cur=='portrait-primary'||cur=='portrait-secondary'? 'landscape' : 'portrait';
+    setTimeout(()=>{screen.orientation.lock(tmp)}, 1000);
+    setTimeout(()=>{screen.orientation.lock(cur)}, 2000);
     setTimeout(()=>{screen.orientation.unlock()}, 3000);
 }
 
