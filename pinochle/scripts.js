@@ -2166,6 +2166,6 @@ oncontextmenu = contextmenuEvent;                           // prepare for conte
 
 window.addEventListener('DOMContentLoaded', () => {
     setTimeout(()=>{screen.orientation.lock('landscape')}, 1000);
-    setTimeout(()=>{screen.orientation.lock('portrait')}, 2000);
+    //setTimeout(()=>{screen.orientation.lock('portrait')}, 2000);
     setTimeout(()=>{screen.orientation.unlock()}, 3000);
 });
