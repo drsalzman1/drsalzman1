@@ -2164,7 +2164,7 @@ function loadEvent() {
         screen.orientation.lock('landscape');
     else
         screen.orientation.lock('portrait');
-    screen.orientation.unlock();
+    setTimeout(()=>{screen.orientation.unlock()}, 2000);
     setTimeout(resizeEvent);                                    // initialize size variables and card locations
 }
 
