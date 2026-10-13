@@ -2154,14 +2154,18 @@ function loadEvent() {
         setInterval(wsIntervalEvent, 1000);                         // start heartbeat
         hrefTxt.textContent = `${location.protocol}//${hst}${location.port?(':'+location.port):''}`;
     }
-    /*
-    if (location.origin != 'file://')                           // if not running from debugger, start service worker
+    
+    // if not running from debugger, start service worker
+    /*if (location.origin != 'file://')
         navigator.serviceWorker.register('service-worker.js', {updateViaCache: 'none'});*/
-    setTimeout(resizeEvent);                                    // initialize size variables and card locations
-    const cur = screen.orientation.type;
-    const tmp = cur=='portrait-primary'||cur=='portrait-secondary'? 'landscape' : 'portrait';
-    screen.orientation.lock(tmp);
+    
+    // work around fullscreen rendering bug
+    if (screen.orientation.type=='portrait-primary'||screen.orientation.type=='portrait-secondary')
+        screen.orientation.lock('landscape');
+    else
+        screen.orientation.lock('portrait');
     screen.orientation.unlock();
+    setTimeout(resizeEvent);                                    // initialize size variables and card locations
 }
 
 onload        = loadEvent;                                  // prepare for load event
