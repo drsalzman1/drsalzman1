@@ -2164,16 +2164,23 @@ onload        = loadEvent;                                  // prepare for load 
 onresize      = resizeEvent;                                // prepare for resize event
 oncontextmenu = contextmenuEvent;                           // prepare for context (right-click or long-press) menu events
 
-window.addEventListener('DOMContentLoaded', () => {
-  // Wait a split second for the Android PWA window wrapper to finish animating
-  setTimeout(() => {
-    // Toggling the body display forces Chrome's rendering engine to recalculate the safe areas
-    document.body.style.display = 'none';
-    document.body.offsetHeight; // Triggers a forced reflow
-    document.body.style.display = 'block';
-    
-    // Explicitly scroll 1px to kick the mobile browser layout engine into gear
-    window.scrollTo(0, 1);
-    window.scrollTo(0, 0);
-  }, 5000);
+window.addEventListener('DOMContentLoaded', async () => {
+  // Wait for the initial window container layout to settle
+  setTimeout(async () => {
+    try {
+      if (screen.orientation && screen.orientation.lock) {
+        // 1. Force a quick flip to landscape
+        await screen.orientation.lock('landscape');
+        
+        // 2. Small delay to let Chromium flush the display cutout layout bounds
+        setTimeout(async () => {
+          // 3. Return to standard portrait (or unlock it to follow system settings)
+          await screen.orientation.lock('portrait'); 
+          // screen.orientation.unlock(); // Alternative: unlock to system preference
+        }, 100);
+      }
+    } catch (error) {
+      playTtl.textContent = "Orientation lock blocked or not supported on this device cycle:";
+    }
+  }, 400); // Executed shortly after launch animation finishes
 });
