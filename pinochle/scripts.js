@@ -2160,13 +2160,11 @@ function loadEvent() {
         navigator.serviceWorker.register('service-worker.js', {updateViaCache: 'none'});*/
     
     // work around fullscreen rendering bug
-    if (typeof screen.orientation.lock == 'function') {
-        if (screen.orientation.type=='portrait-primary'||screen.orientation.type=='portrait-secondary')
-            screen.orientation.lock('landscape');
-        else
-            screen.orientation.lock('portrait');
-        setTimeout(()=>{screen.orientation.unlock()}, 2000);
-    }
+    if (screen.orientation.type=='portrait-primary'||screen.orientation.type=='portrait-secondary')
+        screen.orientation.lock('landscape');
+    else
+        screen.orientation.lock('portrait');
+    screen.orientation.unlock();
     setTimeout(resizeEvent);                                    // initialize size variables and card locations
 }
 
