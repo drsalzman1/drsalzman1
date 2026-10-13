@@ -187,6 +187,7 @@ const minCards  = [Array(values), Array(values), Array(values), Array(values)];
 const body      = document.getElementById('body');
 const playPag   = document.getElementById('playPag');
 const playIco   = document.getElementById('playIco');
+const playTtl   = document.getElementById('playTtl');
 const roleGrd   = document.getElementById('roleGrd');
 const soloBox   = document.getElementById('soloBox');
 const makeBox   = document.getElementById('makeBox');
@@ -2114,6 +2115,15 @@ function resizeEvent() {
         for (const c of cArray)
             moveCard(c, card[c].g, 0, card[c].g, card[c].z, card[c].f, 0);
     }
+    const computedStyle  = window.getComputedStyle(document.documentElement);
+    const topInsetStr    = computedStyle.getPropertyValue('--safe-area-inset-top').trim();
+    const rightInsetStr  = computedStyle.getPropertyValue('--safe-area-inset-right').trim();
+    const bottomInsetStr = computedStyle.getPropertyValue('--safe-area-inset-bottom').trim();
+    const leftInsetStr   = computedStyle.getPropertyValue('--safe-area-inset-left').trim();
+    playTtl.textContent = `top:${topInsetStr}, right:${rightInsetStr}, bottom:${bottomInsetStr}, left:${leftInsetStr}`;
+
+    // 2. Parse the string into a numeric pixel integer
+    // const bottomInsetPx = parseInt(bottomInsetStr, 10) || 0;
 }
 
 // Initialize app, then await events
