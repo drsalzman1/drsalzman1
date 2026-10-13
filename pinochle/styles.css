@@ -1,3 +1,14 @@
+:root {
+    --safe-area-inset-top:    env(safe-area-inset-top);
+    --safe-area-inset-right:  env(safe-area-inset-right);
+    --safe-area-inset-bottom: env(safe-area-inset-bottom);
+    --safe-area-inset-left:   env(safe-area-inset-left);
+    --top:    0px;
+    --right:  0px;
+    --bottom: 0px;
+    --left:   0px;
+}
+
 @media (orientation: portrait) {
     :root {
         font-size: min(4.25svw, 2.55svh);
@@ -9,14 +20,6 @@
         font-size: min(4.25svh, 2.575svw);
    }
 }
-
-:root {
-    --safe-area-inset-top:    env(safe-area-inset-top);
-    --safe-area-inset-right:  env(safe-area-inset-right);
-    --safe-area-inset-bottom: env(safe-area-inset-bottom);
-    --safe-area-inset-left:   env(safe-area-inset-left);
-}
-
 
 * {
     font-family: sans-serif;

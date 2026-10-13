@@ -2115,13 +2115,26 @@ function resizeEvent() {
         for (const c of cArray)
             moveCard(c, card[c].g, 0, card[c].g, card[c].z, card[c].f, 0);
     }
-    const computedStyle  = window.getComputedStyle(document.documentElement);
-    const topInsetStr    = computedStyle.getPropertyValue('--safe-area-inset-top').trim();
-    const rightInsetStr  = computedStyle.getPropertyValue('--safe-area-inset-right').trim();
-    const bottomInsetStr = computedStyle.getPropertyValue('--safe-area-inset-bottom').trim();
-    const leftInsetStr   = computedStyle.getPropertyValue('--safe-area-inset-left').trim();
-    const orientation    = screen.orientation.type;
-    playTtl.textContent = `${topInsetStr}, ${rightInsetStr}, ${bottomInsetStr}, ${leftInsetStr}, ${orientation}`;
+    const orientation = screen.orientation.type;
+    let top    = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--safe-area-inset-top'));
+    let right  = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--safe-area-inset-right'));
+    let bottom = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--safe-area-inset-bottom'));
+    let left   = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--safe-area-inset-left'));
+    switch (orientation) {
+    case 'portrait-primary':
+        bottom = top==0? 66 : top;
+        break;
+    case 'landscape-primary':
+        right = left==0? 66 : left;
+        break;
+    case 'portrait-secondary':
+        top = bottom==0? 66 : bottom;
+        break;
+    case 'landscape-secondary':
+        left = right==0? 66 : right;
+        break;
+    }
+    playTtl.textContent = `${type}, ${top}, ${right}, ${bottom}, ${left}, ${vw}, ${vh}`;
 
     // 2. Parse the string into a numeric pixel integer
     // const bottomInsetPx = parseInt(bottomInsetStr, 10) || 0;
