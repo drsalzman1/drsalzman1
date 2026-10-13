@@ -1,27 +1,12 @@
-:root {
-    --safe-area-inset-top:    env(safe-area-inset-top);
-    --safe-area-inset-right:  env(safe-area-inset-right);
-    --safe-area-inset-bottom: env(safe-area-inset-bottom);
-    --safe-area-inset-left:   env(safe-area-inset-left);
-}
-
 @media (orientation: portrait) {
     :root {
         font-size: min(4.25svw, 2.55svh);
-        --top:    0px;
-        --right:  0px;
-        --bottom: 66px;
-        --left:   0px;
     }
 }
 
 @media (orientation: landscape) {
     :root {
         font-size: min(4.25svh, 2.575svw);
-        --top:    0px;
-        --right:  66px;
-        --bottom: 0px;
-        --left:   0px;
    }
 }
 
