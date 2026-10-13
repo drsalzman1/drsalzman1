@@ -2118,7 +2118,7 @@ function resizeEvent() {
 }
 
 // Initialize app, then await events
-async function loadEvent() {
+function loadEvent() {
     console.clear();                                            // clear console
     for (const img of document.querySelectorAll('img'))         // prevent user from dragging images
         img.draggable = false;
@@ -2163,9 +2163,9 @@ async function loadEvent() {
     // work around fullscreen rendering bug
     try {
         if (screen.orientation.type=='portrait-primary'||screen.orientation.type=='portrait-secondary')
-            await screen.orientation.lock('landscape');
+            screen.orientation.lock('landscape');
         else
-            await screen.orientation.lock('portrait');
+            screen.orientation.lock('portrait');
         screen.orientation.unlock();
     } catch {
         playTtl.textContent = 'Unsupported';
