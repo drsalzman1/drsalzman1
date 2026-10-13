@@ -2115,6 +2115,10 @@ function resizeEvent() {
         for (const c of cArray)
             moveCard(c, card[c].g, 0, card[c].g, card[c].z, card[c].f, 0);
     }
+}
+
+// Set padding when device orientation changes
+function orientationEvent() {
     const orientation = screen.orientation.type;
     let top    = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--safe-area-inset-top'));
     let right  = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--safe-area-inset-right'));
@@ -2134,10 +2138,7 @@ function resizeEvent() {
         left = right==0? 66 : right;
         break;
     }
-    playTtl.textContent = `${orientation}, ${top}, ${right}, ${bottom}, ${left}, ${vw}, ${vh}`;
-
-    // 2. Parse the string into a numeric pixel integer
-    // const bottomInsetPx = parseInt(bottomInsetStr, 10) || 0;
+    playTtl.textContent = `${orientation}, ${top}, ${right}, ${bottom}, ${left}, ${vw|0}, ${vh|0}`;
 }
 
 // Initialize app, then await events
@@ -2181,8 +2182,10 @@ function loadEvent() {
     if (location.origin != 'file://')                           // if not running from debugger, start service worker
         navigator.serviceWorker.register('service-worker.js', {updateViaCache: 'none'});*/
     setTimeout(resizeEvent);                                    // initialize size variables and card locations
+    setTimeout(orientationEvent);                               // initialize padding
 }
 
 onload        = loadEvent;                                  // prepare for load event
 onresize      = resizeEvent;                                // prepare for resize event
 oncontextmenu = contextmenuEvent;                           // prepare for context (right-click or long-press) menu events
+screen.orientation.addEventListener("change", orientationEvent);
