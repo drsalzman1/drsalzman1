@@ -18,18 +18,24 @@
     padding: 0em;
 }
 
-body {
-    position: absolute;
-    width: 100svw;
-    height: 100svh;
-    display: grid;
-    place-items: center;
+html, body {
+    position: fixed;
+    width: 100dvw;
+    height: 100dvh;
     background-color: darkgreen;
     color: white;
     -webkit-user-select: none;
     user-select: none;
     touch-action: none;
     overflow: hidden;
+}
+
+#wrapper {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
 }
 
 #playPag {

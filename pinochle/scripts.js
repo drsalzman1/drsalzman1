@@ -1974,7 +1974,6 @@ function showEvent(e) {
 
 // Notify players when user clicks the play ('Play single', 'Start multi', or 'Join multi') button
 function playBtnEvent() {
-    document.documentElement.requestFullscreen();
     playBtn.style.display = 'none';
     playMsg.textContent = 'Waiting for others.'
     playMsg.style.display = 'block';
