@@ -5,6 +5,9 @@ const dropSrc   = 'icons/drop.svg';
 const liftSrc   = 'icons/lift.svg';
 const chkdSrc   = 'icons/checked.svg';
 const unchkdSrc = 'icons/unchecked.svg';
+const downSrc   = 'icons/down.svg';
+const editSrc   = 'icons/edit.svg';
+const delSrc    = 'icons/del.svg';
 const jackSrc   = 'ranks/jack.svg';
 const queenSrc  = 'ranks/queen.svg';
 const kingSrc   = 'ranks/king.svg';
@@ -14,11 +17,6 @@ const diamndSrc = 'suits/diamond.svg';
 const clubSrc   = 'suits/club.svg';
 const heartSrc  = 'suits/heart.svg';
 const spadeSrc  = 'suits/spade.svg';
-
-// Image html files
-const downHTML  = '<img src=icons/down.svg>';
-const editHTML  = '<img src=icons/edit.svg>';
-const delHTML   = '<img src=icons/del.svg>';
 
 // Position values (or none)
 const none      = -1;                                       // also used elsewhere
@@ -189,6 +187,7 @@ const minCards  = [Array(values), Array(values), Array(values), Array(values)];
 const body      = document.getElementById('body');
 const playPag   = document.getElementById('playPag');
 const playIco   = document.getElementById('playIco');
+const playTtl   = document.getElementById('playTtl');
 const roleGrd   = document.getElementById('roleGrd');
 const soloBox   = document.getElementById('soloBox');
 const makeBox   = document.getElementById('makeBox');
@@ -202,10 +201,14 @@ const nameSpnNL = document.querySelectorAll('button span');
 const nameSpn   = [nameSpnNL[1], nameSpnNL[2], nameSpnNL[3], nameSpnNL[0]];
 const nameImgNL = document.querySelectorAll('button img');
 const nameImg   = [nameImgNL[1], nameImgNL[2], nameImgNL[3], nameImgNL[0]];
-const nameInpNL = document.querySelectorAll('#nameGrd input');
+const nameInpNL = document.querySelectorAll('.nameBlk input');
 const nameInp   = [nameInpNL[1], nameInpNL[2], nameInpNL[3], nameInpNL[0]];
 const nameLstNL = document.querySelectorAll('.nameLst');
 const nameLst   = [nameLstNL[1], nameLstNL[2], nameLstNL[3], nameLstNL[0]];
+const botBlkNL  = document.querySelectorAll('.botBlk');
+const botBlk    = [botBlkNL[1], botBlkNL[2], botBlkNL[3], botBlkNL[0]];
+const botBoxNL  = document.querySelectorAll('.botBlk input');
+const botBox    = [botBoxNL[1], botBoxNL[2], botBoxNL[3], botBoxNL[0]];
 const showGrd   = document.getElementById('showGrd');
 const showInp   = Array.from(document.querySelectorAll('#showGrd input'));
 const playBtn   = document.getElementById('playBtn');
@@ -257,11 +260,6 @@ const hrefTxt   = document.getElementById('hrefTxt');
 
 // Animation constants
 const dealTime  = 2000;                                 // milliseconds to deal all cards
-
-// Pick list category constants
-const newUser   = '(new user)';
-const newJoiner = '(new joiner)';
-const newRobot  = '(new robot)';
 
 // Legal player name characters
 const nameChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789' ";
@@ -330,9 +328,8 @@ let lead        = [];                                   // list of players ready
 let deal        = [];                                   // list of players ready for next deal, if any
 
 // User settings (from maker's perspective) (stored in user's sessionStorage and localStorage as defaults)
-let users       = ['South'];                            // list of past user names
-let joiners     = [];                                   // list of past joiner names
-let robots      = ['East', 'North', 'West'];            // list of past robot names
+let version     = '1.0';                                // version of user settings
+let names       = ['East', 'North', 'South', 'West'];   // list of past players
 let user        = 'South';                              // User name
 let role        = 'solo';                               // User role ('solo', 'make' or 'join')
 let player      = ['West', 'North', 'East', 'South'];   // player[p] is name of position p (can't be empty)
@@ -367,8 +364,6 @@ let takeE       = 0;                                    // points team E has tak
 let scoreO      = 0;                                    // team O's total points so far in game
 let scoreE      = 0;                                    // team E's total points so far in game
 let playZ       = -1000;                                // z-index for played card (auto-increments)
-let category    = '';                                   // category = newUser, newJoiner or newRobot
-
 
 // Dynamic sizes
 let vw0         = 0;                                    // previous view width
@@ -837,7 +832,7 @@ function showHints() {
                 else if (minCards[p][ace+s]>0)                              // otherwise, if ace in suit, display 'A'
                     infoChr[i++].innerHTML = 'A';
                 else if (capMaxCards(p,ace+s,p3)==0)                        // otherwise, if no ace in suit, display '↓'
-                    infoChr[i++].innerHTML = downHTML;
+                    infoChr[i++].innerHTML = `<img src=${downSrc}>`;
                 else                                                        // otherwise, display '?'
                     infoChr[i++].innerHTML = '?';
             }
@@ -1169,8 +1164,8 @@ function keys(o) {
 function saveSettings() {
     player = right(player);                                     // shift player array from user's to maker's perspective
     robot = right(robot);                                       // shift robot array from user's to maker's perspective
-    sessionStorage.pinochle = JSON.stringify({users, joiners, robots, user, role, player, robot, show});
-    localStorage.pinochle = JSON.stringify({users, joiners, robots, user, role, player, robot, show});
+    sessionStorage.pinochle = JSON.stringify({version, names, user, role, player, robot, show});
+    localStorage.pinochle = JSON.stringify({version, names, user, role, player, robot, show});
     player = left(player);                                      // shift player array from maker's to user's perspective
     robot = left(robot);                                        // shift robot array from maker's to user's perspective
     src = user = player[p3];
@@ -1181,7 +1176,7 @@ function saveSettings() {
 }
 
 // Reset playPag then show list l (or none)
-function resetLoadPag(l) {
+function resetPlayPag(l) {
     const waiting = getComputedStyle(playMsg).display=='block';
     roleGrd.style.opacity = waiting? '0.4' : '1.0';
     soloBox.src = role=='solo'? chkdSrc : unchkdSrc;
@@ -1197,6 +1192,9 @@ function resetLoadPag(l) {
         nameLst[p].innerHTML = '';
         nameLst[p].style.visibility = 'hidden';
         nameImg[p].src = dropSrc;
+        botBlk[p].style.opacity = waiting || role!='make'? '0.4' : '1.0';
+        botBox[p].src = robot[p]? chkdSrc : unchkdSrc;
+        botBox[p].disabled = waiting || role!='make';
     }
     showGrd.style.opacity = waiting||role=='join'? '0.4' : '1.0';
     for (const s of [counts, hands]) {
@@ -1204,27 +1202,12 @@ function resetLoadPag(l) {
         showInp[s].disabled = waiting||role=='join';
     }
     playBtn.textContent = role=='solo'? 'Play' : (role=='make'? 'Start' : 'Join');
+    playBtn.disabled = player.includes('TBD');
     if (l != none) {
-        let h = '';
-        if (l==p3 || role!='solo') {
-            h += `<div class=listCat><span>${l==p3?newUser:newJoiner}</span>${editHTML}</div>`;
-            for (const n of l==p3?users:joiners)
-                if (!player.includes(n))
-                    h += `<div class=listItm><span>${n}</span>${delHTML}</div>`;
-        }
-        if (l != p3) {
-            h += `<div ${role!='solo'?'id=robotCat':''} class=listCat><span>${newRobot}</span>${editHTML}</div>`;
-            for (const n of robots)
-                if (!player.includes(n))
-                    h += `<div class=listItm><span>${n}</span>${delHTML}</div>`;
-        }
+        let h = `<div onclick=newEvent(event)><span><i>New name</i></span><img src=${editSrc}></div>`;
+        for (const n of names)
+            h += `<div><span onclick=namEvent(event)>${n}</span><img src=${delSrc} onclick=delEvent(event)></div>`;
         nameLst[l].innerHTML = h;
-        for (const cat of document.querySelectorAll('.listCat'))
-            cat.addEventListener('click', catImgEvent);
-        for (const img of document.querySelectorAll('.listItm img'))
-            img.addEventListener('click', itmImgEvent);
-        for (const spn of document.querySelectorAll('.listItm span'))
-            spn.addEventListener('click', itmSpnEvent);
         nameLst[l].style.visibility = 'visible';
         nameImg[l].src = liftSrc;
     }
@@ -1290,7 +1273,7 @@ function appCloseEvent() {
 
 // Hide current helpPag (if any); display new helpPag topic
 function helpEvent(topic) {
-    resetLoadPag(none);
+    resetPlayPag(none);
     for (const div of helpPag)
         if (div.id == topic) {
             if (helpStack.length)
@@ -1886,14 +1869,16 @@ function playerMsgEvent(msg) {
     show = msg.show;                                            // show array is from msg.show
     dealer = role=='join'? right(p3) : p3;                      // dealer is p3 from user's perspective
     saveSettings();
-    resetLoadPag(none);
+    resetPlayPag(none);
 }
 
 // Set role when a role box is clicked
 function roleEvent(r) {
     role = r;
+    if (role == 'solo')
+        robot[p0] = robot[p1] = robot[p2] = true;
     saveSettings();
-    resetLoadPag(none);
+    resetPlayPag(none);
 }
 
 // Update playPag based on nameInp's keydown event
@@ -1905,79 +1890,78 @@ function nameInpKeyEvent(e) {
     if (k=='Escape')
         nameInp[p].value = '';
     if (k=='Enter')
-        playBtn.focus();
+        nameInp[p].blur();
     e.preventDefault();
 }
 
 // Update playPag when nameInp loses focus
 function nameInpBlurEvent(e) {
     const p = nameInp.indexOf(e.target);
-    nameInp[p].value = nameInp[p].value.trim();
-    if (nameInp[p].value != '') {
-        player[p] = nameInp[p].value;
-        robot[p] = category==newRobot;
-        const list = category==newUser? users : (category==newJoiner? joiners : robots);
-        if (!list.includes(player[p])) {
-            list.push(player[p]);
-            list.sort();
+    const name = nameInp[p].value.trim();
+    if (name != '') {
+        if (player.includes(name))
+            player[player.indexOf(name)] = 'TBD';
+        player[p] = name;
+        if (!names.includes(name)) {
+            names.push(name);
+            names.sort();
         }
         saveSettings();
     }
-    resetLoadPag(none);
+    resetPlayPag(none);
 }
 
-// Prepare for user to enter a new name when a nameLst catagory image is clicked
-function catImgEvent(e) {
-    const p = nameLst.indexOf(e.target.parentElement.parentElement);
-    category = e.target.parentElement.textContent;
-    resetLoadPag(none);
+// Prepare to enter a name when a nameList edit icon is clicked
+function newEvent(e) {
+    const p = nameLst.indexOf(e.target.parentElement.parentElement.parentElement);
+    resetPlayPag(none);
     nameBtn[p].style.display = 'none';
     nameInp[p].value = '';
-    nameInp[p].placeholder = `Enter new ${category==newUser?'user':(category==newJoiner?'joiner':'robot')}`;
+    nameInp[p].placeholder = 'Enter new name';
     nameInp[p].style.display = 'block';
     nameInp[p].focus();
 }
 
-// Delete name when a nameLst item image is clicked
-function itmImgEvent(e) {
+// Delete name when a nameLst del icon is clicked
+function delEvent(e) {
     const p = nameLst.indexOf(e.target.parentElement.parentElement);
-    const itm = e.target.previousElementSibling.textContent;
-    let elm = e.target.parentElement;
-    while (elm.classList.contains('listItm'))
-        elm = elm.previousElementSibling;
-    category = elm.firstElementChild.innerText;
-    const list = category==newUser? users : (category==newJoiner? joiners : robots);
-    list.splice(list.indexOf(itm), 1);
+    const name = e.target.previousElementSibling.textContent;
+    if (player.includes(name))
+        player[player.indexOf(name)] = 'TBD';
+    names.splice(names.indexOf(name), 1);
     saveSettings();
-    resetLoadPag(p);
+    resetPlayPag(p);
 } 
 
-// Select a name when a nameLst item span is clicked
-function itmSpnEvent(e) {
+// Select a name when a nameLst name is clicked
+function namEvent(e) {
     const p = nameLst.indexOf(e.target.parentElement.parentElement);
-    const itm = e.target.textContent;
-    let elm = e.target.parentElement;
-    while (elm.classList.contains('listItm'))
-        elm = elm.previousElementSibling;
-    category = elm.firstElementChild.innerText;
-    player[p] = itm;
-    robot[p] = category==newRobot;
+    const name = e.target.textContent;
+    if (player.includes(name))
+        player[player.indexOf(name)] = 'TBD';
+    player[p] = name;
     saveSettings();
-    resetLoadPag(none);
+    resetPlayPag(none);
     if (p == p2)
         showInp[0].focus();
     else
         nameBtn[next[p]].focus();
 }
 
-// Open or close a nameLst when a nameBtn is clicked
+// Open or close a nameLst when a nameBtn or drop icon is clicked
 function nameBtnEvent(e) {
     const p = Math.max(nameBtn.indexOf(e.target), nameBtn.indexOf(e.target.parentElement));
     e.preventDefault();
     if (getComputedStyle(nameLst[p]).visibility == 'hidden')
-        resetLoadPag(p);
+        resetPlayPag(p);
     else
-        resetLoadPag(none);
+        resetPlayPag(none);
+}
+
+// Toggle robot[p] when robot box is clicked
+function botBoxEvent(p) {
+    robot[p] = !robot[p];
+    resetPlayPag(none);
 }
 
 // Toggle show when a show box is clicked
@@ -1985,7 +1969,7 @@ function showEvent(e) {
     const s = showInp.indexOf(e.target);
     show[s] = !show[s];
     saveSettings();
-    resetLoadPag(none);
+    resetPlayPag(none);
 }
 
 // Notify players when user clicks the play ('Play single', 'Start multi', or 'Join multi') button
@@ -2000,7 +1984,7 @@ function playBtnEvent() {
         sendMsg({player:player, robot:robot, show:show});
         sendMsg({play:user});
     }
-    resetLoadPag(none);
+    resetPlayPag(none);
 }
 
 // Process websocket close events
@@ -2142,22 +2126,23 @@ function loadEvent() {
         cardImg[c].src = backImg[0].src;
         cardImg[c].style.transform = 'translate(-2.8em, -2em)';
     }
-    if ('pinochle' in sessionStorage) {                         // if session restart,
-        const r = JSON.parse(sessionStorage.pinochle);              // reload sesson setup from maker's perspective
-        users=r.users,joiners=r.joiners,robots=r.robots,user=r.user,role=r.role,player=r.player,robot=r.robot,show=r.show;
-    } else if ('pinochle' in localStorage) {                    // if game is saved
-        const r = JSON.parse(localStorage.pinochle);                // reload last saved game from maker's perspective
-        users=r.users,joiners=r.joiners,robots=r.robots,user=r.user,role=r.role,player=r.player,robot=r.robot,show=r.show;
-    }
+    let s = {};                                                 // assume no session or local setup
+    if ('pinochle' in sessionStorage)                           // if session setup exists,
+        s = JSON.parse(sessionStorage.pinochle);                    // recall session setup from maker's perspective
+    else if ('pinochle' in localStorage)                        // otherwise, if local setup exists,
+        s = JSON.parse(localStorage.pinochle);                      // recall local setup from maker's perspective
+    if (s.version == version)                                   // if recalled setup version is ok, replace default setup
+        names=s.names, user=s.user, role=s.role, player=s.player, robot=s.robot, show=s.show;
     shift = (player.indexOf(user) + 1) % positions;             // shift = 1/2/3/0 for user==msg.player[p0/p1/p2/p3]
     player = left(player);                                      // shift player array to user's perspective
     robot = left(robot);                                        // shift robot array to user's perspective
     saveSettings();                                             // save game settings
-    resetLoadPag(none);                                         // initialize playPag
+    resetPlayPag(none);                                         // initialize playPag
     playMsg.style.display = 'none';
     gamePag.style.display = 'none';
     playPag.style.display = 'flex';
     nameBtn[p3].focus();
+    setTimeout(resizeEvent);                                    // initialize size variables and card locations
 
     if (navigator.onLine && location.hostname) {                // if browser is online and not running from debugger,
         const hst = location.hostname;
@@ -2170,10 +2155,10 @@ function loadEvent() {
         setInterval(wsIntervalEvent, 1000);                         // start heartbeat
         hrefTxt.textContent = `${location.protocol}//${hst}${location.port?(':'+location.port):''}`;
     }
-    /*
-    if (location.origin != 'file://')                           // if not running from debugger, start service worker
+    
+    // if not running from debugger, start service worker
+    /*if (location.origin != 'file://')
         navigator.serviceWorker.register('service-worker.js', {updateViaCache: 'none'});*/
-    setTimeout(resizeEvent);                                    // initialize size variables and card locations
 }
 
 onload        = loadEvent;                                  // prepare for load event

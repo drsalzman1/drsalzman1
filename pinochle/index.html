@@ -33,54 +33,60 @@
                     <input id=joinBox type=image src=icons/unchecked.svg onclick="roleEvent('join')">
                 </div>
             </div>
-            <div id=nameGrd>
-                <div class=nameBlk>
-                    <label for=nameInp3>You:</label>
-                    <div>
-                        <button onclick=nameBtnEvent(event)><span>&nbsp;</span><img src=icons/drop.svg></button>
-                        <input id=nameInp3 onkeydown=nameInpKeyEvent(event) onblur=nameInpBlurEvent(event)>
-                        <div id=nameLst3 class=nameLst></div>
-                    </div>
-                </div>
-                <div class=botBlk>
-                    <label for=botBox3 style=display:none>Robot:</label>
-                    <input id=botBox3 type=image src=icons/checked.svg onclick=botBoxEvent(3) style=display:none>
-                </div>
-                <div class=nameBlk>
-                    <label for=nameInp0>Left:</label>
+            <div id=nameRow0 class=nameRow>
+                <div id=nameBlk0 class=nameBlk>
+                    <label for=nameInp0>You:</label>
                     <div>
                         <button onclick=nameBtnEvent(event)><span>&nbsp;</span><img src=icons/drop.svg></button>
                         <input id=nameInp0 onkeydown=nameInpKeyEvent(event) onblur=nameInpBlurEvent(event)>
                         <div id=nameLst0 class=nameLst></div>
                     </div>
                 </div>
-                <div class=botBlk>
+                <div id=botBlk0 class=botBlk>
                     <label for=botBox0>Robot:</label>
                     <input id=botBox0 type=image src=icons/checked.svg onclick=botBoxEvent(0)>
                 </div>
-                <div class=nameBlk>
-                    <label for=nameInp1>Across:</label>
+            </div>
+            <div id=nameRow1 class=nameRow>
+                <div id=nameBlk1 class=nameBlk>
+                    <label for=nameInp1>Left:</label>
                     <div>
                         <button onclick=nameBtnEvent(event)><span>&nbsp;</span><img src=icons/drop.svg></button>
                         <input id=nameInp1 onkeydown=nameInpKeyEvent(event) onblur=nameInpBlurEvent(event)>
                         <div id=nameLst1 class=nameLst></div>
                     </div>
                 </div>
-                <div class=botBlk>
+                <div id=botBlk1 class=botBlk>
                     <label for=botBox1>Robot:</label>
                     <input id=botBox1 type=image src=icons/checked.svg onclick=botBoxEvent(1)>
                 </div>
-                <div class=nameBlk>
-                    <label for=nameInp2>Right:</label>
+            </div>
+            <div id=nameRow2 class=nameRow>
+                <div id=nameBlk2 class=nameBlk>
+                    <label for=nameInp2>Across:</label>
                     <div>
                         <button onclick=nameBtnEvent(event)><span>&nbsp;</span><img src=icons/drop.svg></button>
                         <input id=nameInp2 onkeydown=nameInpKeyEvent(event) onblur=nameInpBlurEvent(event)>
                         <div id=nameLst2 class=nameLst></div>
                     </div>
                 </div>
-                <div class=botBlk>
+                <div id=botBlk2 class=botBlk>
                     <label for=botBox2>Robot:</label>
                     <input id=botBox2 type=image src=icons/checked.svg onclick=botBoxEvent(2)>
+                </div>
+            </div>
+            <div id=nameRow3 class=nameRow>
+                <div id=nameBlk3 class=nameBlk>
+                    <label for=nameInp3>Right:</label>
+                    <div>
+                        <button onclick=nameBtnEvent(event)><span>&nbsp;</span><img src=icons/drop.svg></button>
+                        <input id=nameInp3 onkeydown=nameInpKeyEvent(event) onblur=nameInpBlurEvent(event)>
+                        <div id=nameLst3 class=nameLst></div>
+                    </div>
+                </div>
+                <div id=botBlk3 class=botBlk>
+                    <label for=botBox3>Robot:</label>
+                    <input id=botBox3 type=image src=icons/checked.svg onclick=botBoxEvent(3)>
                 </div>
             </div>
             <div id=showGrd>
@@ -96,27 +102,27 @@
             </div>
             <div id=playBtns>
                 <button id=playBtn onclick=playBtnEvent()>&nbsp;</button>
-                <div id=playMsg>Waiting for others</div>
+                <div id=playTxt>Waiting for others</div>
             </div>
         </div>
         <div id=gamePag>
             <img id=gameHelp class=helpIco src=icons/help.svg alt=help onclick="helpEvent('bidHelp')">
             <img id=trumpIco src=suits/club.svg alt=info onclick=infoEvent()>
-            <div id=trumpMsg></div>
+            <div id=trumpTxt></div>
             <img id=gameIco src=icons/offline.svg alt=offline>
             <img class=appCloseIco src=icons/close.svg alt=close onclick=appCloseEvent()>
-            <div id=gameTxt>
-                <div id=bidTxt>
+            <div id=gameDiv>
+                <div id=bidDiv>
                     <div id=meldTbl>
                         <div id=trumpCol>
-                            If Trump<br>
+                            If trump:<br>
                             <img src=suits/spade.svg alt=spade><br>
                             <img src=suits/heart.svg alt=heart><br>
                             <img src=suits/club.svg alt=club><br>
                             <img src=suits/diamond.svg>
                         </div>
                         <div id=meldColumn>
-                            Total Meld<br>
+                            Total meld:<br>
                             <span></span><br>
                             <span></span><br>
                             <span></span><br>
@@ -128,26 +134,26 @@
                         <input id=lessBtn type=button value='<' onclick=lessBtnEvent()>
                         <input id=bidBtn type=button value='50' onclick=bidBtnEvent()>
                         <input id=moreBtn type=button value='>' onclick=moreBtnEvent()>
-                        <div id=bidMsg>Waiting for others</div>
+                        <div id=bidTxt>Waiting for others</div>
                     </div>
                 </div>
-                <div id=trumpTxt>
+                <div id=trumpDiv>
                     <div><input type=button value=Spades onclick=trumpBtnEvent(15)></div>
                     <div><input type=button value=Hearts onclick=trumpBtnEvent(10)></div>
                     <div><input type=button value=Clubs onclick=trumpBtnEvent(5)></div>
                     <div><input type=button value=Diamonds onclick=trumpBtnEvent(0) ></div>
                 </div>
-                <div id=needTxt>
+                <div id=needDiv>
                     <p>You picked hearts.</p>
                     <p>Your meld is 20.<br>Their meld is 20.</p>
                     <p>You need 30 points.<br>They need 20 points.</p>
                     <div id=needBtns>
                         <input id=okBtn type=button value=OK onclick=okBtnEvent()>
                         <input id=tossBtn type=button value=Toss onclick=tossBtnEvent()>
-                        <div id=needMsg>Waiting for others</div>
+                        <div id=needTxt>Waiting for others</div>
                     </div>
                 </div>
-                <div id=handTxt>
+                <div id=handDiv>
                     <div id=handGrd>
                           <div></div>   <div><u>Your</u></div> <div><u>Their</u></div>
                         <div>Old</div>       <div></div>           <div></div>
@@ -158,11 +164,11 @@
                     </div>
                     <p id=handPar></p>
                     <input id=handBtn type=button value=OK onclick=handBtnEvent()>
-                    <div id=handMsg>Waiting for others</div>
+                    <div id=handTxt>Waiting for others</div>
                 </div>
-                <div id=infoTxt>
+                <div id=infoDiv>
                     <img src=icons/close.svg alt=close onclick=infoCloseEvent()>
-                    <div id=infoBiddr>Grampy won bid.</div>
+                    <div id=infoBdr>Grampy won bid.</div>
                     <div id=infoGrd>
                         <u>Out</u><img src=suits/spade.svg><img src=suits/heart.svg><img src=suits/club.svg><img src=suits/diamond.svg>
                         <span>Aces</span>  <div>0</div> <div>1</div> <div>2</div> <div>3</div>
@@ -203,8 +209,14 @@
                     </div>
                 </div>
                 <div id=infoBlk3>
-                    <span class=infoNam></span>
-                    <span class=infoBid></span>
+                    <div class=infoNam></div>
+                    <div class=infoBid></div>
+                    <div class=infoHnt>
+                        <span>A</span><img src=suits/spade.svg>
+                        <span>L</span><img src=suits/heart.svg>
+                        <span>?</span><img src=suits/club.svg>
+                        <span>X</span><img src=suits/diamond.svg>
+                    </div>
                 </div>
             </div>
             <div id=slideImg>
@@ -232,7 +244,7 @@
         <div id=helpPag>
             <div id=playHelp>
                 <img src=icons/close.svg alt=close onclick=helpCloseEvent()>
-                <b>Double Deck Pinochle v3.0</b>
+                <b>Double Deck Pinochle v<span id=vTxt></span></b>
                 <p>
                     This <a href="javascript:helpEvent('loadShot')">page</a> allows you to start or join a game:
                 </p>
@@ -731,9 +743,9 @@
             <button onclick=termOkEvent()>Ok</button>&nbsp;
             <button onclick=termCancelEvent()>Cancel</button>
         </dialog>
-        <dialog id=quitDlg>
-            <span id=quitNam>Grampy</span> terminated this game.<br><br>
-            <button onclick=quitOkEvent()>Ok</button>
+        <dialog id=leftDlg>
+            <span id=leftNam>Grampy</span> left this game.<br><br>
+            <button onclick=leftOkEvent()>Ok</button>
         </dialog>
     </body>
 </html>

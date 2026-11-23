@@ -4,7 +4,6 @@
         <meta charset=utf-8>
         <title>Pinochle</title>
         <meta name=viewport content='width=device-width, initial-scale=1, viewport-fit=cover'>
-        <meta name=theme-color content=darkgreen>
         <link rel=manifest href=pinochle.webmanifest>
         <link rel=icon href=icons/any.png>
         <link rel=stylesheet href=styles.css>
@@ -14,7 +13,7 @@
         <div id=playPag>
             <img class=helpIco src=icons/help.svg alt=help onclick="helpEvent('playHelp')">
             <img id=playIco src=icons/offline.svg alt=offline>
-            <img class=whiteCloseIco src=icons/close.svg alt=close onclick=appCloseEvent()>
+            <img class=appCloseIco src=icons/close.svg alt=close onclick=appCloseEvent()>
             <div id=playTtl>
                 Welcome to Double Deck Pinochle!
             </div>
@@ -36,36 +35,52 @@
             </div>
             <div id=nameGrd>
                 <div class=nameBlk>
-                    <label for=nameInp3>Your name:</label>
+                    <label for=nameInp3>You:</label>
                     <div>
                         <button onclick=nameBtnEvent(event)><span>&nbsp;</span><img src=icons/drop.svg></button>
                         <input id=nameInp3 onkeydown=nameInpKeyEvent(event) onblur=nameInpBlurEvent(event)>
                         <div id=nameLst3 class=nameLst></div>
                     </div>
                 </div>
+                <div class=botBlk>
+                    <label for=botBox3 style=display:none>Robot:</label>
+                    <input id=botBox3 type=image src=icons/checked.svg onclick=botBoxEvent(3) style=display:none>
+                </div>
                 <div class=nameBlk>
-                    <label for=nameInp0>Left name:</label>
+                    <label for=nameInp0>Left:</label>
                     <div>
                         <button onclick=nameBtnEvent(event)><span>&nbsp;</span><img src=icons/drop.svg></button>
                         <input id=nameInp0 onkeydown=nameInpKeyEvent(event) onblur=nameInpBlurEvent(event)>
                         <div id=nameLst0 class=nameLst></div>
                     </div>
                 </div>
+                <div class=botBlk>
+                    <label for=botBox0>Robot:</label>
+                    <input id=botBox0 type=image src=icons/checked.svg onclick=botBoxEvent(0)>
+                </div>
                 <div class=nameBlk>
-                    <label for=nameInp1>Across name:</label>
+                    <label for=nameInp1>Across:</label>
                     <div>
                         <button onclick=nameBtnEvent(event)><span>&nbsp;</span><img src=icons/drop.svg></button>
                         <input id=nameInp1 onkeydown=nameInpKeyEvent(event) onblur=nameInpBlurEvent(event)>
                         <div id=nameLst1 class=nameLst></div>
                     </div>
                 </div>
+                <div class=botBlk>
+                    <label for=botBox1>Robot:</label>
+                    <input id=botBox1 type=image src=icons/checked.svg onclick=botBoxEvent(1)>
+                </div>
                 <div class=nameBlk>
-                    <label for=nameInp2>Right name:</label>
+                    <label for=nameInp2>Right:</label>
                     <div>
                         <button onclick=nameBtnEvent(event)><span>&nbsp;</span><img src=icons/drop.svg></button>
                         <input id=nameInp2 onkeydown=nameInpKeyEvent(event) onblur=nameInpBlurEvent(event)>
                         <div id=nameLst2 class=nameLst></div>
                     </div>
+                </div>
+                <div class=botBlk>
+                    <label for=botBox2>Robot:</label>
+                    <input id=botBox2 type=image src=icons/checked.svg onclick=botBoxEvent(2)>
                 </div>
             </div>
             <div id=showGrd>
@@ -89,7 +104,7 @@
             <img id=trumpIco src=suits/club.svg alt=info onclick=infoEvent()>
             <div id=trumpMsg></div>
             <img id=gameIco src=icons/offline.svg alt=offline>
-            <img class=whiteCloseIco src=icons/close.svg alt=close onclick=appCloseEvent()>
+            <img class=appCloseIco src=icons/close.svg alt=close onclick=appCloseEvent()>
             <div id=gameTxt>
                 <div id=bidTxt>
                     <div id=meldTbl>
@@ -146,7 +161,7 @@
                     <div id=handMsg>Waiting for others</div>
                 </div>
                 <div id=infoTxt>
-                    <img class=blackCloseIco src=icons/close.svg alt=close onclick=infoCloseEvent()>
+                    <img src=icons/close.svg alt=close onclick=infoCloseEvent()>
                     <div id=infoBiddr>Grampy won bid.</div>
                     <div id=infoGrd>
                         <u>Out</u><img src=suits/spade.svg><img src=suits/heart.svg><img src=suits/club.svg><img src=suits/diamond.svg>
@@ -216,7 +231,7 @@
         </div>
         <div id=helpPag>
             <div id=playHelp>
-                <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
+                <img src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Double Deck Pinochle v3.0</b>
                 <p>
                     This <a href="javascript:helpEvent('loadShot')">page</a> allows you to start or join a game:
@@ -244,7 +259,7 @@
                 </div>
             </div>
             <div id=tutorial>
-                <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
+                <img src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Tutorial</b>
                 <p>
                     Click these links to learn how to play double deck Pinochle:
@@ -261,7 +276,7 @@
                 </ul> 
             </div>
             <div id=setup>
-                <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
+                <img src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Set Up</b>
                 <p>
                     To start a game:
@@ -292,7 +307,7 @@
                 </div>
             </div>
             <div id=bidding>
-                <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
+                <img src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Bidding</b>
                 <p>
                     The player to the dealer's left must bid at least 50 or pass.
@@ -324,7 +339,7 @@
                 </div>
             </div>
             <div id=playing>
-                <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
+                <img src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Playing</b>
                 <p>
                     If you win the bid without a marriage in trump, you must toss the hand.
@@ -347,7 +362,7 @@
                 </div>
             </div>
             <div id=scoring>
-                <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
+                <img src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Scoring</b>
                 <p>
                     After each hand, each team counts their take.
@@ -367,7 +382,7 @@
                 </div>
             </div>
             <div id=comm>
-                <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
+                <img src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Communicating</b>
                 <p>
                     You can't directly communicate your cards or strategy to your partner.
@@ -392,7 +407,7 @@
                 </div>
             </div>
             <div id=counts>
-                <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
+                <img src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Counts</b>
                 <p>
                     You know your own cards.
@@ -422,7 +437,7 @@
                 </div>
             </div>
             <div id=strategy>
-                <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
+                <img src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Strategy</b>
                 <p>
                     You should bid up to a limit based on your meld, your estimate of your partner's meld (perhaps based on a jump bid),
@@ -447,7 +462,7 @@
                 </div>
             </div>
             <div id=terms>
-                <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
+                <img src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Terms</b>
                 <ul>
                     <li>Players: the four named players</li>
@@ -471,7 +486,7 @@
                 </ul>
             </div>
             <div id=meld>
-                <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
+                <img src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Meld</b>
                 <p>
                     The valuable sets of cards in your hand.
@@ -502,7 +517,7 @@
                 </div>
             </div>
             <div id=take>
-                <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
+                <img src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Take</b>
                 <p>
                     Points your team earns by winning tricks.
@@ -531,7 +546,7 @@
                 </div>
             </div>
             <div id=startHelp>
-                <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
+                <img src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Start Help</b>
                 <p>
                     This <a href="javascript:helpEvent('startShot')">page</a> allows you to start a new game:
@@ -559,7 +574,7 @@
                 </div>
             </div>
             <div id=joinHelp>
-                <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
+                <img src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Join Help</b>
                 <p>
                     This <a href="javascript:helpEvent('joinShot')">page</a> allows you to join an existing game:
@@ -581,7 +596,7 @@
                 </div>
             </div>
             <div id=bidHelp>
-                <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
+                <img src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Bid Help</b>
                 <p>
                     This <a href="javascript:helpEvent('bidShot')">page</a> allows you to bid this hand:
@@ -605,7 +620,7 @@
                 </div>
             </div>
             <div id=trumpHelp>
-                <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
+                <img src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Trump Help</b>
                 <p>
                     This <a href="javascript:helpEvent('trumpShot')">page</a> allows you to pick trump:
@@ -627,7 +642,7 @@
                 </div>
             </div>
             <div id=tossHelp>
-                <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
+                <img src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Toss Help</b>
                 <p>
                     This <a href="javascript:helpEvent('tossShot')">page</a> allows you to toss a hand:
@@ -656,7 +671,7 @@
                 </div>
             </div>
             <div id=playHelp>
-                <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
+                <img src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Play Help</b>
                 <p>
                     This <a href="javascript:helpEvent('playShot')">page</a> allows you to play cards:
@@ -684,7 +699,7 @@
                 </div>
             </div>
             <div id=handHelp>
-                <img class=blackCloseIco src=icons/close.svg alt=close onclick=helpCloseEvent()>
+                <img src=icons/close.svg alt=close onclick=helpCloseEvent()>
                 <b>Hand Help</b>
                 <p>
                     This <a href="javascript:helpEvent('handShot')">page</a> shows how the hand was scored:

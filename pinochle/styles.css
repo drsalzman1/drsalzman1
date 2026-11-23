@@ -39,7 +39,7 @@ body {
     padding: 0.4em;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: start;
     align-items: center;
     text-align: center;
     overflow: hidden;
@@ -70,11 +70,12 @@ body {
 }
 
 #playTtl {
+    margin-top: 2.5em;
     font-size: larger;
 }
 
 #roleGrd {
-    margin-top: 3em;
+    margin-top: 2em;
     width: 22.3em;
     display: grid;
     grid-template-columns: auto 1fr auto 1fr auto;
@@ -84,23 +85,22 @@ body {
 
 #roleGrd input {
     height: 0.8em;
+    width: 0.8em;
     filter: invert(100%);
 }
 
-#nameGrd {
+.nameRow {
     margin-top: 1em;
-    margin-bottom: 1em;
     display: grid;
     grid-template-columns: auto auto;
     column-gap: 1em;
-    row-gap: 1em;
     text-align: right;
 }
 
 .nameBlk {
     position: relative;
     display: grid;
-    grid-template-columns: 4em auto;
+    grid-template-columns: 3.5em auto;
     column-gap: 0.3em;
 }
 
@@ -143,12 +143,20 @@ body {
     visibility: hidden;
 }
 
-#nameLst3, #nameLst0 {
-    max-height: calc(50dvh + 1em);
+#nameLst0 {
+    max-height: calc(100dvh - 10.3em);
 }
 
-#nameLst1, #nameLst2 {
-    max-height: calc(50dvh - 2.3em);
+#nameLst1 {
+    max-height: calc(100dvh - 12.6em);
+}
+
+#nameLst2 {
+    max-height: calc(100dvh - 14.9em);
+}
+
+#nameLst3 {
+    max-height: calc(100dvh - 17.2em);
 }
 
 .nameLst div {
@@ -165,14 +173,20 @@ body {
     height: 0.7em;
 }
 
+.botBlk {
+    visibility: hidden;
+}
+
 .botBlk input {
     height: 0.8em;
+    width: 0.8em;
     filter: invert(100%);
 }
 
 #showGrd {
     width: 22.3em;
     display: grid;
+    margin-top: 1em;
     grid-template-columns: auto 1fr auto;
     justify-content: center;
     text-align: right;
@@ -180,11 +194,12 @@ body {
 
 #showGrd input {
     height: 0.8em;
+    width: 0.8em;
     filter: invert(100%);
 }
 
 #playBtns {
-    margin-top: 3em;
+    margin-top: 2em;
 }
 
 #playBtns button {
@@ -196,7 +211,7 @@ body {
     padding-right: 0.4em;
 }
 
-#playMsg {
+#playTxt {
     height: 1.3em;
     display: none;
 }
@@ -218,7 +233,7 @@ body {
     display: none;
 }
 
-#trumpMsg {
+#trumpTxt {
     position: absolute;
     left: 4.3em; /*2.9em;*/
     top: 0.4em;
@@ -226,7 +241,7 @@ body {
     text-align: left;
 }
 
-#gameTxt {
+#gameDiv {
     position: absolute;
     top: calc(50dvh - 4.28em);
     left: calc(50dvw - 5.52em);
@@ -238,7 +253,7 @@ body {
     align-items: center;
 }
 
-#bidTxt {
+#bidDiv {
     width: 100%;
     height: 100%;
     display: none;
@@ -276,12 +291,12 @@ body {
     background-color: white;
 }
 
-#bidMsg {
+#bidTxt {
     height: 1.3em;
     width: 100%;
 }
 
-#trumpTxt {
+#trumpDiv {
     width: 100%;
     height: 100%;
     display: none;
@@ -291,14 +306,14 @@ body {
     text-align: center;
 }
 
-#trumpTxt input {
+#trumpDiv input {
     width: 8em;
     height: 1.3em;
     border: none;
     background-color: white;
 }
 
-#needTxt {
+#needDiv {
     width: 100%;
     height: 100%;
     display: none;
@@ -322,12 +337,12 @@ body {
     background-color: white;
 }
 
-#needMsg {
+#needTxt {
     height: 1.3em;
     display: none;
 }
 
-#handTxt {
+#handDiv {
     width: 80dvw;
     display: none;
     text-align: center;
@@ -351,11 +366,11 @@ body {
     background-color: white;
 }
 
-#handMsg {
+#handTxt {
     height: 1.3em;
 }
 
-#infoTxt {
+#infoDiv {
     position: absolute;
     width: 100%;
     height: 105%;
@@ -368,14 +383,14 @@ body {
     background-color: white;
 }
 
-#infoTxt>img {
+#infoDiv>img {
     position: absolute;
     top: 0.55em;
     right: 0.4em;
     height: 0.8em;
 }
 
-#infoTxt #infoGrd {
+#infoDiv #infoGrd {
     width: 100%;
     display: grid;
     grid-template-columns: auto 1.5em 1.5em 1.5em 1.5em;
@@ -383,7 +398,7 @@ body {
     text-align: center;
 }
 
-#infoTxt #infoGrd img {
+#infoDiv #infoGrd img {
     position: relative;
     top: 0.1em;
     left: 0.3em;
@@ -397,80 +412,7 @@ body {
     z-index: -1000;
 }
 
-#infoBlk0 .infoNam {
-    position: absolute;
-    left: 0.4em;
-    width: 5.6em;
-}
-
-#infoBlk0 .infoBid {
-    position: absolute;
-    left: 0.4em;
-    width: 5.6em;
-}
-
-#infoBlk0 .infoHnt {
-    position: absolute;
-    font-size: 0.85em;
-    line-height: 1.2em;
-    left: 0.4em;
-    width: 7em;
-}
-
-#infoBlk0 img {
-    height: 0.73em;
-    filter: invert(100%);
-}
-
-#infoBlk1 {
-    position: absolute;
-    top: 0.44em;
-    left: calc(50dvw - 10em);
-    width: 20em;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-}
-
-#infoBlk1 .infoBid {
-    margin-left: 0.5em;
-}
-
-#infoBlk1 .infoHnt {
-    margin-left: 0.5em;
-}
-
-#infoBlk1 img {
-    height: 0.73em;
-    filter: invert(100%);
-}
-
-#infoBlk2 .infoNam {
-    position: absolute;
-    left: calc(100dvw - 6em);
-    width: 5.6em;
-}
-
-#infoBlk2 .infoBid {
-    position: absolute;
-    left: calc(100dvw - 6em);
-    width: 5.6em;
-}
-
-#infoBlk2 .infoHnt {
-    position: absolute;
-    font-size: 0.85em;
-    line-height: 1.2em;
-    left: calc(100dvw - 7.4em);
-    width: 7em;
-}
-
-#infoBlk2 img {
-    height: 0.73em;
-    filter: invert(100%);
-}
-
-#infoBlk3 {
+#infoBlk0 {
     position: absolute;
     top: calc(100dvh - 1.6em);
     left: calc(50dvw - 10em);
@@ -480,8 +422,85 @@ body {
     justify-content: center;
 }
 
-#infoBlk3 .infoBid {
+#infoBlk0 .infoBid {
     margin-left: 0.5em;
+}
+
+#infoBlk0 .infoHnt {
+    display: none;;
+}
+
+#infoBlk1 .infoNam {
+    position: absolute;
+    left: 0.4em;
+    width: 5.6em;
+}
+
+#infoBlk1 .infoBid {
+    position: absolute;
+    left: 0.4em;
+    width: 5.6em;
+}
+
+#infoBlk1 .infoHnt {
+    position: absolute;
+    font-size: 0.85em;
+    line-height: 1.2em;
+    left: 0.4em;
+    width: 7em;
+}
+
+#infoBlk1 img {
+    height: 0.73em;
+    filter: invert(100%);
+}
+
+#infoBlk2 {
+    position: absolute;
+    top: 0.44em;
+    left: calc(50dvw - 10em);
+    width: 20em;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+#infoBlk2 .infoBid {
+    margin-left: 0.5em;
+}
+
+#infoBlk2 .infoHnt {
+    margin-left: 0.5em;
+}
+
+#infoBlk2 img {
+    height: 0.73em;
+    filter: invert(100%);
+}
+
+#infoBlk3 .infoNam {
+    position: absolute;
+    left: calc(100dvw - 6em);
+    width: 5.6em;
+}
+
+#infoBlk3 .infoBid {
+    position: absolute;
+    left: calc(100dvw - 6em);
+    width: 5.6em;
+}
+
+#infoBlk3 .infoHnt {
+    position: absolute;
+    font-size: 0.85em;
+    line-height: 1.2em;
+    left: calc(100dvw - 7.4em);
+    width: 7em;
+}
+
+#infoBlk3 img {
+    height: 0.73em;
+    filter: invert(100%);
 }
 
 #slide0, #slide1, #slide2, #slide3 {
@@ -494,26 +513,26 @@ body {
 }
 
 #slide0 {
+    top: calc(50dvh + 1.3em);
+    left: calc(50dvw - 0.95em);
+    transform: rotate(90deg);
+}
+
+#slide1 {
     top: calc(50dvh - 1.95em);
     left: calc(50dvw - 4.3em);
     transform: rotate(180deg);
 }
 
-#slide1 {
+#slide2 {
     top: calc(50dvh - 5.3em);
     left: calc(50dvw - 0.95em);
     transform: rotate(270deg);
 }
 
-#slide2 {
+#slide3 {
     top: calc(50dvh - 1.95em);
     left: calc(50dvw + 2.3em);
-}
-
-#slide3 {
-    top: calc(50dvh + 1.3em);
-    left: calc(50dvw - 0.95em);
-    transform: rotate(90deg);
 }
 
 #cardImg img, #faceImg img, #backImg img {
