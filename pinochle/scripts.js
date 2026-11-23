@@ -207,7 +207,7 @@ const cardImg   = Array.from(document.querySelectorAll('#cardImg img'));
 const faceImg   = Array.from(document.querySelectorAll('#faceImg img'));
 const backImg   = Array.from(document.querySelectorAll('#backImg img'));
 const infoCell  = Array.from(document.querySelectorAll('#infoGrd div'));
-const helpPag   = Array.from(document.querySelectorAll('#helpPag div'));
+const helpDiv   = Array.from(document.querySelectorAll('#helpPag div'));
 
 // Timer constants
 const dealTime  = 2000;                                 // milliseconds to deal all cards
@@ -1239,10 +1239,10 @@ function appCloseEvent() {
     termDlg.showModal();
 }
 
-// Hide current helpPag (if any); display new helpPag topic
+// Hide current helpDiv (if any); display new helpDiv topic
 function helpEvent(topic) {
     resetPlayPag(none);
-    for (const div of helpPag)
+    for (const div of helpDiv)
         if (div.id == topic) {
             if (helpStack.length)
                 helpStack.at(-1).style.display = 'none';
@@ -1252,7 +1252,7 @@ function helpEvent(topic) {
         }
 }
 
-// Pop and hide current helpPag, then display previous helpPag
+// Pop and hide current helpDiv, then display previous helpDiv
 function helpCloseEvent() {
     if (helpStack.length > 0)
         helpStack.pop().style.display = 'none';
