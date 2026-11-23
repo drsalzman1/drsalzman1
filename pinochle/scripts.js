@@ -2119,6 +2119,7 @@ function contextmenuEvent(e) {
 // Set dynamic sizes and, if sizes changed, redraw deck
 function resizeEvent() {
     const em = Number.parseFloat(getComputedStyle(body).fontSize);
+    playTtl.textContent = em;
     vw = Number.parseFloat(getComputedStyle(body).width);
     vh = Number.parseFloat(getComputedStyle(body).height);
     cardw = 4 * em;
