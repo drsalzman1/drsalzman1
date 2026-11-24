@@ -2116,21 +2116,6 @@ function contextmenuEvent(e) {
     e.preventDefault();
 }
 
-function getSafeAreaInsets() {
-  const styles = getComputedStyle(document.documentElement);
-  
-  return {
-    top: parseFloat(styles.getPropertyValue('--sat')) || 0,
-    right: parseFloat(styles.getPropertyValue('--sar')) || 0,
-    bottom: parseFloat(styles.getPropertyValue('--sab')) || 0,
-    left: parseFloat(styles.getPropertyValue('--sal')) || 0,
-  };
-}
-
-// Example usage
-const insets = getSafeAreaInsets();
-console.log(insets.top); // e.g., 44
-
 // Set dynamic sizes and, if sizes changed, redraw deck
 function resizeEvent() {
     const styles = getComputedStyle(document.documentElement);
@@ -2138,10 +2123,10 @@ function resizeEvent() {
     const sar = Number.parseFloat(styles.getPropertyValue('--sar'));
     const sab = Number.parseFloat(styles.getPropertyValue('--sab'));
     const sal = Number.parseFloat(styles.getPropertyValue('--sal'));
-    playTtl.textContent = `sat:${sat}, sar:${sar}, sab:${sab}, sal:${sal}`;
-    const em = Number.parseFloat(getComputedStyle(body).fontSize);
-    vw = Number.parseFloat(getComputedStyle(body).width);
-    vh = Number.parseFloat(getComputedStyle(body).height);
+    const em = Number.parseFloat(getComputedStyle(safe).fontSize);
+    vw = Number.parseFloat(getComputedStyle(safe).width);
+    vh = Number.parseFloat(getComputedStyle(safe).height);
+    playTtl.textContent = `t:${sat}, r:${sar}, b:${sab}, l:${sal}, w:${vw}, h:${vh}`;
     cardw = 4 * em;
     cardh = 5.6 * em;
     iconw = 1.32 * em;

@@ -1,12 +1,16 @@
 @media (orientation: portrait) {
     :root {
-        font-size: min(4.25svw, 2.55svh);
+        --vInset: max(env(safe-area-inset-top), env(safe-area-inset-bottom));
+        --hInset: 0px;
+        font-size: min(calc((100svw - var(--hInset)*2) * 0.0425), calc((100svh - var(--vInset)*2) * 0.0255));
     }
 }
 
 @media (orientation: landscape) {
     :root {
-        font-size: min(4.25svh, 2.575svw);
+        --vInset: 0px;
+        --hInset: max(env(safe-area-inset-left), env(safe-area-inset-right));
+        font-size: min(calc((100svh - var(--vInset)*2) * 0.0425), calc((100svw - var(--hInset)*2) * 0.02575));
    }
 }
 
@@ -27,16 +31,29 @@
 
 body {
     position: absolute;
-    width: 100svw;
     height: 100svh;
-    display: grid;
-    place-items: center;
-    background-color: darkgreen;
+    width: 100svw;
+    background-color: black;
     color: white;
     -webkit-user-select: none;
     user-select: none;
     touch-action: none;
     overflow: hidden;
+    z-index: -3000;
+}
+
+#safe {
+    position: absolute;
+    top: var(--vInset);
+    bottom: var(--vInset);
+    left: var(--hInset);
+    right: var(--hInset);
+    height: calc(100svh - var(--vInset)*2);
+    width: calc(100svw - var(--hInset)*2);
+    display: grid;
+    place-items: center;
+    background-color: darkgreen;
+    z-index: -2000;
 }
 
 #playPag {
@@ -147,19 +164,19 @@ body {
 }
 
 #nameLst0 {
-    max-height: calc(100svh - 10.3em);
+    max-height: calc(100% - 10.3em);
 }
 
 #nameLst1 {
-    max-height: calc(100svh - 12.6em);
+    max-height: calc(100% - 12.6em);
 }
 
 #nameLst2 {
-    max-height: calc(100svh - 14.9em);
+    max-height: calc(100% - 14.9em);
 }
 
 #nameLst3 {
-    max-height: calc(100svh - 17.2em);
+    max-height: calc(100% - 17.2em);
 }
 
 .nameLst div {
@@ -246,8 +263,8 @@ body {
 
 #gameDiv {
     position: absolute;
-    top: calc(50svh - 4.28em);
-    left: calc(50svw - 5.52em);
+    top: calc(50% - 4.28em);
+    left: calc(50% - 5.52em);
     width: 11.04em;
     height: 8.56em;
     display: flex;
@@ -346,7 +363,7 @@ body {
 }
 
 #handDiv {
-    width: 80svw;
+    width: 80%;
     display: none;
     text-align: center;
 }
@@ -410,6 +427,8 @@ body {
 
 #infoBlks {
     position: absolute;
+    height: 100%;
+    width: 100%;
     text-align: center;
     display: none;
     z-index: -1000;
@@ -417,8 +436,8 @@ body {
 
 #infoBlk0 {
     position: absolute;
-    top: calc(100svh - 1.6em);
-    left: calc(50svw - 10em);
+    top: calc(100% - 1.6em);
+    left: calc(50% - 10em);
     width: 20em;
     display: flex;
     flex-direction: row;
@@ -461,7 +480,7 @@ body {
 #infoBlk2 {
     position: absolute;
     top: 0.44em;
-    left: calc(50svw - 10em);
+    left: calc(50% - 10em);
     width: 20em;
     display: flex;
     flex-direction: row;
@@ -483,13 +502,13 @@ body {
 
 #infoBlk3 .infoNam {
     position: absolute;
-    left: calc(100svw - 6em);
+    left: calc(100% - 6em);
     width: 5.6em;
 }
 
 #infoBlk3 .infoBid {
     position: absolute;
-    left: calc(100svw - 6em);
+    left: calc(100% - 6em);
     width: 5.6em;
 }
 
@@ -497,7 +516,7 @@ body {
     position: absolute;
     font-size: 0.85em;
     line-height: 1.2em;
-    left: calc(100svw - 7.4em);
+    left: calc(100% - 7.4em);
     width: 7em;
 }
 
@@ -516,26 +535,26 @@ body {
 }
 
 #slide0 {
-    top: calc(50svh + 1.3em);
-    left: calc(50svw - 0.95em);
+    top: calc(50% + 1.3em);
+    left: calc(50% - 0.95em);
     transform: rotate(90deg);
 }
 
 #slide1 {
-    top: calc(50svh - 1.95em);
-    left: calc(50svw - 4.3em);
+    top: calc(50% - 1.95em);
+    left: calc(50% - 4.3em);
     transform: rotate(180deg);
 }
 
 #slide2 {
-    top: calc(50svh - 5.3em);
-    left: calc(50svw - 0.95em);
+    top: calc(50% - 5.3em);
+    left: calc(50% - 0.95em);
     transform: rotate(270deg);
 }
 
 #slide3 {
-    top: calc(50svh - 1.95em);
-    left: calc(50svw + 2.3em);
+    top: calc(50% - 1.95em);
+    left: calc(50% + 2.3em);
 }
 
 #cardImg img, #faceImg img, #backImg img {
