@@ -976,26 +976,33 @@ function relocate() {
     let pitch1 = 0;                                             // card pitch for p1's hand
     let pitch2 = 0;                                             // card pitch for p2's hand
     let pitch3 = 0;                                             // card pitch for p3's hand
+    let off1 = 0;
     for (const c of cArray) {
         const p = card[c].p;
         if (c == cpArray[p][0]) {
             n = -1;
             for (const c of cpArray[p])
                 n = card[c].g==hand? n+1 : n;
-            if (vw <= vh) { // portrait
-                hpad = pad;
-                vpad = iconh + pad;
-                pitch0 = Math.min(cardw*3/4, (vw - pad*2 - cardw) / n);
-                pitch1 = Math.min(cardw*1/4, (vh - cardh*2 - iconh*4 - pad*3 - cardw) / n);
-                pitch2 = Math.min(cardw*1/4, (vw - pad*2 - cardw) / n);
-                pitch3 = Math.min(cardw*1/4, (vh - cardh*2 - iconh*4 - pad*3 - cardw) / n);
-            } else { // landscape
-                hpad = pad;
-                vpad = iconh + pad;
-                pitch0 = Math.min(cardw*3/4, (vw - pad*4 - cardh*2 - cardw) / n);
-                pitch1 = Math.min(cardw*1/4, (vh - iconh*3 - pad*1.5 - cardw) / n);
-                pitch2 = Math.min(cardw*1/4, (vw - pad*2 - cardw) / n);
-                pitch3 = Math.min(cardw*1/4, (vh - iconh*3 - pad*1.5 - cardw) / n);
+            hpad = pad;
+            vpad = pad*4.3; /*iconh + pad;*/
+            if (vh/vw > 1.20) { // tall
+                pitch0 = Math.min(cardw*3/4, (vw - pad*12.0) / n);
+                pitch1 = Math.min(cardw*1/4, (vh - pad*54.0) / n);
+                pitch2 = Math.min(cardw*1/4, (vw - pad*12.0) / n);
+                pitch3 = Math.min(cardw*1/4, (vh - pad*54.0) / n);
+                off1 = pad*2.7;
+            } else if (vh/vw > 0.7) { // medium
+                pitch0 = Math.min(cardw*3/4, (vw - pad*12.0) / n);
+                pitch1 = Math.min(cardw*1/4, (vh - pad*39.0) / n);
+                pitch2 = Math.min(cardw*1/4, (vw - pad*42.0) / n);
+                pitch3 = Math.min(cardw*1/4, (vh - pad*39.0) / n);
+                off1 = pad*10.2;
+            } else { // wide
+                pitch0 = Math.min(cardw*3/4, (vw - pad*42.0) / n);
+                pitch1 = Math.min(cardw*1/4, (vh - pad*21.5) / n);
+                pitch2 = Math.min(cardw*1/4, (vw - pad*42.0) / n);
+                pitch3 = Math.min(cardw*1/4, (vh - pad*21.5) / n);
+                off1 = pad*1.4;
             }
             v = 0;
         }
@@ -1006,7 +1013,7 @@ function relocate() {
         card[c].heap.y = Math.round([vh-cardw-vpad, vh/2, cardw+vpad, vh/2][p] + (Math.random()-0.5)*cardw/2);
         card[c].heap.r = [0, Math.PI/2, 0, -Math.PI/2][dealer] + (Math.random()-0.5)*Math.PI/4;
         card[c].hand.x = Math.round([vw/2+pitch0*(v-n/2), cardh/2+hpad, vw/2-pitch2*(v-n/2), vw-cardh/2-hpad][p]);
-        card[c].hand.y = Math.round([vh-cardh/2-vpad, vh*0.475+pitch1*(v-n/2), cardh/2+vpad, vh*0.475-pitch3*(v-n/2)][p]);
+        card[c].hand.y = Math.round([vh-cardh/2-vpad, vh/2-off1+pitch1*(v-n/2), cardh/2+vpad, vh/2-off1-pitch3*(v-n/2)][p]);
         card[c].hand.r = [r0, r1, r2, r3][p];
         card[c].cntr.x = Math.round(vw/2 + [0, -cardw*0.38, 0, +cardw*0.38][p]);
         card[c].cntr.y = Math.round(vh/2 + [+cardw*0.38, 0, -cardw*0.38, 0][p]);
@@ -1273,7 +1280,7 @@ function infoEvent() {
         infoCell[i++].textContent = q;
     }
     infoGrd.style.display = show[counts]? 'grid' : 'none';
-    infoTake.textContent = `Your take: ${takeO} of ${needO}. Their take: ${takeE} of ${needE}.`;
+    infoTake.textContent = `Your take: ${takeE} of ${needE}. Their take: ${takeO} of ${needO}.`;
     infoDiv.style.display = 'flex';
 }
 
@@ -2118,18 +2125,11 @@ function contextmenuEvent(e) {
 
 // Set dynamic sizes and, if sizes changed, redraw deck
 function resizeEvent() {
-    const styles = getComputedStyle(document.documentElement);
-    const sat = Number.parseFloat(styles.getPropertyValue('--sat'));
-    const sar = Number.parseFloat(styles.getPropertyValue('--sar'));
-    const sab = Number.parseFloat(styles.getPropertyValue('--sab'));
-    const sal = Number.parseFloat(styles.getPropertyValue('--sal'));
     const em = Number.parseFloat(getComputedStyle(safe).fontSize);
     vw = Number.parseFloat(getComputedStyle(safe).width);
     vh = Number.parseFloat(getComputedStyle(safe).height);
-    playTtl.textContent = `t:${sat}, r:${sar}, b:${sab}, l:${sal}, w:${vw}, h:${vh}`;
     cardw = 4 * em;
     cardh = 5.6 * em;
-    iconw = 1.32 * em;
     iconh = 1.32 * em;
     pad   = 0.4 * em;
     if (vh!=vh0 || vw!=vw0) {
